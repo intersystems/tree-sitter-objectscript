@@ -1,0 +1,156 @@
+================
+If Statements 0
+================
+  if 1 set x = 3 set set = 3
+  if 1 { set x = 3 } else { w 2 }
+  set x = 3
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (numeric_literal
+            (integer_literal)))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn))
+              (expression
+                (numeric_literal
+                  (integer_literal))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (numeric_literal
+              (integer_literal))))))
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (numeric_literal
+            (integer_literal)))
+        (statements
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (glvn
+                  (lvn))
+                (expression
+                  (numeric_literal
+                    (integer_literal)))))))
+        (else_block
+          (keyword_else)
+          (statements
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (numeric_literal
+                      (integer_literal))))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (numeric_literal
+              (integer_literal))))))))
+
+================
+If Statements 1
+================
+ if seg="ORC" {
+		set type=$zcvt($$$ORCOrderTypeIdentifier,"U")
+  } elseif msgType="ORU_R01" {  // Results
+			if type="OBS" {
+				set ^||HS.Data(s)="ORCOBS"
+			} else {
+				W "hello", !
+			}
+	}
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (binary_expression
+            (expression
+              (glvn
+                (lvn)))
+            (expression
+              (string_literal))))
+        (statements
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (glvn
+                  (lvn))
+                (expression
+                  (system_defined_function
+                    (expression
+                      (macro
+                        (macro_constant)))
+                    (expression
+                      (string_literal))))))))
+        (elseif_block
+          (keyword_elseif)
+          (expression
+            (binary_expression
+              (expression
+                (glvn
+                  (lvn)))
+              (expression
+                (string_literal))))
+          (line_comment_1)
+          (statements
+            (statement
+              (command_if
+                (keyword_if)
+                (expression
+                  (binary_expression
+                    (expression
+                      (glvn
+                        (lvn)))
+                    (expression
+                      (string_literal))))
+                (statements
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (set_argument
+                        (glvn
+                          (gvn
+                            (subscripts
+                              (expression
+                                (glvn
+                                  (lvn))))))
+                        (expression
+                          (string_literal))))))
+                (else_block
+                  (keyword_else)
+                  (statements
+                    (statement
+                      (command_write
+                        (keyword_write)
+                        (write_argument
+                          (expression
+                            (string_literal)))
+                        (write_argument
+                          (write_device_control
+                            (write_device_fflf)))))))))))))))

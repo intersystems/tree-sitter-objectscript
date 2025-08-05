@@ -1,0 +1,48 @@
+================
+Set Statement
+================
+
+ set x = 1
+ set (Action, FD) = $s(msgType="ADT_A13":"CancelDischarge",1:"AddOrUpdate")
+
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (numeric_literal
+              (integer_literal))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (variable_list
+            (glvn
+              (lvn))
+            (glvn
+              (lvn)))
+          (expression
+            (system_defined_function
+              (dollar_select
+                (dollar_arg_pair
+                  (expression
+                    (binary_expression
+                      (expression
+                        (glvn
+                          (lvn)))
+                      (expression
+                        (string_literal))))
+                  (expression
+                    (string_literal)))
+                (dollar_arg_pair
+                  (expression
+                    (numeric_literal
+                      (integer_literal)))
+                  (expression
+                    (string_literal)))))))))))

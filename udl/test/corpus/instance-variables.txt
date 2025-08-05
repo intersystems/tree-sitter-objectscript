@@ -1,0 +1,39 @@
+==================
+Instance Variables 0
+==================
+
+Class Foo {
+
+ClassMethod Bar() {
+  set ..Foo = 12
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (oref_set_target
+                      (relative_dot_property
+                        (oref_property
+                          (property_name))))
+                    (expression
+                      (expr_atom
+                        (numeric_literal
+                          (integer_literal))))))))))))))

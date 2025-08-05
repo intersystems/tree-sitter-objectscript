@@ -1,0 +1,501 @@
+================
+Statements O
+================
+
+ set x = 1
+ set Action=$s(msgType="ADT_A13":"CancelDischarge",1:"AddOrUpdate")
+TAG
+
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (numeric_literal
+              (integer_literal))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (system_defined_function
+              (dollar_select
+                (dollar_arg_pair
+                  (expression
+                    (binary_expression
+                      (expression
+                        (glvn
+                          (lvn)))
+                      (expression
+                        (string_literal))))
+                  (expression
+                    (string_literal)))
+                (dollar_arg_pair
+                  (expression
+                    (numeric_literal
+                      (integer_literal)))
+                  (expression
+                    (string_literal)))))))))
+    (statement
+      (tag))))
+
+================
+Statements 1
+================
+  Set $ZT="Trap"
+
+	Set lock = op
+
+	Set:timeout=##class(%SYS.Python).None() timeout=""
+	Set:mode=##class(%SYS.Python).None() mode=""
+
+	If '$IsObject(ref) {
+		Set lock = lock _ ref
+		Set:mode'="" lock = lock _ "#""" _ mode _ """"
+	} ElseIf ref.%IsA("%SYS.Python") {
+	    Set lock = lock _ "("
+	    For i=1:1:ref."__len__"() {
+			Set:i>1 lock = lock _ ","
+			Set lock = lock _ ref."__getitem__"(i-1)
+			Set:mode'="" lock = lock _ "#""" _ mode _ """"
+		}
+		Set lock = lock _ ")"
+	} Else {
+		Set $ZE="<SYNTAX>"
+		Goto Trap
+	}
+
+	If timeout'="" {
+	   Set lock = lock _ ":"_timeout
+	} Else {
+	   Set $TEST = 1
+	}
+
+	// If anything is invalid, this will raise a <SYNTAX> error which we'll convert to
+	// a type error.
+	LOCK @lock
+
+	Quit $S($TEST:$system.Python.True(),1:$system.Python.False())
+
+Trap
+	Set $ZT=""  // Clear to prevent infinite loops
+	Set error = $CASE($P($ZE,">",1)_">", "<INTERRUPT>":"KeyboardInterrupt",
+		                                    "<SYNTAX>":"TypeError",
+		                                              :"RuntimeError")
+	Set pyex = $METHOD(##class(%SYS.Python).Builtins(),error,$ZE)
+	Throw pyex
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (system_defined_variable)
+          (expression
+            (string_literal)))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (glvn
+              (lvn))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (post_conditional
+          (expression
+            (binary_expression
+              (expression
+                (glvn
+                  (lvn)))
+              (_binary_operator)
+              (expression
+                (class_method_call
+                  (keyword_pound_pound_class)
+                  (class_name)
+                  (method_name)
+                  (method_args))))))
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (string_literal)))))
+    (statement
+      (command_set
+        (keyword_set)
+        (post_conditional
+          (expression
+            (binary_expression
+              (expression
+                (glvn
+                  (lvn)))
+              (_binary_operator)
+              (expression
+                (class_method_call
+                  (keyword_pound_pound_class)
+                  (class_name)
+                  (method_name)
+                  (method_args))))))
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (string_literal)))))
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (unary_expression
+            (expression
+              (system_defined_function
+                (expression
+                  (glvn
+                    (lvn)))))))
+        (statements
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (glvn
+                  (lvn))
+                (expression
+                  (binary_expression
+                    (expression
+                      (glvn
+                        (lvn)))
+                    (expression
+                      (glvn
+                        (lvn))))))))
+          (statement
+            (command_set
+              (keyword_set)
+              (post_conditional
+                (expression
+                  (binary_expression
+                    (expression
+                      (glvn
+                        (lvn)))
+                    (_binary_operator)
+                    (expression
+                      (string_literal)))))
+              (set_argument
+                (glvn
+                  (lvn))
+                (expression
+                  (binary_expression
+                    (expression
+                      (binary_expression
+                        (expression
+                          (binary_expression
+                            (expression
+                              (glvn
+                                (lvn)))
+                            (expression
+                              (string_literal))))
+                        (expression
+                          (glvn
+                            (lvn)))))
+                    (expression
+                      (string_literal))))))))
+        (elseif_block
+          (keyword_elseif)
+          (expression
+            (oref_method_call
+              (lvn)
+              (method_name)
+              (method_args
+                (method_arg
+                  (expression
+                    (string_literal))))))
+          (statements
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn))
+                  (expression
+                    (binary_expression
+                      (expression
+                        (glvn
+                          (lvn)))
+                      (expression
+                        (string_literal)))))))
+            (statement
+              (command_for
+                (keyword_for)
+                (for_parameter
+                  (glvn
+                    (lvn))
+                  (for_parameter_arg
+                    (expression
+                      (numeric_literal
+                        (integer_literal)))
+                    (expression
+                      (numeric_literal
+                        (integer_literal)))
+                    (expression
+                      (oref_method_call
+                        (lvn)
+                        (method_name)
+                        (method_args)))))
+                (statements
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (post_conditional
+                        (expression
+                          (binary_expression
+                            (expression
+                              (glvn
+                                (lvn)))
+                            (_binary_operator)
+                            (expression
+                              (numeric_literal
+                                (integer_literal))))))
+                      (set_argument
+                        (glvn
+                          (lvn))
+                        (expression
+                          (binary_expression
+                            (expression
+                              (glvn
+                                (lvn)))
+                            (expression
+                              (string_literal)))))))
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (set_argument
+                        (glvn
+                          (lvn))
+                        (expression
+                          (binary_expression
+                            (expression
+                              (glvn
+                                (lvn)))
+                            (expression
+                              (oref_method_call
+                                (lvn)
+                                (method_name)
+                                (method_args
+                                  (method_arg
+                                    (expression
+                                      (binary_expression
+                                        (expression
+                                          (glvn
+                                            (lvn)))
+                                        (expression
+                                          (numeric_literal
+                                            (integer_literal))))))))))))))
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (post_conditional
+                        (expression
+                          (binary_expression
+                            (expression
+                              (glvn
+                                (lvn)))
+                            (_binary_operator)
+                            (expression
+                              (string_literal)))))
+                      (set_argument
+                        (glvn
+                          (lvn))
+                        (expression
+                          (binary_expression
+                            (expression
+                              (binary_expression
+                                (expression
+                                  (binary_expression
+                                    (expression
+                                      (glvn
+                                        (lvn)))
+                                    (expression
+                                      (string_literal))))
+                                (expression
+                                  (glvn
+                                    (lvn)))))
+                            (expression
+                              (string_literal))))))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn))
+                  (expression
+                    (binary_expression
+                      (expression
+                        (glvn
+                          (lvn)))
+                      (expression
+                        (string_literal)))))))))
+        (else_block
+          (keyword_else)
+          (statements
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (system_defined_variable)
+                  (expression
+                    (string_literal)))))
+            (statement
+              (command_goto
+                (keyword_goto)
+                (goto_argument
+                  (goto_location
+                    (goto_label)))))))))
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (binary_expression
+            (expression
+              (glvn
+                (lvn)))
+            (expression
+              (string_literal))))
+        (statements
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (glvn
+                  (lvn))
+                (expression
+                  (binary_expression
+                    (expression
+                      (binary_expression
+                        (expression
+                          (glvn
+                            (lvn)))
+                        (expression
+                          (string_literal))))
+                    (expression
+                      (glvn
+                        (lvn)))))))))
+        (else_block
+          (keyword_else)
+          (statements
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (system_defined_variable)
+                  (expression
+                    (numeric_literal
+                      (integer_literal))))))))))
+    (line_comment_1)
+    (line_comment_1)
+    (statement
+      (command_lock
+        (keyword_lock)
+        (command_lock_argument
+          (command_lock_arguments_variant_1
+            (glvn
+              (lvn))))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (expression
+          (system_defined_function
+            (dollar_select
+              (dollar_arg_pair
+                (expression
+                  (system_defined_variable))
+                (expression
+                  (dollarsf
+                    (dollar_system_keyword)
+                    (method_args))))
+              (dollar_arg_pair
+                (expression
+                  (numeric_literal
+                    (integer_literal)))
+                (expression
+                  (dollarsf
+                    (dollar_system_keyword)
+                    (method_args)))))))))
+    (statement
+      (tag))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (system_defined_variable)
+          (expression
+            (string_literal)))))
+    (line_comment_1)
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (system_defined_function
+              (expression
+                (binary_expression
+                  (expression
+                    (system_defined_function
+                      (expression
+                        (system_defined_variable))
+                      (expression
+                        (string_literal))
+                      (expression
+                        (numeric_literal
+                          (integer_literal)))))
+                  (expression
+                    (string_literal))))
+              (dollar_arg_pair
+                (expression
+                  (string_literal))
+                (expression
+                  (string_literal)))
+              (dollar_arg_pair
+                (expression
+                  (string_literal))
+                (expression
+                  (string_literal)))
+              (expression
+                (string_literal)))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn))
+          (expression
+            (system_defined_function
+              (expression
+                (class_method_call
+                  (keyword_pound_pound_class)
+                  (class_name)
+                  (method_name)
+                  (method_args)))
+              (expression
+                (glvn
+                  (lvn)))
+              (expression
+                (system_defined_variable)))))))
+    (statement
+      (command_throw
+        (keyword_throw)
+        (expression
+          (glvn
+            (lvn)))))))

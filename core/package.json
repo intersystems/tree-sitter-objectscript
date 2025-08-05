@@ -1,0 +1,81 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "author": "Dave McCaldon <davem@intersystems.com>",
+  "contributors": [
+    {
+      "name": "Michael Fortunato",
+      "email": "michael.n.fortunato@gmail.com"
+    },
+    {
+      "name": "Marc Johnson",
+      "email": "marc.johnson@intersystems.com"
+    }
+  ],
+  "description": "Core tree-sitter grammar for InterSystems ObjectScript routines",
+  "keywords": [
+    "parser",
+    "lexer",
+    "objectscript_core"
+  ],
+  "license": "MIT",
+  "main": "./bindings/node",
+  "types": "bindings/node",
+  "scripts": {
+    "prebuildify": "prebuildify --napi --strip",
+    "lint": "eslint grammar.js",
+    "gen": "tree-sitter generate",
+    "postgen": "du -h src/parser.c || echo 'Cannot display parser.c size'",
+    "build": "tree-sitter build",
+    "build-wasm": "tree-sitter build --wasm",
+    "parse": "tree-sitter parse",
+    "test": "tree-sitter test",
+    "playground": "tree-sitter playground",
+    "demo": "npm run gen && npm run build-wasm && npm run playground",
+    "install": "node-gyp-build"
+  },
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "prebuilds/**",
+    "bindings/node/*",
+    "queries/*",
+    "src/**",
+    "test/**"
+  ],
+  "injection-regex": "html",
+  "injections": "./injections.js",
+  "tree-sitter": [
+    {
+      "scope": "source.objectscript.core",
+      "injection-regex": "^objectscript_core$",
+      "highlights": [
+        "queries/highlights.scm"
+      ],
+      "locals": [
+        "queries/locals.scm"
+      ],
+      "tags": [
+        "queries/tags.scm"
+      ],
+      "injections": [
+        "queries/injections.scm"
+      ]
+    }
+  ],
+  "dependencies": {
+    "node-gyp-build": "^4.8.0",
+    "tree-sitter-html": "^0.19.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.22.0"
+  },
+  "peerDependenciesMeta": {
+    "tree_sitter": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "prebuildify": "^6.0.0"
+  }
+}
