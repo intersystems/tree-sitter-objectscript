@@ -1,0 +1,1337 @@
+[
+  {
+    "type": "binary_operator",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "byref_arg",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "lvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_method_call",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_ref",
+          "named": true
+        },
+        {
+          "type": "method_args",
+          "named": true
+        },
+        {
+          "type": "method_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "class_parameter_ref",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_ref",
+          "named": true
+        },
+        {
+          "type": "parameter_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "class_ref",
+    "named": true,
+    "fields": {
+      "preproc_keyword": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_pound_pound_class",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_name",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "lvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "decimal_literal",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "dollar_arg_pair",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollarsf",
+    "named": true,
+    "fields": {
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "dollar_system_keyword",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "method_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expr_atom",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "class_method_call",
+          "named": true
+        },
+        {
+          "type": "class_parameter_ref",
+          "named": true
+        },
+        {
+          "type": "dollarsf",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "extrinsic_function",
+          "named": true
+        },
+        {
+          "type": "gvn",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "json_array_literal",
+          "named": true
+        },
+        {
+          "type": "json_object_literal",
+          "named": true
+        },
+        {
+          "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "macro",
+          "named": true
+        },
+        {
+          "type": "numeric_literal",
+          "named": true
+        },
+        {
+          "type": "oref_chain_expr",
+          "named": true
+        },
+        {
+          "type": "relative_dot_method",
+          "named": true
+        },
+        {
+          "type": "relative_dot_parameter",
+          "named": true
+        },
+        {
+          "type": "relative_dot_property",
+          "named": true
+        },
+        {
+          "type": "sql_field_reference",
+          "named": true
+        },
+        {
+          "type": "ssvn",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "superclass_method_call",
+          "named": true
+        },
+        {
+          "type": "system_defined_function",
+          "named": true
+        },
+        {
+          "type": "system_defined_variable",
+          "named": true
+        },
+        {
+          "type": "unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expr_tail",
+    "named": true,
+    "fields": {
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "?",
+            "named": false
+          },
+          {
+            "type": "binary_operator",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "pattern_expression",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_atom",
+          "named": true
+        },
+        {
+          "type": "expr_tail",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "extrinsic_function",
+    "named": true,
+    "fields": {
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label_ref",
+            "named": true
+          }
+        ]
+      },
+      "offset": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label_offset",
+            "named": true
+          }
+        ]
+      },
+      "routine": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "routine_ref",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "indirection",
+          "named": true
+        },
+        {
+          "type": "method_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "glvn",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "gvn",
+          "named": true
+        },
+        {
+          "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "macro",
+          "named": true
+        },
+        {
+          "type": "ssvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gvn",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "indirection",
+    "named": true,
+    "fields": {
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "@",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "glvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "instance_variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "property_name",
+          "named": true
+        },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "json_array_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "json_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "json_boolean_literal",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "json_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "json_array_literal",
+          "named": true
+        },
+        {
+          "type": "json_boolean_literal",
+          "named": true
+        },
+        {
+          "type": "json_null_literal",
+          "named": true
+        },
+        {
+          "type": "json_number_literal",
+          "named": true
+        },
+        {
+          "type": "json_object_literal",
+          "named": true
+        },
+        {
+          "type": "json_string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "json_object_literal",
+    "named": true,
+    "fields": {
+      "key": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "json_string_literal",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "json_literal",
+            "named": true
+          },
+          {
+            "type": "json_objectscript_expr",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "json_objectscript_expr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "label_offset",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "label_ref",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "lvn",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "macro",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "macro_constant",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "macro_function",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "method_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_arg",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "byref_arg",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "variadic_arg",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_args",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "method_arg",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "numeric_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "decimal_literal",
+          "named": true
+        },
+        {
+          "type": "integer_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "oref_chain_expr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_method_call",
+          "named": true
+        },
+        {
+          "type": "dollarsf",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "extrinsic_function",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "json_object_literal",
+          "named": true
+        },
+        {
+          "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "oref_method",
+          "named": true
+        },
+        {
+          "type": "oref_parameter",
+          "named": true
+        },
+        {
+          "type": "oref_property",
+          "named": true
+        },
+        {
+          "type": "relative_dot_method",
+          "named": true
+        },
+        {
+          "type": "relative_dot_property",
+          "named": true
+        },
+        {
+          "type": "system_defined_function",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "oref_method",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "method_args",
+          "named": true
+        },
+        {
+          "type": "method_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "oref_parameter",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "parameter_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "oref_property",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "property_name",
+          "named": true
+        },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "parameter_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "property_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "relative_dot_method",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "oref_method",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "relative_dot_parameter",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "oref_parameter",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "relative_dot_property",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "oref_property",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "routine_ref",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sql_field_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "sql_field_reference",
+    "named": true,
+    "fields": {
+      "modifier": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "sql_field_modifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "sql_field_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "ssvn",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "subscripts",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "superclass_method_call",
+    "named": true,
+    "fields": {
+      "preproc_keyword": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_pound_pound_super",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "method_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "system_defined_function",
+    "named": true,
+    "fields": {
+      "case": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "dollar_arg_pair",
+            "named": true
+          }
+        ]
+      },
+      "default": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "dollar_arg_pair",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "method_arg",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "system_defined_variable",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "unary_expression",
+    "named": true,
+    "fields": {
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "'",
+            "named": false
+          },
+          {
+            "type": "+",
+            "named": false
+          },
+          {
+            "type": "-",
+            "named": false
+          },
+          {
+            "type": "@",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "glvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "variadic_arg",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "lvn",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "!",
+    "named": false
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "\"\"",
+    "named": false
+  },
+  {
+    "type": "#",
+    "named": false
+  },
+  {
+    "type": "$$",
+    "named": false
+  },
+  {
+    "type": "&",
+    "named": false
+  },
+  {
+    "type": "&&",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": "'!",
+    "named": false
+  },
+  {
+    "type": "'&",
+    "named": false
+  },
+  {
+    "type": "'<",
+    "named": false
+  },
+  {
+    "type": "'=",
+    "named": false
+  },
+  {
+    "type": "'>",
+    "named": false
+  },
+  {
+    "type": "'[",
+    "named": false
+  },
+  {
+    "type": "']",
+    "named": false
+  },
+  {
+    "type": "']]",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": "**",
+    "named": false
+  },
+  {
+    "type": "+",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": "..",
+    "named": false
+  },
+  {
+    "type": "...",
+    "named": false
+  },
+  {
+    "type": "/",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<=",
+    "named": false
+  },
+  {
+    "type": "=",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": ">=",
+    "named": false
+  },
+  {
+    "type": "?",
+    "named": false
+  },
+  {
+    "type": "@",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "]]",
+    "named": false
+  },
+  {
+    "type": "^",
+    "named": false
+  },
+  {
+    "type": "^$",
+    "named": false
+  },
+  {
+    "type": "_",
+    "named": false
+  },
+  {
+    "type": "dollar_system_keyword",
+    "named": true
+  },
+  {
+    "type": "false",
+    "named": false
+  },
+  {
+    "type": "integer_literal",
+    "named": true
+  },
+  {
+    "type": "json_null_literal",
+    "named": true
+  },
+  {
+    "type": "json_number_literal",
+    "named": true
+  },
+  {
+    "type": "json_string_literal",
+    "named": true
+  },
+  {
+    "type": "keyword_pound_pound_class",
+    "named": true
+  },
+  {
+    "type": "keyword_pound_pound_super",
+    "named": true
+  },
+  {
+    "type": "objectscript_identifier",
+    "named": true
+  },
+  {
+    "type": "pattern_expression",
+    "named": true
+  },
+  {
+    "type": "sql_field_modifier",
+    "named": true
+  },
+  {
+    "type": "string_literal",
+    "named": true
+  },
+  {
+    "type": "true",
+    "named": false
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
+    "named": false
+  },
+  {
+    "type": "||",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
+  }
+]
