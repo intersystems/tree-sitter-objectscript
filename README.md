@@ -17,6 +17,16 @@ The grammar currently integrates with these editors:
 - [neovim](#neovim-nvim-treesitter)
 - [emacs](#emacs)
 
+Given the polyglot nature of ObjectScript `.cls` files, it's recommended to ensure the following tree-sitter grammars are installed and available for injection:
+
+- SQL
+- HTML
+- Python
+- JavaScript
+- CSS
+- XML
+- Markdown
+
 ## Screenshots
 
 ### Zed
@@ -30,7 +40,7 @@ The grammar currently integrates with these editors:
 
 ### zed.dev
 
-Integration with the Zed editor is done as a [Zed Extension for ObjectScript](http://github.com/intersystems/zed-objectscript).  Once we've added this to the official zed-extensions repo, installation can be done via the Zed Extensions panel and simply search for ObjectScript.  Note that given the sophistication of the tree-sitter-objectscript grammar, installation can take 1-2 minutes for Zed's WASM infrastructure to build the parser.
+Integration with the Zed editor is done as a [Zed Extension for ObjectScript](http://github.com/intersystems/zed-objectscript).  Once we've added this to the official zed-extensions repo, installation can be done via the Zed Extensions panel and simply search for ObjectScript.
 
 ### Neovim (nvim-treesitter)
 
@@ -93,7 +103,7 @@ _TODO: Add configuration instructions._
 
 ## Reporting Issues
 
-Please report issues via [GitHub Issues](https://github.com/your-repo-url/issues).
+Please report issues via [GitHub Issues](https://github.com/intersystems/tree-sitter-objectscript/issues).
 
 ## Contributing
 
