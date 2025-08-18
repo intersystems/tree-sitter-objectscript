@@ -40,7 +40,7 @@ Given the polyglot nature of ObjectScript `.cls` files, it's recommended to ensu
 
 ### zed.dev
 
-Integration with the Zed editor is done as a [Zed Extension for ObjectScript](http://github.com/intersystems/zed-objectscript).  Once we've added this to the official zed-extensions repo, installation can be done via the Zed Extensions panel and simply search for ObjectScript.
+Integration with the Zed editor is done as a [Zed Extension for ObjectScript](https://zed.dev/extensions/objectscript).  You can install from that page, or alternately use `zed: extensions` in the command panel to access the Extensions tab, from there just search for ObjectScript and click install.
 
 ### Neovim (nvim-treesitter)
 
@@ -99,7 +99,8 @@ Open up a .cls file in NeoVim:
 Highlighting should be automatic. If not, use `:TSBufEnable highlight`.
 
 ### Emacs
-_TODO: Add configuration instructions._
+
+For Emacs 29.1 or later, we've implemented a [major mode for ObjectScript](https://github.com/intersystems/emacs-objectscript-ts-mode) using Emacs' built in tree-sitter support.  Follow the installation & setup instructions there.
 
 ## Reporting Issues
 
