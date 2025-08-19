@@ -38,10 +38,9 @@
 
 (property_name) @property
 (parameter_name) @constant
-(_ parameter: _ @variable.parameter)
+(parameter_name) @variable.parameter
 
 ; Method invcoations
-(instance_method_call) @function.method.call
 (class_method_call
     (class_ref (class_name) @type.definition)
     (method_name) @function.method.call

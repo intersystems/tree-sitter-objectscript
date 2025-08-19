@@ -1,102 +1,176 @@
-================
-System Functions 0
-================
+========================
+$CASE with $PIECE and $ZE
+========================
 
 $CASE($P($ZE,">",1)_">", "<INTERRUPT>":"KeyboardInterrupt",
 		                                    "<SYNTAX>":"TypeError",
 		                                              :"RuntimeError")
-$PIECE("SOME STRING", 1, *-1)
-$ZF(-1, "/usr/sbin/systemd")
-
-$E("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
-$EXTRACT("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
-$EXTRACT(mystr,*-0)
-
 
 ---
 
 (source_file
   (expression
-    (system_defined_function
-      (expression
-        (binary_expression
-          (expression
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
             (system_defined_function
               (expression
-                (system_defined_variable))
+                (expr_atom
+                  (system_defined_variable)))
               (expression
-                (string_literal))
+                (expr_atom
+                  (string_literal)))
               (expression
-                (numeric_literal
-                  (integer_literal)))))
+                (expr_atom
+                  (numeric_literal
+                    (integer_literal))))))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (dollar_arg_pair
           (expression
-            (string_literal))))
-      (dollar_arg_pair
-        (expression
-          (string_literal))
-        (expression
-          (string_literal)))
-      (dollar_arg_pair
-        (expression
-          (string_literal))
-        (expression
-          (string_literal)))
-      (expression
-        (string_literal))))
-  (expression
-    (system_defined_function
-      (expression
-        (string_literal))
-      (expression
-        (numeric_literal
-          (integer_literal)))
-      (expression
-        (numeric_literal
-          (integer_literal)))))
-  (expression
-    (system_defined_function
-      (expression
-        (unary_expression
+            (expr_atom
+              (string_literal)))
           (expression
+            (expr_atom
+              (string_literal))))
+        (dollar_arg_pair
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+==============
+$PIECE with *-1
+==============
+
+$PIECE("SOME STRING", 1, *-1)
+
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
             (numeric_literal
-              (integer_literal)))))
-      (expression
-        (string_literal))))
+              (integer_literal))))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))))))
+
+===========
+$ZF function
+===========
+
+$ZF(-1, "/usr/sbin/systemd")
+
+---
+
+(source_file
   (expression
-    (system_defined_function
-      (expression
-        (binary_expression
-          (expression
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
+            (unary_expression
+              (expression
+                (expr_atom
+                  (numeric_literal
+                    (integer_literal)))))))
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+====================
+$E with *+41 position
+====================
+
+$E("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
+
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
             (string_literal))
-          (expression
-            (macro
-              (macro_constant)))))
-      (expression
-        (numeric_literal
-          (integer_literal)))
-      (expression
-        (numeric_literal
-          (integer_literal)))))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (macro
+                  (macro_constant))))))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))))))
+
+==========================
+$EXTRACT with *+41 position
+==========================
+
+$EXTRACT("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
+
+---
+
+(source_file
   (expression
-    (system_defined_function
-      (expression
-        (binary_expression
-          (expression
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
             (string_literal))
-          (expression
-            (macro
-              (macro_constant)))))
-      (expression
-        (numeric_literal
-          (integer_literal)))
-      (expression
-        (numeric_literal
-          (integer_literal)))))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (macro
+                  (macro_constant))))))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))))))
+
+=========================
+$EXTRACT with *-0 position
+=========================
+
+$EXTRACT(mystr,*-0)
+
+---
+
+(source_file
   (expression
-    (system_defined_function
-      (expression
-        (glvn
-          (lvn)))
-      (expression
-        (numeric_literal
-          (integer_literal))))))
+    (expr_atom
+      (system_defined_function
+        (expression
+          (expr_atom
+            (lvn)))
+        (expression
+          (expr_atom
+            (numeric_literal
+              (integer_literal))))))))
