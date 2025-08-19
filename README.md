@@ -10,7 +10,7 @@ This project provides a [Tree-sitter](https://tree-sitter.github.io/tree-sitter/
 
 **Tree-sitter** is a powerful parser generator and incremental parsing library widely used in modern development environments to deliver real-time syntax highlighting, structural editing, and code analysis. It constructs concrete syntax trees quickly and efficiently, even as code changes.
 
-**InterSystems ObjectScript** is a dynamic, multi-paradigm programming language that combines procedural and object-oriented approaches with a novel multi-model data access features for key-value, SQL, Object and Document stores. It is the core language for the InterSystems IRIS Data Platform, particularly well-known in mission-critical applications in healthcare, financial services, and other data-intensive domains.
+**InterSystems ObjectScript** is a dynamic, multi-paradigm programming language that combines procedural and object-oriented approaches with novel multi-model data access features for key-value, SQL, Object and Document stores. It is the core language for the InterSystems IRIS Data Platform, particularly well-known in mission-critical applications in healthcare, financial services, and other data-intensive domains.
 
 The grammar currently integrates with these editors:
 - [zed.dev](#zeddev)
@@ -110,15 +110,66 @@ Please report issues via [GitHub Issues](https://github.com/intersystems/tree-si
 
 Contributions are welcome. Please submit changes via Pull Requests. Our preference is to use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages in order to keep the summaries terse, but allowing for more detail on the subsequent lines of the commit message.
 
-### Project Structure
+### Project Overview
 
 There are three main grammars in this repository:
+
 - **expr**: Handles ObjectScript expressions.
 - **core**: Core ObjectScript "routine" syntax (e.g., lines of code).
 - **udl**: Grammar for the `.cls` files that IRIS uses for storing ObjectScript classes.
 
+UDL is the grammar for the `.cls` files and extends the `core` grammar that represents one or more lines/statements of ObjectScript.  The `core` grammar similarly extends the `expr` grammar.
+
 The reason behind the multiple grammar architecture is that there are cases where we need to inject ObjectScript
-expressions as well as lines of ObjectScript into other grammars (see future work below).
+expressions as well as lines of ObjectScript into other grammars (see future work below).  Although it adds a little bit of complexity, it does promote reuse, for example a IRIS specific dialect of SQL could extend the stock SQL grammar and use tree-sitter injections to handle the ObjectScript extensions.
+
+### Getting Started
+
+You'll need to install the [tree-sitter-cli](https://github.com/tree-sitter/tree-sitter/blob/master/crates/cli/README.md) tooling (best done via your local package manager, e.g. homebrew on macOS, scoop on Windows).
+
+Since there are three parsers, you'll need to cd into the directory containing the one you want to work on.
+
+#### Build the Parser(s)
+
+From the parser directory, generate the state machines from the grammar and compile the native parser:
+```bash
+tree-sitter generate
+tree-sitter build
+```
+
+**NOTE**: Use `tree-sitter --wasm` when using the playground to test the grammar.
+
+#### Running Tests
+
+Tree-sitter has a built-in test runner:
+```bash
+tree-sitter test
+```
+Test cases live under `test/corpus`, where each file contains sample ObjectScript code and the expected parse tree.
+
+#### Playground
+
+Tree-sitter comes with a "playground" that allows you to test your grammar changes, visualize the AST as well as try out queries.
+
+```bash
+tree-sitter playground
+```
+
+This will start up a web browser running the playground with the .wasm built from the grammar using `tree-sitter build --wasm`.
+
+#### Iterating on Changes
+
+1. Edit grammar definitions (e.g., `grammar.js` and related files).
+2. Rebuild and test:
+   ```bash
+   tree-sitter generate
+   tree-sitter build
+   tree-sitter test
+   ```
+3. Update or add cases in `test/corpus` as needed.
+4. Repeat until all tests pass.
+
+**NOTE**: Since `udl` extends `core` which extends `expr`, if you make changes to the "upstream" grammars, you'll need to regenerate/rebuild the downstream one(s).
 
 ## License
 
