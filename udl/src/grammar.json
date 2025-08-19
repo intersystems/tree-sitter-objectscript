@@ -1864,10 +1864,6 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "dollar_function"
-        },
-        {
-          "type": "SYMBOL",
           "name": "dollar_piece"
         },
         {
@@ -1893,6 +1889,10 @@
         {
           "type": "SYMBOL",
           "name": "dollar_classmethod"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dollar_function"
         }
       ]
     },
@@ -2163,11 +2163,6 @@
                     {
                       "type": "PATTERN",
                       "value": "\\$WRE(VERSE)?",
-                      "flags": "i"
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\$WE(XTRACT)?",
                       "flags": "i"
                     },
                     {
@@ -3098,9 +3093,19 @@
                 "type": "FIELD",
                 "name": "function_name",
                 "content": {
-                  "type": "PATTERN",
-                  "value": "\\$E(XTRACT)?",
-                  "flags": "i"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "\\$E(XTRACT)?",
+                      "flags": "i"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "\\$WE(XTRACT)?",
+                      "flags": "i"
+                    }
+                  ]
                 }
               },
               {
@@ -3518,47 +3523,62 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "expression"
+          "type": "PREC",
+          "value": 1,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "modifier",
+                "content": {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "STRING",
+                    "value": "*"
+                  }
+                }
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "FIELD",
+                        "name": "modifier",
+                        "content": {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "-"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "+"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "expression"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "*"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": "-"
-                        },
-                        {
-                          "type": "STRING",
-                          "value": "+"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "expression"
-                    }
-                  ]
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "expression"
         }
       ]
     },

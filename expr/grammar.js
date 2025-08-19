@@ -563,7 +563,7 @@ module.exports = grammar({
     system_defined_function: ($) =>
       choice(
         // NOTE: Make sure you add any new rules here to the inline key at top of the file
-        $.dollar_function,
+        //       and put specific rules before generic dollar_function to avoid conflicts
         $.dollar_piece,
         $.dollar_extract,
         $.dollar_list,
@@ -571,6 +571,7 @@ module.exports = grammar({
         $.dollar_case,
         $.dollar_select,
         $.dollar_classmethod,
+        $.dollar_function,    // Fallback case
       ),
     dollar_function: ($) =>
       seq(
@@ -624,7 +625,6 @@ module.exports = grammar({
                 /\$WISWIDE/i,
                 /\$WL(ENGTH)?/i,
                 /\$WRE(VERSE)?/i,
-                /\$WE(XTRACT)?/i,
                 /\$WF(IND)?/i,
                 /\$ZABS/i,
                 /\$ZARCCOS/i,
@@ -786,7 +786,7 @@ module.exports = grammar({
       ),
     dollar_extract: ($) =>
       seq(
-        token(seq(field('function_name', /\$E(XTRACT)?/i), token.immediate('('))),
+        token(seq(field('function_name', choice(/\$E(XTRACT)?/i, /\$WE(XTRACT)?/i)), token.immediate('('))),
         $.expression,
         optional(
           seq(',', $.dollar_func_pos, optional(seq(',', $.dollar_func_pos))),
@@ -847,8 +847,18 @@ module.exports = grammar({
       ),
     dollar_arg_pair: ($) => seq($.expression, ':', $.expression),
     dollar_func_pos: ($) => choice(
+      prec(1,
+        seq(
+          field('modifier', token('*')),
+          optional(
+            seq(
+              field('modifier', choice('-', '+')),
+              $.expression,
+            ),
+          ),
+        ),
+      ),
       $.expression,
-      seq('*', optional(seq(choice('-', '+'), $.expression))),
     ),
     numeric_literal: ($) => choice($.integer_literal, $.decimal_literal),
     integer_literal: (_) => /[\d]+/,

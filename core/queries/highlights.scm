@@ -9,11 +9,16 @@
 (_ macro_arg: (_) @constant.macro)
 (_ mnemonic: (_) @constant.macro)
 
+(_ parameter: _ @variable.parameter)
+
 ; Functions that can be on the LHS of a SET
 (doable_dollar_functions) @function.builtin
 
 ; non-extrinsic routine call
 (routine_tag_call) @function.call
+
+; method call
+(instance_method_call) @function.method.call
 
 ;; Technically elseif and else_block are not statements,
 ;; so we need ot query them explicitly
