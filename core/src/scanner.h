@@ -403,15 +403,19 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     // Didn't find ##continue before newline
     return false;
 
-  } else if (/*iswspace(lexer->lookahead)*/ valid_symbols[_WHITESPACE]) {
+  } else if (valid_symbols[_WHITESPACE]) {
+    // Store initial position to check if we advanced
+    uint32_t start_column = lexer->get_column(lexer);
     eat_whitespace(lexer);
-    lexer->result_symbol = _WHITESPACE;
-    return true;
+    // return true if we actually consumed whitespace
+    if (lexer->get_column(lexer) > start_column) {
+        lexer->result_symbol = _WHITESPACE;
+        return true;
+    }
+    return false;  // No whitespace found
   }
-
   return false;
 }
-
 void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *scanner) {
   scanner->marker_buffer_len = 0;
 }
