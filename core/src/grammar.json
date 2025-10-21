@@ -404,7 +404,7 @@
       "type": "IMMEDIATE_TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"|\\((?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))(?:,(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))*)\\)))+"
+        "value": "[ \\t]*[ \\n]*(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"|\\((?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))(?:,(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\")))*\\)))+"
       }
     },
     "class_method_call": {
@@ -786,11 +786,8 @@
           }
         },
         {
-          "type": "TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "[%A-Za-z][A-Za-z0-9]*(?:\\.[A-Za-z0-9]+)*"
-          }
+          "type": "SYMBOL",
+          "name": "dotted_identifier_relaxed_token"
         }
       ]
     },
@@ -4810,7 +4807,7 @@
           "members": [
             {
               "type": "PATTERN",
-              "value": "[%A-Za-z][A-Za-z0-9]*(\\.[%A-Za-z][A-Za-z0-9]*)*"
+              "value": "[%A-Za-z0-9][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
             },
             {
               "type": "REPEAT",
@@ -4823,7 +4820,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[%A-Za-z][A-Za-z0-9]*(\\.[%A-Za-z][A-Za-z0-9]*)*"
+                    "value": "[%A-Za-z0-9][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
                   }
                 ]
               }
@@ -4851,7 +4848,7 @@
         },
         {
           "type": "PATTERN",
-          "value": "[%A-Za-z][A-Za-z0-9]*(\\.[%A-Za-z][A-Za-z0-9]*)*"
+          "value": "[%A-Za-z0-9][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
         }
       ]
     },
@@ -11778,6 +11775,16 @@
         }
       ]
     },
+    "dotted_identifier_relaxed_token_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "[%A-Za-z][A-Za-z0-9]*(?:\\.[A-Za-z0-9]+)*"
+        }
+      }
+    },
     "routine_ref_post_cond": {
       "type": "SEQ",
       "members": [
@@ -11789,14 +11796,13 @@
           }
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PATTERN",
-              "value": "[%A-Za-z][A-Za-z0-9]*(?:\\.[A-Za-z0-9]+)*"
-            }
-          }
+            "type": "SYMBOL",
+            "name": "dotted_identifier_relaxed_token_post_cond"
+          },
+          "named": true,
+          "value": "dotted_identifier_relaxed_token"
         }
       ]
     },
@@ -12929,7 +12935,7 @@
       "type": "IMMEDIATE_TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"|\\((?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))(?:,(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))*)\\)))+"
+        "value": "[ \\t]*[ \\n]*(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"|\\((?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\"))(?:,(?:(?:\\d+(?:\\.\\d+)?|\\.\\d+|\\.)?(?:[ACEULNPZaceulnpz]+|\"(?:[^\"\\r\\n]|\"\")*\")))*\\)))+"
       }
     },
     "_pattern_operator_post_cond": {

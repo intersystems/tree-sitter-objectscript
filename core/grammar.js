@@ -177,7 +177,7 @@ module.exports = grammar(objectscript_expr, {
 
     dotted_statement: ($) =>
        seq(
-        $.bol,
+        $.bol, // this is from the external scanner, and it means that it was at the start of a line and there were dots matching the dotted statement
         $.statement
       ),
     pound_dim: ($) =>
@@ -286,15 +286,13 @@ module.exports = grammar(objectscript_expr, {
     pound_import: ($) =>
       seq(
         field('preproc_keyword', alias(/\#import/i, $.kw_pound_import)),
-        repeat_with_commas(/[%A-Za-z][A-Za-z0-9]*(\.[%A-Za-z][A-Za-z0-9]*)*/)
-        // repeat_with_commas(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+        repeat_with_commas(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
       ),
 
     pound_include: ($) =>
       seq(
         field('preproc_keyword', alias(/\#include/i, $.kw_pound_include)),
-        /[%A-Za-z][A-Za-z0-9]*(\.[%A-Za-z][A-Za-z0-9]*)*/
-        // /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+        /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
       ),
 
     // TODO: Unimplemented preprocessor directives (lower priority):
