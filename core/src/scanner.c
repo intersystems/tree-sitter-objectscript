@@ -16,20 +16,6 @@ bool tree_sitter_objectscript_core_external_scanner_scan(
       (struct ObjectScript_Core_Scanner *)payload, lexer, valid_symbols);
 }
 
-//unsigned
-//tree_sitter_objectscript_core_external_scanner_serialize(void *payload,
-//                                                         char *buffer) {
-//  struct ObjectScript_Core_Scanner *scanner =
-//      (struct ObjectScript_Core_Scanner *)payload;
-//  memcpy(buffer, scanner, sizeof(struct ObjectScript_Core_Scanner));
-//  return sizeof(struct ObjectScript_Core_Scanner);
-//}
-//
-//void tree_sitter_objectscript_core_external_scanner_deserialize(
-//    void *payload, const char *buffer, unsigned length) {
-//  memcpy(payload, buffer, length);
-//}
-
 unsigned tree_sitter_objectscript_core_external_scanner_serialize(
     void *payload, char *buffer) {
   struct ObjectScript_Core_Scanner *s = (struct ObjectScript_Core_Scanner *)payload;
@@ -46,7 +32,7 @@ unsigned tree_sitter_objectscript_core_external_scanner_serialize(
   buffer[i++] = (char)mlen;
 
   for (int j = 0; j < s->marker_buffer_len; j++) {
-    // store as raw 4 bytes (endianness doesn’t matter for same machine session)
+    // store as raw 4 bytes
     if (i + (unsigned)sizeof(int32_t) > TREE_SITTER_SERIALIZATION_BUFFER_SIZE) {
       mlen = j; // truncate safely
       break;

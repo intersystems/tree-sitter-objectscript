@@ -145,7 +145,6 @@ module.exports = grammar({
         ']]',       // Sorts-after
         "']]",      // Not Sorts-after
       ),
-    // After `?` there must be no whitespace for literal patterns.
 // Keep `@glvn` as a separate alternative so spaces are allowed there.
     _pattern_operator: ($) =>
       seq(
@@ -157,11 +156,9 @@ module.exports = grammar({
       ),
     indirection: ($) => seq(field('operator', '@'), $.glvn),
 
-
-
-    pattern_expression: (_)=>
+    pattern_expression: _ =>
       token.immediate(
-        /(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"|\((?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"))(?:,(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"))*)\)))+/
+        /[ \t]*[ \n]*(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"|\((?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"))(?:,(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*")))*\)))+/
       ),
 
     // So far it looks like DO + SET: ##class(, ..Method(
@@ -201,15 +198,6 @@ module.exports = grammar({
       ),
 
     keyword_pound_pound_class: (_) => /##CLASS/i,
-    // class_name: (_) =>
-    //   choice(
-    //     seq(
-    //       token.immediate('"'),
-    //       repeat(choice(/[^"]+/, token.immediate('""'))),
-    //       '"',
-    //     ),
-    //     token.immediate(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
-    //   ),
     class_name: ($) =>
       choice(
         // quoted class name (unchanged)
@@ -277,7 +265,7 @@ module.exports = grammar({
         $.expression,
       ),
     routine_ref: ($) =>
-      seq(token.immediate('^'), token(DOTTED_ID_RELAXED)),
+      seq(token.immediate('^'), $.dotted_identifier_relaxed_token),
 
     dollarsf: ($) =>
       seq(
@@ -464,16 +452,6 @@ module.exports = grammar({
           optional($.subscripts),
         )
       ),
-
-    // _member_name: ($) =>
-    //   choice(
-    //     seq(
-    //       token.immediate('"'),
-    //       repeat(choice(/[^"]+/, token.immediate('""'))),
-    //       '"',
-    //     ),
-    //     token.immediate(/[%A-Za-z0-9][A-Za-z0-9]*/),
-    //   ),
     _member_name: ($) =>
          choice(
              seq(token.immediate('"'), repeat(choice(/[^"]+/, token.immediate('""'))), '"'),
