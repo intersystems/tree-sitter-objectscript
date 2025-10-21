@@ -71,6 +71,7 @@ module.exports = grammar(objectscript_expr, {
     $._block_comment_inner,
     $.macro_value_line_with_continue,
     $.sentinel,
+    $.bol,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -174,11 +175,10 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     dotted_statement: ($) =>
-      prec.right(10, seq(
-        repeat1('.'),
-        optional(token.immediate(/[ \t]+/)),
-        $.statement,
-      )),
+       seq(
+        $.bol,
+        $.statement
+      ),
     pound_dim: ($) =>
       seq(
         field('preproc_keyword', $.keyword_dim),
