@@ -12,6 +12,7 @@
 
 // Note: CommonJS warning is expected - TypeScript repos commonly have this issue
 const objectscript_expr = require('../expr/grammar');
+
 const {
   unspace: generate_post_conditionals,
   repeat_with_commas,
@@ -77,8 +78,8 @@ module.exports = grammar(objectscript_expr, {
     previous.concat([
       [$.keyword_hang, $.keyword_halt],
       [$.command_xecute, $._parenthetical_expression],
+      [ $.label_ref, $.objectscript_identifier ]
     ]),
-  // [$.statement, $.expression]],
 
   // These are what I can think of
   // \r: Carriage return
@@ -285,13 +286,15 @@ module.exports = grammar(objectscript_expr, {
     pound_import: ($) =>
       seq(
         field('preproc_keyword', alias(/\#import/i, $.kw_pound_import)),
-        repeat_with_commas(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+        repeat_with_commas(/[%A-Za-z][A-Za-z0-9]*(\.[%A-Za-z][A-Za-z0-9]*)*/)
+        // repeat_with_commas(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
       ),
 
     pound_include: ($) =>
       seq(
         field('preproc_keyword', alias(/\#include/i, $.kw_pound_include)),
-        /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+        /[%A-Za-z][A-Za-z0-9]*(\.[%A-Za-z][A-Za-z0-9]*)*/
+        // /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
       ),
 
     // TODO: Unimplemented preprocessor directives (lower priority):
@@ -389,8 +392,11 @@ module.exports = grammar(objectscript_expr, {
         field('mnemonic', $.mnemonic_name),
         optional($.method_args)
       ),
-    mnemonic_name: (_) =>
-      token(/\/[%A-Za-z0-9][A-Za-z0-9]*/),
+    mnemonic_name: ($) =>
+      seq(
+        "/",
+        $.identifier_segment_immediate
+      ),
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>

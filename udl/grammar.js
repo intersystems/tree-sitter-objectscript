@@ -455,19 +455,30 @@ module.exports = define_grammar(objectscript_core, {
         ),
       ),
 
+    // typename_param: ($) =>
+    //   seq(
+    //     $.identifier,
+    //     '=',
+    //     choice(
+    //       $.string_literal,
+    //       seq(optional(field('operator', '-')), /[0-9]+(\.[0-9]+)?/),
+    //     ),
+    //   ),
     typename_param: ($) =>
       seq(
         $.identifier,
         '=',
         choice(
           $.string_literal,
-          seq(optional(field('operator', '-')), /[0-9]+(\.[0-9]+)?/),
+          seq(optional(field('operator', '-')), $.numeric_literal),
         ),
       ),
-    identifier: ($) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+    // identifier: ($) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+    identifier: ($) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/,
     quote_permitting_identifier: ($) =>
       choice(/"((?:""|[^"])*)"/, $.identifier),
-    _word: ($) => /[%A-Za-z0-9][A-Za-z0-9]+/,
+    // _word: ($) => /[%A-Za-z0-9][A-Za-z0-9]+/,
+    _word: ($) =>/[%A-Za-z][A-Za-z0-9]+/,
     ...keyword_rules,
   },
 });
