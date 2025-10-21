@@ -40,7 +40,7 @@ static const char* token_names[] = {
   "BOL",
 };
 
-#if 0
+#if 1
 static char* debug_enum(TSLexer *lexer, const bool *valid_symbols) {
   static char work[1024];
   size_t n = 0;
@@ -102,7 +102,11 @@ static bool
 ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                                TSLexer *lexer, const bool *valid_symbols)
 {
-  // lexer->log(lexer, "scan: %c (%d): %s\n", lexer->lookahead, lexer->lookahead, debug_enum(lexer, valid_symbols));
+  if (lexer->log) {
+    lexer->log(lexer, "scan: %c (%d): %s\n",
+               lexer->lookahead, lexer->lookahead,
+               debug_enum(lexer, valid_symbols));
+  }
 
   // Tree sitter will mark all terminals as valid on error
   // The sentinel should never be valid in a good parse, so this ensures
@@ -213,6 +217,14 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         char_pos++;
       }
 
+      if (lexer->eof(lexer)) {
+          if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+            return true;
+          }
+          return false;
+        }
+
       // If we didn't match any of the terminations, then it must be a space followed
       // by a non-terminating character
       if (!lexer->eof(lexer)) {
@@ -236,7 +248,8 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       }
     } else if ((lexer->lookahead == '\n') ||
                (lexer->lookahead == '\t') ||
-               (lexer->lookahead == '}')) {
+               (lexer->lookahead == '}') ||
+               lexer->eof(lexer)) {
       // Argumentless if newline, tab or } directly follows
       //lexer->advance(lexer, false);
       if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
