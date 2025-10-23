@@ -73,12 +73,13 @@ module.exports = grammar(objectscript_expr, {
     $.macro_value_line_with_continue,
     $.sentinel,
     $.bol,
+    $._inline_statement_separator
   ],
   conflicts: ($, previous) =>
     previous.concat([
       [$.keyword_hang, $.keyword_halt],
       [$.command_xecute, $._parenthetical_expression],
-      [ $.label_ref, $.objectscript_identifier ]
+      [ $.label_ref, $.objectscript_identifier ],
     ]),
 
   // These are what I can think of
@@ -99,6 +100,7 @@ module.exports = grammar(objectscript_expr, {
   // Note that adding the word key
   // makes tree sitter not like the one letter form of keyword write
   precedences: ($, previous) => [
+
     [$.oref_method_post_cond, $.oref_property_post_cond],
     [$.oref_chain_expr_post_cond, $.expr_atom_post_cond],
     [$.command_hang, $.command_halt],
@@ -177,7 +179,9 @@ module.exports = grammar(objectscript_expr, {
 
     dotted_statement: ($) =>
        seq(
-        $.bol, // this is from the external scanner, and it means that it was at the start of a line and there were dots matching the dotted statement
+         // this is from the external scanner, and it means that it was
+         // at the start of a line and there were dots matching the dotted statement
+        $.bol,
         $.statement
       ),
     pound_dim: ($) =>
@@ -472,6 +476,7 @@ module.exports = grammar(objectscript_expr, {
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
+          optional($._whitespace_before_block),
           repeat_with_commas($.for_parameter),
           '{',
           repeat($.statement),
@@ -562,7 +567,7 @@ module.exports = grammar(objectscript_expr, {
 
     command_lock: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_lock),
+        seq(field('command_name', $.keyword_lock), $._argumentless_command_end),
         build_command_rule_argumentful(
           $,
           $.keyword_lock,
@@ -813,6 +818,7 @@ module.exports = grammar(objectscript_expr, {
             field('command_name', $.keyword_if),
             $._immediate_single_whitespace_followed_by_non_whitespace,
             repeat_with_commas($.expression),
+            optional($._whitespace_before_block),
             '{',
             repeat($.statement),
             '}',
@@ -825,10 +831,14 @@ module.exports = grammar(objectscript_expr, {
           field('command_name', $.keyword_if),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.expression),
+          optional(choice(
+            $._immediate_single_whitespace_followed_by_non_whitespace,
+            $._inline_statement_separator,
+          )),
           choice(
-            $._argumentless_command_end,
             prec.left(repeat1($.statement)),
-          ),
+            $._argumentless_command_end
+          )
         ),
         // Argumentless IF, requires 2 spaces following
         seq(

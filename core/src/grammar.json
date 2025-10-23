@@ -5620,6 +5620,18 @@
               "name": "_immediate_single_whitespace_followed_by_non_whitespace"
             },
             {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_whitespace_before_block"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
               "type": "SEQ",
               "members": [
                 {
@@ -6164,18 +6176,6 @@
                 "type": "SYMBOL",
                 "name": "keyword_lock"
               }
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "post_conditional"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
             },
             {
               "type": "SYMBOL",
@@ -7599,6 +7599,18 @@
                 ]
               },
               {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_whitespace_before_block"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
                 "type": "STRING",
                 "value": "{"
               },
@@ -7687,9 +7699,26 @@
               "type": "CHOICE",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "_argumentless_command_end"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_immediate_single_whitespace_followed_by_non_whitespace"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_inline_statement_separator"
+                    }
+                  ]
                 },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
                 {
                   "type": "PREC_LEFT",
                   "value": 0,
@@ -7700,6 +7729,10 @@
                       "name": "statement"
                     }
                   }
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_argumentless_command_end"
                 }
               ]
             }
@@ -13230,6 +13263,10 @@
     {
       "type": "SYMBOL",
       "name": "bol"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_inline_statement_separator"
     }
   ],
   "inline": [
