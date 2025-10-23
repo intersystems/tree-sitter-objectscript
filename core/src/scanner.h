@@ -18,6 +18,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   MACRO_VALUE_LINE_WITH_CONTINUE,
   SENTINEL,
   BOL,
+  _INLINE_STATEMENT_SEPARATOR,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 };
@@ -38,6 +39,7 @@ static const char* token_names[] = {
   "MACRO_VALUE_LINE_WITH_CONTINUE",
   "SENTINEL",
   "BOL",
+  "_INLINE_STATEMENT_SEPARATOR",
 };
 
 #if 1
@@ -45,7 +47,7 @@ static char* debug_enum(TSLexer *lexer, const bool *valid_symbols) {
   static char work[1024];
   size_t n = 0;
 
-  for (int i = 0; i < OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX + 1; i++) {
+  for (int i = 0; i < OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX; i++) {
     if (valid_symbols[i]) {
       if (n > 0) {
         strncpy(&work[n], ", ", sizeof(work)-n);
@@ -117,6 +119,89 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
 
+  if ((valid_symbols[_INLINE_STATEMENT_SEPARATOR] ||
+  valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
+  valid_symbols[_WHITESPACE_BEFORE_BLOCK] ||
+  valid_symbols[_ARGUMENTLESS_COMMAND_END])
+  && iswspace(lexer->lookahead)
+  ) {
+        int count = 0;
+        if (lexer->lookahead == ' ') {
+
+         while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
+            count ++;
+            lexer->advance(lexer, false);
+         }
+        // make sure it isn't argumentless
+        bool is_termination = (lexer->lookahead == '\n' ||
+                              lexer->lookahead == '}' ||
+                              lexer->lookahead == '/' ||
+                              lexer->lookahead == '#' ||
+                              lexer->lookahead == ';');
+
+        bool is_block = (lexer->lookahead == '{');
+        if (count == 1 && !is_termination && !is_block) {
+            if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
+                lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
+                scanner->at_bol = false;
+                return true;
+            }
+        }
+
+        else if (count >= 2 && !is_termination && !is_block && !lexer->eof(lexer)) {
+            // old if format if <cond> <statement>
+            if (valid_symbols[_INLINE_STATEMENT_SEPARATOR]) {
+                lexer->result_symbol = _INLINE_STATEMENT_SEPARATOR;
+                scanner->at_bol = false;
+                return true;
+            }
+        }
+
+        //argumentless
+        else if (lexer->eof(lexer) || lexer->lookahead == '}' || lexer->lookahead == ';') {
+            if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+                lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+                return true;
+            }
+        }
+
+        else {
+            while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                lexer->advance(lexer, false);
+            }
+            bool is_block = (lexer->lookahead == '{');
+
+            if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
+                lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
+                return true;
+            }
+            if (valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
+                lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+                return true;
+            }
+        }
+        }
+        else {
+            if (lexer->eof(lexer) || lexer->lookahead == '}' || lexer->lookahead == ';') {
+                if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+                    lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+                    return true;
+                }
+            }
+            while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                lexer->advance(lexer, false);
+            }
+            bool is_block = (lexer->lookahead == '{');
+            if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
+                lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
+                return true;
+            }
+            if (valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
+                lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+                return true;
+            }
+        }
+  }
   if ((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
        valid_symbols[_ARGUMENTLESS_COMMAND_END] ||
        valid_symbols[_WHITESPACE_BEFORE_BLOCK]) &&
