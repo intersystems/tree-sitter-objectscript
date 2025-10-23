@@ -157,9 +157,31 @@ module.exports = grammar({
     indirection: ($) => seq(field('operator', '@'), $.glvn),
 
     pattern_expression: _ =>
+      // A pattern expression looks like this:
+      // (?:(REPEAT)(ELEMENT))+
+      //
+      // REPEAT:
+      //   (?:\d*(?:\.\d*)?|\.)
+      //     - Matches:
+      //         • '3'       → exactly 3
+      //         • '1.3'     → 1 to 3
+      //         • '3.'      → 3 or more
+      //         • '.3'      → up to 3
+      //         • '.'       → any number
+      //
+      // ELEMENT (one of):
+      //   [aceulnpzACEULNPZ]+
+      //     - One or more valid pattern codes (case-insensitive): A, C, E, L, N, P, U, Z
+      //
+      //   "[^"\r\n]*(""[^"\r\n]*)*"
+      //     - A string literal:
+      //
+      //   \([^()\r\n"]*(?:,[^()\r\n"]*)*\)
+      //     - Alternation group (e.g., (1N,"-",2P)):
       token.immediate(
-        /[ \t]*[ \n]*(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"|\((?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*"))(?:,(?:(?:\d+(?:\.\d+)?|\.\d+|\.)?(?:[ACEULNPZaceulnpz]+|"(?:[^"\r\n]|"")*")))*\)))+/
+        /[ \t]*[ \n]*(?:(?:\d*(?:\.\d*)?|\.)((?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"|\(((?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))(?:,(?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))*\)))+)+/
       ),
+
 
     // So far it looks like DO + SET: ##class(, ..Method(
     // So far it looks like DO only: [label]^routine[(args)]]
