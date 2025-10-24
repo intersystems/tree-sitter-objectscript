@@ -12,6 +12,7 @@
 
 // Note: CommonJS warning is expected - TypeScript repos commonly have this issue
 const objectscript_expr = require('../expr/grammar');
+
 const {
   unspace: generate_post_conditionals,
   repeat_with_commas,
@@ -71,13 +72,15 @@ module.exports = grammar(objectscript_expr, {
     $._block_comment_inner,
     $.macro_value_line_with_continue,
     $.sentinel,
+    $.bol,
+    $._inline_statement_separator
   ],
   conflicts: ($, previous) =>
     previous.concat([
       [$.keyword_hang, $.keyword_halt],
       [$.command_xecute, $._parenthetical_expression],
+      [ $.label_ref, $.objectscript_identifier ],
     ]),
-  // [$.statement, $.expression]],
 
   // These are what I can think of
   // \r: Carriage return
@@ -97,6 +100,7 @@ module.exports = grammar(objectscript_expr, {
   // Note that adding the word key
   // makes tree sitter not like the one letter form of keyword write
   precedences: ($, previous) => [
+
     [$.oref_method_post_cond, $.oref_property_post_cond],
     [$.oref_chain_expr_post_cond, $.expr_atom_post_cond],
     [$.command_hang, $.command_halt],
@@ -174,11 +178,12 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     dotted_statement: ($) =>
-      prec.right(10, seq(
-        repeat1('.'),
-        optional(token.immediate(/[ \t]+/)),
-        $.statement,
-      )),
+       seq(
+         // this is from the external scanner, and it means that it was
+         // at the start of a line and there were dots matching the dotted statement
+        $.bol,
+        $.statement
+      ),
     pound_dim: ($) =>
       seq(
         field('preproc_keyword', $.keyword_dim),
@@ -389,8 +394,11 @@ module.exports = grammar(objectscript_expr, {
         field('mnemonic', $.mnemonic_name),
         optional($.method_args)
       ),
-    mnemonic_name: (_) =>
-      token(/\/[%A-Za-z0-9][A-Za-z0-9]*/),
+    mnemonic_name: ($) =>
+      seq(
+        "/",
+        $.identifier_segment_immediate
+      ),
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
@@ -468,6 +476,7 @@ module.exports = grammar(objectscript_expr, {
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
+          optional($._whitespace_before_block),
           repeat_with_commas($.for_parameter),
           '{',
           repeat($.statement),
@@ -558,7 +567,7 @@ module.exports = grammar(objectscript_expr, {
 
     command_lock: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_lock),
+        seq(field('command_name', $.keyword_lock), $._argumentless_command_end),
         build_command_rule_argumentful(
           $,
           $.keyword_lock,
@@ -809,6 +818,7 @@ module.exports = grammar(objectscript_expr, {
             field('command_name', $.keyword_if),
             $._immediate_single_whitespace_followed_by_non_whitespace,
             repeat_with_commas($.expression),
+            optional($._whitespace_before_block),
             '{',
             repeat($.statement),
             '}',
@@ -821,10 +831,14 @@ module.exports = grammar(objectscript_expr, {
           field('command_name', $.keyword_if),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.expression),
+          optional(choice(
+            $._immediate_single_whitespace_followed_by_non_whitespace,
+            $._inline_statement_separator,
+          )),
           choice(
-            $._argumentless_command_end,
             prec.left(repeat1($.statement)),
-          ),
+            $._argumentless_command_end
+          )
         ),
         // Argumentless IF, requires 2 spaces following
         seq(

@@ -44,5 +44,20 @@
  (keyword_use)
  (use_parameter) @indent)
 
-(command_while
-  (statements) @indent)
+; ----- Block-style commands -----
+(command_while "{" @indent.begin "}" @indent.end)
+(command_for   "{" @indent.begin "}" @indent.end)
+(command_if    "{" @indent.begin "}" @indent.end)
+(elseif_block  "{" @indent.begin "}" @indent.end)
+(else_block    "{" @indent.begin "}" @indent.end)
+
+; ----- Old-style FOR -----
+(command_for (for_parameter) @indent)
+(command_for (statement)     @indent)
+
+; ----- Old-style IF -----
+(command_if  (expression) @indent)
+(command_if  (statement)  @indent)
+
+; Old-style ELSE:
+(command_else (statement) @indent)

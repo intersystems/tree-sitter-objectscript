@@ -12,7 +12,7 @@ $CASE($P($ZE,">",1)_">", "<INTERRUPT>":"KeyboardInterrupt",
   (expression
     (expr_atom
       (system_defined_function
-        (expression
+        target: (expression
           (expr_atom
             (system_defined_function
               (expression
@@ -23,28 +23,27 @@ $CASE($P($ZE,">",1)_">", "<INTERRUPT>":"KeyboardInterrupt",
                   (string_literal)))
               (expression
                 (expr_atom
-                  (numeric_literal
-                    (integer_literal))))))
+                  (numeric_literal)))))
           (expr_tail
-            (binary_operator)
+            operator: (binary_operator)
             (expression
               (expr_atom
                 (string_literal)))))
-        (dollar_arg_pair
+        case: (dollar_arg_pair
           (expression
             (expr_atom
               (string_literal)))
           (expression
             (expr_atom
               (string_literal))))
-        (dollar_arg_pair
+        case: (dollar_arg_pair
           (expression
             (expr_atom
               (string_literal)))
           (expression
             (expr_atom
               (string_literal))))
-        (expression
+        default: (expression
           (expr_atom
             (string_literal)))))))
 
@@ -65,12 +64,10 @@ $PIECE("SOME STRING", 1, *-1)
             (string_literal)))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))
+            (numeric_literal)))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))))))
+            (numeric_literal)))))))
 
 ===========
 $ZF function
@@ -89,8 +86,7 @@ $ZF(-1, "/usr/sbin/systemd")
             (unary_expression
               (expression
                 (expr_atom
-                  (numeric_literal
-                    (integer_literal)))))))
+                  (numeric_literal))))))
         (expression
           (expr_atom
             (string_literal)))))))
@@ -111,19 +107,17 @@ $E("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
           (expr_atom
             (string_literal))
           (expr_tail
-            (binary_operator)
+            operator: (binary_operator)
             (expression
               (expr_atom
                 (macro
                   (macro_constant))))))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))
+            (numeric_literal)))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))))))
+            (numeric_literal)))))))
 
 ==========================
 $EXTRACT with *+41 position
@@ -141,19 +135,17 @@ $EXTRACT("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
           (expr_atom
             (string_literal))
           (expr_tail
-            (binary_operator)
+            operator: (binary_operator)
             (expression
               (expr_atom
                 (macro
                   (macro_constant))))))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))
+            (numeric_literal)))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))))))
+            (numeric_literal)))))))
 
 =========================
 $EXTRACT with *-0 position
@@ -169,8 +161,8 @@ $EXTRACT(mystr,*-0)
       (system_defined_function
         (expression
           (expr_atom
-            (lvn)))
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
-            (numeric_literal
-              (integer_literal))))))))
+            (numeric_literal)))))))

@@ -11,38 +11,46 @@ Set Statement
   (statements
     (statement
       (command_set
-        (keyword_set)
+        command_name: (keyword_set)
         (set_argument
-          (glvn
-            (lvn))
-          (expression
-            (numeric_literal
-              (integer_literal))))))
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
     (statement
       (command_set
-        (keyword_set)
+        command_name: (keyword_set)
         (set_argument
-          (variable_list
+          lhs: (set_target_list
             (glvn
-              (lvn))
+              (lvn
+                (objectscript_identifier)))
             (glvn
-              (lvn)))
-          (expression
-            (system_defined_function
-              (dollar_select
-                (dollar_arg_pair
+              (lvn
+                (objectscript_identifier))))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                case: (dollar_arg_pair
                   (expression
-                    (binary_expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      operator: (binary_operator)
                       (expression
-                        (glvn
-                          (lvn)))
-                      (expression
-                        (string_literal))))
+                        (expr_atom
+                          (string_literal)))))
                   (expression
-                    (string_literal)))
-                (dollar_arg_pair
+                    (expr_atom
+                      (string_literal))))
+                case: (dollar_arg_pair
                   (expression
-                    (numeric_literal
-                      (integer_literal)))
+                    (expr_atom
+                      (numeric_literal)))
                   (expression
-                    (string_literal)))))))))))
+                    (expr_atom
+                      (string_literal))))))))))))
+

@@ -17,6 +17,8 @@ const repeat_with_commas = function (rule) {
   return seq(rule, repeat(seq(',', rule)));
 };
 
+const { IDENT_SEG, DOTTED_ID_STRICT, DOTTED_ID_RELAXED } = require('../common/identifiers');
+
 module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
@@ -143,43 +145,43 @@ module.exports = grammar({
         ']]',       // Sorts-after
         "']]",      // Not Sorts-after
       ),
-      _pattern_operator: ($) =>
-        seq(
-          field('operator','?'),
-          field('right', choice(
-            alias($.indirection, $.unary_expression),
-            $.pattern_expression,
-          )),
-        ),
-      indirection: ($) =>
-        seq(field('operator', '@'), $.glvn),
+// Keep `@glvn` as a separate alternative so spaces are allowed there.
+    _pattern_operator: ($) =>
+      seq(
+        field('operator', '?'),
+        field('right', choice(
+          alias($.indirection, $.unary_expression), // ? @var
+          $.pattern_expression                      // ?<pattern>
+        )),
+      ),
+    indirection: ($) => seq(field('operator', '@'), $.glvn),
 
-      pattern_expression: ($) =>
-        token(
-          // A pattern expression looks like thisL
-          // (?:(REPEAT)(ELEMENT))+
-          //
-          // REPEAT:
-          //   (?:\d*(?:\.\d*)?|\.)
-          //     - Matches:
-          //         • '3'       → exactly 3
-          //         • '1.3'     → 1 to 3
-          //         • '3.'      → 3 or more
-          //         • '.3'      → up to 3
-          //         • '.'       → any number
-          //
-          // ELEMENT (one of):
-          //   [aceulnpzACEULNPZ]+
-          //     - One or more valid pattern codes (case-insensitive): A, C, E, L, N, P, U, Z
-          //
-          //   "[^"\r\n]*(""[^"\r\n]*)*"
-          //     - A string literal:
-          //
-          //   \([^()\r\n"]*(?:,[^()\r\n"]*)*\)
-          //     - Alternation group (e.g., (1N,"-",2P)):
+    pattern_expression: _ =>
+      // A pattern expression looks like this:
+      // (?:(REPEAT)(ELEMENT))+
+      //
+      // REPEAT:
+      //   (?:\d*(?:\.\d*)?|\.)
+      //     - Matches:
+      //         • '3'       → exactly 3
+      //         • '1.3'     → 1 to 3
+      //         • '3.'      → 3 or more
+      //         • '.3'      → up to 3
+      //         • '.'       → any number
+      //
+      // ELEMENT (one of):
+      //   [aceulnpzACEULNPZ]+
+      //     - One or more valid pattern codes (case-insensitive): A, C, E, L, N, P, U, Z
+      //
+      //   "[^"\r\n]*(""[^"\r\n]*)*"
+      //     - A string literal:
+      //
+      //   \([^()\r\n"]*(?:,[^()\r\n"]*)*\)
+      //     - Alternation group (e.g., (1N,"-",2P)):
+      token.immediate(
+        /[ \t]*[ \n]*(?:(?:\d*(?:\.\d*)?|\.)((?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"|\(((?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))(?:,(?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))*\)))+)+/
+      ),
 
-          /(?:(?:\d*(?:\.\d*)?|\.)((?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"|\(((?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))(?:,(?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))*\)))+)+/
-        ),
 
     // So far it looks like DO + SET: ##class(, ..Method(
     // So far it looks like DO only: [label]^routine[(args)]]
@@ -218,14 +220,16 @@ module.exports = grammar({
       ),
 
     keyword_pound_pound_class: (_) => /##CLASS/i,
-    class_name: (_) =>
+    class_name: ($) =>
       choice(
+        // quoted class name (unchanged)
         seq(
           token.immediate('"'),
           repeat(choice(/[^"]+/, token.immediate('""'))),
-          '"',
+          '"'
         ),
-        token.immediate(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+        // unquoted: each segment starts with letter or %
+        $.dotted_identifier_strict_token_immediate
       ),
     superclass_method_call: ($) =>
       seq(
@@ -283,10 +287,7 @@ module.exports = grammar({
         $.expression,
       ),
     routine_ref: ($) =>
-      seq(
-        token.immediate('^'),
-        $.objectscript_identifier,
-      ),
+      seq(token.immediate('^'), $.dotted_identifier_relaxed_token),
 
     dollarsf: ($) =>
       seq(
@@ -296,7 +297,7 @@ module.exports = grammar({
             '.',
             field(
               'classname_piece',
-              token.immediate(/[%A-Za-z0-9][A-Za-z0-9]*/),
+              $.identifier_segment_immediate,
             ),
           ),
         ),
@@ -352,12 +353,12 @@ module.exports = grammar({
           optional($.subscripts),
         )
       ),
-    lvn: ($) => prec.right(seq(/[%A-Za-z][A-Za-z0-9]*/, optional($.subscripts))),
+    lvn: ($) => prec.right(seq($.objectscript_identifier, optional($.subscripts))),
     ssvn: ($) =>
       prec.right(
         seq(
           '^$',
-          token.immediate(/[%A-Za-z][A-Za-z0-9]*/),
+          $.identifier_segment_immediate,
           optional($.subscripts),
         )
       ),
@@ -388,7 +389,7 @@ module.exports = grammar({
       token.immediate(/[ONC]/),
     sql_field_identifier: (_) =>
       choice(
-        /[%A-Za-z][A-Za-z0-9]*/,
+        IDENT_SEG,
         // /"([^"\\:]|\\.)*"/         // Quoted identifier
         seq(
           '"',
@@ -473,16 +474,11 @@ module.exports = grammar({
           optional($.subscripts),
         )
       ),
-
     _member_name: ($) =>
-      choice(
-        seq(
-          token.immediate('"'),
-          repeat(choice(/[^"]+/, token.immediate('""'))),
-          '"',
-        ),
-        token.immediate(/[%A-Za-z0-9][A-Za-z0-9]*/),
-      ),
+         choice(
+             seq(token.immediate('"'), repeat(choice(/[^"]+/, token.immediate('""'))), '"'),
+           $.identifier_segment_immediate,
+           ),
     parameter_name: ($) =>
       seq(
         token.immediate('#'),
@@ -860,31 +856,16 @@ module.exports = grammar({
       ),
       $.expression,
     ),
-    numeric_literal: ($) => choice($.integer_literal, $.decimal_literal),
-    integer_literal: (_) => /[\d]+/,
-decimal_literal: (_) =>
-      // NOTE: Using optional exponent directly in regex to avoid zero-length tokens
-      choice(
-        // digit+ . digit+ [exponent] - exponent optional in regex
-        seq(/[\d]+\.[\d]+/, token.immediate(/([eE][+-]?[\d]+)?/)),
-        // digit+ exponent   NOTE without exponent this is integer
-        /[\d]+[eE][+-]?[\d]+/,
-        // . digit+ [exponent] - exponent optional in regex
-        seq(/\.[\d]+/, token.immediate(/([eE][+-]?[\d]+)?/)),
-      ),
-    // decimal_literal: (_) =>
-    //   // NOTE: This possibly causes an infinite loop in `tree-sitter test`,
-    //   //       although I don't see that in normal usage or the playground.
-    //   //       However "fixing"" it seems to cause catastropic DFA explosion!
-    //   choice(
-    //     // digit+ . digit+ [exponent]
-    //     seq(/[\d]+\.[\d]+/, token.immediate(optional(/[eE][+-]?[\d]+/))),
-    //     // digit+ exponent   NOTE without exponent this is integer
-    //     /[\d]+[eE][+-]?[\d]+/,
-    //     // . digit+ [exponent]
-    //     seq(/\.[\d]+/, token.immediate(optional(/[eE][+-]?[\d]+/))),
-    //   ),
 
+    // rules that can be reused:
+    identifier_segment_immediate: _ => token.immediate(IDENT_SEG),
+    objectscript_identifier: _ => token(IDENT_SEG),
+    dotted_identifier_strict_token_immediate : _ => token.immediate(DOTTED_ID_STRICT),
+    dotted_identifier_strict_token: _  => token(DOTTED_ID_STRICT),   // class/UDL names
+    dotted_identifier_relaxed_token: _ => token(DOTTED_ID_RELAXED),  // routines only
+
+    numeric_literal: _ =>
+      token(/(?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?)/),
     // string literals in objecscript
     // are an any length sequence of characters besides ", between ".
     // Double-quotes are escaped with double quotes
@@ -898,7 +879,7 @@ decimal_literal: (_) =>
       token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
     macro_function: ($) =>
       prec(1, seq(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)), $.method_args)),
-    objectscript_identifier: (_) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+
     json_object_literal: ($) => prec(2, seq(
       '{',
       optional(repeat_with_commas($._json_object_literal_pair)),
@@ -949,4 +930,3 @@ decimal_literal: (_) =>
     json_null_literal: ($) => 'null',
   },
 });
-

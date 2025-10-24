@@ -45,7 +45,17 @@
   {
     "type": "class_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "dotted_identifier_strict_token_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "class_parameter_ref",
@@ -101,11 +111,6 @@
     }
   },
   {
-    "type": "decimal_literal",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "dollar_arg_pair",
     "named": true,
     "fields": {},
@@ -124,6 +129,16 @@
     "type": "dollarsf",
     "named": true,
     "fields": {
+      "classname_piece": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier_segment_immediate",
+            "named": true
+          }
+        ]
+      },
       "function_name": {
         "multiple": false,
         "required": true,
@@ -578,9 +593,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
         {
           "type": "subscripts",
           "named": true
@@ -668,26 +687,22 @@
   {
     "type": "method_name",
     "named": true,
-    "fields": {}
-  },
-  {
-    "type": "numeric_literal",
-    "named": true,
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
-          "type": "decimal_literal",
-          "named": true
-        },
-        {
-          "type": "integer_literal",
+          "type": "identifier_segment_immediate",
           "named": true
         }
       ]
     }
+  },
+  {
+    "type": "objectscript_identifier",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "oref_chain_expr",
@@ -808,12 +823,32 @@
   {
     "type": "parameter_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "property_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "relative_dot_method",
@@ -869,7 +904,7 @@
       "required": true,
       "types": [
         {
-          "type": "objectscript_identifier",
+          "type": "dotted_identifier_relaxed_token",
           "named": true
         }
       ]
@@ -927,9 +962,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        },
         {
           "type": "subscripts",
           "named": true
@@ -1289,11 +1328,19 @@
     "named": true
   },
   {
+    "type": "dotted_identifier_relaxed_token",
+    "named": true
+  },
+  {
+    "type": "dotted_identifier_strict_token_immediate",
+    "named": true
+  },
+  {
     "type": "false",
     "named": false
   },
   {
-    "type": "integer_literal",
+    "type": "identifier_segment_immediate",
     "named": true
   },
   {
@@ -1317,7 +1364,7 @@
     "named": true
   },
   {
-    "type": "objectscript_identifier",
+    "type": "numeric_literal",
     "named": true
   },
   {

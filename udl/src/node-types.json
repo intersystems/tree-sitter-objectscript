@@ -32,7 +32,17 @@
   {
     "type": "_member_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "_oref_chain_segment",
@@ -501,7 +511,17 @@
   {
     "type": "class_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "dotted_identifier_strict_token_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "class_parameter_ref",
@@ -1967,11 +1987,6 @@
     }
   },
   {
-    "type": "decimal_literal",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "default_argument_value",
     "named": true,
     "fields": {
@@ -2074,6 +2089,16 @@
     "type": "dollarsf",
     "named": true,
     "fields": {
+      "classname_piece": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier_segment_immediate",
+            "named": true
+          }
+        ]
+      },
       "function_name": {
         "multiple": false,
         "required": true,
@@ -2097,13 +2122,22 @@
     }
   },
   {
+    "type": "dotted_identifier_strict_token_immediate",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "dotted_statement",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "bol",
+          "named": true
+        },
         {
           "type": "statement",
           "named": true
@@ -2780,6 +2814,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "identifier_segment_immediate",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "include_clause",
@@ -6103,9 +6142,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
         {
           "type": "subscripts",
           "named": true
@@ -6465,10 +6508,20 @@
   {
     "type": "method_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
-    "type": "numeric_literal",
+    "type": "mnemonic_name",
     "named": true,
     "fields": {},
     "children": {
@@ -6476,11 +6529,7 @@
       "required": true,
       "types": [
         {
-          "type": "decimal_literal",
-          "named": true
-        },
-        {
-          "type": "integer_literal",
+          "type": "identifier_segment_immediate",
           "named": true
         }
       ]
@@ -6797,9 +6846,18 @@
         {
           "type": "_member_name",
           "named": true
+        },
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
         }
       ]
     }
+  },
+  {
+    "type": "pattern_expression",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "post_conditional",
@@ -7468,7 +7526,17 @@
   {
     "type": "property_name",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "property_type",
@@ -7918,7 +7986,7 @@
       "required": true,
       "types": [
         {
-          "type": "objectscript_identifier",
+          "type": "dotted_identifier_relaxed_token",
           "named": true
         }
       ]
@@ -8103,9 +8171,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        },
         {
           "type": "subscripts",
           "named": true
@@ -8795,6 +8867,10 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "numeric_literal",
           "named": true
         },
         {
@@ -9625,6 +9701,10 @@
     "named": false
   },
   {
+    "type": "bol",
+    "named": true
+  },
+  {
     "type": "call",
     "named": false
   },
@@ -9658,6 +9738,10 @@
   },
   {
     "type": "dollar_system_keyword",
+    "named": true
+  },
+  {
+    "type": "dotted_identifier_relaxed_token",
     "named": true
   },
   {
@@ -9703,10 +9787,6 @@
   {
     "type": "index",
     "named": false
-  },
-  {
-    "type": "integer_literal",
-    "named": true
   },
   {
     "type": "ispl",
@@ -10105,10 +10185,6 @@
     "named": false
   },
   {
-    "type": "mnemonic_name",
-    "named": true
-  },
-  {
     "type": "mvbasic",
     "named": false
   },
@@ -10119,6 +10195,10 @@
   {
     "type": "node",
     "named": false
+  },
+  {
+    "type": "numeric_literal",
+    "named": true
   },
   {
     "type": "objectgenerator",
@@ -10139,10 +10219,6 @@
   {
     "type": "parent",
     "named": false
-  },
-  {
-    "type": "pattern_expression",
-    "named": true
   },
   {
     "type": "persistent",

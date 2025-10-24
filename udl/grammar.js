@@ -461,10 +461,10 @@ module.exports = define_grammar(objectscript_core, {
         '=',
         choice(
           $.string_literal,
-          seq(optional(field('operator', '-')), /[0-9]+(\.[0-9]+)?/),
+          seq(optional(field('operator', '-')), $.numeric_literal),
         ),
       ),
-    identifier: ($) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+    identifier: ($) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/, // i think that class names and such can't start with a number
     quote_permitting_identifier: ($) =>
       choice(/"((?:""|[^"])*)"/, $.identifier),
     _word: ($) => /[%A-Za-z0-9][A-Za-z0-9]+/,
