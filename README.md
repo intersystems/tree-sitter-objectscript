@@ -139,7 +139,7 @@ tree-sitter generate
 tree-sitter build
 ```
 
-**NOTE**: Use `tree-sitter --wasm` when using the playground to test the grammar.
+**NOTE**: Use `tree-sitter build --wasm` when using the playground to test the grammar.
 
 #### Running Tests
 
