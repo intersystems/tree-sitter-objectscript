@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tree-sitter-objectscript"
+description = "Objectscript grammar for tree-sitter"
+version = "0.0.20"
+keywords = ["incremental", "parsing", "tree-sitter", "objectscript"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Software Development :: Compilers",
+  "Topic :: Text Processing :: Linguistic",
+  "Typing :: Typed"
+]
+authors = [
+  { name = "Dave McCaldon", email = "davem@intersystems.com" },
+]
+requires-python = ">=3.8"
+license.text = "MIT"
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/intersystems/tree-sitter-objectscript"
+
+[project.optional-dependencies]
+core = ["tree-sitter~=0.23"]
+
+[tool.cibuildwheel]
+build = "cp38-*"
+build-frontend = "build"

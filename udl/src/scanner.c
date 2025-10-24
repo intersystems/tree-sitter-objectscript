@@ -1,4 +1,4 @@
-#include "../../core/src/scanner.h"
+#include "../../common/scanner.h"
 #include "tree_sitter/parser.h"
 #include <stdlib.h>
 #include <string.h>
