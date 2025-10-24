@@ -14,26 +14,26 @@ ClassMethod Bar() {
 
 (source_file
   (class_definition
-    (keyword_class)
-    (identifier)
-    (class_body
+    keyword: (keyword_class)
+    class_name: (identifier)
+    class_body: (class_body
       (class_statement
         (classmethod
-          (keyword_classmethod)
+          keyword: (keyword_classmethod)
           (method_definition
-            (identifier
+            name: (identifier
               (identifier))
-            (arguments)
-            (core_method_body_content
+            arguments: (arguments)
+            body: (core_method_body_content
               (statement
                 (command_set
-                  (keyword_set)
+                  command_name: (keyword_set)
                   (set_argument
-                    (oref_set_target
+                    lhs: (oref_set_target
                       (relative_dot_property
                         (oref_property
-                          (property_name))))
-                    (expression
+                          (property_name
+                            (identifier_segment_immediate)))))
+                    rhs: (expression
                       (expr_atom
-                        (numeric_literal
-                          (integer_literal))))))))))))))
+                        (numeric_literal)))))))))))))

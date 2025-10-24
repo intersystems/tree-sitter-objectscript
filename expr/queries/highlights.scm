@@ -20,8 +20,7 @@
 
 ; Numeric literals
 ; e.g. 12345
-(integer_literal) @number
-(decimal_literal) @float
+(numeric_literal) @number
 
 ; System variable name
 ; e.g. $IO, $SY[SYTEM]
