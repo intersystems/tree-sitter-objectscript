@@ -1,4 +1,4 @@
-//! This crate provides ObjectscriptUdl language support for the [tree-sitter][] parsing library.
+//! This crate provides Objectscript language support for the [tree-sitter][] parsing library.
 //!
 //! Typically, you will use the [LANGUAGE_OBJECTSCRIPT] function to add this language to a
 //! tree-sitter [Parser][], and then use the parser to parse some code:
@@ -18,15 +18,15 @@
 //! [Parser]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Parser.html
 //! [tree-sitter]: https://tree-sitter.github.io/
 
-use tree_sitter::LanguageFn;
+use tree_sitter_language::LanguageFn;
 
 extern "C" {
     fn tree_sitter_objectscript() -> *const ();
 }
 
-/// Get the tree-sitter [Language][] for this grammar.
+/// The tree-sitter [`LanguageFn`] for ObjectScript.
 ///
-/// [Language]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Language.html
+/// [LanguageFn]: https://docs.rs/tree-sitter-language/*/tree_sitter_language/struct.LanguageFn.html
 pub const LANGUAGE_OBJECTSCRIPT: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_objectscript) };
 
 /// The content of the [`node-types.json`][] file for this grammar.

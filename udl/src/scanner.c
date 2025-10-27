@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Ther is no way to extend enums, so keep this in sync with base.h
+// There is no way to extend enums, so keep this in sync with base.h
 // All new entries should be appended at the bottom of the list
 enum TokenType {
   EXTERNAL_METHOD_BODY_CONTENT = OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
@@ -70,7 +70,7 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
                                         valid_symbols);
 }
 
-void *tree_sitter_objectscript_udl_external_scanner_create() {
+void *tree_sitter_objectscript_external_scanner_create() {
   struct ObjectScript_Udl_Scanner *scanner =
       (struct ObjectScript_Udl_Scanner *)calloc(
           1, sizeof(struct ObjectScript_Udl_Scanner));
@@ -79,12 +79,12 @@ void *tree_sitter_objectscript_udl_external_scanner_create() {
   return scanner;
 }
 
-bool tree_sitter_objectscript_udl_external_scanner_scan(
+bool tree_sitter_objectscript_external_scanner_scan(
     void *payload, TSLexer *lexer, const bool *valid_symbols) {
   return scan(payload, lexer, valid_symbols);
 }
 
-unsigned tree_sitter_objectscript_udl_external_scanner_serialize(void *payload,
+unsigned tree_sitter_objectscript_external_scanner_serialize(void *payload,
                                                                  char *buffer) {
   struct ObjectScript_Udl_Scanner *scanner =
       (struct ObjectScript_Udl_Scanner *)payload;
@@ -92,14 +92,14 @@ unsigned tree_sitter_objectscript_udl_external_scanner_serialize(void *payload,
   return sizeof(struct ObjectScript_Udl_Scanner);
 }
 
-void tree_sitter_objectscript_udl_external_scanner_deserialize(
+void tree_sitter_objectscript_external_scanner_deserialize(
     void *payload, const char *buffer, unsigned length) {
   // This one is a bit funky.
   // length includes the sizeof(struct Scanner) and the structs it points to
   memcpy(payload, buffer, length);
 }
 
-void tree_sitter_objectscript_udl_external_scanner_destroy(void *payload) {
+void tree_sitter_objectscript_external_scanner_destroy(void *payload) {
   struct ObjectScript_Udl_Scanner *scanner =
       (struct ObjectScript_Udl_Scanner *)payload;
   free(scanner);
