@@ -18,7 +18,7 @@ const define_grammar = require('../common/grammar');
 
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
-  name: 'objectscript_udl',
+  name: 'objectscript',
   word: ($) => $._word,
   externals: ($, previous) => previous.concat([$.external_method_body_content]),
   conflicts: ($, previous) =>

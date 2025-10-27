@@ -1,5 +1,5 @@
-#ifndef TREE_SITTER_OBJECTSCRIPT_UDL_H_
-#define TREE_SITTER_OBJECTSCRIPT_UDL_H_
+#ifndef TREE_SITTER_OBJECTSCRIPT_H_
+#define TREE_SITTER_OBJECTSCRIPT_H_
 
 typedef struct TSLanguage TSLanguage;
 
@@ -7,10 +7,10 @@ typedef struct TSLanguage TSLanguage;
 extern "C" {
 #endif
 
-const TSLanguage *tree_sitter_objectscript_udl(void);
+const TSLanguage *tree_sitter_objectscript(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // TREE_SITTER_OBJECTSCRIPT_UDL_H_
+#endif // TREE_SITTER_OBJECTSCRIPT_H_

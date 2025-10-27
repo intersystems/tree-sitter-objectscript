@@ -18,7 +18,6 @@ fn main() {
         obj_core_dir.join("parser.c"),
         obj_core_dir.join("scanner.c"),
         obj_expr_dir.join("parser.c"),
-        obj_expr_dir.join("scanner.c"),
     ] {
         config.file(path);
         println!("cargo:rerun-if-changed={}", path.to_str().unwrap());
