@@ -5,21 +5,9 @@
   "scripts": {
     "install": "node-gyp-build",
     "lint": "eslint common/grammar.js",
-    "test": "node --test bindings/node/*_test.js",
-    "prestart": "tree-sitter build --wasm",
-    "start": "tree-sitter playground"
+    "test": "node --test bindings/node/*_test.js"
   },
   "author": "Dave McCaldon <davem@intersystems.com>",
-  "contributors": [
-    {
-      "name": "Michael Fortunato",
-      "email": "michael.n.fortunato@gmail.com"
-    },
-    {
-      "name": "Marc Johnson",
-      "email": "marc.johnson@intersystems.com"
-    }
-  ],
   "license": "MIT",
   "keywords": [
     "incremental",
@@ -27,50 +15,42 @@
     "tree-sitter",
     "objectscript"
   ],
-  "engine": {
-    "node": ">=18"
-  },
   "dependencies": {
-    "node-gyp-build": "^4.8.0",
-    "node-addon-api": "^8.3.1"
+    "node-gyp-build": "^4.8.2",
+    "node-addon-api": "^8.5.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.25.0"
+  },
+  "peerDependenciesMeta": {
+    "tree-sitter": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0",
-    "eslint": "^9.16.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^9.1.0",
-    "@eslint/markdown": "^7.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint": "^9.35.0",
+    "eslint-config-treesitter": "^1.0.2",
     "prebuildify": "^6.0.1",
-    "prettier": "^3.4.2",
-    "tree-sitter": "^0.22.4",
-    "tree-sitter-cli": "^0.25.8"
+    "tree-sitter-cli": "^0.25.9",
+    "tree-sitter": "^0.25.0"
   },
-  "tree-sitter": [
-    {
-      "scope": "source.objectscript",
-      "file-types": [
-        "cls"
-      ]
-    }
-  ],
+  "main": "bindings/node",
   "types": "bindings/node",
   "files": [
     "udl/grammar.js",
+    "core/grammar.js",
+    "expr/grammar.js",
     "binding.gyp",
     "prebuilds/**",
+    "common/**",
     "bindings/node/*",
     "udl/queries/*",
     "udl/src/**",
     "tree-sitter.json",
     "udl/package.json",
-    "common/**",
     "*.wasm",
     "core/src/**",
-    "core/grammar.js",
     "expr/src/**",
-    "expr/grammar.js",
     "expr/queries/*",
     "core/queries/*"
   ]

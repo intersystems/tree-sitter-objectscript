@@ -24,5 +24,6 @@ type Language = {
   nodeTypeInfo: NodeInfo[];
 };
 
-declare const language: Language;
-export = language;
+declare const objectscript: Language;
+
+export = objectscript;

@@ -194,7 +194,12 @@ From the root directory, run `python -m pip install -e .` and then `python -m py
 From the root directory, run `swift test`. Make sure you have `Xcode` downloaded from the App Store, and before running swift test, run `sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`
 
 ### Node 
+I had to run this command for my changes to show up: 
+`rm -rf node_modules build`
 
+Additionally, for this one, make sure you have a compatible npm version. I had to lower my version to 20: `nvm install 20` and then `nvm use 20`
+
+Once you have those prereqs complete, run `npm install` and then `npm test`
 ### Go
 From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v4.24.0` and then run `go test ./bindings/go/...`
 
