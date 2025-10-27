@@ -1,19 +1,11 @@
-'use strict';
-const path = require('path');
-const root = path.join(__dirname, '..', '..');
+const root = require("path").join(__dirname, "..", "..");
 
-const built = require('node-gyp-build')(root);
+module.exports =
+  typeof process.versions.bun === "string"
+    // Support `bun build --compile` by being statically analyzable enough to find the .node file at build-time
+    ? require(`../../prebuilds/${process.platform}-${process.arch}/tree-sitter-objectscript.node`)
+    : require("node-gyp-build")(root);
 
-// Your addon exports { objectscript: { name, language } }
-const lang = built.objectscript ?? built;
-
-// Attach node types (REQUIRED by tree-sitter JS)
-const nodeTypesPath = path.join(root, 'udl', 'src', 'node-types.json');
-lang.nodeTypeInfo = require(nodeTypesPath);
-
-// Optional safety: fail fast if it’s wrong
-if (!Array.isArray(lang.nodeTypeInfo)) {
-  throw new Error(`Invalid nodeTypeInfo at ${nodeTypesPath}`);
-}
-
-module.exports = lang;
+try {
+  module.exports.nodeTypeInfo = require("../../src/node-types.json");
+} catch (_) {}

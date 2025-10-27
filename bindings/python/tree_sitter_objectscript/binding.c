@@ -4,12 +4,12 @@ typedef struct TSLanguage TSLanguage;
 
 TSLanguage *tree_sitter_objectscript(void);
 
-static PyObject* _binding_language(PyObject *self, PyObject *args) {
-    return PyLong_FromVoidPtr(tree_sitter_objectscript());
+static PyObject* _binding_language_objectscript(PyObject *self, PyObject *args) {
+    return PyCapsule_New(tree_sitter_objectscript(), "tree_sitter.Language", NULL);
 }
 
 static PyMethodDef methods[] = {
-    {"language", _binding_language, METH_NOARGS,
+    {"language_objectscript", _binding_language_objectscript, METH_NOARGS,
      "Get the tree-sitter language for this grammar."},
     {NULL, NULL, 0, NULL}
 };

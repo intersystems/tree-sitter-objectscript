@@ -4,8 +4,10 @@
   "description": "Tree Sitter Grammar for InterSystems ObjectScript",
   "scripts": {
     "install": "node-gyp-build",
-    "lint": "eslint common/define-grammar.js",
-    "test": "node --test bindings/node/*_test.js"
+    "lint": "eslint common/grammar.js",
+    "test": "node --test bindings/node/*_test.js",
+    "prestart": "tree-sitter build --wasm",
+    "start": "tree-sitter playground"
   },
   "author": "Dave McCaldon <davem@intersystems.com>",
   "contributors": [
@@ -29,7 +31,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "node-gyp-build": "^4.8.0"
+    "node-gyp-build": "^4.8.0",
+    "node-addon-api": "^8.3.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",

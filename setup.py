@@ -48,7 +48,7 @@ setup(
                 ("Py_LIMITED_API", "0x03080000"),
                 ("PY_SSIZE_T_CLEAN", None)
             ],
-            include_dirs=["src"],
+            include_dirs=["udl/src", "common"],
             py_limited_api=True,
         )
     ],
