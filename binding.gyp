@@ -6,7 +6,10 @@
         "<!(node -p \"require('node-addon-api').targets\"):node_addon_api_except",
       ],
       "include_dirs": [
-        "src",
+        "udl/src",
+        "<!(node -p \"require('tree-sitter').includeDir\")",
+        "<!(node -p \"require('node-addon-api').include\")",
+        "common",
       ],
       "sources": [
         "bindings/node/binding.cc",

@@ -2,19 +2,10 @@
   "name": "tree-sitter-objectscript",
   "version": "1.0.0",
   "description": "Tree Sitter Grammar for InterSystems ObjectScript",
-  "workspaces": [
-    "expr",
-    "core",
-    "udl"
-  ],
   "scripts": {
-    "prebuildify": "npm run prebuildify --workspaces",
-    "lint": "npm run lint --workspaces",
-    "gen": "npm run gen --workspaces",
-    "build": "npm run build --workspaces",
-    "build-wasm": "npm run build-wasm --workspaces",
-    "test": "npm run test --workspaces",
-    "demo:udl": "npm run gen --workspace=udl && npm run build-wasm --workspace=udl && npm run playground --workspace=udl"
+    "install": "node-gyp-build",
+    "lint": "eslint common/define-grammar.js",
+    "test": "node --test bindings/node/*_test.js"
   },
   "author": "Dave McCaldon <davem@intersystems.com>",
   "contributors": [
