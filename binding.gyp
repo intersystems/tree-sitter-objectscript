@@ -7,9 +7,6 @@
       ],
       "include_dirs": [
         "udl/src",
-        "<!(node -p \"require('tree-sitter').includeDir\")",
-        "<!(node -p \"require('node-addon-api').include\")",
-        "common",
       ],
       "sources": [
         "bindings/node/binding.cc",
