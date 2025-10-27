@@ -1,4 +1,4 @@
-#ifndef TREE_SITTER_OBJECTSCRIPT_H
+#ifndef TREE_SITTER_OBJECTSCRIPT_H_
 #define TREE_SITTER_OBJECTSCRIPT_H_
 
 typedef struct TSLanguage TSLanguage;
