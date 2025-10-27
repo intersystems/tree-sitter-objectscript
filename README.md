@@ -182,3 +182,21 @@ This project provided as-is and is licensed under the MIT License.
 Future plans include creating a grammar for CSP by extending HTML and injecting `expr` and `core` grammar elements
 to support `#(<expr>)#` and `<script language="cache" runat=server>...</script>` blocks of ObjectScript.
 
+## Testing Bindings 
+The binding tests verify that you can create a parser with your grammar.
+### Rust 
+From the root directory, run `cargo build` and then `cargo test`.
+
+### Python 
+From the root directory, run `python -m pip install -e .` and then `python -m pytest -q bindings/python/tests/test_binding.py`
+
+### Swift
+From the root directory, run `swift test`. Make sure you have `Xcode` downloaded from the App Store, and before running swift test, run `sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`
+
+### Node 
+
+### Go
+From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v4.24.0` and then run `go test ./bindings/go/...`
+
+### C
+Run `make test`

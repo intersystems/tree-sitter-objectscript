@@ -2,15 +2,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "TreeSitterObjectscript",
+    name: "TreeSitterObjectScript",
     products: [
-        .library(name: "TreeSitterObjectscript", targets: ["TreeSitterObjectscript"]),
+        .library(name: "TreeSitterObjectScript", targets: ["TreeSitterObjectScript"]),
     ],
     dependencies: [
     .package(url: "https://github.com/ChimeHQ/SwiftTreeSitter", from: "0.8.0"),
   ],
     targets: [
-        .target(name: "TreeSitterObjectscript",
+        .target(name: "TreeSitterObjectScript",
                 path: ".",
                 sources: [
                     "udl/src/parser.c",
@@ -25,7 +25,7 @@ let package = Package(
             name: "TreeSitterTypeScriptTests",
             dependencies: [
                 "SwiftTreeSitter",
-                "TreeSitterObjectscript",
+                "TreeSitterObjectScript",
             ],
             path: "bindings/swift/TreeSitterObjectScriptTests"
             )
