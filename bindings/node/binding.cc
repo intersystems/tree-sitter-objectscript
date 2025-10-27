@@ -10,13 +10,9 @@ const napi_type_tag LANGUAGE_TYPE_TAG = {
 };
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    auto objectscript = Napi::Object::New(env);
-    objectscript["name"] = Napi::String::New(env, "objectscript");
-    auto objectscript_language = Napi::External<TSLanguage>::New(env, tree_sitter_objectscript());
-    objectscript_language.TypeTag(&LANGUAGE_TYPE_TAG);
-    objectscript["language"] = objectscript_language;
-
-    exports["objectscript"] = objectscript;
+    auto language = Napi::External<TSLanguage>::New(env, tree_sitter_objectscript());
+    language.TypeTag(&LANGUAGE_TYPE_TAG);
+    exports["language"] = language;
     return exports;
 }
 
