@@ -59,7 +59,7 @@ Add the following to `init.lua`, or, in the case you are using LazyVim, to your 
 
 ```lua
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-parser_config.objectscript_udl = {
+parser_config.objectscript = {
   install_info = {
     url = "https://github.com/intersystems/tree-sitter-objectscript",
     files = { "src/parser.c", "src/scanner.c" }, 
@@ -69,10 +69,10 @@ parser_config.objectscript_udl = {
 }
 vim.filetype.add({
   extension = {
-    cls = "objectscript_udl",
+    cls = "objectscript",
   },
 })
-vim.treesitter.language.register("objectscript_udl", "objectscript_udl") 
+vim.treesitter.language.register("objectscript", "objectscript") 
 ```
 
 You will need to copy in the `*.scm` files, these go into the nvim-data directory which depends on if you're using Windows or UNIX
@@ -81,14 +81,16 @@ You will need to copy in the `*.scm` files, these go into the nvim-data director
 The best place to get these currently is https://github.com/intersystems/zed-objectscript/languages/objectscript_udl/*.scm and 
 copy them into:
 
-* UNIX: `~/.local/share/nvim/lazy/nvim-treesitter/queries/objectscript_udl/...`
+* UNIX: `~/.local/share/nvim/lazy/nvim-treesitter/queries/objectscript_udl/...` OR `~/.config/nvim/queries/objectscript/`
 * Windows: `%USERPROFILE%\Local\nvim-data\lazy\nvim-treesitter\queries\objectscript_udl\...`
 
 #### Installation
+Uninstall the old one (if present): `:TSUninstall objectscript_udl`
 
-Open a new instance of NeoVim and type `:TSInstall objectscript_udl` to install the tree-sitter-objectscript parser.  After this completes you should be able to open `*.cls` files.  If no coloring shows up, it probably means you haven't copied the `*.scm` files as described above.
+Install the new one: open a new instance of neovim and type `:TSInstall objectscript` to install the tree-sitter-objectscript parser.
+After this completes you should be able to open `*.cls` files.  If no coloring shows up, it probably means you haven't copied the `*.scm` files as described above.
 
-**NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript_udl` command.
+**NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript` command.
 
 #### Testing
 

@@ -5,10 +5,19 @@
 //!
 //! ```
 //! let code = r#"
+//! Class Demo.Test
+//! {
+//!   ClassMethod Main()
+//!   {
+//!     set x = 42
+//!   }
+//! }
 //! "#;
 //! let mut parser = tree_sitter::Parser::new();
 //! let language = tree_sitter_objectscript::LANGUAGE_OBJECTSCRIPT;
-//! parser.set_language(&language.into()).expect("Error loading Objectscript parser");
+//! parser
+//!     .set_language(&language.into())
+//!     .expect("Error loading Objectscript parser");
 //! let tree = parser.parse(code, None).unwrap();
 //! assert!(!tree.root_node().has_error());
 //! ```
@@ -32,7 +41,7 @@ pub const LANGUAGE_OBJECTSCRIPT: LanguageFn = unsafe { LanguageFn::from_raw(tree
 /// The content of the [`node-types.json`][] file for this grammar.
 ///
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
-pub const NODE_TYPES: &str = include_str!("../../udl/src/node-types.json");
+pub const OBJECTSCRIPT_NODE_TYPES: &str = include_str!("../../udl/src/node-types.json");
 
 /// The syntax highlighting query for ObjectScript.
 pub const HIGHLIGHTS_QUERY: &str = concat!(
