@@ -865,7 +865,7 @@ module.exports = grammar({
     dotted_identifier_relaxed_token: _ => token(DOTTED_ID_RELAXED),  // routines only
 
     numeric_literal: _ =>
-      token(/(?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?)/),
+      token(/[+-]?(?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?)/),
     // string literals in objecscript
     // are an any length sequence of characters besides ", between ".
     // Double-quotes are escaped with double quotes
