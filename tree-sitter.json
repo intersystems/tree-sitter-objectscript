@@ -6,6 +6,7 @@
       "scope": "source.objectscript",
       "path": "udl",
       "external-files": [
+        "common/scanner.h"
       ],
       "file-types": [
         "cls"
@@ -16,36 +17,61 @@
         "udl/queries/highlights.scm"
       ],
       "injections": [
-        "expr/queries/injections.scm",
         "core/queries/injections.scm",
         "udl/queries/injections.scm"
       ],
       "locals": [
-        "expr/queries/locals.scm",
         "core/queries/locals.scm",
         "udl/queries/locals.scm"
       ],
       "tags": [
+        "core/queries/tags.scm",
+        "udl/queries/tags.scm"
+      ],
+      "injection-regex": "^(cos|objectscript)$"
+    },
+    {
+      "name": "objectscript_core",
+      "camelcase": "ObjectScriptCore",
+      "scope": "source.objectscript_core",
+      "path": "core",
+      "external-files": [
+        "common/scanner.h"
+      ],
+      "file-types": [
+        "txt"
+      ],
+      "highlights": [
+        "expr/queries/highlights.scm",
+        "core/queries/highlights.scm"
+      ],
+      "injections": [
+        "core/queries/injections.scm"
+      ],
+      "locals": [
+        "core/queries/locals.scm"      
+      ],
+      "tags": [
+        "core/queries/tags.scm"
+      ],
+      "indents": [
+        "core/queries/indents.scm"
       ],
       "injection-regex": "^(cos|objectscript)$"
     }
   ],
   "metadata": {
-    "version": "0.0.20",
+    "version": "1.0.0",
     "license": "MIT",
-    "description": "ObjectScript (UDL) grammar for tree-sitter",
+    "description": "ObjectScript Core grammar for tree-sitter",
     "authors": [
       {
         "name": "Dave McCaldon",
         "email": "davem@intersystems.com"
       },
       {
-        "name": "Michael Fortunato",
-        "email": "michael.n.fortunato@gmail.com"
-      },
-      {
-        "name": "Marc Johnson",
-        "email": "marc.johnson@intersystems.com"
+        "name": "Hannah Kimura",
+        "email": "hkimura@intersystems.com"
       }
     ],
     "links": {
@@ -57,6 +83,7 @@
     "go": true,
     "node": true,
     "python": true,
-    "rust": true
+    "rust": true,
+    "swift" : true
   }
 }
