@@ -2,66 +2,61 @@
   "name": "tree-sitter-objectscript",
   "version": "1.0.0",
   "description": "Tree Sitter Grammar for InterSystems ObjectScript",
-  "workspaces": [
-    "expr",
-    "core",
-    "udl"
-  ],
   "scripts": {
-    "prebuildify": "npm run prebuildify --workspaces",
-    "lint": "npm run lint --workspaces",
-    "gen": "npm run gen --workspaces",
-    "build": "npm run build --workspaces",
-    "build-wasm": "npm run build-wasm --workspaces",
-    "test": "npm run test --workspaces",
-    "demo:udl": "npm run gen --workspace=udl && npm run build-wasm --workspace=udl && npm run playground --workspace=udl"
+    "install": "node-gyp-build",
+    "lint": "eslint common/grammar.js",
+    "test": "node --test bindings/node/*_test.js"
   },
   "author": "Dave McCaldon <davem@intersystems.com>",
-  "contributors": [
-    {
-      "name": "Michael Fortunato",
-      "email": "michael.n.fortunato@gmail.com"
-    },
-    {
-      "name": "Marc Johnson",
-      "email": "marc.johnson@intersystems.com"
-    }
+  "maintainers": [
+    "Hannah Kimura <hkimura@intersystems.com>"
   ],
   "license": "MIT",
-  "engine": {
-    "node": ">=18"
-  },
+  "keywords": [
+    "incremental",
+    "parsing",
+    "tree-sitter",
+    "objectscript"
+  ],
   "dependencies": {
-    "node-gyp-build": "^4.8.0"
+    "node-gyp-build": "^4.8.2",
+    "node-addon-api": "^8.5.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.25.0"
+  },
+  "peerDependenciesMeta": {
+    "tree-sitter": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0",
-    "eslint": "^9.16.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^9.1.0",
-    "@eslint/markdown": "^7.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint": "^9.35.0",
+    "eslint-config-treesitter": "^1.0.2",
     "prebuildify": "^6.0.1",
-    "prettier": "^3.4.2",
-    "tree-sitter": "^0.22.4",
-    "tree-sitter-cli": "^0.25.8"
+    "tree-sitter-cli": "^0.25.9",
+    "tree-sitter": "^0.25.0"
   },
-  "tree-sitter": [
-    {
-      "scope": "source.objectscript",
-      "file-types": [
-        "cls"
-      ]
-    }
-  ],
+  "main": "bindings/node",
   "types": "bindings/node",
   "files": [
-    "grammar.js",
+    "udl/grammar.js",
+    "core/grammar.js",
+    "expr/grammar.js",
     "binding.gyp",
     "prebuilds/**",
+    "common/**",
     "bindings/node/*",
-    "queries/*",
-    "src/**"
+    "udl/queries/*",
+    "udl/src/**",
+    "tree-sitter.json",
+    "udl/package.json",
+    "core/package.json",
+    "expr/package.json",
+    "*.wasm",
+    "core/src/**",
+    "expr/src/**",
+    "expr/queries/*",
+    "core/queries/*"
   ]
 }

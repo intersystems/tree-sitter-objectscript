@@ -59,7 +59,7 @@ Add the following to `init.lua`, or, in the case you are using LazyVim, to your 
 
 ```lua
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-parser_config.objectscript_udl = {
+parser_config.objectscript = {
   install_info = {
     url = "https://github.com/intersystems/tree-sitter-objectscript",
     files = { "src/parser.c", "src/scanner.c" }, 
@@ -69,10 +69,10 @@ parser_config.objectscript_udl = {
 }
 vim.filetype.add({
   extension = {
-    cls = "objectscript_udl",
+    cls = "objectscript",
   },
 })
-vim.treesitter.language.register("objectscript_udl", "objectscript_udl") 
+vim.treesitter.language.register("objectscript", "objectscript") 
 ```
 
 You will need to copy in the `*.scm` files, these go into the nvim-data directory which depends on if you're using Windows or UNIX
@@ -81,14 +81,16 @@ You will need to copy in the `*.scm` files, these go into the nvim-data director
 The best place to get these currently is https://github.com/intersystems/zed-objectscript/languages/objectscript_udl/*.scm and 
 copy them into:
 
-* UNIX: `~/.local/share/nvim/lazy/nvim-treesitter/queries/objectscript_udl/...`
+* UNIX: `~/.local/share/nvim/lazy/nvim-treesitter/queries/objectscript_udl/...` OR `~/.config/nvim/queries/objectscript/`
 * Windows: `%USERPROFILE%\Local\nvim-data\lazy\nvim-treesitter\queries\objectscript_udl\...`
 
 #### Installation
+Uninstall the old one (if present): `:TSUninstall objectscript_udl`
 
-Open a new instance of NeoVim and type `:TSInstall objectscript_udl` to install the tree-sitter-objectscript parser.  After this completes you should be able to open `*.cls` files.  If no coloring shows up, it probably means you haven't copied the `*.scm` files as described above.
+Install the new one: open a new instance of neovim and type `:TSInstall objectscript` to install the tree-sitter-objectscript parser.
+After this completes you should be able to open `*.cls` files.  If no coloring shows up, it probably means you haven't copied the `*.scm` files as described above.
 
-**NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript_udl` command.
+**NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript` command.
 
 #### Testing
 
@@ -180,3 +182,26 @@ This project provided as-is and is licensed under the MIT License.
 Future plans include creating a grammar for CSP by extending HTML and injecting `expr` and `core` grammar elements
 to support `#(<expr>)#` and `<script language="cache" runat=server>...</script>` blocks of ObjectScript.
 
+## Testing Bindings 
+The binding tests verify that you can create a parser with your grammar.
+### Rust 
+From the root directory, run `cargo build` and then `cargo test`.
+
+### Python 
+From the root directory, run `python -m pip install -e .` and then `python -m pytest -q bindings/python/tests/test_binding.py`
+
+### Swift
+From the root directory, run `swift test`. Make sure you have `Xcode` downloaded from the App Store, and before running swift test, run `sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`
+
+### Node 
+I had to run this command for my changes to show up: 
+`rm -rf node_modules build`
+
+Additionally, for this one, make sure you have a compatible npm version. I had to lower my version to 20: `nvm install 20` and then `nvm use 20`
+
+Once you have those prereqs complete, run `npm install` and then `npm test`
+### Go
+From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v0.24.0` and then run `go test ./bindings/go/...`
+
+### C
+Run `make test`
