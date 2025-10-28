@@ -1,5 +1,5 @@
 from importlib.resources import files as _files
-from ._binding import language_objectscript  
+from ._binding import language_objectscript_core  
 
 def _get_query(name, file):
     text = (_files(f"{__package__}.queries") / file).read_text()

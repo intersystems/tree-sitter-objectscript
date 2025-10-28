@@ -201,7 +201,7 @@ Additionally, for this one, make sure you have a compatible npm version. I had t
 
 Once you have those prereqs complete, run `npm install` and then `npm test`
 ### Go
-From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v4.24.0` and then run `go test ./bindings/go/...`
+From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v0.24.0` and then run `go test ./bindings/go/...`
 
 ### C
 Run `make test`

@@ -7,11 +7,16 @@
       ],
       "include_dirs": [
         "udl/src",
+        "core/src",
+        "expr/src"
       ],
       "sources": [
         "bindings/node/binding.cc",
         "udl/src/parser.c",
         "udl/src/scanner.c",
+        "core/src/parser.c",
+        "core/src/scanner.c",
+        "expr/src/parser.c",
       ],
       "conditions": [
         ["OS!='win'", {
