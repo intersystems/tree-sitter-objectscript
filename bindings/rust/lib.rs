@@ -96,21 +96,6 @@ include_str!("../../core/queries/highlights.scm")
 /// The syntax highlighting query for ObjectScript Expr.
 pub const OBJECTSCRIPT_EXPR_HIGHLIGHTS_QUERY: &str = "../../expr/queries/highlights.scm";
 
-/// The symbol tagging query for ObjectScript.
-pub const OBJECTSCRIPT_TAGS_QUERY: &str = concat!(
-include_str!("../../expr/queries/tags.scm"), "\n",
-include_str!("../../core/queries/tags.scm"), "\n",
-include_str!("../../udl/queries/tags.scm"),
-);
-
-/// The symbol tagging query for ObjectScript Core.
-pub const OBJECTSCRIPT_CORE_TAGS_QUERY: &str = concat!(
-include_str!("../../expr/queries/tags.scm"), "\n",
-include_str!("../../core/queries/tags.scm"));
-
-/// The symbol tagging query for ObjectScript Expr.
-pub const OBJECTSCRIPT_EXPR_TAGS_QUERY: &str = "../../expr/queries/tags.scm";
-
 /// Injections for ObjectScript.
 pub const OBJECTSCRIPT_INJECTIONS_QUERY: &str = concat!(
 include_str!("../../core/queries/injections.scm"), "\n",
@@ -128,22 +113,6 @@ include_str!("../../udl/queries/indents.scm"),
 
 /// Indentation for ObjectScript Core.
 pub const OBJECTSCRIPT_CORE_INDENTS_QUERY: &str = "../../core/queries/indents.scm";
-
-/// The local var syntax highlighting query for ObjectScript.
-pub const LOCALS_QUERY: &str = concat!(
-include_str!("../../expr/queries/locals.scm"), "\n",
-include_str!("../../core/queries/locals.scm"), "\n",
-include_str!("../../udl/queries/locals.scm"),
-);
-
-/// The local var syntax highlighting query for ObjectScript Core.
-pub const OBJECTSCRIPT_CORE_LOCALS_QUERY: &str = concat!(
-include_str!("../../expr/queries/locals.scm"), "\n",
-include_str!("../../core/queries/locals.scm")
-);
-
-/// The local var syntax highlighting query for ObjectScript Expr.
-pub const OBJECTSCRIPT_EXPR_LOCALS_QUERY: &str = "../../expr/queries/locals.scm";
 
 #[cfg(test)]
 mod tests {

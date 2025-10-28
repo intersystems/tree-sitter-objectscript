@@ -541,7 +541,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
   return false;
 }
-void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *scanner) {
+static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *scanner) {
   scanner->marker_buffer_len = 0;
   scanner -> at_bol = true;
 }

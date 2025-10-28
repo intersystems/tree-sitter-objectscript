@@ -25,5 +25,7 @@ type Language = {
 };
 
 declare const objectscript: Language;
+declare const objectscript_core: Language;
+declare const objectscript_expr: Language;
 
-export = objectscript;
+export = {objectscript,objectscript_core,objectscript_expr};
