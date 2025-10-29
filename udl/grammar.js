@@ -29,6 +29,10 @@ module.exports = define_grammar(objectscript_core, {
         $.external_method_keywords,
       ],
       [
+        $.xdata_keywords,
+        $.xdata_keywords_any,
+      ],
+      [
         $.trigger_keywords,
         $.external_trigger_keywords,
       ], // This is intended. When the parser sees kw_Abstract ',' for example,
@@ -312,10 +316,35 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         field('keyword', $.keyword_xdata),
         field('name', alias($.quote_permitting_identifier, $.identifier)),
-        optional(field('keywords', $.xdata_keywords)),
-        $._xdata_body,
+        choice($._xdata_xml, $._xdata_any),
       ),
     keyword_xdata: (_) => /XData/i,
+
+    _xdata_xml: ($) =>
+      seq(
+        optional(field('keywords', $.xdata_keywords)),
+        '{',
+        field('body', alias($.external_method_body_content, $.xdata_body_content_xml)),
+        '}',
+      ),
+
+    _xdata_any: ($) =>
+      seq(
+        field('keywords', alias($.xdata_keywords_any, $.xdata_keywords)),
+        '{',
+        field('body', alias($.external_method_body_content, $.xdata_body_content_any)),
+        '}',
+      ),
+
+    xdata_keywords_any: ($) =>
+      // NOTE: Here, MimeType _must_ be present to match this
+      seq(
+        '[',
+        repeat(seq($._xdata_keyword, ',')),
+        $.kw_MimeType,
+        repeat(seq(',', $._xdata_keyword)),
+        ']',
+      ),
 
     storage: ($) =>
       seq(
@@ -428,13 +457,6 @@ module.exports = define_grammar(objectscript_core, {
     code_snippet: ($) =>
       seq(
         '{', prec.left(repeat1($.statement)), '}',
-      ),
-
-    _xdata_body: ($) =>
-      seq(
-        '{',
-        field('body', alias($.external_method_body_content, $.xdata_body_content)),
-        '}',
       ),
 
     _storage_body: ($) =>

@@ -1,0 +1,77 @@
+=====
+XData Blocks- 0: Test parsing different mime types
+=====
+
+Class User.XData
+{
+XData MARKDOWN [ MimeType = "text/markdown" ]
+{
+# This is some markdown
+
+We can write markdown in here using various *formatting* and other
+options:
+1. A list
+2. Code Blocks
+3. Etc.
+
+## Code Block
+
+```json
+{ "key": "value", "pi": 3.14159 }
+```
+}
+
+/// Now XML with a MimeType
+XData XML [ MimeType = "text/xml" ]
+{
+<?xml version="1.0"?>
+<document>
+  <item id="1"/>
+</document>
+}
+
+/// No MimeType, defaults to XML
+XData DEFAULT
+{
+<?xml version="1.0"?>
+
+<root/>
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (identifier
+            (identifier))
+          (xdata_keywords
+            (kw_MimeType
+              (keyword_name)
+              (string_literal)))
+          (xdata_body_content_any)))
+      (documatic_line)
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (identifier
+            (identifier))
+          (xdata_keywords
+            (kw_MimeType
+              (keyword_name)
+              (string_literal)))
+          (xdata_body_content_any)))
+      (documatic_line)
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (identifier
+            (identifier))
+          (xdata_body_content_xml))))))
