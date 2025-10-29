@@ -86,7 +86,7 @@ include_str!("../../udl/queries/injections.scm"),
 pub const OBJECTSCRIPT_CORE_INJECTIONS_QUERY: &str = "../../core/queries/injections.scm";
 
 /// The indents query for ObjectScript.
-pub const INDENTS_QUERY: &str = concat!(
+pub const OBJECTSCRIPT_INDENTS_QUERY: &str = concat!(
 include_str!("../../core/queries/indents.scm"), "\n",
 include_str!("../../udl/queries/indents.scm"),
 );
