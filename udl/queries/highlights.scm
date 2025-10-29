@@ -25,7 +25,7 @@
 (typename) @type
 (class_definition
   class_name: (identifier) @type
-  (class_extends (identifier) @type))
+  (class_extends (identifier) @type)?)
 (method_definition (identifier (identifier)) @function)
 (query (identifier) @function)
 
