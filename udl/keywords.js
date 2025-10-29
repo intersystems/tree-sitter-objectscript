@@ -455,7 +455,7 @@ module.exports = {
   // XData Rules
   _xdata_keyword: ($) =>
     choice(
-      $.kw_MimeType,
+      // NOTE: kw_MimeType is INTENTIONALLY excluded, see $._xdata_any rule
       $.kw_SchemaSpec,
       $.kw_XMLNamespace,
       $.kw_Deprecated,

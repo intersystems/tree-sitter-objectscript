@@ -14421,6 +14421,29 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "SYMBOL",
+              "name": "_xdata_xml"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_xdata_any"
+            }
+          ]
+        }
+      ]
+    },
+    "keyword_xdata": {
+      "type": "PATTERN",
+      "value": "XData",
+      "flags": "i"
+    },
+    "_xdata_xml": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "FIELD",
               "name": "keywords",
               "content": {
@@ -14434,15 +14457,115 @@
           ]
         },
         {
-          "type": "SYMBOL",
-          "name": "_xdata_body"
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "FIELD",
+          "name": "body",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "external_method_body_content"
+            },
+            "named": true,
+            "value": "xdata_body_content_xml"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
         }
       ]
     },
-    "keyword_xdata": {
-      "type": "PATTERN",
-      "value": "XData",
-      "flags": "i"
+    "_xdata_any": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "keywords",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "xdata_keywords_any"
+            },
+            "named": true,
+            "value": "xdata_keywords"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "FIELD",
+          "name": "body",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "external_method_body_content"
+            },
+            "named": true,
+            "value": "xdata_body_content_any"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "xdata_keywords_any": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_xdata_keyword"
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              }
+            ]
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "kw_MimeType"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_xdata_keyword"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
     },
     "storage": {
       "type": "SEQ",
@@ -15090,32 +15213,6 @@
               "type": "SYMBOL",
               "name": "statement"
             }
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "}"
-        }
-      ]
-    },
-    "_xdata_body": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "{"
-        },
-        {
-          "type": "FIELD",
-          "name": "body",
-          "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "external_method_body_content"
-            },
-            "named": true,
-            "value": "xdata_body_content"
           }
         },
         {
@@ -21426,10 +21523,6 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "kw_MimeType"
-        },
-        {
-          "type": "SYMBOL",
           "name": "kw_SchemaSpec"
         },
         {
@@ -21971,6 +22064,10 @@
       "method_keywords",
       "expression_method_keywords",
       "external_method_keywords"
+    ],
+    [
+      "xdata_keywords",
+      "xdata_keywords_any"
     ],
     [
       "trigger_keywords",
