@@ -14,7 +14,7 @@ struct ObjectScript_Udl_Scanner {
   struct ObjectScript_Core_Scanner core_scanner;
 };
 
-static bool lex_fenced_text(void *payload, TSLexer *lexer,
+static bool lex_fenced_text(TSLexer *lexer,
                             enum TokenType desired_symbol, char l_delim,
                             char r_delim) {
   int leftRightDiff = 1;
@@ -61,7 +61,7 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     // A valid method_body is one that is whose text fences
     // are evenly balanced (so far only { })
     // e.g. VALID: {{{ [^{}]* }}} INVALID: {{{ [^{}]* }
-    return lex_fenced_text(payload, lexer, EXTERNAL_METHOD_BODY_CONTENT, '{',
+    return lex_fenced_text(lexer, EXTERNAL_METHOD_BODY_CONTENT, '{',
                            '}');
   }
   struct ObjectScript_Udl_Scanner *scanner =
