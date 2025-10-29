@@ -42,7 +42,7 @@ static const char* token_names[] = {
   "_INLINE_STATEMENT_SEPARATOR",
 };
 
-#if 1
+#if 0
 static char* debug_enum(TSLexer *lexer, const bool *valid_symbols) {
   static char work[1024];
   size_t n = 0;
@@ -104,11 +104,13 @@ static bool
 ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                                TSLexer *lexer, const bool *valid_symbols)
 {
+#if 0
   if (lexer->log) {
     lexer->log(lexer, "scan: %c (%d): %s\n",
                lexer->lookahead, lexer->lookahead,
                debug_enum(lexer, valid_symbols));
   }
+#endif
 
   // Tree sitter will mark all terminals as valid on error
   // The sentinel should never be valid in a good parse, so this ensures
