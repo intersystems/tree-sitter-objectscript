@@ -75,13 +75,14 @@ static inline void skip   (TSLexer *lexer) { lexer->advance(lexer, true ); }
 #define MARKER_BUFFER_MAX_LEN 30
 struct ObjectScript_Core_Scanner {
   int32_t marker_buffer[MARKER_BUFFER_MAX_LEN];
-  char marker_buffer_len;
+  int marker_buffer_len;
   bool at_bol;
 };
 
 static bool ObjectScript_Core_Scanner_lex_fenced_text(
-    void *payload, TSLexer *lexer,
-    enum ObjectScript_Core_Scanner_TokenType desired_symbol, char l_delim,
+    TSLexer *lexer,
+    enum ObjectScript_Core_Scanner_TokenType desired_symbol,
+    char l_delim,
     char r_delim) {
   int leftRightDiff = 1;
   while (!lexer->eof(lexer)) {
@@ -373,12 +374,12 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
   } else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {
     bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
-        scanner, lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>');
+        lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>');
     if (ok) scanner->at_bol = false;
     return ok;
   } else if (valid_symbols[PAREN_FENCED_TEXT]) {
     bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
-        scanner, lexer, PAREN_FENCED_TEXT, '(', ')');
+        lexer, PAREN_FENCED_TEXT, '(', ')');
     if (ok) scanner->at_bol = false;
     return ok;
   } else if (valid_symbols[EMBEDDED_SQL_MARKER]) {
