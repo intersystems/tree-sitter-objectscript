@@ -19,13 +19,27 @@ The grammar currently integrates with these editors:
 
 Given the polyglot nature of ObjectScript `.cls` files, it's recommended to ensure the following tree-sitter grammars are installed and available for injection:
 
-- SQL
-- HTML
-- Python
-- JavaScript
+- SQL 
+- HTML 
+- Python 
+- JavaScript 
 - CSS
 - XML
 - Markdown
+
+All of these grammars are all available as Rust crates (and in other languages as well). 
+For example, if I want to include these grammars in my rust project, 
+I would simply add these under dependencies in my Cargo.Toml file: 
+```Cargo
+tree-sitter-html = "0.23.2"
+tree-sitter-javascript = "0.25.0"
+tree-sitter-python = "0.25.0"
+tree-sitter-css = "0.25.0"
+tree-sitter-sql = "0.0.2"
+tree-sitter-xml = "0.7.0"
+tree-sitter-md = "0.5.1"
+```
+
 
 ## Screenshots
 
@@ -133,13 +147,13 @@ Since there are three parsers, you'll need to cd into the directory containing t
 
 #### Build the Parser(s)
 
-From the parser directory, generate the state machines from the grammar and compile the native parser:
+From the grammar directory, generate the state machines from the grammar and compile the native parser:
 ```bash
 tree-sitter generate
 tree-sitter build
 ```
 
-**NOTE**: Use `tree-sitter --wasm` when using the playground to test the grammar.
+**NOTE**: Use `tree-sitter build --wasm` when using the playground to test the grammar.
 
 #### Running Tests
 
