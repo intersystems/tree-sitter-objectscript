@@ -23,15 +23,6 @@ const kw_boolean = function ($, keyword) {
     ),
   );
 };
-const kw_bool_assignable = ($, re) =>
-  choice(
-    field('name', alias(re, $.keyword_name)),
-    seq(
-      field('name', alias(re, $.keyword_name)),
-      '=',
-      field('rhs', alias(/[01]/, $.keyword_bool))
-    )
-  );
 
 const kw_integer = function ($, keyword) {
   return seq(
@@ -203,25 +194,19 @@ module.exports = {
       'STRUCT',
     ]),
 
-// kw_ProcedureBlock: ($) => kw_bool_assignable($, /ProcedureBlock/i),
 keyword_not:              ($) => token(prec(1, /[nN][oO][tT]/)),
 keyword_ProcedureBlock:   ($) => token(prec(1, /[Pp][Rr][Oo][Cc][Ee][Dd][Uu][Rr][Ee][Bb][Ll][Oo][Cc][Kk]/)),
-kw_ProcedureBlock: $ => choice(
+kw_ProcedureBlock: ($) => choice(
   field('name', $.keyword_ProcedureBlock),
-  seq(field('name', $.keyword_ProcedureBlock), '=', field('rhs', alias(/[01]/, $.keyword_bool)))
+  seq(field('name', $.keyword_ProcedureBlock), '=', field('rhs', alias(/[1]/, $.keyword_bool_true)))
 ),
 
-kw_NotProcedureBlock: $ => seq(
-  field('not',  $.keyword_not),
-  field('name', $.keyword_ProcedureBlock)
+kw_NotProcedureBlock: ($) => choice(
+  seq(field('not',  $.keyword_not), field('name', $.keyword_ProcedureBlock)),
+  seq(field('name', $.keyword_ProcedureBlock), '=', field('rhs', alias(/[0]/, $.keyword_bool_false)))
 ),
-// kw_NotProcedureBlock: ($) => seq(
-//   field('not',  alias(/[nN][oO][tT]\s+/, $.keyword_not)),
-//   field('name', alias(/ProcedureBlock/i, $.keyword_name))
-// ),
-  kw_Owner: ($) => kw_text($, /Owner/i),
-  // kw_ProcedureBlock: ($) => kw_boolean($, /ProcedureBlock/i),
-  // kw_NotProcedureBlock: ($) => 
+
+  kw_Owner: ($) => kw_text($, /Owner/i), 
   kw_ProjectionClass: ($) => kw_identifier($, /ProjectionClass/i),
   kw_PropertyClass: ($) => kw_identifier($, /PropertyClass/i),
   kw_QueryClass: ($) => kw_identifier($, /QueryClass/i),
@@ -438,6 +423,7 @@ kw_NotProcedureBlock: $ => seq(
       $.kw_PlaceAfter,
       $.kw_Private,
       $.kw_ProcedureBlock,
+      $.kw_NotProcedureBlock,
       $.kw_PublicList,
       $.kw_ReturnResultsets,
       $.kw_ServerOnly,
