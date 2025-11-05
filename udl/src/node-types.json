@@ -4695,10 +4695,20 @@
       },
       "not": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "keyword_not",
+            "named": true
+          }
+        ]
+      },
+      "rhs": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "keyword_bool_false",
             "named": true
           }
         ]
@@ -5020,7 +5030,7 @@
         "required": false,
         "types": [
           {
-            "type": "keyword_bool",
+            "type": "keyword_bool_true",
             "named": true
           }
         ]
@@ -6488,6 +6498,10 @@
         },
         {
           "type": "kw_NotInheritable",
+          "named": true
+        },
+        {
+          "type": "kw_NotProcedureBlock",
           "named": true
         },
         {
@@ -9873,7 +9887,11 @@
     "named": true
   },
   {
-    "type": "keyword_bool",
+    "type": "keyword_bool_false",
+    "named": true
+  },
+  {
+    "type": "keyword_bool_true",
     "named": true
   },
   {
