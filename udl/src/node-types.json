@@ -411,6 +411,10 @@
           "named": true
         },
         {
+          "type": "kw_NotProcedureBlock",
+          "named": true
+        },
+        {
           "type": "kw_OdbcType",
           "named": true
         },
@@ -4676,6 +4680,32 @@
     }
   },
   {
+    "type": "kw_NotProcedureBlock",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_ProcedureBlock",
+            "named": true
+          }
+        ]
+      },
+      "not": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_not",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "kw_OdbcType",
     "named": true,
     "fields": {
@@ -4980,7 +5010,17 @@
         "required": true,
         "types": [
           {
-            "type": "keyword_name",
+            "type": "keyword_ProcedureBlock",
+            "named": true
+          }
+        ]
+      },
+      "rhs": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "keyword_bool",
             "named": true
           }
         ]
@@ -9821,11 +9861,19 @@
     "named": false
   },
   {
+    "type": "keyword_ProcedureBlock",
+    "named": true
+  },
+  {
     "type": "keyword_array",
     "named": true
   },
   {
     "type": "keyword_as",
+    "named": true
+  },
+  {
+    "type": "keyword_bool",
     "named": true
   },
   {
@@ -9958,6 +10006,10 @@
   },
   {
     "type": "keyword_new",
+    "named": true
+  },
+  {
+    "type": "keyword_not",
     "named": true
   },
   {
