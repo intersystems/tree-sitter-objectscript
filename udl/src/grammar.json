@@ -17527,6 +17527,92 @@
         }
       ]
     },
+    "keyword_not": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[nN][oO][tT]"
+        }
+      }
+    },
+    "keyword_ProcedureBlock": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[Pp][Rr][Oo][Cc][Ee][Dd][Uu][Rr][Ee][Bb][Ll][Oo][Cc][Kk]"
+        }
+      }
+    },
+    "kw_ProcedureBlock": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_ProcedureBlock"
+          }
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_ProcedureBlock"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "FIELD",
+              "name": "rhs",
+              "content": {
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[01]"
+                },
+                "named": true,
+                "value": "keyword_bool"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "kw_NotProcedureBlock": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "not",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_not"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_ProcedureBlock"
+          }
+        }
+      ]
+    },
     "kw_Owner": {
       "type": "SEQ",
       "members": [
@@ -17555,83 +17641,6 @@
             "type": "SYMBOL",
             "name": "string_literal"
           }
-        }
-      ]
-    },
-    "kw_ProcedureBlock": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "PATTERN",
-              "value": "ProcedureBlock",
-              "flags": "i"
-            },
-            "named": true,
-            "value": "keyword_name"
-          }
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "name",
-              "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "ProcedureBlock",
-                  "flags": "i"
-                },
-                "named": true,
-                "value": "keyword_name"
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "="
-            },
-            {
-              "type": "FIELD",
-              "name": "rhs",
-              "content": {
-                "type": "PATTERN",
-                "value": "[0-1]"
-              }
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "not",
-              "content": {
-                "type": "PATTERN",
-                "value": "[nN][oO][tT] "
-              }
-            },
-            {
-              "type": "FIELD",
-              "name": "name",
-              "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "ProcedureBlock",
-                  "flags": "i"
-                },
-                "named": true,
-                "value": "keyword_name"
-              }
-            }
-          ]
         }
       ]
     },
@@ -21148,6 +21157,10 @@
         {
           "type": "SYMBOL",
           "name": "kw_ProcedureBlock"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "kw_NotProcedureBlock"
         },
         {
           "type": "SYMBOL",
