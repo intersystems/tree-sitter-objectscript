@@ -169,3 +169,142 @@ If Statements 1
                           (write_device_control
                             (write_device_fflf)))))))))))))))
 
+================
+If Statements 2
+================
+ If ($E(classname,1)="%") && (sysclasses=0) Continue
+
+ If ..DebugDevice = "" {
+            Set sc = $$$ERROR($$$GeneralError, "No debug device configured")
+            Quit
+        }
+
+ If line [ "@", line [ ">" {
+                Set done = 1
+                Quit
+            }
+
+ If classname = "%Net.HttpRequest"
+---
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    operator: (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))
+        (statement
+          (command_continue
+            command_name: (keyword_continue)))
+        (statement
+          (command_if
+            command_name: (keyword_if)
+            (expression
+              (expr_atom
+                (relative_dot_property
+                  (oref_property
+                    (property_name
+                      (identifier_segment_immediate)))))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal)))))
+            (statement
+              (command_set
+                command_name: (keyword_set)
+                (set_argument
+                  lhs: (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  rhs: (expression
+                    (expr_atom
+                      (macro
+                        (macro_function
+                          (method_args
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (string_literal))))))))))))
+            (statement
+              (command_quit
+                command_name: (keyword_quit)))))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (statement
+          (command_quit
+            command_name: (keyword_quit)))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))))))

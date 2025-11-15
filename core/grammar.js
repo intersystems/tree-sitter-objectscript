@@ -73,7 +73,8 @@ module.exports = grammar(objectscript_expr, {
     $.macro_value_line_with_continue,
     $.sentinel,
     $.bol,
-    $._inline_statement_separator
+    $._inline_statement_separator,
+    $._termination,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -476,7 +477,7 @@ module.exports = grammar(objectscript_expr, {
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
-          optional($._whitespace_before_block),
+          // optional($._whitespace_before_block),
           repeat_with_commas($.for_parameter),
           '{',
           repeat($.statement),
@@ -487,7 +488,7 @@ module.exports = grammar(objectscript_expr, {
           field('command_name', $.keyword_for),
           optional(
             choice(
-              $._whitespace_before_block,
+              // $._whitespace_before_block,
               $._argumentless_command_end,
               $._immediate_single_whitespace_followed_by_non_whitespace,
             ),
@@ -813,75 +814,63 @@ module.exports = grammar(objectscript_expr, {
       // NOTE: `IF` doesn't allow post_conditional in any form
       choice(
         // Block style IF
-        prec.right(
+
           seq(
             field('command_name', $.keyword_if),
             $._immediate_single_whitespace_followed_by_non_whitespace,
             repeat_with_commas($.expression),
-            optional($._whitespace_before_block),
             '{',
             repeat($.statement),
             '}',
             repeat(field('elseif_block', $.elseif_block)),
             optional(field('else_block', $.else_block)),
           ),
-        ),
-        // Old style IF
-        seq(
+
+      seq(
+          field('command_name', $.keyword_if),
+          $._argumentless_command_end,
+          repeat($.statement),
+          $._termination
+      ),
+      seq(
           field('command_name', $.keyword_if),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.expression),
-          optional(choice(
-            $._immediate_single_whitespace_followed_by_non_whitespace,
-            $._inline_statement_separator,
-          )),
-          choice(
-            prec.left(repeat1($.statement)),
-            $._argumentless_command_end
-          )
-        ),
-        // Argumentless IF, requires 2 spaces following
-        seq(
-          field('command_name', $.keyword_if),
-          $._argumentless_command_end,
-          choice(
-            $._argumentless_command_end,
-            prec.left(repeat1($.statement)),
-          ),
-        ),
+          repeat($.statement),
+          $._termination,
+      )
       ),
 
     keyword_if: (_) => /I(f)?/i,
     keyword_elseif: (_) => /ElseIf/i,
     keyword_else: (_) => /Else/i,     // NOTE: New style Else must be spelled out
-    keyword_oldelse: (_) => /E(lse)?/i,
+    keyword_oldelse: (_) => /E(lse)/i,
 
     elseif_block: ($) =>
       seq(
         field('command_name', $.keyword_elseif),
+        $._immediate_single_whitespace_followed_by_non_whitespace,
         repeat_with_commas($.expression),
         '{',
-        $.statements,
+        repeat($.statement),
         '}',
       ),
-
+// for this one, we must match whitespace before block, becuase otherwise it thinks it is command_else the old style
     else_block: ($) =>
       seq(
         field('command_name', $.keyword_else),
         '{',
-        $.statements,
+        repeat($.statement),
         '}',
       ),
 
     command_else: ($) =>
-      prec.left(
-        1,
         seq(
-          field('command_name', $.keyword_oldelse),
-          $._argumentless_command_end,
-          prec.left(repeat1($.statement)),
+            field('command_name', $.keyword_oldelse),
+            $._argumentless_command_end,
+            repeat($.statement),
+            $._termination
         ),
-      ),
 
     command_throw: ($) =>
       prec.right(
