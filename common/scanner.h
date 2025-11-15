@@ -19,6 +19,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   SENTINEL,
   BOL,
   _INLINE_STATEMENT_SEPARATOR,
+  _TERMINATION,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 };
@@ -40,6 +41,7 @@ static const char* token_names[] = {
   "SENTINEL",
   "BOL",
   "_INLINE_STATEMENT_SEPARATOR",
+  "_TERMINATION"
 };
 
 #if 0
@@ -122,6 +124,21 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
 
+  if (valid_symbols[_TERMINATION]) {
+        bool is_termination = (lexer->lookahead == '\n' ||
+                                      lexer->lookahead == '}' ||
+                                      lexer->lookahead == '/' ||
+                                      lexer->lookahead == '#' ||
+                                      lexer->lookahead == ';');
+
+        bool is_new_line = (lexer-> lookahead == '\n');
+        if (is_termination) {
+            lexer->result_symbol = _TERMINATION;
+            scanner-> at_bol = is_new_line;
+            return true;
+        }
+  }
+
   if ((valid_symbols[_INLINE_STATEMENT_SEPARATOR] ||
   valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
   valid_symbols[_WHITESPACE_BEFORE_BLOCK] ||
@@ -151,14 +168,25 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             }
         }
 
-        else if (count >= 2 && !is_termination && !is_block && !lexer->eof(lexer)) {
-            // old if format if <cond> <statement>
-            if (valid_symbols[_INLINE_STATEMENT_SEPARATOR]) {
-                lexer->result_symbol = _INLINE_STATEMENT_SEPARATOR;
-                scanner->at_bol = false;
-                return true;
-            }
+        if (count == 2 && valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
+            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+            scanner->at_bol = false;
+            return true;
         }
+
+        if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
+                        lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
+                        return true;
+                    }
+
+//        else if (count >= 2 && !is_termination && !is_block && !lexer->eof(lexer)) {
+//            // old if format if <cond> <statement>
+//            if (valid_symbols[_INLINE_STATEMENT_SEPARATOR]) {
+//                lexer->result_symbol = _INLINE_STATEMENT_SEPARATOR;
+//                scanner->at_bol = false;
+//                return true;
+//            }
+//        }
 
         //argumentless
         else if (lexer->eof(lexer) || lexer->lookahead == '}' || lexer->lookahead == ';') {
