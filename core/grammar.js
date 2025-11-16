@@ -58,10 +58,10 @@ const post_conditional_rules = generate_post_conditionals(
 module.exports = grammar(objectscript_expr, {
   name: 'objectscript_core',
   externals: ($) => [
-    $._whitespace_before_block,
     $._immediate_single_whitespace_followed_by_non_whitespace,
     $._assert_no_space_between_rules,
     $._argumentless_command_end,
+    $._argumentless_for_loop,
     $._whitespace, // handle whitespaces programatically. NOTE: Prioritize lexing whitespace as fast as possible!!!
     $.tag,
     $.angled_bracket_fenced_text,
@@ -134,7 +134,6 @@ module.exports = grammar(objectscript_expr, {
         $.command_use,
         $.command_new,
         $.command_if,
-        $.command_else,
         $.command_throw,
         $.command_trycatch,
         $.command_job,
@@ -415,12 +414,16 @@ module.exports = grammar(objectscript_expr, {
       ),
     keyword_do: (_) => /[dD]([oO])?/,
     do_parameter: ($) =>
-      choice(
-        $.routine_tag_call,
-        $.class_method_call,
-        $.instance_method_call,
-        $.doable_dollar_functions,
-      ),
+        seq(
+            choice(
+                $.routine_tag_call,
+                $.class_method_call,
+                $.instance_method_call,
+                $.doable_dollar_functions,
+            ),
+            optional($.post_conditional)
+        ),
+
 
     instance_method_call: ($) =>
       choice(
@@ -477,7 +480,6 @@ module.exports = grammar(objectscript_expr, {
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
-          // optional($._whitespace_before_block),
           repeat_with_commas($.for_parameter),
           '{',
           repeat($.statement),
@@ -486,29 +488,25 @@ module.exports = grammar(objectscript_expr, {
         // Block style FOR without parameters (argumentless)
         seq(
           field('command_name', $.keyword_for),
-          optional(
-            choice(
-              // $._whitespace_before_block,
-              $._argumentless_command_end,
-              $._immediate_single_whitespace_followed_by_non_whitespace,
-            ),
-          ),
+          $._argumentless_for_loop,
           '{',
           repeat($.statement),
           '}',
         ),
-        // Old style FOR with parameters
+        // // Old style FOR with parameters
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.for_parameter),
-          prec.left(repeat1($.statement)),
+          repeat($.statement),
+          $._termination,
         ),
-        // Old style argumentless FOR
+        // // Old style argumentless FOR
         seq(
           field('command_name', $.keyword_for),
           $._argumentless_command_end,
-          prec.left(repeat1($.statement)),
+          repeat($.statement),
+          $._termination,
         ),
       ),
 
@@ -544,7 +542,7 @@ module.exports = grammar(objectscript_expr, {
     command_while: ($) =>
       seq(
         field('command_name', $.keyword_while),
-        optional($._immediate_single_whitespace_followed_by_non_whitespace),
+        $._immediate_single_whitespace_followed_by_non_whitespace,
         repeat_with_commas($.expression),
         '{',
         repeat($.statement),
@@ -830,7 +828,15 @@ module.exports = grammar(objectscript_expr, {
           field('command_name', $.keyword_if),
           $._argumentless_command_end,
           repeat($.statement),
-          $._termination
+          $._termination,
+          optional(
+              seq(
+                  field('command_name', $.keyword_oldelse),
+                  $._argumentless_command_end,
+                  repeat($.statement),
+                  $._termination
+              )
+          )
       ),
       seq(
           field('command_name', $.keyword_if),
@@ -838,6 +844,14 @@ module.exports = grammar(objectscript_expr, {
           repeat_with_commas($.expression),
           repeat($.statement),
           $._termination,
+          optional(
+              seq(
+                  field('command_name', $.keyword_oldelse),
+                  $._argumentless_command_end,
+                  repeat($.statement),
+                  $._termination
+              )
+          )
       )
       ),
 
@@ -864,13 +878,13 @@ module.exports = grammar(objectscript_expr, {
         '}',
       ),
 
-    command_else: ($) =>
-        seq(
-            field('command_name', $.keyword_oldelse),
-            $._argumentless_command_end,
-            repeat($.statement),
-            $._termination
-        ),
+    // command_else: ($) =>
+    //     seq(
+    //         field('command_name', $.keyword_oldelse),
+    //         $._argumentless_command_end,
+    //         repeat($.statement),
+    //         $._termination
+    //     ),
 
     command_throw: ($) =>
       prec.right(

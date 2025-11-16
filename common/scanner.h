@@ -3,10 +3,10 @@
 #include <wctype.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
-  _WHITESPACE_BEFORE_BLOCK,
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
   _ASSERT_NO_SPACE_BETWEEN_RULES,
   _ARGUMENTLESS_COMMAND_END,
+  _ARGUMENTLESS_FOR_LOOP,
   _WHITESPACE,
   TAG,
   ANGLED_BRACKET_FENCED_TEXT,
@@ -25,10 +25,10 @@ enum ObjectScript_Core_Scanner_TokenType {
 };
 
 static const char* token_names[] = {
-  "_WHITESPACE_BEFORE_BLOCK",
   "_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE",
   "_ASSERT_NO_SPACE_BETWEEN_RULES",
   "_ARGUMENTLESS_COMMAND_END",
+  "_ARGUMENTLESS_FOR_LOOP",
   "_WHITESPACE",
   "TAG",
   "ANGLED_BRACKET_FENCED_TEXT",
@@ -129,7 +129,8 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                                       lexer->lookahead == '}' ||
                                       lexer->lookahead == '/' ||
                                       lexer->lookahead == '#' ||
-                                      lexer->lookahead == ';');
+                                      lexer->lookahead == ';' ||
+                                      lexer->eof(lexer));
 
         bool is_new_line = (lexer-> lookahead == '\n');
         if (is_termination) {
@@ -139,10 +140,18 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         }
   }
 
-  if ((valid_symbols[_INLINE_STATEMENT_SEPARATOR] ||
-  valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
-  valid_symbols[_WHITESPACE_BEFORE_BLOCK] ||
-  valid_symbols[_ARGUMENTLESS_COMMAND_END])
+  if (valid_symbols[_ARGUMENTLESS_FOR_LOOP]) {
+    bool is_block = (lexer->lookahead == '{');
+    if (is_block) {
+        lexer->result_symbol = _ARGUMENTLESS_FOR_LOOP;
+        scanner->at_bol = false;
+        return true;
+    }
+  }
+
+  if((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
+  valid_symbols[_ARGUMENTLESS_COMMAND_END] ||
+  valid_symbols[_ARGUMENTLESS_FOR_LOOP])
   && iswspace(lexer->lookahead)
   ) {
         int count = 0;
@@ -157,7 +166,8 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                               lexer->lookahead == '}' ||
                               lexer->lookahead == '/' ||
                               lexer->lookahead == '#' ||
-                              lexer->lookahead == ';');
+                              lexer->lookahead == ';' ||
+                              lexer->eof(lexer));
 
         bool is_block = (lexer->lookahead == '{');
         if (count == 1 && !is_termination && !is_block) {
@@ -168,25 +178,17 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             }
         }
 
-        if (count == 2 && valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
-            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+        if (valid_symbols[_ARGUMENTLESS_FOR_LOOP] && is_block) {
+            lexer->result_symbol = _ARGUMENTLESS_FOR_LOOP;
             scanner->at_bol = false;
             return true;
         }
 
-        if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
-                        lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
-                        return true;
-                    }
-
-//        else if (count >= 2 && !is_termination && !is_block && !lexer->eof(lexer)) {
-//            // old if format if <cond> <statement>
-//            if (valid_symbols[_INLINE_STATEMENT_SEPARATOR]) {
-//                lexer->result_symbol = _INLINE_STATEMENT_SEPARATOR;
-//                scanner->at_bol = false;
-//                return true;
-//            }
-//        }
+        if (count == 2 && valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+            scanner->at_bol = false;
+            return true;
+        }
 
         //argumentless
         else if (lexer->eof(lexer) || lexer->lookahead == '}' || lexer->lookahead == ';') {
@@ -202,10 +204,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             }
             bool is_block = (lexer->lookahead == '{');
 
-            if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
-                lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
-                return true;
-            }
             if (valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
                 lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
                 return true;
@@ -223,160 +221,154 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                 lexer->advance(lexer, false);
             }
             bool is_block = (lexer->lookahead == '{');
-            if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && is_block) {
-                lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
-                return true;
-            }
             if (valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block) {
                 lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
                 return true;
             }
         }
   }
-  if ((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
-       valid_symbols[_ARGUMENTLESS_COMMAND_END] ||
-       valid_symbols[_WHITESPACE_BEFORE_BLOCK]) &&
-      (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
-       lexer->lookahead == '\t' || lexer->lookahead == '}')) {
-
-    // This case is where we're processing a command that has both argumentful
-    // and argumentless versions, such as QUIT or RETURN, or more interestingly
-    // IF or FOR that can be followed by a { } block structure.
-    //
-    // In the case of an argumentful version, we need to see a single space,
-    // followed by something that's not a space (or newline etc), which would
-    // be the command argument(s).
-    //
-    // In the argumentless case, we need to see two spaces before anything else
-    // unless it's the end of line, comment, or closing curly brace.  Unless we
-    // are in _WHITESPACE_BEFORE_BLOCK mode, in which case we can have unlimited
-    // whitespace (incl. eolns) before a block `{`
-    //
-    // The tricky part of this is we have to consider all three possibilities at
-    // once while scanning.
-
-    // Argumentless termination patterns which if we match, indicate that we have
-    // an _ARGUMENTLESS_COMMAND_END
-#define _TERM_MAX  8
-    static const char* terminations[_TERM_MAX] = {
-      " ",    // space (for two spaces total)
-      "\n",   // newline
-      "\t",   // tab
-      ";",    // semicolon comment
-      "}",    // closing brace
-      "//",   // double slash comment
-      "/*",   // block comment start
-      "#;",   // macro preprocessor comment
-    };
-
-    // Handle single space after command
-    if (lexer->lookahead == ' ') {
-      lexer->advance(lexer, false);
-      lexer->mark_end(lexer);   // Lock token boundary after the space
-
-      int inactive[_TERM_MAX] = {0};        // Set of inactive patterns
-      int active_count        = _TERM_MAX;  // Patterns remaining
-      int char_pos            = 0;          // Current offset
-
-      // Process characters until we find a match or eliminate all patterns
-      while (active_count > 0 && !lexer->eof(lexer)) {
-        char current_char = lexer->lookahead;
-
-        // Check each pattern at current position
-        for (size_t i = 0; i < _TERM_MAX; i++) {
-          if (inactive[i]) {
-            // This pattern has already been ruled out
-            continue;
-          }
-
-          const char* candidate = terminations[i];
-
-          // Check if current character matches this pattern at current position
-          if (current_char == candidate[char_pos]) {
-            // This is a match ... have we completed this candidate?
-            if (candidate[char_pos+1] == 0) {
-              // Yes! We have found complete match: argumentless, if we are
-              // looking for an _ARGUMENTLESS_COMMAND_END, then we're done
-              if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
-                lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
-                return true;
-              }
-
-              // If we're looking for _WHITESPACE_BEFORE_BLOCK then let's
-              // see if that's true -- we should've just completed a match
-              // on one of the whitespace terminators
-              if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && iswspace(current_char)) {
-                // It could well be, break out of this loop and we'll try a more
-                // thorough check
-                break;
-              }
-
-              // Well, we had a match to a termination string, but we are
-              // not looking for either _ARGUMENTLESS_COMMAND_END nor
-              // _WHITESPACE_BEFORE_BLOCK, so return false.
-              return false;
-            }
-            // else: No, this candidate has additional chars to check
-          } else {
-            // Character doesn't match, deactivate this candidate
-            inactive[i] = 1;
-            active_count--;
-          }
-        }
-
-        // Bail out now if there are none left
-        if (!active_count) break;
-
-        // We've checked all of the [active] candidate termination string,
-        // but not yet found a match, so keep matching
-        advance(lexer);
-        char_pos++;
-      }
-
-      if (lexer->eof(lexer)) {
-          if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
-            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
-            return true;
-          }
-          return false;
-        }
-
-      // If we didn't match any of the terminations, then it must be a space followed
-      // by a non-terminating character
-      if (!lexer->eof(lexer)) {
-
-        // Let's see if this is a _WHITESPACE_BEFORE_BLOCK
-        if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && iswspace(lexer->lookahead)) {
-          do {
-            lexer->advance(lexer, false);
-          } while (!lexer->eof(lexer) && iswspace(lexer->lookahead));
-
-          if (lexer->lookahead == '{') {
-            lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
-            return true;
-          }
-        }
-        else if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
-          // One space followed by a non-whitespace character: argumentful
-          lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
-          return true;
-        }
-      }
-    } else if ((lexer->lookahead == '\n') ||
-               (lexer->lookahead == '\t') ||
-               (lexer->lookahead == '}') ||
-               lexer->eof(lexer)) {
-      // Argumentless if newline, tab or } directly follows
-      //lexer->advance(lexer, false);
-      if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
-        lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
-        return true;
-      }
-    }
-
-    return false;
-
-  } else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
+//  if ((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
+//       valid_symbols[_ARGUMENTLESS_COMMAND_END]) &&
+//      (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
+//       lexer->lookahead == '\t' || lexer->lookahead == '}')) {
+//
+//    // This case is where we're processing a command that has both argumentful
+//    // and argumentless versions, such as QUIT or RETURN, or more interestingly
+//    // IF or FOR that can be followed by a { } block structure.
+//    //
+//    // In the case of an argumentful version, we need to see a single space,
+//    // followed by something that's not a space (or newline etc), which would
+//    // be the command argument(s).
+//    //
+//    // In the argumentless case, we need to see two spaces before anything else
+//    // unless it's the end of line, comment, or closing curly brace.
+//    //
+//    // The tricky part of this is we have to consider all three possibilities at
+//    // once while scanning.
+//
+//    // Argumentless termination patterns which if we match, indicate that we have
+//    // an _ARGUMENTLESS_COMMAND_END
+//#define _TERM_MAX  8
+//    static const char* terminations[_TERM_MAX] = {
+//      " ",    // space (for two spaces total)
+//      "\n",   // newline
+//      "\t",   // tab
+//      ";",    // semicolon comment
+//      "}",    // closing brace
+//      "//",   // double slash comment
+//      "/*",   // block comment start
+//      "#;",   // macro preprocessor comment
+//    };
+//
+//    // Handle single space after command
+//    if (lexer->lookahead == ' ') {
+//      lexer->advance(lexer, false);
+//      lexer->mark_end(lexer);   // Lock token boundary after the space
+//
+//      int inactive[_TERM_MAX] = {0};        // Set of inactive patterns
+//      int active_count        = _TERM_MAX;  // Patterns remaining
+//      int char_pos            = 0;          // Current offset
+//
+//      // Process characters until we find a match or eliminate all patterns
+//      while (active_count > 0 && !lexer->eof(lexer)) {
+//        char current_char = lexer->lookahead;
+//
+//        // Check each pattern at current position
+//        for (size_t i = 0; i < _TERM_MAX; i++) {
+//          if (inactive[i]) {
+//            // This pattern has already been ruled out
+//            continue;
+//          }
+//
+//          const char* candidate = terminations[i];
+//
+//          // Check if current character matches this pattern at current position
+//          if (current_char == candidate[char_pos]) {
+//            // This is a match ... have we completed this candidate?
+//            if (candidate[char_pos+1] == 0) {
+//              // Yes! We have found complete match: argumentless, if we are
+//              // looking for an _ARGUMENTLESS_COMMAND_END, then we're done
+//              if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+//                lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+//                return true;
+//              }
+//
+//              // If we're looking for _WHITESPACE_BEFORE_BLOCK then let's
+//              // see if that's true -- we should've just completed a match
+//              // on one of the whitespace terminators
+////              if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && iswspace(current_char)) {
+////                // It could well be, break out of this loop and we'll try a more
+////                // thorough check
+////                break;
+////              }
+//
+//              // Well, we had a match to a termination string, but we are
+//              // not looking for either _ARGUMENTLESS_COMMAND_END nor
+//              // _WHITESPACE_BEFORE_BLOCK, so return false.
+//              return false;
+//            }
+//            // else: No, this candidate has additional chars to check
+//          } else {
+//            // Character doesn't match, deactivate this candidate
+//            inactive[i] = 1;
+//            active_count--;
+//          }
+//        }
+//
+//        // Bail out now if there are none left
+//        if (!active_count) break;
+//
+//        // We've checked all of the [active] candidate termination string,
+//        // but not yet found a match, so keep matching
+//        advance(lexer);
+//        char_pos++;
+//      }
+//
+//      if (lexer->eof(lexer)) {
+//          if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+//            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+//            return true;
+//          }
+//          return false;
+//        }
+//
+//      // If we didn't match any of the terminations, then it must be a space followed
+//      // by a non-terminating character
+//      if (!lexer->eof(lexer)) {
+//
+//        // Let's see if this is a _WHITESPACE_BEFORE_BLOCK
+////        if (valid_symbols[_WHITESPACE_BEFORE_BLOCK] && iswspace(lexer->lookahead)) {
+////          do {
+////            lexer->advance(lexer, false);
+////          } while (!lexer->eof(lexer) && iswspace(lexer->lookahead));
+////
+////          if (lexer->lookahead == '{') {
+////            lexer->result_symbol = _WHITESPACE_BEFORE_BLOCK;
+////            return true;
+////          }
+////        }
+//        if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
+//          // One space followed by a non-whitespace character: argumentful
+//          lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
+//          return true;
+//        }
+//      }
+//    } else if ((lexer->lookahead == '\n') ||
+//               (lexer->lookahead == '\t') ||
+//               (lexer->lookahead == '}') ||
+//               lexer->eof(lexer)) {
+//      // Argumentless if newline, tab or } directly follows
+//      //lexer->advance(lexer, false);
+//      if (valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
+//        lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+//        return true;
+//      }
+//    }
+//
+//    return false;
+//
+//  }
+else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     if (!iswspace(lexer->lookahead)) {
       lexer->result_symbol = _ASSERT_NO_SPACE_BETWEEN_RULES;
       return true;

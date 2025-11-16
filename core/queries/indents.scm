@@ -59,5 +59,4 @@
 (command_if  (expression) @indent)
 (command_if  (statement)  @indent)
 
-; Old-style ELSE:
-(command_else (statement) @indent)
+

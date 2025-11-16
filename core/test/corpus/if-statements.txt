@@ -23,17 +23,17 @@ If Statements 0
                   (objectscript_identifier)))
               rhs: (expression
                 (expr_atom
+                  (numeric_literal))))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
                   (numeric_literal))))))))
-    (statement
-      (command_set
-        command_name: (keyword_set)
-        (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
-          rhs: (expression
-            (expr_atom
-              (numeric_literal))))))
     (statement
       (command_if
         command_name: (keyword_if)
@@ -52,14 +52,13 @@ If Statements 0
                   (numeric_literal))))))
         else_block: (else_block
           command_name: (keyword_else)
-          (statements
-            (statement
-              (command_write
-                command_name: (keyword_write)
-                (write_argument
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+          (statement
+            (command_write
+              command_name: (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -128,64 +127,180 @@ If Statements 1
                 (expr_atom
                   (string_literal)))))
           (line_comment_1)
-          (statements
-            (statement
-              (command_if
-                command_name: (keyword_if)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    operator: (binary_operator)
-                    (expression
-                      (expr_atom
-                        (string_literal)))))
-                (statement
-                  (command_set
-                    command_name: (keyword_set)
-                    (set_argument
-                      lhs: (glvn
-                        (gvn
-                          (subscripts
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))
-                      rhs: (expression
-                        (expr_atom
-                          (string_literal))))))
-                else_block: (else_block
-                  command_name: (keyword_else)
-                  (statements
-                    (statement
-                      (command_write
-                        command_name: (keyword_write)
-                        (write_argument
+          (statement
+            (command_if
+              command_name: (keyword_if)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))
+              (statement
+                (command_set
+                  command_name: (keyword_set)
+                  (set_argument
+                    lhs: (glvn
+                      (gvn
+                        (subscripts
                           (expression
                             (expr_atom
-                              (string_literal))))
-                        (write_argument
-                          (write_device_control
-                            (write_device_fflf)))))))))))))))
+                              (lvn
+                                (objectscript_identifier)))))))
+                    rhs: (expression
+                      (expr_atom
+                        (string_literal))))))
+              else_block: (else_block
+                command_name: (keyword_else)
+                (statement
+                  (command_write
+                    command_name: (keyword_write)
+                    (write_argument
+                      (expression
+                        (expr_atom
+                          (string_literal))))
+                    (write_argument
+                      (write_device_control
+                        (write_device_fflf)))))))))))))
 
 ================
 If Statements 2
 ================
+
+ if x=1 set x = 2 ;old version arguments
+ else  set x =3
+
+ if  set x = 2 ; old version argumentless
+ else  set x =3
+
+ if x = 1 { ; if block
+	set x = 2
+ }
+ else {
+	set x = 4 ;else block
+ }
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (line_comment_3)
+        command_name: (keyword_oldelse)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (line_comment_3)
+        command_name: (keyword_oldelse)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (line_comment_3)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (numeric_literal))))))
+        else_block: (else_block
+          command_name: (keyword_else)
+          (statement
+            (command_set
+              command_name: (keyword_set)
+              (set_argument
+                lhs: (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                rhs: (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          (line_comment_3))))))
+
+================
+If Statements 3
+================
  If ($E(classname,1)="%") && (sysclasses=0) Continue
 
  If ..DebugDevice = "" {
-            Set sc = $$$ERROR($$$GeneralError, "No debug device configured")
-            Quit
-        }
+     Set sc = $$$ERROR($$$GeneralError, "No debug device configured")
+     Quit
+     }
 
  If line [ "@", line [ ">" {
-                Set done = 1
-                Quit
-            }
+    Set done = 1
+    Quit
+    }
 
  If classname = "%Net.HttpRequest"
+
 ---
+
 (source_file
   (statements
     (statement
