@@ -289,7 +289,18 @@ module.exports = grammar({
         $.expression,
       ),
     routine_ref: ($) =>
-      seq(token.immediate('^'), $.dotted_identifier_relaxed_token),
+      seq(token.immediate('^'),
+          optional(
+              choice(
+                  token.immediate('||'),
+                  seq(
+                      token.immediate('|'),
+                      $.expression,
+                      token.immediate('|'),
+                  ),
+              ),
+          ),
+          $.dotted_identifier_relaxed_token),
 
     dollarsf: ($) =>
       seq(

@@ -1,21 +1,418 @@
- DO:0 $INCREMENT(myvar($INCREMENT(subvar))):1
-
- READ !,"Integer= ",num QUIT:num=""
- READ !,"Power= ",powr QUIT:powr=""
+=============================
+Do Statement No Param Passing
+=============================
+ DO pat.Admit()
  DO Exponent()
- WRITE !,"Result= ",result,!
- RETURN
-Exponent()
-  SET result=num
-  FOR i=1:1:powr-1 { SET result=result*num }
-  RETURN
-
  DO Init,Read1,Convert^Test
+ NEW $NAMESPACE
+ SET $NAMESPACE="USER"
+ DO ^|"SAMPLES"|fibonacci
+---
+(source_file
+  (statements
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (instance_method_call
+            (lvn
+              (objectscript_identifier))
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args)))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token)))))))
+    (statement
+      (command_new
+        command_name: (keyword_new)))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (system_defined_variable)
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              routine: (routine_ref
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (dotted_identifier_relaxed_token)))))))))
+
+===============================
+Do Statement With Param Passing
+===============================
  SET x=1,y=2,z=3
  WRITE !,"In Main ",x,y,z
  DO Sub1(x,y,z)
  WRITE !,"Back in Main ",x,y,z
  QUIT
+ SET x=1,y=2,z=3
+ WRITE !,"In Main ",x,y,z
+ DO Sub1(x,,z)
+ WRITE !,"Back in Main ",x,y,z
+ QUIT
+ SET x=3,x(1)=10,x(2)=20,x(3)=30
+ DO Sub1(x...)
+ QUIT
+ SET x=1,y=2,z=3
+ WRITE !,"In Main ",x,y,z
+ DO Sub1(.x,.y,.z)
+---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (variadic_arg
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (byref_arg
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (byref_arg
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (byref_arg
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ==========================
 Do Statement Object Method
@@ -23,6 +420,60 @@ Do Statement Object Method
  DO oref.Method()
  DO ..Method()
  DO i%prop(subs).Method()
+ DO ##class(cname).Method()
+---
+(source_file
+  (statements
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (instance_method_call
+            (lvn
+              (objectscript_identifier))
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (instance_method_call
+            (relative_dot_method
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (instance_method_call
+            (instance_variable
+              (property_name
+                (identifier_segment_immediate))
+              (subscripts
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (class_method_call
+            (class_ref
+              preproc_keyword: (keyword_pound_pound_class)
+              (class_name
+                (dotted_identifier_strict_token_immediate)))
+            (method_name
+              (identifier_segment_immediate))
+            (method_args)))))))
 
 =============================
 Do Statement with Indirection
@@ -33,6 +484,102 @@ Do Statement with Indirection
  SET loc = "Choice"_num_rout
  DO @loc
 ---
+(source_file
+  (statements
+    (statement
+      (command_read
+        command_name: (keyword_read)
+        (read_argument)
+        (read_argument
+          prompt: (_read_prompt))
+        (read_argument
+          variable: (glvn
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              (indirection
+                (expression
+                  (expr_atom
+                    (expression
+                      (expr_atom
+                        (string_literal))
+                      (expr_tail
+                        operator: (binary_operator)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))))))
+              (routine_ref
+                (dotted_identifier_relaxed_token)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              (indirection
+                (expression
+                  (expr_atom
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        operator: (binary_operator)
+                        (expression
+                          (expr_atom
+                            (string_literal)))))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              (indirection
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ===========================================
 Do Statement with Argument Postconditionals
@@ -42,4 +589,231 @@ Do Statement with Argument Postconditionals
  DO:1 Sub1(x,y,z):0,Sub2(x,y,z):1
  DO:0 $INCREMENT(myvar($INCREMENT(subvar))):1  /* myvar and subvar not incremented */
  DO:1 $INCREMENT(myvar($INCREMENT(subvar))):0  /* myvar not incremented, subvar incremented */
+---
+(source_file
+  (statements
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (post_conditional
+            (expression
+              (expr_atom
+                (expression
+                  (expr_atom
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        operator: (binary_operator)
+                        (expression
+                          (expr_atom
+                            (numeric_literal))))))
+                  (expr_tail
+                    operator: (binary_operator)
+                    (expression
+                      (expr_atom
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            operator: (binary_operator)
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (post_conditional
+          (expression
+            (expr_atom
+              (numeric_literal))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))
+          (post_conditional
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (do_parameter
+          (routine_tag_call
+            (line_ref
+              label: (label_ref))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))
+          (post_conditional
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (post_conditional
+          (expression
+            (expr_atom
+              (numeric_literal))))
+        (do_parameter
+          (doable_dollar_functions
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))))))))))
+          (post_conditional
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (block_comment)
+    (statement
+      (command_do
+        command_name: (keyword_do)
+        (post_conditional
+          (expression
+            (expr_atom
+              (numeric_literal))))
+        (do_parameter
+          (doable_dollar_functions
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))))))))))
+          (post_conditional
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (block_comment))
 

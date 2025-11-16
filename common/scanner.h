@@ -165,7 +165,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         bool is_termination = (lexer->lookahead == '\n' ||
                               lexer->lookahead == '}' ||
                               lexer->lookahead == '/' ||
-                              lexer->lookahead == '#' ||
                               lexer->lookahead == ';' ||
                               lexer->eof(lexer));
 
