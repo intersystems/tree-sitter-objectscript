@@ -451,32 +451,6 @@
     }
   },
   {
-    "type": "command_else",
-    "named": true,
-    "fields": {
-      "command_name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_oldelse",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "statement",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "command_for",
     "named": true,
     "fields": {
@@ -597,11 +571,15 @@
     "named": true,
     "fields": {
       "command_name": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
             "type": "keyword_if",
+            "named": true
+          },
+          {
+            "type": "keyword_oldelse",
             "named": true
           }
         ]
@@ -1546,7 +1524,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -1559,6 +1537,10 @@
         },
         {
           "type": "instance_method_call",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
           "named": true
         },
         {
@@ -2248,7 +2230,7 @@
       "required": true,
       "types": [
         {
-          "type": "glvn",
+          "type": "expression",
           "named": true
         }
       ]
@@ -2556,11 +2538,15 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
           "type": "indirection",
+          "named": true
+        },
+        {
+          "type": "routine_ref",
           "named": true
         }
       ]
@@ -3855,10 +3841,6 @@
         },
         {
           "type": "command_dowhile",
-          "named": true
-        },
-        {
-          "type": "command_else",
           "named": true
         },
         {

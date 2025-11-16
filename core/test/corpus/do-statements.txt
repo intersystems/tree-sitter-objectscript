@@ -1,0 +1,45 @@
+ DO:0 $INCREMENT(myvar($INCREMENT(subvar))):1
+
+ READ !,"Integer= ",num QUIT:num=""
+ READ !,"Power= ",powr QUIT:powr=""
+ DO Exponent()
+ WRITE !,"Result= ",result,!
+ RETURN
+Exponent()
+  SET result=num
+  FOR i=1:1:powr-1 { SET result=result*num }
+  RETURN
+
+ DO Init,Read1,Convert^Test
+ SET x=1,y=2,z=3
+ WRITE !,"In Main ",x,y,z
+ DO Sub1(x,y,z)
+ WRITE !,"Back in Main ",x,y,z
+ QUIT
+
+==========================
+Do Statement Object Method
+==========================
+ DO oref.Method()
+ DO ..Method()
+ DO i%prop(subs).Method()
+
+=============================
+Do Statement with Indirection
+=============================
+ READ !,"Enter the number for your choice: ",num QUIT:num=""
+ DO @("Item"_num)^Menu
+ DO @(eref_":fstr>0")
+ SET loc = "Choice"_num_rout
+ DO @loc
+---
+
+===========================================
+Do Statement with Argument Postconditionals
+===========================================
+ DO:F>0 A:F=1,B:F=2,C
+ DO:F>0 A:F=1,B:F=2,C:((F'=1)&&(F'=2))
+ DO:1 Sub1(x,y,z):0,Sub2(x,y,z):1
+ DO:0 $INCREMENT(myvar($INCREMENT(subvar))):1  /* myvar and subvar not incremented */
+ DO:1 $INCREMENT(myvar($INCREMENT(subvar))):0  /* myvar not incremented, subvar incremented */
+
