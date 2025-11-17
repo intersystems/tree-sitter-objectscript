@@ -48,12 +48,14 @@ Do Statement No Param Passing
                 (dotted_identifier_relaxed_token)))))))
     (statement
       (command_new
-        command_name: (keyword_new)))
+        command_name: (keyword_new)
+        (namespace_token)))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (system_defined_variable)
+          lhs: (system_defined_variable
+            (namespace_token))
           rhs: (expression
             (expr_atom
               (string_literal))))))

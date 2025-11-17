@@ -1626,6 +1626,38 @@
         }
       ]
     },
+    "namespace_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$NAMESPACE",
+        "flags": "i"
+      }
+    },
+    "estack_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ES(TACK)?",
+        "flags": "i"
+      }
+    },
+    "etrap_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ET(RAP)?",
+        "flags": "i"
+      }
+    },
+    "roles_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ROLES",
+        "flags": "i"
+      }
+    },
     "system_defined_variable": {
       "type": "CHOICE",
       "members": [
@@ -1640,14 +1672,12 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ES(TACK)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "estack_token"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ET(RAP)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "etrap_token"
         },
         {
           "type": "PATTERN",
@@ -1675,9 +1705,8 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$NAMESPACE",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "namespace_token"
         },
         {
           "type": "PATTERN",
@@ -1690,9 +1719,8 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ROLES",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "roles_token"
         },
         {
           "type": "PATTERN",

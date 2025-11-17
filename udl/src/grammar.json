@@ -1657,6 +1657,38 @@
         }
       ]
     },
+    "namespace_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$NAMESPACE",
+        "flags": "i"
+      }
+    },
+    "estack_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ES(TACK)?",
+        "flags": "i"
+      }
+    },
+    "etrap_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ET(RAP)?",
+        "flags": "i"
+      }
+    },
+    "roles_token": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\$ROLES",
+        "flags": "i"
+      }
+    },
     "system_defined_variable": {
       "type": "CHOICE",
       "members": [
@@ -1671,14 +1703,12 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ES(TACK)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "estack_token"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ET(RAP)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "etrap_token"
         },
         {
           "type": "PATTERN",
@@ -1706,9 +1736,8 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$NAMESPACE",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "namespace_token"
         },
         {
           "type": "PATTERN",
@@ -1721,9 +1750,8 @@
           "flags": "i"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ROLES",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "roles_token"
         },
         {
           "type": "PATTERN",
@@ -7585,24 +7613,20 @@
           "name": "lvn"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ES(TACK)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "estack_token"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ET(RAP)?",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "etrap_token"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$NAMESPACE",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "namespace_token"
         },
         {
-          "type": "PATTERN",
-          "value": "\\$ROLES",
-          "flags": "i"
+          "type": "SYMBOL",
+          "name": "roles_token"
         }
       ]
     },
@@ -11377,6 +11401,50 @@
         ]
       }
     },
+    "estack_token_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "\\$ES(TACK)?",
+          "flags": "i"
+        }
+      }
+    },
+    "etrap_token_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "\\$ET(RAP)?",
+          "flags": "i"
+        }
+      }
+    },
+    "namespace_token_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "\\$NAMESPACE",
+          "flags": "i"
+        }
+      }
+    },
+    "roles_token_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "\\$ROLES",
+          "flags": "i"
+        }
+      }
+    },
     "system_defined_variable_post_cond": {
       "type": "CHOICE",
       "members": [
@@ -11397,20 +11465,22 @@
           }
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "PATTERN",
-            "value": "\\$ES(TACK)?",
-            "flags": "i"
-          }
+            "type": "SYMBOL",
+            "name": "estack_token_post_cond"
+          },
+          "named": true,
+          "value": "estack_token"
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "PATTERN",
-            "value": "\\$ET(RAP)?",
-            "flags": "i"
-          }
+            "type": "SYMBOL",
+            "name": "etrap_token_post_cond"
+          },
+          "named": true,
+          "value": "etrap_token"
         },
         {
           "type": "IMMEDIATE_TOKEN",
@@ -11453,12 +11523,13 @@
           }
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "PATTERN",
-            "value": "\\$NAMESPACE",
-            "flags": "i"
-          }
+            "type": "SYMBOL",
+            "name": "namespace_token_post_cond"
+          },
+          "named": true,
+          "value": "namespace_token"
         },
         {
           "type": "IMMEDIATE_TOKEN",
@@ -11477,12 +11548,13 @@
           }
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "PATTERN",
-            "value": "\\$ROLES",
-            "flags": "i"
-          }
+            "type": "SYMBOL",
+            "name": "roles_token_post_cond"
+          },
+          "named": true,
+          "value": "roles_token"
         },
         {
           "type": "IMMEDIATE_TOKEN",
@@ -22325,10 +22397,6 @@
     {
       "type": "SYMBOL",
       "name": "bol"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_inline_statement_separator"
     },
     {
       "type": "SYMBOL",

@@ -80,4 +80,4 @@
 
 ; Lock type specifications
 (locktype) @type.qualifier
-
+(_read_prompt) @readprompt
