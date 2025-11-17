@@ -8,13 +8,17 @@ test/* export-ignore
 * text=auto eol=lf
 
 # Generated source files
-udl/src/*.json linguist-generated
-udl/src/parser.c linguist-generated
+udl/src/*.json linguist-generated -diff
+udl/src/parser.c linguist-generated -diff
 udl/src/tree_sitter/* linguist-generated
 
-core/src/*.json linguist-generated
-core/src/parser.c linguist-generated
+core/src/*.json linguist-generated -diff
+core/src/parser.c linguist-generated -diff
 core/src/tree_sitter/* linguist-generated
+
+expr/src/*.json linguist-generated -diff
+expr/src/parser.c linguist-generated -diff
+expr/src/tree_sitter/* linguist-generated
 
 # C bindings
 bindings/c/* linguist-generated
@@ -46,3 +50,4 @@ go.sum linguist-generated
 bindings/swift/** linguist-generated
 Package.swift linguist-generated
 Package.resolved linguist-generated
+

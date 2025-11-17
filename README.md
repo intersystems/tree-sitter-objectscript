@@ -58,51 +58,25 @@ Integration with the Zed editor is done as a [Zed Extension for ObjectScript](ht
 
 ### Neovim (nvim-treesitter)
 
-**NOTE:** The normal process for nvim-treesitter integration is for the grammar author to fork nvim-treesitter, add a few lines to make the grammar known and submit a PR, after which it's just a simple question of `TSInstall ...`.  However, as of writing, the nvim-treesitter project has archived it's main branch and isn't taking PRs while they rewrite the project.
-
-At some point when they've completed that work, we'll integrate this directly, but in the meantime, you need to follow the manual steps outlined below.
-
 #### Pre-requisites
 
-Before using, you need to have [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) plugin installed with your favorite
-package manager, here we use LazyVim.
+Before use, you will need to have [nvim-treesitter:main](https://github.com/nvim-treesitter/nvim-treesitter/tree/main) plugin installed with your favorite package manager such as LazyVim.
 
 #### Configuration
 
-Add the following to `init.lua`, or, in the case you are using LazyVim, to your `config/autocmds.lua` file.
+Associate the `.cls` extension with the objectscript parser by adding the following to `init.lua`, or, in the case you are using LazyVim, to your `config/autocmds.lua` file.
 
 ```lua
-local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-parser_config.objectscript = {
-  install_info = {
-    url = "https://github.com/intersystems/tree-sitter-objectscript",
-    files = { "src/parser.c", "src/scanner.c" }, 
-    branch = "main",
-    location = "udl",
-  },
-}
 vim.filetype.add({
   extension = {
-    cls = "objectscript",
+    cls = 'objectscript',
   },
 })
-vim.treesitter.language.register("objectscript", "objectscript") 
 ```
 
-You will need to copy in the `*.scm` files, these go into the nvim-data directory which depends on if you're using Windows or UNIX
-(and if you're using LazyVim or another package manager).
-
-The best place to get these currently is https://github.com/intersystems/zed-objectscript/languages/objectscript_udl/*.scm and 
-copy them into:
-
-* UNIX: `~/.local/share/nvim/lazy/nvim-treesitter/queries/objectscript_udl/...` OR `~/.config/nvim/queries/objectscript/`
-* Windows: `%USERPROFILE%\Local\nvim-data\lazy\nvim-treesitter\queries\objectscript_udl\...`
-
 #### Installation
-Uninstall the old one (if present): `:TSUninstall objectscript_udl`
-
-Install the new one: open a new instance of neovim and type `:TSInstall objectscript` to install the tree-sitter-objectscript parser.
-After this completes you should be able to open `*.cls` files.  If no coloring shows up, it probably means you haven't copied the `*.scm` files as described above.
+Open a new instance of neovim and type `:TSInstall objectscript` to install the tree-sitter-objectscript parser.
+After this completes and you've added the filetype mapping for `.cls` then you should be able to open `*.cls` files with ObjectScript syntax coloring (or use `set filetype=objectscript` if you didn't add the mapping).
 
 **NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript` command.
 
@@ -219,3 +193,4 @@ From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v0.24.
 
 ### C
 Run `make test`
+
