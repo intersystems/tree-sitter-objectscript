@@ -520,22 +520,27 @@ module.exports = grammar({
         token.immediate('..'),
         $.oref_parameter,
       ),
+      namespace_token: ($) => token(/\$NAMESPACE/i),
+      estack_token: ($) => token(/\$ES(TACK)?/i),
+      etrap_token: ($) => token(/\$ET(RAP)?/i),
+      roles_token: ($) => token(/\$ROLES/i),
 
-    system_defined_variable: (_) =>
+
+      system_defined_variable: ($) =>
       choice(
         /\$D(EVICE)?/i, // $DEVICE
-        /\$EC(ODE)?/i, // $ECODE
-        /\$ES(TACK)?/i, // $ESTACK
-        /\$ET(RAP)?/i, // $ETRAP
+          /\$EC(ODE)?/i, // $ECODE
+        $.estack_token, // $ESTACK
+        $.etrap_token, // $ETRAP
         /\$HALT/i, // $HALT
         /\$H(OROLOG)?/i, // $HOROLOG
         /\$I(O)?/i, // $IO
         /\$J(OB)?/i, // $JOB
         /\$K(EY)?/i, // $KEY
-        /\$NAMESPACE/i, // $NAMESPACE
+       $.namespace_token, // $NAMESPACE
         /\$P(RINCIPAL)?/i, // $P[RINCIPAL] conflicts with $P[IECE]
         /\$Q(UIT)?/i, // $QUIT
-        /\$ROLES/i, // $ROLES
+        $.roles_token, // $ROLES
         /\$ST(ACK)?/i, // $STACK conflits with $STACK()
         /\$S(TORAGE)?/i, // $S[TORAGE] conflicts with $S[ELECT]
         /\$SY(STEM)?/i, // $SYSTEM

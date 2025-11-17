@@ -797,10 +797,10 @@ module.exports = grammar(objectscript_expr, {
     _command_new_item: ($) =>
       choice(
         $.lvn,
-        /\$ES(TACK)?/i,
-        /\$ET(RAP)?/i,
-        /\$NAMESPACE/i,
-        /\$ROLES/i,
+        $.estack_token,
+        $.etrap_token,
+        $.namespace_token,
+        $.roles_token,
       ),
 
     command_if: ($) =>
@@ -868,7 +868,6 @@ module.exports = grammar(objectscript_expr, {
         repeat($.statement),
         '}',
       ),
-// for this one, we must match whitespace before block, becuase otherwise it thinks it is command_else the old style
     else_block: ($) =>
       seq(
         field('command_name', $.keyword_else),
