@@ -73,7 +73,6 @@ module.exports = grammar(objectscript_expr, {
     $.macro_value_line_with_continue,
     $.sentinel,
     $.bol,
-    $._inline_statement_separator,
     $._termination,
   ],
   conflicts: ($, previous) =>

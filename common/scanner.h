@@ -18,7 +18,6 @@ enum ObjectScript_Core_Scanner_TokenType {
   MACRO_VALUE_LINE_WITH_CONTINUE,
   SENTINEL,
   BOL,
-  _INLINE_STATEMENT_SEPARATOR,
   _TERMINATION,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
