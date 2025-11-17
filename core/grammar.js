@@ -61,7 +61,7 @@ module.exports = grammar(objectscript_expr, {
     $._immediate_single_whitespace_followed_by_non_whitespace,
     $._assert_no_space_between_rules,
     $._argumentless_command_end,
-    $._argumentless_for_loop,
+    $._argumentless_loop,
     $._whitespace, // handle whitespaces programatically. NOTE: Prioritize lexing whitespace as fast as possible!!!
     $.tag,
     $.angled_bracket_fenced_text,
@@ -488,7 +488,7 @@ module.exports = grammar(objectscript_expr, {
         // Block style FOR without parameters (argumentless)
         seq(
           field('command_name', $.keyword_for),
-          $._argumentless_for_loop,
+          $._argumentless_loop,
           '{',
           repeat($.statement),
           '}',
@@ -775,7 +775,7 @@ module.exports = grammar(objectscript_expr, {
     command_dowhile: ($) =>
       seq(
         field('command_name', $.keyword_do),
-        optional($._immediate_single_whitespace_followed_by_non_whitespace),
+        $._argumentless_loop,
         '{',
         repeat($.statement),
         '}',
@@ -877,14 +877,6 @@ module.exports = grammar(objectscript_expr, {
         repeat($.statement),
         '}',
       ),
-
-    // command_else: ($) =>
-    //     seq(
-    //         field('command_name', $.keyword_oldelse),
-    //         $._argumentless_command_end,
-    //         repeat($.statement),
-    //         $._termination
-    //     ),
 
     command_throw: ($) =>
       prec.right(
