@@ -817,3 +817,296 @@ Do Statement with Argument Postconditionals
                 (numeric_literal))))))))
   (block_comment))
 
+===============================
+Do While Statement and Continue
+===============================
+ DO {SET x=x+1 IF x#2=0 {CONTINUE} WRITE !,"Loop ",x} WHILE x<20
+---
+(source_file
+  (statements
+    (statement
+      (command_dowhile
+        command_name: (keyword_do)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (statement
+          (command_if
+            command_name: (keyword_if)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))
+            (ERROR
+              (keyword_continue))))
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+===========================
+Do While Statement and Quit
+===========================
+ SET x=1,y=1
+  DO {
+     WRITE "outer loop ",!
+     DO {
+        WRITE "inner loop "
+        WRITE " y=",y,!
+        QUIT:y=7
+        SET y=y+2
+        } WHILE y<100
+     WRITE "back to outer loop x=",x,!!
+     SET x=x+1
+     } WHILE x<6
+  WRITE "Done"
+---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_dowhile
+        command_name: (keyword_do)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (command_dowhile
+            command_name: (keyword_do)
+            (statement
+              (command_write
+                command_name: (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))))
+            (statement
+              (command_write
+                command_name: (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))))
+            (statement
+              (command_quit
+                command_name: (keyword_quit)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      operator: (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))
+            (statement
+              (command_set
+                command_name: (keyword_set)
+                (set_argument
+                  lhs: (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  rhs: (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      operator: (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))
+            command_name: (keyword_while)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===========================
+Do While Statement and Goto
+===========================
+  DO {
+      WRITE !,"In an infinite DO WHILE loop"
+      GOTO label1
+      WRITE !,"This should not display"
+  } WHILE 1=1
+  WRITE !,"This should not display"
+---
+(source_file
+  (statements
+    (statement
+      (command_dowhile
+        command_name: (keyword_do)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_goto
+            command_name: (keyword_goto)
+            (goto_argument
+              (line_ref
+                label: (label_ref)))))
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (numeric_literal))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
