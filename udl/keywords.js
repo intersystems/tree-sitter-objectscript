@@ -206,7 +206,7 @@ kw_NotProcedureBlock: ($) => choice(
   seq(field('name', $.keyword_ProcedureBlock), '=', field('rhs', alias(/[0]/, $.keyword_bool_false)))
 ),
 
-  kw_Owner: ($) => kw_text($, /Owner/i), 
+  kw_Owner: ($) => kw_text($, /Owner/i),
   kw_ProjectionClass: ($) => kw_identifier($, /ProjectionClass/i),
   kw_PropertyClass: ($) => kw_identifier($, /PropertyClass/i),
   kw_QueryClass: ($) => kw_identifier($, /QueryClass/i),
@@ -243,7 +243,16 @@ kw_NotProcedureBlock: ($) => choice(
   kw_NotInheritable: ($) => kw_boolean($, /NotInheritable/i),
   kw_PlaceAfter: ($) => kw_identifier($, /PlaceAfter/i),
   kw_Private: ($) => kw_boolean($, /Private/i),
-  kw_PublicList: ($) => kw_identifier($, /PublicList/i),
+  kw_PublicList: ($) => choice(
+      kw_identifier($, /PublicList/i),
+      seq(
+          /PublicList/i,
+          "=",
+          "(",
+          seq($.identifier, repeat(seq(',', $.identifier))),
+          ")",
+      )
+      ),
   kw_ReturnResultsets: ($) => kw_boolean($, /ReturnResultsets/i),
   kw_SqlProc: ($) => kw_boolean($, /SqlProc/i),
   kw_SqlRoutine: ($) => kw_enum($, /SqlRoutine/i, ['procedure', 'function']),
