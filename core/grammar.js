@@ -510,7 +510,8 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     keyword_for: (_) => /[fF]([oO][rR])?/,
-    for_parameter: ($) => prec.right(seq(
+    for_parameter: ($) => prec.right(
+        seq(
       choice(
         $.glvn,
         $.instance_variable,
