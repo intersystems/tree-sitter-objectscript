@@ -44,7 +44,11 @@ function build_command_rule_argumentless($, commandKeyword) {
   return seq(
     field('command_name', commandKeyword),
     optional($.post_conditional),
-    $._argumentless_command_end,
+    choice(
+        $._argumentless_command_end,
+        $._termination,
+    )
+
   );
 }
 
@@ -133,6 +137,7 @@ module.exports = grammar(objectscript_expr, {
         $.command_use,
         $.command_new,
         $.command_if,
+        $.command_else,
         $.command_throw,
         $.command_trycatch,
         $.command_job,
@@ -402,14 +407,19 @@ module.exports = grammar(objectscript_expr, {
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
       choice(
+          seq($.keyword_do, repeat1($.dotted_statement),$._termination)
         // DO with parameters
-        build_command_rule_argumentful(
-          $,
-          $.keyword_do,
-          repeat_with_commas($.do_parameter),
-        ),
-        // Argumentless DO
-        build_command_rule_argumentless($, $.keyword_do),
+        // build_command_rule_argumentful(
+        //   $,
+        //   $.keyword_do,
+        //   repeat_with_commas($.do_parameter),
+        // ),
+        // // Argumentless DO
+        // seq(
+        //     $.keyword_do,
+        //     $
+        // ),
+        // build_command_rule_argumentless($, $.keyword_do),
       ),
     keyword_do: (_) => /[dD]([oO])?/,
     do_parameter: ($) =>
@@ -492,7 +502,7 @@ module.exports = grammar(objectscript_expr, {
           repeat($.statement),
           '}',
         ),
-        // // Old style FOR with parameters
+        // Old style FOR with parameters
         seq(
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
@@ -507,6 +517,10 @@ module.exports = grammar(objectscript_expr, {
           repeat($.statement),
           $._termination,
         ),
+          seq(
+              field('command_name', $.keyword_for),
+              $._termination,
+          )
       ),
 
     keyword_for: (_) => /[fF]([oO][rR])?/,
@@ -566,7 +580,13 @@ module.exports = grammar(objectscript_expr, {
 
     command_lock: ($) =>
       choice(
-        seq(field('command_name', $.keyword_lock), $._argumentless_command_end),
+        seq(field('command_name', $.keyword_lock),
+            choice($._argumentless_command_end,
+                $._termination,
+            ),
+
+            ),
+
         build_command_rule_argumentful(
           $,
           $.keyword_lock,
@@ -629,7 +649,7 @@ module.exports = grammar(objectscript_expr, {
     keyword_read: (_) => /[Rr]([eE][aA][dD])?/,
     read_argument: ($) =>
       choice(
-        field('fchar', $._read_fchar),
+        field('fchar', repeat1($._read_fchar)),
         field('prompt', alias($.string_literal, $._read_prompt)),
         field('variable', $._read_variable),
       ),
@@ -775,7 +795,7 @@ module.exports = grammar(objectscript_expr, {
     command_dowhile: ($) =>
       seq(
         field('command_name', $.keyword_do),
-        $._argumentless_loop,
+        // $._argumentless_loop,
         '{',
         repeat($.statement),
         '}',
@@ -814,51 +834,60 @@ module.exports = grammar(objectscript_expr, {
         // Block style IF
 
           seq(
-            field('command_name', $.keyword_if),
-            $._immediate_single_whitespace_followed_by_non_whitespace,
-            repeat_with_commas($.expression),
-            '{',
-            repeat($.statement),
-            '}',
-            repeat(field('elseif_block', $.elseif_block)),
-            optional(field('else_block', $.else_block)),
+              field('command_name', $.keyword_if),
+              $._immediate_single_whitespace_followed_by_non_whitespace,
+              repeat_with_commas($.expression),
+              '{',
+              repeat($.statement),
+              '}',
+              repeat(field('elseif_block', $.elseif_block)),
+              optional(field('else_block', $.else_block)),
           ),
-
-      seq(
-          field('command_name', $.keyword_if),
-          $._argumentless_command_end,
-          repeat($.statement),
-          $._termination,
-          optional(
-              seq(
-                  field('command_name', $.keyword_oldelse),
-                  $._argumentless_command_end,
-                  repeat($.statement),
-                  $._termination
-              )
+          seq(
+              field('command_name', $.keyword_if),
+              $._argumentless_loop,
+              '{',
+              repeat($.statement),
+              '}',
+              repeat(field('elseif_block', $.elseif_block)),
+              optional(field('else_block', $.else_block)),
+          ),
+          seq(
+              field('command_name', $.keyword_if),
+              $._argumentless_command_end,
+              repeat1($.statement),
+              $._termination,
+          ),
+          seq(
+              field('command_name', $.keyword_if),
+              $._termination,
+          ),
+          seq(
+              field('command_name', $.keyword_if),
+              $._immediate_single_whitespace_followed_by_non_whitespace,
+              repeat_with_commas($.expression),
+              repeat($.statement),
+              $._termination,
           )
       ),
-      seq(
-          field('command_name', $.keyword_if),
-          $._immediate_single_whitespace_followed_by_non_whitespace,
-          repeat_with_commas($.expression),
-          repeat($.statement),
-          $._termination,
-          optional(
-              seq(
-                  field('command_name', $.keyword_oldelse),
-                  $._argumentless_command_end,
-                  repeat($.statement),
-                  $._termination
-              )
-          )
-      )
-      ),
+    command_else: ($) =>
+        choice(
+            seq(
+                field('command_name', $.keyword_oldelse),
+                $._argumentless_command_end,
+                repeat($.statement),
+                $._termination,
+            ),
+            seq (
+                field('command_name', $.keyword_oldelse),
+                $._termination,
+            )
+        ),
 
     keyword_if: (_) => /I(f)?/i,
     keyword_elseif: (_) => /ElseIf/i,
     keyword_else: (_) => /Else/i,     // NOTE: New style Else must be spelled out
-    keyword_oldelse: (_) => /E(lse)/i,
+    keyword_oldelse: (_) => /E(lse)?/i,
 
     elseif_block: ($) =>
       seq(
@@ -1009,18 +1038,14 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
-
     command_quit: ($) =>
-      prec.right(
-        choice(
-          build_command_rule_argumentless($, $.keyword_quit),
-          build_command_rule_argumentful(
-            $,
-            $.keyword_quit,
-            repeat_with_commas($.expression),
-          ),
-        ),
-      ),
+        prec.right(choice(
+            seq($.keyword_quit, $._argumentless_command_end),
+            seq($.keyword_quit, $._termination),
+            seq($.keyword_quit, $.post_conditional, $._termination),
+            seq($.keyword_quit, $.post_conditional, $._immediate_single_whitespace_followed_by_non_whitespace, $.expression),
+            seq($.keyword_quit, $._immediate_single_whitespace_followed_by_non_whitespace, $.expression)
+        )),
     keyword_quit: (_) => /[Qq]([uU][iI][tT])?/,
 
     command_goto: ($) =>
@@ -1056,7 +1081,23 @@ module.exports = grammar(objectscript_expr, {
     keyword_hang: (_) => choice(/[Hh]/, /Hang/i),
 
     command_continue: ($) =>
-      build_command_rule_argumentless($, $.keyword_continue),
+        // this one is special, becuase if there is anything after the
+        // continue but on the same line, that stuff doesn't actually ever get executed
+        // i am enclosing any commands written on the same line as the continue WITHIN
+        // the continue, as they will never be executed
+      choice(
+          seq($.keyword_continue,
+              optional($.post_conditional),
+              $._argumentless_command_end,
+              choice(
+                  repeat(/[A-Za-z0-9`!@#$%^&*()_+\-={}|<>?,.\/\[\]:"';]+/),
+              ),
+              $._termination,
+          ),
+          seq($.keyword_continue, optional($.post_conditional), $._termination)
+      ),
+
+      //build_command_rule_argumentless($, $.keyword_continue),
     keyword_continue: (_) => /Continue/i,
 
     command_tcommit: ($) =>
