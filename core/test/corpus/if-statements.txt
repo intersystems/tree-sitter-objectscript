@@ -207,8 +207,10 @@ If Statements 2
                   (objectscript_identifier)))
               rhs: (expression
                 (expr_atom
-                  (numeric_literal))))))
-        (line_comment_3)
+                  (numeric_literal))))))))
+    (line_comment_3)
+    (statement
+      (command_else
         command_name: (keyword_oldelse)
         (statement
           (command_set
@@ -232,8 +234,10 @@ If Statements 2
                   (objectscript_identifier)))
               rhs: (expression
                 (expr_atom
-                  (numeric_literal))))))
-        (line_comment_3)
+                  (numeric_literal))))))))
+    (line_comment_3)
+    (statement
+      (command_else
         command_name: (keyword_oldelse)
         (statement
           (command_set
@@ -298,7 +302,6 @@ If Statements 3
     }
 
  If classname = "%Net.HttpRequest"
-
 ---
 
 (source_file
@@ -338,45 +341,45 @@ If Statements 3
                         (numeric_literal)))))))))
         (statement
           (command_continue
-            command_name: (keyword_continue)))
-        (statement
-          (command_if
-            command_name: (keyword_if)
+            (keyword_continue)))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (relative_dot_property
+              (oref_property
+                (property_name
+                  (identifier_segment_immediate)))))
+          (expr_tail
+            operator: (binary_operator)
             (expression
               (expr_atom
-                (relative_dot_property
-                  (oref_property
-                    (property_name
-                      (identifier_segment_immediate)))))
-              (expr_tail
-                operator: (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal)))))
-            (statement
-              (command_set
-                command_name: (keyword_set)
-                (set_argument
-                  lhs: (glvn
-                    (lvn
-                      (objectscript_identifier)))
-                  rhs: (expression
-                    (expr_atom
-                      (macro
-                        (macro_function
-                          (method_args
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (macro
-                                    (macro_constant)))))
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (string_literal))))))))))))
-            (statement
-              (command_quit
-                command_name: (keyword_quit)))))))
+                (string_literal)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (macro
+                    (macro_function
+                      (method_args
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_constant)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (string_literal))))))))))))
+        (statement
+          (command_quit
+            (keyword_quit)))))
     (statement
       (command_if
         command_name: (keyword_if)
@@ -410,7 +413,7 @@ If Statements 3
                   (numeric_literal))))))
         (statement
           (command_quit
-            command_name: (keyword_quit)))))
+            (keyword_quit)))))
     (statement
       (command_if
         command_name: (keyword_if)
@@ -423,3 +426,140 @@ If Statements 3
             (expression
               (expr_atom
                 (string_literal)))))))))
+
+===========================
+Else statements old version
+===========================
+ else  w 0
+ else ; wwww
+ else
+ else // ww
+ else /* */
+ else /* */ w 0
+---
+(source_file
+  (statements
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))
+    (line_comment_3)
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
+
+======================
+Else Statement Invalid
+:error
+======================
+ ELSE /* */ { w 0 }
+---
+
+
+====================
+If Statement Invalid
+:error
+====================
+ if set x = 2
+
+---
+
+============================
+If Block to old Else Invalid
+:error
+============================
+  if 1 {
+  	w 1,!
+  }
+  ; comment
+  else  w 0,!
+  q
+---
+
+====================
+If Statement Invalid
+:error
+====================
+  if 0 { a=1 w 1 }
+---
+
+
+==========================
+If Block to Old Else Valid
+==========================
+  if 1 {
+  	w 1,!
+  }
+  s x=""
+  e  w 0,!
+  q
+---
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (numeric_literal)))
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (command_quit
+        (keyword_quit)))))

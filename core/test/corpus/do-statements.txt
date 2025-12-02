@@ -192,7 +192,7 @@ Do Statement With Param Passing
                 (objectscript_identifier)))))))
     (statement
       (command_quit
-        command_name: (keyword_quit)))
+         (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -287,7 +287,7 @@ Do Statement With Param Passing
                 (objectscript_identifier)))))))
     (statement
       (command_quit
-        command_name: (keyword_quit)))
+         (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -345,7 +345,7 @@ Do Statement With Param Passing
                     (objectscript_identifier)))))))))
     (statement
       (command_quit
-        command_name: (keyword_quit)))
+         (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -500,7 +500,7 @@ Do Statement with Indirection
               (objectscript_identifier))))))
     (statement
       (command_quit
-        command_name: (keyword_quit)
+       (keyword_quit)
         (post_conditional
           (expression
             (expr_atom
@@ -862,8 +862,9 @@ Do While Statement and Continue
                 (expression
                   (expr_atom
                     (numeric_literal)))))
-            (ERROR
-              (keyword_continue))))
+            (statement
+              (command_continue
+                (keyword_continue)))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -966,7 +967,7 @@ Do While Statement and Quit
                     (write_device_fflf)))))
             (statement
               (command_quit
-                command_name: (keyword_quit)
+                 (keyword_quit)
                 (post_conditional
                   (expression
                     (expr_atom
@@ -1112,3 +1113,461 @@ Do While Statement and Goto
           (expression
             (expr_atom
               (string_literal))))))))
+
+=======================
+Do Statement Dot Syntax
+=======================
+  DO
+  . WRITE "into the DO",!
+  . DO
+  .. WRITE "inner DO",!
+  .. QUIT
+  .. WRITE "never written",!
+  . WRITE "back to outer DO",!
+  . QUIT
+  . WRITE "never written",!
+  WRITE "out of the DO"
+
+  READ !,"Square (S) or cube (C): ",op QUIT:op=""
+  READ !,"Integer: ",num QUIT:num=""
+  IF (op["S")!(op["s") DO
+  .  SET result=num*num            ; Square block
+  .  WRITE !,"Result: ",result
+  ELSE  DO
+  .  SET result=num*num*num        ; Cube block
+  .  WRITE !,"Result: ",result
+  .  QUIT
+  GOTO Start
+
+  FOR i=1:1:y DO
+  .  SET z=z*x
+  .  WRITE !,z
+  .  QUIT
+
+  WRITE !,"At top level" ; Mainline code (Level count = 0)
+  DO
+  . ; Outermost block (Level count = 1)
+  .
+  .  DO
+  .  . ; Inner block 1 (Level count = 2)
+  .  .
+  .  .  DO
+  .  .  . ; Inner block 2 (Level count = 3)
+  .  .  .
+  .  . ; (Level count = 2)
+  . ; (Level count = 1)
+  .
+  .  QUIT ; (Level count = 0)
+  WRITE !,"Back at top level" ; Mainline code resumes
+
+---
+(source_file
+  (statements
+    (statement
+      (command_do
+        command_name: (keyword_do)))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_do
+            command_name: (keyword_do)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_quit
+            (keyword_quit)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_quit
+            (keyword_quit)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_read
+        command_name: (keyword_read)
+        (read_argument)
+        (read_argument
+          prompt: (_read_prompt))
+        (read_argument
+          variable: (glvn
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))))
+    (statement
+      (command_read
+        command_name: (keyword_read)
+        (read_argument)
+        (read_argument
+          prompt: (_read_prompt))
+        (read_argument
+          variable: (glvn
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))))
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    operator: (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))))))
+        (statement
+          (command_do
+            command_name: (keyword_do)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))
+    (line_comment_3)
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)
+        (statement
+          (command_do
+            command_name: (keyword_do)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))
+    (line_comment_3)
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_quit
+            (keyword_quit)))))
+    (statement
+      (command_goto
+        command_name: (keyword_goto)
+        (goto_argument
+          (line_ref
+            label: (label_ref)))))
+    (statement
+      (command_for
+        command_name: (keyword_for)
+        (for_parameter
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (for_parameter_arg
+            initial: (expression
+              (expr_atom
+                (numeric_literal)))
+            increment: (expression
+              (expr_atom
+                (numeric_literal)))
+            limit: (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (statement
+          (command_do
+            command_name: (keyword_do)))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (statement
+          (command_quit
+            (keyword_quit)))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (line_comment_3)
+    (statement
+      (command_do
+        command_name: (keyword_do)))
+    (statement
+      (dotted_statement
+        (bol)
+        (line_comment_3)
+        (statement
+          (dotted_statement
+            (bol)
+            (statement
+              (dotted_statement
+                (bol)
+                (statement
+                  (command_do
+                    command_name: (keyword_do)))))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (line_comment_3)
+        (statement
+          (dotted_statement
+            (bol)
+            (statement
+              (dotted_statement
+                (bol)
+                (statement
+                  (command_do
+                    command_name: (keyword_do)))))))))
+    (statement
+      (dotted_statement
+        (bol)
+        (line_comment_3)
+        (statement
+          (dotted_statement
+            (bol)
+            (statement
+              (dotted_statement
+                (bol)
+                (line_comment_3)
+                (statement
+                  (dotted_statement
+                    (bol)
+                    (line_comment_3)
+                    (statement
+                      (dotted_statement
+                        (bol)
+                        (statement
+                          (dotted_statement
+                            (bol)
+                            (statement
+                              (command_quit
+                                (keyword_quit)))))))))))))))
+    (line_comment_3)
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal)))))))
+  (line_comment_3))
