@@ -26,6 +26,8 @@ module.exports = grammar({
     [$.method_arg, $.subscripts],
     [$.oref_chain_expr, $.expr_atom],
     [$.label_ref, $.lvn],
+    [$.class_method_call, $.oref_method],
+
   ],
   conflicts: ($) => [
   ],
@@ -443,6 +445,7 @@ module.exports = grammar({
             $.extrinsic_function,
             $._parenthetical_expression,
             $.json_object_literal,
+            $.class_ref,
           ),
           repeat1($._oref_chain_segment),
           optional(
