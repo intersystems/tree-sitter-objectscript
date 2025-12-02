@@ -1336,6 +1336,10 @@
               {
                 "type": "SYMBOL",
                 "name": "json_object_literal"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "class_ref"
               }
             ]
           },
@@ -5342,6 +5346,19 @@
         {
           "type": "SYMBOL",
           "name": "write_mnemonic"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "write_device_fflf"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "write_device_tab"
+            }
+          ]
         }
       ]
     },
@@ -8727,94 +8744,70 @@
       "value": "[rR][eE][tT]([uU][rR][nN])?"
     },
     "command_quit": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SEQ",
-            "members": [
-              {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_quit"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "post_conditional"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_argumentless_command_end"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
                 "type": "SYMBOL",
-                "name": "keyword_quit"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_argumentless_command_end"
+                "name": "statement"
               }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "keyword_quit"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_termination"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "keyword_quit"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "post_conditional"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_termination"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "keyword_quit"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "post_conditional"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_immediate_single_whitespace_followed_by_non_whitespace"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "expression"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "keyword_quit"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_immediate_single_whitespace_followed_by_non_whitespace"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "expression"
-              }
-            ]
-          }
-        ]
-      }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_termination"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_quit"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "post_conditional"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_termination"
+            }
+          ]
+        }
+      ]
     },
     "keyword_quit": {
       "type": "PATTERN",
@@ -9101,16 +9094,11 @@
               "name": "_argumentless_command_end"
             },
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "[A-Za-z0-9`!@#$%^&*()_+\\-={}|<>?,.\\/\\[\\]:\"';]+"
-                  }
-                }
-              ]
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "statement"
+              }
             },
             {
               "type": "SYMBOL",
@@ -12781,6 +12769,15 @@
                 },
                 "named": true,
                 "value": "json_object_literal"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "class_ref_post_cond"
+                },
+                "named": true,
+                "value": "class_ref"
               }
             ]
           },
@@ -13499,6 +13496,16 @@
     [
       {
         "type": "SYMBOL",
+        "name": "class_method_call_post_cond"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "oref_method_post_cond"
+      }
+    ],
+    [
+      {
+        "type": "SYMBOL",
         "name": "oref_method"
       },
       {
@@ -13534,6 +13541,16 @@
       {
         "type": "SYMBOL",
         "name": "lvn"
+      }
+    ],
+    [
+      {
+        "type": "SYMBOL",
+        "name": "class_method_call"
+      },
+      {
+        "type": "SYMBOL",
+        "name": "oref_method"
       }
     ]
   ],

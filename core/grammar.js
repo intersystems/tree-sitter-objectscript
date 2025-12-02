@@ -39,6 +39,23 @@ function build_command_rule_argumentful($, commandKeyword, commandArgument) {
  * @param {RuleOrLiteral} commandKeyword
  * @return {RuleOrLiteral}
  */
+function build_command_rule_special_argumentless($, commandKeyword) {
+  return choice(
+      seq(commandKeyword,
+          optional($.post_conditional),
+          $._argumentless_command_end,
+          repeat($.statement),
+          $._termination,
+      ),
+      seq(commandKeyword, optional($.post_conditional), $._termination)
+  );
+}
+
+/**
+ * @param {GrammarSymbols<string>} $
+ * @param {RuleOrLiteral} commandKeyword
+ * @return {RuleOrLiteral}
+ */
 function build_command_rule_argumentless($, commandKeyword) {
   // Argumentless
   return seq(
@@ -108,6 +125,7 @@ module.exports = grammar(objectscript_expr, {
     [$.oref_method_post_cond, $.oref_property_post_cond],
     [$.oref_chain_expr_post_cond, $.expr_atom_post_cond],
     [$.command_hang, $.command_halt],
+    [$.class_method_call_post_cond,$.oref_method_post_cond],
     ...previous,
   ],
   inline: ($, previous) => [$.set_target, ...previous],
@@ -388,6 +406,7 @@ module.exports = grammar(objectscript_expr, {
         $.write_device_tab,
         $.write_device_char,
         $.write_mnemonic,
+        seq($.write_device_fflf, $.write_device_tab),
       ),
     write_device_fflf: (_) => repeat1(choice('!', '#')),
     write_device_tab: ($) => seq('?', $.expression),
@@ -1039,13 +1058,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
     command_quit: ($) =>
-        prec.right(choice(
-            seq($.keyword_quit, $._argumentless_command_end),
-            seq($.keyword_quit, $._termination),
-            seq($.keyword_quit, $.post_conditional, $._termination),
-            seq($.keyword_quit, $.post_conditional, $._immediate_single_whitespace_followed_by_non_whitespace, $.expression),
-            seq($.keyword_quit, $._immediate_single_whitespace_followed_by_non_whitespace, $.expression)
-        )),
+        build_command_rule_special_argumentless($,$.keyword_quit),
     keyword_quit: (_) => /[Qq]([uU][iI][tT])?/,
 
     command_goto: ($) =>
@@ -1085,18 +1098,7 @@ module.exports = grammar(objectscript_expr, {
         // continue but on the same line, that stuff doesn't actually ever get executed
         // i am enclosing any commands written on the same line as the continue WITHIN
         // the continue, as they will never be executed
-      choice(
-          seq($.keyword_continue,
-              optional($.post_conditional),
-              $._argumentless_command_end,
-              choice(
-                  repeat(/[A-Za-z0-9`!@#$%^&*()_+\-={}|<>?,.\/\[\]:"';]+/),
-              ),
-              $._termination,
-          ),
-          seq($.keyword_continue, optional($.post_conditional), $._termination)
-      ),
-
+      build_command_rule_special_argumentless($,$.keyword_continue),
       //build_command_rule_argumentless($, $.keyword_continue),
     keyword_continue: (_) => /Continue/i,
 
