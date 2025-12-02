@@ -426,19 +426,19 @@ module.exports = grammar(objectscript_expr, {
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
       choice(
-          seq($.keyword_do, repeat1($.dotted_statement),$._termination)
+          seq($.keyword_do, repeat1($.dotted_statement),$._termination),
         // DO with parameters
-        // build_command_rule_argumentful(
-        //   $,
-        //   $.keyword_do,
-        //   repeat_with_commas($.do_parameter),
-        // ),
+        build_command_rule_argumentful(
+          $,
+          $.keyword_do,
+          repeat_with_commas($.do_parameter),
+        ),
         // // Argumentless DO
         // seq(
         //     $.keyword_do,
         //     $
         // ),
-        // build_command_rule_argumentless($, $.keyword_do),
+        build_command_rule_argumentless($, $.keyword_do),
       ),
     keyword_do: (_) => /[dD]([oO])?/,
     do_parameter: ($) =>
@@ -696,45 +696,136 @@ module.exports = grammar(objectscript_expr, {
         repeat_with_commas($.open_parameter),
       ),
     keyword_open: (_) => /O(pen)?/i,
-    open_parameter: ($) =>
-      seq(
-        $.expression,
-        optional(
-          seq(
-            token.immediate(':'),
-            optional(
-              seq(
-                token.immediate('('),
-                field(
-                  'keywords',
-                  repeat_with_commas(
-                    field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
-                  ),
-                ),
-                token.immediate(')'),
-              ),
-            ),
-            optional(
-              seq(
-                token.immediate(':'),
-                seq(
-                  $._assert_no_space_between_rules,
-                  field('timeout', $.expression),
-                ),
-                optional(
-                  seq(
-                    token.immediate(':'),
-                    seq(
-                      $._assert_no_space_between_rules,
-                      field('mnspace', $.expression),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+    // open_parameter: ($) =>
+    //   seq(
+    //     $.expression,
+    //     optional(
+    //       seq(
+    //         token.immediate(':'),
+    //         optional(
+    //           seq(
+    //             token.immediate('('),
+    //             field(
+    //               'keywords',
+    //               repeat_with_commas(
+    //                 field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
+    //               ),
+    //             ),
+    //             token.immediate(')'),
+    //           ),
+    //         ),
+    //         optional(
+    //           seq(
+    //             token.immediate(':'),
+    //             seq(
+    //               $._assert_no_space_between_rules,
+    //               field('timeout', $.expression),
+    //             ),
+    //             optional(
+    //               seq(
+    //                 token.immediate(':'),
+    //                 seq(
+    //                   $._assert_no_space_between_rules,
+    //                   field('mnspace', $.expression),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // NEW helper for items *inside* the (...) parameter list of OPEN
+    open_param_item: ($) =>
+        choice(
+            // Positional or expression parameter (numbers, strings, vars, etc.)
+            $.expression,
+            // Keyword parameter: /KEY=VALUE (VALUE can be anything without : or ))
+            token(/\/[A-Za-z][A-Za-z0-9]*=[^:)\n]*/),
         ),
-      ),
+
+    // open_parameter: ($) =>
+    //     seq(
+    //         // Device expression: number, string, var, "|TCP|", etc.
+    //         $.expression,
+    //
+    //         // Zero or more colon segments after the device
+    //         // This covers:
+    //         //   :("NRW")
+    //         //   :(3:12)
+    //         //   ::10
+    //         //   :"SAMPLES"
+    //         //   :(12345:"127.0.0.1"):5
+    //         repeat(
+    //             seq(
+    //                 token.immediate(':'),
+    //
+    //                 // The segment is optional: "::10" is allowed (middle omitted)
+    //                 optional(
+    //                     choice(
+    //                         // Parenthesized parameter block, inner items colon-separated
+    //                         seq(
+    //                             token.immediate('('),
+    //                             optional(
+    //                                 seq(
+    //                                     $.open_param_item,
+    //                                     repeat(
+    //                                         seq(
+    //                                             token.immediate(':'),   // inner colon separator
+    //                                             optional($.open_param_item),
+    //                                         ),
+    //                                     ),
+    //                                 ),
+    //                             ),
+    //                             token.immediate(')'),
+    //                         ),
+    //
+    //                         // Or just a bare expression: timeout, mnspace, etc.
+    //                         $.expression,
+    //                     ),
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    open_param_list: ($) =>
+        seq(
+            token.immediate('('),
+            optional(
+                seq(
+                    $.open_param_item,
+                    // colon-separated params, with optional omissions: (3::"NRW")
+                    repeat(
+                        seq(
+                            token.immediate(':'),
+                            optional($.open_param_item),
+                        ),
+                    ),
+                ),
+            ),
+            token.immediate(')'),
+        ),
+    open_parameter: ($) =>
+        seq(
+            $.expression,
+
+            // Zero or more colon segments after the device.
+            // Each colon may have:
+            //   - a parenthesized param list, OR
+            //   - a bare expression (timeout, mnespace, or device-specific thing), OR
+            //   - nothing (for omitted position, like ::10)
+            repeat(
+                seq(
+                    token.immediate(':'),
+
+                    optional(
+                        choice(
+                            field('params', $.open_param_list),   // :( ... )
+                            field('arg', $.expression),           // :timeout, :"SAMPLES", etc.
+                        ),
+                    ),
+                ),
+            ),
+        ),
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cclose
     // eslint-disable-next-line max-len
@@ -814,7 +905,7 @@ module.exports = grammar(objectscript_expr, {
     command_dowhile: ($) =>
       seq(
         field('command_name', $.keyword_do),
-        // $._argumentless_loop,
+        $._argumentless_loop,
         '{',
         repeat($.statement),
         '}',
