@@ -1571,3 +1571,32 @@ Do Statement Dot Syntax
             (expr_atom
               (string_literal)))))))
   (line_comment_3))
+
+====================================================
+do while block no whitespace in between do and block
+====================================================
+ do{ w hi} while x < 2
+---
+(source_file
+  (statements
+    (statement
+      (command_dowhile
+        command_name: (keyword_do)
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))

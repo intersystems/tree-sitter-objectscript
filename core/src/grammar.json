@@ -6481,6 +6481,18 @@
       "type": "SEQ",
       "members": [
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[\\+\\-]"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "STRING",
           "value": "("
         },
@@ -6754,6 +6766,10 @@
             "type": "SYMBOL",
             "name": "_read_variable"
           }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "indirection"
         }
       ]
     },
