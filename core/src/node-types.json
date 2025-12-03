@@ -363,15 +363,22 @@
   {
     "type": "command_continue",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_continue",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
-        {
-          "type": "keyword_continue",
-          "named": true
-        },
         {
           "type": "post_conditional",
           "named": true
@@ -927,13 +934,24 @@
   {
     "type": "command_quit",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_quit",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
-          "type": "keyword_quit",
+          "type": "expression",
           "named": true
         },
         {
@@ -2494,7 +2512,30 @@
       "required": true,
       "types": [
         {
+          "type": "kill_target",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "kill_target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
           "type": "glvn",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "oref_set_target",
           "named": true
         }
       ]

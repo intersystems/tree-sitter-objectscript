@@ -433,20 +433,20 @@ Old Style For Loop Argumentless
                   operator: (binary_operator)
                   (expression
                     (expr_atom
-                      (string_literal))))))))
-        (statement
-          (command_do
-            command_name: (keyword_do)
-            (do_parameter
-              (routine_tag_call
-                (line_ref
-                  label: (label_ref))
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (string_literal))))))
+            (statement
+              (command_do
+                command_name: (keyword_do)
+                (do_parameter
+                  (routine_tag_call
+                    (line_ref
+                      label: (label_ref))
+                    (method_args
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))))))))))))
 
 ==========================================
 Old Style For Loop var=start:increment:end
@@ -623,8 +623,9 @@ For Alone
 =========
  For
 ---
-(source_file [0, 0] - [1, 0]
-  (statements [0, 1] - [0, 4]
-    (statement [0, 1] - [0, 4]
-      (command_for [0, 1] - [0, 4]
-        command_name: (keyword_for [0, 1] - [0, 4])))))
+ (source_file
+      (statements
+        (statement
+          (command_for
+            command_name: (keyword_for)))))
+

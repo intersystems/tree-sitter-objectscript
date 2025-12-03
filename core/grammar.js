@@ -41,13 +41,14 @@ function build_command_rule_argumentful($, commandKeyword, commandArgument) {
  */
 function build_command_rule_special_argumentless($, commandKeyword) {
   return choice(
-      seq(commandKeyword,
+      seq(
+          field('command_name', commandKeyword),
           optional($.post_conditional),
           $._argumentless_command_end,
           repeat($.statement),
           $._termination,
       ),
-      seq(commandKeyword, optional($.post_conditional), $._termination)
+      seq(field('command_name', commandKeyword), optional($.post_conditional), $._termination)
   );
 }
 
@@ -380,10 +381,10 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_property,
             $.relative_dot_method,
           ),
-          repeat($._oref_chain_segment),
-          // Whatever we have here must end in a property
-          token.immediate('.'),
-          $.oref_property,
+          repeat1($._oref_chain_segment),
+          // // Whatever we have here must end in a property
+          // token.immediate('.'),
+          // $.oref_property,
         ),
       ),
 
@@ -595,7 +596,17 @@ module.exports = grammar(objectscript_expr, {
 
     keyword_kill: (_) => /[kK]([iI][lL][lL])?/,
     kill_argument: ($) =>
-      choice($.glvn, seq('(', repeat_with_commas($.glvn), ')')),
+        choice(
+            $.kill_target,
+            seq('(', repeat_with_commas($.kill_target), ')'),
+        ),
+
+    kill_target: ($) =>
+        choice(
+            $.glvn,
+            $.instance_variable,
+            $.oref_set_target,
+        ),
 
     command_lock: ($) =>
       choice(
@@ -696,45 +707,6 @@ module.exports = grammar(objectscript_expr, {
         repeat_with_commas($.open_parameter),
       ),
     keyword_open: (_) => /O(pen)?/i,
-    // open_parameter: ($) =>
-    //   seq(
-    //     $.expression,
-    //     optional(
-    //       seq(
-    //         token.immediate(':'),
-    //         optional(
-    //           seq(
-    //             token.immediate('('),
-    //             field(
-    //               'keywords',
-    //               repeat_with_commas(
-    //                 field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
-    //               ),
-    //             ),
-    //             token.immediate(')'),
-    //           ),
-    //         ),
-    //         optional(
-    //           seq(
-    //             token.immediate(':'),
-    //             seq(
-    //               $._assert_no_space_between_rules,
-    //               field('timeout', $.expression),
-    //             ),
-    //             optional(
-    //               seq(
-    //                 token.immediate(':'),
-    //                 seq(
-    //                   $._assert_no_space_between_rules,
-    //                   field('mnspace', $.expression),
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
     // NEW helper for items *inside* the (...) parameter list of OPEN
     open_param_item: ($) =>
         choice(
@@ -744,49 +716,6 @@ module.exports = grammar(objectscript_expr, {
             token(/\/[A-Za-z][A-Za-z0-9]*=[^:)\n]*/),
         ),
 
-    // open_parameter: ($) =>
-    //     seq(
-    //         // Device expression: number, string, var, "|TCP|", etc.
-    //         $.expression,
-    //
-    //         // Zero or more colon segments after the device
-    //         // This covers:
-    //         //   :("NRW")
-    //         //   :(3:12)
-    //         //   ::10
-    //         //   :"SAMPLES"
-    //         //   :(12345:"127.0.0.1"):5
-    //         repeat(
-    //             seq(
-    //                 token.immediate(':'),
-    //
-    //                 // The segment is optional: "::10" is allowed (middle omitted)
-    //                 optional(
-    //                     choice(
-    //                         // Parenthesized parameter block, inner items colon-separated
-    //                         seq(
-    //                             token.immediate('('),
-    //                             optional(
-    //                                 seq(
-    //                                     $.open_param_item,
-    //                                     repeat(
-    //                                         seq(
-    //                                             token.immediate(':'),   // inner colon separator
-    //                                             optional($.open_param_item),
-    //                                         ),
-    //                                     ),
-    //                                 ),
-    //                             ),
-    //                             token.immediate(')'),
-    //                         ),
-    //
-    //                         // Or just a bare expression: timeout, mnspace, etc.
-    //                         $.expression,
-    //                     ),
-    //                 ),
-    //             ),
-    //         ),
-    //     ),
     open_param_list: ($) =>
         seq(
             token.immediate('('),
@@ -1148,8 +1077,15 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
-    command_quit: ($) =>
+    command_quit: ($) =>choice(
         build_command_rule_special_argumentless($,$.keyword_quit),
+        build_command_rule_argumentful(
+            $,
+            $.keyword_quit,
+            repeat_with_commas($.expression),
+        ),
+    ),
+
     keyword_quit: (_) => /[Qq]([uU][iI][tT])?/,
 
     command_goto: ($) =>
