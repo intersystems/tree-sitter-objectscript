@@ -54,3 +54,38 @@ Set Statement
                     (expr_atom
                       (string_literal))))))))))))
 
+============================================
+Set Statement Oref MultiDimensional Property
+============================================
+ set myarray.%Get(index).md(subscript) = 1
+---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (oref_set_target
+            (lvn
+              (objectscript_identifier))
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))))

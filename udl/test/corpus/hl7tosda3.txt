@@ -963,9 +963,10 @@ ClassMethod GetData()
                     (command_kill
                       command_name: (keyword_kill)
                       (kill_argument
-                        (glvn
-                          (lvn
-                            (objectscript_identifier))))))
+                        (kill_target
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))))))
                   (statement
                     (command_set
                       command_name: (keyword_set)
@@ -1143,31 +1144,31 @@ ClassMethod GetData()
                                   (string_literal)))))
                           (statement
                             (command_continue
-                              command_name: (keyword_continue)))
-                          (statement
-                            (command_set
-                              command_name: (keyword_set)
-                              (set_argument
-                                lhs: (glvn
-                                  (lvn
-                                    (objectscript_identifier)))
-                                rhs: (expression
+                              command_name: (keyword_continue)))))
+                      (statement
+                        (command_set
+                          command_name: (keyword_set)
+                          (set_argument
+                            lhs: (glvn
+                              (lvn
+                                (objectscript_identifier)))
+                            rhs: (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expr_tail
+                                operator: (binary_operator)
+                                (expression
                                   (expr_atom
-                                    (lvn
-                                      (objectscript_identifier)))
-                                  (expr_tail
-                                    operator: (binary_operator)
                                     (expression
                                       (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expr_tail
+                                        operator: (binary_operator)
                                         (expression
                                           (expr_atom
-                                            (lvn
-                                              (objectscript_identifier)))
-                                          (expr_tail
-                                            operator: (binary_operator)
-                                            (expression
-                                              (expr_atom
-                                                (string_literal))))))))))))))
+                                            (string_literal))))))))))))
                       (statement
                         (command_if
                           command_name: (keyword_if)
@@ -1244,28 +1245,75 @@ ClassMethod GetData()
                                       (objectscript_identifier)))))))
                           (statement
                             (command_continue
-                              command_name: (keyword_continue)))
-                          (statement
-                            (command_if
-                              command_name: (keyword_if)
+                              command_name: (keyword_continue)))))
+                      (statement
+                        (command_if
+                          command_name: (keyword_if)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              operator: (binary_operator)
                               (expression
                                 (expr_atom
                                   (lvn
+                                    (objectscript_identifier))))))
+                          (line_comment_1)
+                          (statement
+                            (command_set
+                              command_name: (keyword_set)
+                              (set_argument
+                                lhs: (glvn
+                                  (gvn
+                                    (subscripts
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))))))
+                                rhs: (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))))
+                          (statement
+                            (command_for
+                              command_name: (keyword_for)
+                              (for_parameter
+                                (glvn
+                                  (lvn
                                     (objectscript_identifier)))
-                                (expr_tail
-                                  operator: (binary_operator)
-                                  (expression
+                                (for_parameter_arg
+                                  initial: (expression
                                     (expr_atom
-                                      (lvn
-                                        (objectscript_identifier))))))
-                              (line_comment_1)
+                                      (numeric_literal)))
+                                  increment: (expression
+                                    (expr_atom
+                                      (numeric_literal)))
+                                  limit: (expression
+                                    (expr_atom
+                                      (system_defined_function
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier)))))))))
                               (statement
                                 (command_set
                                   command_name: (keyword_set)
                                   (set_argument
                                     lhs: (glvn
-                                      (gvn
-                                        (subscripts
+                                      (lvn
+                                        (objectscript_identifier)))
+                                    rhs: (expression
+                                      (expr_atom
+                                        (system_defined_function
                                           (expression
                                             (expr_atom
                                               (lvn
@@ -1273,11 +1321,26 @@ ClassMethod GetData()
                                           (expression
                                             (expr_atom
                                               (lvn
-                                                (objectscript_identifier)))))))
-                                    rhs: (expression
-                                      (expr_atom
-                                        (lvn
-                                          (objectscript_identifier)))))))
+                                                (objectscript_identifier))))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))))))))
+                              (statement
+                                (command_if
+                                  command_name: (keyword_if)
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier)))
+                                    (expr_tail
+                                      operator: (binary_operator)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))))
+                                  (statement
+                                    (command_continue
+                                      command_name: (keyword_continue)))))
                               (statement
                                 (command_for
                                   command_name: (keyword_for)
@@ -1339,183 +1402,53 @@ ClassMethod GetData()
                                               (string_literal)))))
                                       (statement
                                         (command_continue
-                                          command_name: (keyword_continue)))
-                                      (statement
-                                        (command_for
-                                          command_name: (keyword_for)
-                                          (for_parameter
-                                            (glvn
-                                              (lvn
-                                                (objectscript_identifier)))
-                                            (for_parameter_arg
-                                              initial: (expression
-                                                (expr_atom
-                                                  (numeric_literal)))
-                                              increment: (expression
-                                                (expr_atom
-                                                  (numeric_literal)))
-                                              limit: (expression
-                                                (expr_atom
-                                                  (system_defined_function
-                                                    (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier))))
-                                                    (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier)))))))))
-                                          (statement
-                                            (command_set
-                                              command_name: (keyword_set)
-                                              (set_argument
-                                                lhs: (glvn
-                                                  (lvn
-                                                    (objectscript_identifier)))
-                                                rhs: (expression
-                                                  (expr_atom
-                                                    (system_defined_function
-                                                      (expression
-                                                        (expr_atom
-                                                          (lvn
-                                                            (objectscript_identifier))))
-                                                      (expression
-                                                        (expr_atom
-                                                          (lvn
-                                                            (objectscript_identifier))))
-                                                      (expression
-                                                        (expr_atom
-                                                          (lvn
-                                                            (objectscript_identifier))))))))))
-                                          (statement
-                                            (command_if
-                                              command_name: (keyword_if)
+                                          command_name: (keyword_continue)))))
+                                  (statement
+                                    (command_set
+                                      command_name: (keyword_set)
+                                      (set_argument
+                                        lhs: (glvn
+                                          (gvn
+                                            (subscripts
                                               (expression
                                                 (expr_atom
                                                   (lvn
-                                                    (objectscript_identifier)))
-                                                (expr_tail
-                                                  operator: (binary_operator)
-                                                  (expression
-                                                    (expr_atom
-                                                      (string_literal)))))
-                                              (statement
-                                                (command_continue
-                                                  command_name: (keyword_continue)))
-                                              (statement
-                                                (command_set
-                                                  command_name: (keyword_set)
-                                                  (set_argument
-                                                    lhs: (glvn
-                                                      (gvn
-                                                        (subscripts
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier)))))))
-                                                    rhs: (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier)))))))))
-                                          (statement
-                                            (command_if
-                                              command_name: (keyword_if)
+                                                    (objectscript_identifier))))
                                               (expression
                                                 (expr_atom
                                                   (lvn
-                                                    (objectscript_identifier)))
-                                                (expr_tail
-                                                  operator: (binary_operator)
-                                                  (expression
-                                                    (expr_atom
-                                                      (numeric_literal)))))
-                                              (statement
-                                                (command_set
-                                                  command_name: (keyword_set)
-                                                  (set_argument
-                                                    lhs: (glvn
-                                                      (gvn
-                                                        (subscripts
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier)))))))
-                                                    rhs: (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier)))))))))))))))
-                              else_block: (else_block
-                                command_name: (keyword_else)
-                                (line_comment_1)
-                                (statement
-                                  (command_set
-                                    command_name: (keyword_set)
-                                    (set_argument
-                                      lhs: (glvn
-                                        (gvn
-                                          (subscripts
-                                            (expression
-                                              (expr_atom
-                                                (lvn
-                                                  (objectscript_identifier))))
-                                            (expression
-                                              (expr_atom
-                                                (lvn
-                                                  (objectscript_identifier)))))))
-                                      rhs: (expression
-                                        (expr_atom
-                                          (lvn
-                                            (objectscript_identifier)))))))
-                                (statement
-                                  (command_if
-                                    command_name: (keyword_if)
-                                    (expression
-                                      (expr_atom
-                                        (lvn
-                                          (objectscript_identifier)))
-                                      (expr_tail
-                                        operator: (binary_operator)
-                                        (expression
+                                                    (objectscript_identifier))))
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier)))))))
+                                        rhs: (expression
                                           (expr_atom
                                             (lvn
-                                              (objectscript_identifier))))))
-                                    (statement
-                                      (command_for
-                                        command_name: (keyword_for)
-                                        (for_parameter
-                                          (glvn
-                                            (lvn
-                                              (objectscript_identifier)))
-                                          (for_parameter_arg
-                                            initial: (expression
-                                              (expr_atom
-                                                (numeric_literal)))
-                                            increment: (expression
-                                              (expr_atom
-                                                (numeric_literal)))
-                                            limit: (expression
-                                              (expr_atom
-                                                (system_defined_function
+                                              (objectscript_identifier)))))))
+                                  (statement
+                                    (command_if
+                                      command_name: (keyword_if)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))
+                                        (expr_tail
+                                          operator: (binary_operator)
+                                          (expression
+                                            (expr_atom
+                                              (numeric_literal)))))
+                                      (statement
+                                        (command_set
+                                          command_name: (keyword_set)
+                                          (set_argument
+                                            lhs: (glvn
+                                              (gvn
+                                                (subscripts
                                                   (expression
                                                     (expr_atom
                                                       (lvn
@@ -1523,86 +1456,154 @@ ClassMethod GetData()
                                                   (expression
                                                     (expr_atom
                                                       (lvn
-                                                        (objectscript_identifier)))))))))
-                                        (statement
-                                          (command_set
-                                            command_name: (keyword_set)
-                                            (set_argument
-                                              lhs: (glvn
-                                                (lvn
-                                                  (objectscript_identifier)))
-                                              rhs: (expression
-                                                (expr_atom
-                                                  (system_defined_function
-                                                    (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier))))
-                                                    (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier))))
-                                                    (expression
-                                                      (expr_atom
-                                                        (lvn
-                                                          (objectscript_identifier))))))))))
-                                        (statement
-                                          (command_if
-                                            command_name: (keyword_if)
-                                            (expression
-                                              (expr_atom
-                                                (lvn
-                                                  (objectscript_identifier)))
-                                              (expr_tail
-                                                operator: (binary_operator)
-                                                (expression
-                                                  (expr_atom
-                                                    (string_literal)))))
-                                            (statement
-                                              (command_continue
-                                                command_name: (keyword_continue)))
-                                            (statement
-                                              (command_set
-                                                command_name: (keyword_set)
-                                                (set_argument
-                                                  lhs: (set_target_list
-                                                    (glvn
-                                                      (gvn
-                                                        (subscripts
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier)))))))
-                                                    (glvn
-                                                      (gvn
-                                                        (subscripts
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (lvn
-                                                                (objectscript_identifier))))
-                                                          (expression
-                                                            (expr_atom
-                                                              (numeric_literal)))))))
-                                                  rhs: (expression
+                                                        (objectscript_identifier))))
+                                                  (expression
                                                     (expr_atom
                                                       (lvn
-                                                        (objectscript_identifier))))))))))))))))))))
+                                                        (objectscript_identifier)))))))
+                                            rhs: (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier)))))))))))))
+                          else_block: (else_block
+                            command_name: (keyword_else)
+                            (line_comment_1)
+                            (statement
+                              (command_set
+                                command_name: (keyword_set)
+                                (set_argument
+                                  lhs: (glvn
+                                    (gvn
+                                      (subscripts
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier)))))))
+                                  rhs: (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier)))))))
+                            (statement
+                              (command_if
+                                command_name: (keyword_if)
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expr_tail
+                                    operator: (binary_operator)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))))
+                                (statement
+                                  (command_for
+                                    command_name: (keyword_for)
+                                    (for_parameter
+                                      (glvn
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (for_parameter_arg
+                                        initial: (expression
+                                          (expr_atom
+                                            (numeric_literal)))
+                                        increment: (expression
+                                          (expr_atom
+                                            (numeric_literal)))
+                                        limit: (expression
+                                          (expr_atom
+                                            (system_defined_function
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier)))))))))
+                                    (statement
+                                      (command_set
+                                        command_name: (keyword_set)
+                                        (set_argument
+                                          lhs: (glvn
+                                            (lvn
+                                              (objectscript_identifier)))
+                                          rhs: (expression
+                                            (expr_atom
+                                              (system_defined_function
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))))))))
+                                    (statement
+                                      (command_if
+                                        command_name: (keyword_if)
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier)))
+                                          (expr_tail
+                                            operator: (binary_operator)
+                                            (expression
+                                              (expr_atom
+                                                (string_literal)))))
+                                        (statement
+                                          (command_continue
+                                            command_name: (keyword_continue)))))
+                                    (statement
+                                      (command_set
+                                        command_name: (keyword_set)
+                                        (set_argument
+                                          lhs: (set_target_list
+                                            (glvn
+                                              (gvn
+                                                (subscripts
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier)))))))
+                                            (glvn
+                                              (gvn
+                                                (subscripts
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))
+                                                  (expression
+                                                    (expr_atom
+                                                      (numeric_literal)))))))
+                                          rhs: (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))))))))))))))
                   (statement
                     (command_do
                       command_name: (keyword_do)
@@ -2153,7 +2154,6 @@ ClassMethod GetData()
                           (statement
                             (command_quit
                               command_name: (keyword_quit)))))
-                      (line_comment_1)
                       (statement
                         (command_if
                           command_name: (keyword_if)
@@ -2208,27 +2208,26 @@ ClassMethod GetData()
                                           (string_literal)))))))))
                           (statement
                             (command_continue
-                              command_name: (keyword_continue)))
-                          (statement
-                            (command_if
-                              command_name: (keyword_if)
-                              (expression
-                                (expr_atom
-                                  (gvn
-                                    (subscripts
-                                      (expression
-                                        (expr_atom
-                                          (lvn
-                                            (objectscript_identifier)))))))
-                                (expr_tail
-                                  operator: (binary_operator)
+                              command_name: (keyword_continue)))))
+                      (statement
+                        (command_if
+                          command_name: (keyword_if)
+                          (expression
+                            (expr_atom
+                              (gvn
+                                (subscripts
                                   (expression
                                     (expr_atom
-                                      (string_literal)))))
-                              (statement
-                                (command_quit
-                                  command_name: (keyword_quit)))))))
-                      (line_comment_1)
+                                      (lvn
+                                        (objectscript_identifier)))))))
+                            (expr_tail
+                              operator: (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (string_literal)))))
+                          (statement
+                            (command_quit
+                              command_name: (keyword_quit)))))
                       (line_comment_2)
                       (statement
                         (command_if

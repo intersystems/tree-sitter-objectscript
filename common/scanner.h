@@ -126,18 +126,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
 
-//if (valid_symbols[_TERMINATION]) {
-//    // Do NOT skip spaces here: that breaks speculative parsing after "if"
-//    if (lexer->lookahead == '}'  ||
-//        lexer->lookahead == '/'  ||
-//        lexer->lookahead == ';'  ||
-//        lexer->eof(lexer)) {
-//
-//        lexer->result_symbol = _TERMINATION;
-//        return true;
-//    }
-//}
-
 if (valid_symbols[_TERMINATION]) {
         bool is_termination = (lexer->lookahead == '\n' ||
                                       lexer->lookahead == '}' ||
@@ -145,13 +133,20 @@ if (valid_symbols[_TERMINATION]) {
                                       lexer->lookahead == ';' ||
                                       lexer->eof(lexer));
 
-        bool is_new_line = (lexer-> lookahead == '\n');
         if (is_termination) {
             lexer->result_symbol = _TERMINATION;
 //            scanner-> at_bol = is_new_line;
             return true;
         }
   }
+
+if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+    bool is_block = (lexer->lookahead == '{');
+    if (is_block) {
+        lexer->result_symbol = _ARGUMENTLESS_LOOP;
+        return true;
+    }
+}
 
   if((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
   valid_symbols[_ARGUMENTLESS_COMMAND_END] ||

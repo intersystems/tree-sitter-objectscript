@@ -782,15 +782,22 @@
   {
     "type": "command_continue",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_continue",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
-        {
-          "type": "keyword_continue",
-          "named": true
-        },
         {
           "type": "post_conditional",
           "named": true
@@ -805,17 +812,36 @@
   {
     "type": "command_do",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "keyword_do",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
+        {
+          "type": "do_parameter",
+          "named": true
+        },
         {
           "type": "dotted_statement",
           "named": true
         },
         {
           "type": "keyword_do",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
           "named": true
         }
       ]
@@ -1327,13 +1353,24 @@
   {
     "type": "command_quit",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_quit",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
-          "type": "keyword_quit",
+          "type": "expression",
           "named": true
         },
         {
@@ -2011,6 +2048,60 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "do_parameter",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_method_call",
+          "named": true
+        },
+        {
+          "type": "doable_dollar_functions",
+          "named": true
+        },
+        {
+          "type": "instance_method_call",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
+          "named": true
+        },
+        {
+          "type": "routine_tag_call",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "doable_dollar_functions",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollarsf",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "method_arg",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -3047,6 +3138,45 @@
     }
   },
   {
+    "type": "instance_method_call",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "oref_method",
+          "named": true
+        },
+        {
+          "type": "oref_property",
+          "named": true
+        },
+        {
+          "type": "relative_dot_method",
+          "named": true
+        },
+        {
+          "type": "relative_dot_property",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "instance_variable",
     "named": true,
     "fields": {},
@@ -3229,7 +3359,30 @@
       "required": true,
       "types": [
         {
+          "type": "kill_target",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "kill_target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
           "type": "glvn",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "oref_set_target",
           "named": true
         }
       ]
@@ -6515,21 +6668,41 @@
     "fields": {}
   },
   {
+    "type": "open_param_item",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "open_param_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "open_param_item",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "open_parameter",
     "named": true,
     "fields": {
-      "keywords": {
+      "arg": {
         "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": ",",
-            "named": false
-          }
-        ]
-      },
-      "mnspace": {
-        "multiple": false,
         "required": false,
         "types": [
           {
@@ -6538,12 +6711,12 @@
           }
         ]
       },
-      "timeout": {
-        "multiple": false,
+      "params": {
+        "multiple": true,
         "required": false,
         "types": [
           {
-            "type": "expression",
+            "type": "open_param_list",
             "named": true
           }
         ]
@@ -7819,6 +7992,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "indirection",
+          "named": true
+        }
+      ]
     }
   },
   {

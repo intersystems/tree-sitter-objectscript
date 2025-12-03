@@ -642,6 +642,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     command_lock_arguments_variant_2: ($) =>
       seq(
+        optional(/[\+\-]/),
         '(',
         repeat_with_commas(
           field(
@@ -682,6 +683,7 @@ module.exports = grammar(objectscript_expr, {
         field('fchar', repeat1($._read_fchar)),
         field('prompt', alias($.string_literal, $._read_prompt)),
         field('variable', $._read_variable),
+          $.indirection,
       ),
     _read_fchar: (_) => choice('!', '#', '?', '/'),
     _read_variable: ($) =>
