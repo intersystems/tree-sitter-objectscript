@@ -1,0 +1,170 @@
+===============
+Kill Statements
+===============
+ KILL a,b,d,^||ppglob
+ KILL a(1)
+ KILL (d,e)
+ KILL ^||a,^||c,(d,e)
+---
+(source_file
+  (statements
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (gvn))))))
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (gvn))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (gvn))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
+
+==========================
+Kill Statements Array Node
+==========================
+ KILL (array1,array2)
+ KILL array1(2,4),array2(3,2),array3(1,7)
+---
+(source_file
+  (statements
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+===========================
+Kill Using an Object Method
+===========================
+ KILL myarray.%Get(index).md(subscript)
+---
+(source_file
+  (statements
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (kill_argument
+          (kill_target
+            (oref_set_target
+              (lvn
+                (objectscript_identifier))
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
