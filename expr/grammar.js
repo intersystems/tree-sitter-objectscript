@@ -150,7 +150,7 @@ module.exports = grammar({
 // Keep `@glvn` as a separate alternative so spaces are allowed there.
     _pattern_operator: ($) =>
       seq(
-        field('operator', '?'),
+        field('operator', choice('?',"'?")),
         field('right', choice(
           alias($.indirection, $.unary_expression), // ? @var
           $.pattern_expression                      // ?<pattern>

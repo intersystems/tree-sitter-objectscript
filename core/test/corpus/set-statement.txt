@@ -89,3 +89,13 @@ Set Statement Oref MultiDimensional Property
           rhs: (expression
             (expr_atom
               (numeric_literal))))))))
+
+====================
+Set with Indirection
+====================
+ set @y = 123
+ SET @b
+ SET LINETEXT = $TEXT(@LINE)
+ SET @..#myparam@(x,y) = "stringval"
+
+---

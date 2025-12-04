@@ -1,0 +1,58 @@
+==================
+NEW with arguments
+==================
+ NEW d,e
+ NEW (a,c)
+---
+(source_file
+  (statements
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))))
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))))))
+
+==========================
+NEW with special variables
+==========================
+ NEW $ETRAP
+ NEW $NAMESPACE
+ NEW $ESTACK
+ NEW $ROLES
+---
+(source_file
+  (statements
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (etrap_token)))
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (namespace_token)))
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (estack_token)))
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (roles_token)))))
+
+====================
+New with Indirection
+====================
+
+
+========================
+New with Postconditional
+========================

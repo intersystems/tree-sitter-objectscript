@@ -94,7 +94,7 @@ module.exports = grammar(objectscript_expr, {
     $._block_comment_inner,
     $.macro_value_line_with_continue,
     $.sentinel,
-    $.bol,
+    $._bol,
     $._termination,
   ],
   conflicts: ($, previous) =>
@@ -152,7 +152,7 @@ module.exports = grammar(objectscript_expr, {
         $.command_lock,
         $.command_read,
         $.command_open,
-        $.command_close,
+        $.command_close, //LEFT OFF HERE
         $.command_use,
         $.command_new,
         $.command_if,
@@ -197,15 +197,14 @@ module.exports = grammar(objectscript_expr, {
         $.tag,
         $.tag_with_params,
         $.procedure,
-        $.dotted_statement,
       ),
 
     dotted_statement: ($) =>
        seq(
          // this is from the external scanner, and it means that it was
          // at the start of a line and there were dots matching the dotted statement
-        $.bol,
-        $.statement
+        $._bol,
+        $.statement,
       ),
     pound_dim: ($) =>
       seq(
@@ -369,6 +368,7 @@ module.exports = grammar(objectscript_expr, {
         $.system_defined_function,  // For things like, set $LB(a, b) = 3
         $.system_defined_variable,
         $.sql_field_reference,
+        $.indirection,
       ),
 
     oref_set_target: ($) =>
@@ -427,7 +427,7 @@ module.exports = grammar(objectscript_expr, {
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
       choice(
-          seq($.keyword_do, repeat1($.dotted_statement),$._termination),
+          prec.right(seq($.keyword_do, repeat1($.dotted_statement))),
         // DO with parameters
         build_command_rule_argumentful(
           $,
@@ -439,7 +439,7 @@ module.exports = grammar(objectscript_expr, {
         //     $.keyword_do,
         //     $
         // ),
-        build_command_rule_argumentless($, $.keyword_do),
+        // build_command_rule_argumentless($, $.keyword_do),
       ),
     keyword_do: (_) => /[dD]([oO])?/,
     do_parameter: ($) =>
@@ -1081,6 +1081,7 @@ module.exports = grammar(objectscript_expr, {
     keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
     command_quit: ($) =>choice(
         build_command_rule_special_argumentless($,$.keyword_quit),
+
         build_command_rule_argumentful(
             $,
             $.keyword_quit,
