@@ -355,8 +355,17 @@
           "type": "FIELD",
           "name": "operator",
           "content": {
-            "type": "STRING",
-            "value": "?"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "?"
+              },
+              {
+                "type": "STRING",
+                "value": "'?"
+              }
+            ]
           }
         },
         {
@@ -4285,10 +4294,6 @@
         {
           "type": "SYMBOL",
           "name": "procedure"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "dotted_statement"
         }
       ]
     },
@@ -4297,7 +4302,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "bol"
+          "name": "_bol"
         },
         {
           "type": "SYMBOL",
@@ -5154,6 +5159,10 @@
         {
           "type": "SYMBOL",
           "name": "sql_field_reference"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "indirection"
         }
       ]
     },
@@ -5435,24 +5444,24 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "keyword_do"
-            },
-            {
-              "type": "REPEAT1",
-              "content": {
+          "type": "PREC_RIGHT",
+          "value": 0,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
                 "type": "SYMBOL",
-                "name": "dotted_statement"
+                "name": "keyword_do"
+              },
+              {
+                "type": "REPEAT1",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "dotted_statement"
+                }
               }
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_termination"
-            }
-          ]
+            ]
+          }
         },
         {
           "type": "SEQ",
@@ -5503,44 +5512,6 @@
                       }
                     ]
                   }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "command_name",
-              "content": {
-                "type": "SYMBOL",
-                "name": "keyword_do"
-              }
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "post_conditional"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_argumentless_command_end"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_termination"
                 }
               ]
             }
@@ -13467,11 +13438,23 @@
           "type": "FIELD",
           "name": "operator",
           "content": {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "?"
-            }
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "?"
+                }
+              },
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "'?"
+                }
+              }
+            ]
           }
         },
         {
@@ -13771,7 +13754,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "bol"
+      "name": "_bol"
     },
     {
       "type": "SYMBOL",

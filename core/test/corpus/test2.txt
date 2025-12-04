@@ -1,0 +1,42 @@
+  DO
+  . WRITE "into the DO",!
+  . DO
+  .. WRITE "inner DO",!
+  .. QUIT
+  .. WRITE "never written",!
+  . WRITE "back to outer DO",!
+  . QUIT
+  . WRITE "never written",!
+  WRITE "out of the DO"
+
+  READ !,"Square (S) or cube (C): ",op QUIT:op=""
+  READ !,"Integer: ",num QUIT:num=""
+  IF (op["S")!(op["s") DO
+  .  SET result=num*num            ; Square block
+  .  WRITE !,"Result: ",result
+  ELSE  DO
+  .  SET result=num*num*num        ; Cube block
+  .  WRITE !,"Result: ",result
+  .  QUIT
+  GOTO Start
+
+  FOR i=1:1:y DO
+  .  SET z=z*x
+  .  WRITE !,z
+  .  QUIT
+
+  WRITE !,"At top level" ; Mainline code (Level count = 0)
+  DO
+  . ; Outermost block (Level count = 1)
+  .
+  .  DO
+  .  . ; Inner block 1 (Level count = 2)
+  .  .
+  .  .  DO
+  .  .  . ; Inner block 2 (Level count = 3)
+  .  .  .
+  .  . ; (Level count = 2)
+  . ; (Level count = 1)
+  .
+  .  QUIT ; (Level count = 0)
+  WRITE !,"Back at top level" ; Mainline code resumes

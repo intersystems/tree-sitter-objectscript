@@ -72,6 +72,10 @@
         "required": true,
         "types": [
           {
+            "type": "'?",
+            "named": false
+          },
+          {
             "type": "?",
             "named": false
           }
@@ -407,7 +411,7 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "do_parameter",
@@ -1688,13 +1692,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "bol",
-          "named": true
-        },
         {
           "type": "statement",
           "named": true
@@ -1991,6 +1991,10 @@
         "multiple": false,
         "required": false,
         "types": [
+          {
+            "type": "'?",
+            "named": false
+          },
           {
             "type": "?",
             "named": false
@@ -3777,6 +3781,10 @@
             "named": true
           },
           {
+            "type": "indirection",
+            "named": true
+          },
+          {
             "type": "instance_variable",
             "named": true
           },
@@ -3834,6 +3842,10 @@
       "types": [
         {
           "type": "glvn",
+          "named": true
+        },
+        {
+          "type": "indirection",
           "named": true
         },
         {
@@ -4088,10 +4100,6 @@
         },
         {
           "type": "command_zz",
-          "named": true
-        },
-        {
-          "type": "dotted_statement",
           "named": true
         },
         {
@@ -4725,6 +4733,10 @@
     "named": false
   },
   {
+    "type": "'?",
+    "named": false
+  },
+  {
     "type": "'[",
     "named": false
   },
@@ -4866,10 +4878,6 @@
   },
   {
     "type": "angled_bracket_fenced_text",
-    "named": true
-  },
-  {
-    "type": "bol",
     "named": true
   },
   {

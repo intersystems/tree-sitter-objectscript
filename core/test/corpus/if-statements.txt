@@ -563,3 +563,75 @@ If Block to Old Else Valid
     (statement
       (command_quit
         command_name: (keyword_quit)))))
+
+========
+If Alone
+========
+ if
+ i
+---
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)))
+    (statement
+      (command_if
+        command_name: (keyword_if)))))
+
+==========
+Else alone
+==========
+ else
+ e
+---
+(source_file
+  (statements
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))
+    (statement
+      (command_else
+        command_name: (keyword_oldelse)))))
+
+=========================
+If Expression Indirection
+=========================
+ IF zip'?@pat {
+   WRITE !,"Invalid ZIP code"
+   DO GetZip()
+ }
+---
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            right: (unary_expression
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        (statement
+          (command_write
+            command_name: (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_do
+            command_name: (keyword_do)
+            (do_parameter
+              (routine_tag_call
+                (line_ref
+                  label: (label_ref))
+                (method_args)))))))))

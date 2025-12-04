@@ -1,1 +1,27 @@
- do{ w hi} while x < 2
+ THINGS FAILING:
+ - for loop that starts on new line
+
+  WRITE !,@array@(i)
+  WRITE !,@array@(i,x)
+  WRITE !,@array@(i,x,y)
+ SET @..#myparam@(x,y) = "stringval"
+  SET LINETEXT = $TEXT(@$PIECE(LINE,"^",1)^@$PIECE(LINE,"^",2))
+
+   NEW:name'?3U3N (badName)
+ set TABLES(0)="EVEN"
+    set TABLES(1)="ODD"
+    for i=1:1:100
+    {
+        set table = TABLES((i#2))
+        set @table@(i)=i
+    }
+
+    zw @table
+    set evenTotal=0
+    set i=""
+    for
+    {
+        set i=$ORDER(@table@(i)) QUIT:i=""
+        set evenTotal = evenTotal+@table@(i)
+    }
+    zwrite evenTotal
