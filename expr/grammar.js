@@ -110,7 +110,12 @@ module.exports = grammar({
     unary_expression: ($) =>
       choice(
         seq(field('operator', $._unary_operator), $.expression),
-        seq(field('operator', '@'), $.glvn),
+        seq(field('operator', '@'), $.glvn, optional(
+          seq(
+      token.immediate('@'),
+      $.subscripts,   // existing: '(' expr (',' expr)* ')'
+  ),
+),),
       ),
     _unary_operator: (_) => choice('+', '-', "'"),
 
@@ -353,7 +358,21 @@ module.exports = grammar({
         token.immediate('...'),
       ),
 
-    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1,$.macro)),
+  indirected_glvn: ($) =>
+      seq(
+          '@',
+          field('base', choice(
+              $.lvn,
+              $.gvn,
+              $.ssvn,
+              $.relative_dot_parameter,   // for ..#myparam
+              $.class_parameter_ref,      //  ##class(...).#Param
+          )),
+          '@',
+          $.subscripts,
+      ),
+
+    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1,$.macro), $.indirected_glvn),
     gvn: ($) =>
       prec.right(
         seq(
@@ -480,7 +499,11 @@ module.exports = grammar({
         optional($.subscripts),
       ),
     oref_parameter: ($) =>
-      $.parameter_name,
+        $.parameter_name,
+
+
+
+
 
     instance_variable: ($) =>
       prec.right(
