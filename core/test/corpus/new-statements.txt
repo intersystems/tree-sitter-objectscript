@@ -48,11 +48,24 @@ NEW with special variables
         command_name: (keyword_new)
         (roles_token)))))
 
-====================
-New with Indirection
-====================
-
 
 ========================
 New with Postconditional
 ========================
+ NEW:name'?3U3N (badName)
+---
+(source_file
+  (statements
+    (statement
+      (command_new
+        command_name: (keyword_new)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (_pattern_operator
+                right: (pattern_expression)))))
+        (lvn
+          (objectscript_identifier))))))

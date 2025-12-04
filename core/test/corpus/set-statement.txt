@@ -99,3 +99,104 @@ Set with Indirection
  SET @..#myparam@(x,y) = "stringval"
 
 ---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (unary_expression
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (indirection
+            (expression
+              (expr_atom
+                (relative_dot_parameter
+                  (oref_parameter
+                    (parameter_name
+                      (identifier_segment_immediate))
+                    (subscripts
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier))))))))))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))))
+
+
+
+====================
+Set With Indexing
+====================
+ set TABLES(0)="EVEN"
+ set TABLES(1)="ODD"
+---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))))

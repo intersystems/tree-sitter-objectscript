@@ -353,11 +353,14 @@ module.exports = grammar(objectscript_expr, {
       ),
     keyword_set: (_) => /[sS]([eE][tT])?/,
     set_argument: ($) =>
-      seq(
-        field('lhs', choice($.set_target, $.set_target_list)),
-        field('operator', '='),
-        field('rhs', $.expression),
-      ),
+        choice(
+            seq(
+                field('lhs', choice($.set_target, $.set_target_list)),
+                field('operator', '='),
+                field('rhs', $.expression),
+            ),
+            $.indirection,
+        ),
 
     set_target_list: ($) => seq('(', repeat_with_commas($.set_target), ')'),
     set_target: ($) =>

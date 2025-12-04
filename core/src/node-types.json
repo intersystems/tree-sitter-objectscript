@@ -2211,6 +2211,10 @@
           "named": true
         },
         {
+          "type": "indirected_glvn",
+          "named": true
+        },
+        {
           "type": "lvn",
           "named": true
         },
@@ -2267,6 +2271,48 @@
     "type": "identifier_segment_immediate",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "indirected_glvn",
+    "named": true,
+    "fields": {
+      "base": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "class_parameter_ref",
+            "named": true
+          },
+          {
+            "type": "gvn",
+            "named": true
+          },
+          {
+            "type": "lvn",
+            "named": true
+          },
+          {
+            "type": "relative_dot_parameter",
+            "named": true
+          },
+          {
+            "type": "ssvn",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "indirection",
@@ -3774,7 +3820,7 @@
     "fields": {
       "lhs": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "glvn",
@@ -3812,7 +3858,7 @@
       },
       "operator": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "=",
@@ -3822,7 +3868,7 @@
       },
       "rhs": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "expression",
@@ -3830,6 +3876,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "indirection",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4425,7 +4481,7 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -4434,6 +4490,10 @@
         },
         {
           "type": "glvn",
+          "named": true
+        },
+        {
+          "type": "subscripts",
           "named": true
         }
       ]
