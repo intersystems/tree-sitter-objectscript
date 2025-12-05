@@ -128,6 +128,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
 if (valid_symbols[_TERMINATION] && valid_symbols[_ARGUMENTLESS_LOOP] && lexer->lookahead=='\n') {
     // normally this would be a termination, but we need to make sure that it isn't a block.
+//    fprintf(stderr,"HERE???");
     while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
         lexer->advance(lexer,false);
     }
@@ -166,6 +167,7 @@ if (valid_symbols[_TERMINATION]) {
 
 
 if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+//    fprintf(stderr,"ARG");
     bool is_block = (lexer->lookahead == '{');
     if (is_block) {
         lexer->result_symbol = _ARGUMENTLESS_LOOP;
@@ -196,9 +198,9 @@ if (valid_symbols[_ARGUMENTLESS_LOOP]) {
 
         bool is_block = (lexer->lookahead == '{');
 
-        // fprintf(stderr, "DEBUG[BUNCH] col=%u lookahead='%c'\n",
-        //                 lexer->get_column(lexer), lexer->lookahead);
-
+//         fprintf(stderr, "DEBUG[BUNCH] col=%u lookahead='%c'\n",
+//                         lexer->get_column(lexer), lexer->lookahead);
+//
 
         if (count == 1 && !is_block && !is_termination) {
             if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
@@ -553,9 +555,9 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
         }
     }
     else if ((valid_symbols[_WHITESPACE] || valid_symbols[_BOL]) && (iswspace(lexer->lookahead)))  {
-    // fprintf(stderr,"WHITESPACE  CHECK");
-    // fprintf(stderr, "scan: lookahead='%c' (%d), col=%u\n",
-            //  lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
+//     fprintf(stderr,"WHITESPACE  CHECK");
+//     fprintf(stderr, "scan: lookahead='%c' (%d), col=%u\n",
+//              lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
     bool consumed = false;
     bool saw_nl   = scanner->terminated_newline;
 
@@ -564,8 +566,8 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
       lexer->advance(lexer,false);         // <-- advance(false): add char to this token
       consumed = true;
     }
-    // fprintf(stderr, " CONSUMED scan: lookahead='%c' (%d), col=%u\n",
-    //               lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
+//     fprintf(stderr, " CONSUMED scan: lookahead='%c' (%d), col=%u\n",
+//                   lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
 
     unsigned dots = 0;
     while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }

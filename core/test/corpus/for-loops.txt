@@ -663,3 +663,30 @@ For Block Alone, no space before block
         (statement
           (command_for
             command_name: (keyword_for)))))
+
+====================================
+For with parameter, block on newline
+====================================
+ for i=1:1:100
+    {
+    }
+---
+(source_file
+  (statements
+    (statement
+      (command_for
+        command_name: (keyword_for)
+        (for_parameter
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (for_parameter_arg
+            initial: (expression
+              (expr_atom
+                (numeric_literal)))
+            increment: (expression
+              (expr_atom
+                (numeric_literal)))
+            limit: (expression
+              (expr_atom
+                (numeric_literal)))))))))

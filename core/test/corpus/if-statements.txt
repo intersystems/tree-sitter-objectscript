@@ -636,3 +636,19 @@ If Expression Indirection
                   label: (label_ref))
                 (method_args)))))))))
 
+====================================
+If with Expression, Block on newline
+====================================
+ if x 
+ {}
+---
+(source_file
+  (statements
+    (statement
+      (command_if
+        command_name: (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
