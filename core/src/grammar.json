@@ -799,6 +799,34 @@
               ]
             }
           ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "label",
+              "content": {
+                "type": "SYMBOL",
+                "name": "indirection"
+              }
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "^"
+              }
+            },
+            {
+              "type": "FIELD",
+              "name": "routine",
+              "content": {
+                "type": "SYMBOL",
+                "name": "indirection"
+              }
+            }
+          ]
         }
       ]
     },
@@ -2025,7 +2053,52 @@
         },
         {
           "type": "SYMBOL",
+          "name": "dollar_text"
+        },
+        {
+          "type": "SYMBOL",
           "name": "dollar_function"
+        }
+      ]
+    },
+    "dollar_text": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "function_name",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\$T(EXT)?",
+                  "flags": "i"
+                }
+              },
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "("
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "arg",
+          "content": {
+            "type": "SYMBOL",
+            "name": "line_ref"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
         }
       ]
     },
@@ -5848,6 +5921,18 @@
               ]
             },
             {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_termination"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
               "type": "STRING",
               "value": "{"
             },
@@ -7787,6 +7872,18 @@
                       }
                     ]
                   }
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_termination"
+                },
+                {
+                  "type": "BLANK"
                 }
               ]
             },

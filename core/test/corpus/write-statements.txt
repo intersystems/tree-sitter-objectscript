@@ -554,3 +554,88 @@ Write with Indirections
   WRITE !,@array@(i,x)
   WRITE !,@array@(i,x,y)
 ---
+(source_file
+  (statements
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===========================
+ZWRITE WITH INDIRECTION
+===========================
+ zw @table
+---
+(source_file
+  (statements
+    (statement
+      (command_zwrite
+        command_name: (keyword_zwrite)
+        (expression
+          (expr_atom
+            (unary_expression
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))

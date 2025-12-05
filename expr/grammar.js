@@ -283,10 +283,15 @@ module.exports = grammar({
         field('routine', $.routine_ref),
       ),
       // Full indirection
-        seq(
-            $.indirection,
-            optional($.routine_ref)
-        )
+      seq(
+          $.indirection,
+          optional($.routine_ref)
+      ),
+      seq(
+        field('label', $.indirection),      
+        token.immediate('^'),
+        field('routine', $.indirection),    
+      ),
     ),
     label_ref: (_) =>
       token(/[%A-Za-z][A-Za-z0-9]*/),
@@ -611,8 +616,22 @@ module.exports = grammar({
         $.dollar_case,
         $.dollar_select,
         $.dollar_classmethod,
+        $.dollar_text,
         $.dollar_function,    // Fallback case
       ),
+    dollar_text: ($) =>
+      seq(
+        // $T or $TEXT, followed by '(' with no space
+        token(
+          seq(
+            field('function_name', /\$T(EXT)?/i),
+            token.immediate('('),
+          ),
+        ),
+        field('arg', $.line_ref),
+        ')',
+    ),
+
     dollar_function: ($) =>
       seq(
         token(

@@ -500,6 +500,7 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
+
     command_for: ($) =>
       // The `FOR` command has 4 versions:
       // * Block style with params:    FOR <criteria> { ... }
@@ -513,6 +514,7 @@ module.exports = grammar(objectscript_expr, {
           field('command_name', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.for_parameter),
+          optional($._termination),
           '{',
           repeat($.statement),
           '}',
@@ -540,10 +542,10 @@ module.exports = grammar(objectscript_expr, {
           repeat($.statement),
           $._termination,
         ),
-          seq(
-              field('command_name', $.keyword_for),
-              $._termination,
-          )
+        seq(
+            field('command_name', $.keyword_for),
+            $._termination,
+        )
       ),
 
     keyword_for: (_) => /[fF]([oO][rR])?/,
@@ -881,6 +883,7 @@ module.exports = grammar(objectscript_expr, {
               field('command_name', $.keyword_if),
               $._immediate_single_whitespace_followed_by_non_whitespace,
               repeat_with_commas($.expression),
+              optional($._termination),
               '{',
               repeat($.statement),
               '}',
