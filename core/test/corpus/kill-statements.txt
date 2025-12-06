@@ -168,3 +168,62 @@ Kill Using an Object Method
                       (expr_atom
                         (lvn
                           (objectscript_identifier))))))))))))))
+
+==========================
+Kill With PostConditionals
+==========================
+ KILL:name'?3U3N ^fruitbasket
+---
+(source_file
+  (statements
+    (statement
+      (command_kill
+        command_name: (keyword_kill)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (_pattern_operator
+                right: (pattern_expression)))))
+        (kill_argument
+          (kill_target
+            (glvn
+              (gvn))))))))
+=====
+Zkill
+=====
+ ZKILL a(1)
+ ZKILL:name'?3U3N a(1)
+---
+(source_file
+  (statements
+    (statement
+      (command_zkill
+        command_name: (keyword_zkill)
+        (glvn
+          (lvn
+            (objectscript_identifier)
+            (subscripts
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_zkill
+        command_name: (keyword_zkill)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (_pattern_operator
+                right: (pattern_expression)))))
+        (glvn
+          (lvn
+            (objectscript_identifier)
+            (subscripts
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))

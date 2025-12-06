@@ -1,0 +1,36 @@
+====
+Use Command
+====
+ USE device:(/KEYWORD1=value1:/KEYWORD2=value2):"mnespace"
+ USE "STUDENTS":256
+---
+(source_file
+  (statements
+    (statement
+      (command_use
+        command_name: (keyword_use)
+        (use_parameter
+          device: (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          arg: (use_colon_argument
+            parameters: (use_parameter_item
+              keyword: (use_keyword_parameter))
+            parameters: (use_parameter_item
+              keyword: (use_keyword_parameter)))
+          arg: (use_colon_argument
+            expr: (expression
+              (expr_atom
+                (string_literal)))))))
+    (statement
+      (command_use
+        command_name: (keyword_use)
+        (use_parameter
+          device: (expression
+            (expr_atom
+              (string_literal)))
+          arg: (use_colon_argument
+            expr: (expression
+              (expr_atom
+                (numeric_literal)))))))))

@@ -19,6 +19,14 @@ const {
 } = require('./utils');
 
 /**
+ * @param {RuleOrLiteral} rule
+ * @return {RuleOrLiteral}
+ */
+const repeat_with_colons = function (rule) {
+  return seq(rule, repeat(seq(token.immediate(':'), rule)));
+};
+
+/**
  * @param {GrammarSymbols<string>} $
  * @param {RuleOrLiteral} commandKeyword
  * @param {RuleOrLiteral} commandArgument
@@ -152,14 +160,14 @@ module.exports = grammar(objectscript_expr, {
         $.command_lock,
         $.command_read,
         $.command_open,
-        $.command_close, //LEFT OFF HERE
-        $.command_use,
+        $.command_close, 
+        $.command_use, 
         $.command_new,
         $.command_if,
         $.command_else,
         $.command_throw,
         $.command_trycatch,
-        $.command_job,
+        $.command_job, // GOT TO HERE
         $.command_break,
         $.command_merge,
         $.command_quit,
@@ -807,34 +815,72 @@ module.exports = grammar(objectscript_expr, {
         repeat_with_commas($.use_parameter),
       ),
     keyword_use: (_) => /U(se)?/i,
+    // use_parameter: ($) =>
+    //   seq(
+    //     field('device', $.expression),
+    //     optional(
+    //       seq(
+    //         token.immediate(':'),
+    //         optional(
+    //           seq(
+    //             token.immediate('('),
+    //             field(
+    //               'keywords',
+    //               repeat_with_commas(
+    //                 field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
+    //               ),
+    //             ),
+    //             token.immediate(')'),
+    //           ),
+    //         ),
+    //         optional(
+    //           seq(
+    //             token.immediate(':'),
+    //             seq(
+    //               $._assert_no_space_between_rules,
+    //               field('mnspace', $.expression),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+
     use_parameter: ($) =>
       seq(
         field('device', $.expression),
-        optional(
+        // zero or more colon-arguments
+        repeat(
           seq(
-            token.immediate(':'),
-            optional(
-              seq(
-                token.immediate('('),
-                field(
-                  'keywords',
-                  repeat_with_commas(
-                    field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
-                  ),
-                ),
-                token.immediate(')'),
-              ),
-            ),
-            optional(
-              seq(
-                token.immediate(':'),
-                seq(
-                  $._assert_no_space_between_rules,
-                  field('mnspace', $.expression),
-                ),
-              ),
-            ),
+            token.immediate(':'),          // no space before colon
+            field('arg', $.use_colon_argument),
           ),
+        ),
+      ),
+
+    use_colon_argument: ($) =>
+    choice(
+      seq(
+        token.immediate('('),
+        field('parameters', repeat_with_colons($.use_parameter_item)),
+        token.immediate(')'),
+      ),
+
+      field('expr', $.expression),
+    ),
+    use_parameter_item: ($) =>
+      choice(
+        field('keyword', $.use_keyword_parameter),
+        field('positional', $.expression),
+      ),
+
+    use_keyword_parameter: (_) =>
+      token(
+        seq(
+          '/',                        // leading slash
+          /[A-Za-z][A-Za-z0-9]*/,     // KEYWORD
+          '=',
+          /[^:\s)]+/,                 // value: up to ':', ')', or whitespace
         ),
       ),
 

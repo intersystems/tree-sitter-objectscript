@@ -1,0 +1,36 @@
+=============
+Close Command
+=============
+ CLOSE:$IO'=C C
+ CLOSE seqfilename:"D"
+---
+(source_file
+  (statements
+    (statement
+      (command_close
+        command_name: (keyword_close)
+        (post_conditional
+          (expression
+            (expr_atom
+              (system_defined_variable))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        (close_parameter
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_close
+        command_name: (keyword_close)
+        (close_parameter
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (close_parameter_option
+            (close_parameter_option_value)))))))

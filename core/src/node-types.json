@@ -4528,9 +4528,49 @@
     }
   },
   {
+    "type": "use_colon_argument",
+    "named": true,
+    "fields": {
+      "expr": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "parameters": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "use_parameter_item",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "use_parameter",
     "named": true,
     "fields": {
+      "arg": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "use_colon_argument",
+            "named": true
+          }
+        ]
+      },
       "device": {
         "multiple": false,
         "required": true,
@@ -4540,18 +4580,24 @@
             "named": true
           }
         ]
-      },
-      "keywords": {
-        "multiple": true,
+      }
+    }
+  },
+  {
+    "type": "use_parameter_item",
+    "named": true,
+    "fields": {
+      "keyword": {
+        "multiple": false,
         "required": false,
         "types": [
           {
-            "type": ",",
-            "named": false
+            "type": "use_keyword_parameter",
+            "named": true
           }
         ]
       },
-      "mnspace": {
+      "positional": {
         "multiple": false,
         "required": false,
         "types": [
@@ -5291,6 +5337,10 @@
   {
     "type": "true",
     "named": false
+  },
+  {
+    "type": "use_keyword_parameter",
+    "named": true
   },
   {
     "type": "{",
