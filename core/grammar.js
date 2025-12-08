@@ -815,37 +815,6 @@ module.exports = grammar(objectscript_expr, {
         repeat_with_commas($.use_parameter),
       ),
     keyword_use: (_) => /U(se)?/i,
-    // use_parameter: ($) =>
-    //   seq(
-    //     field('device', $.expression),
-    //     optional(
-    //       seq(
-    //         token.immediate(':'),
-    //         optional(
-    //           seq(
-    //             token.immediate('('),
-    //             field(
-    //               'keywords',
-    //               repeat_with_commas(
-    //                 field('keyword', /\/[A-Za-z]+=[A-Z-a-z]+/),
-    //               ),
-    //             ),
-    //             token.immediate(')'),
-    //           ),
-    //         ),
-    //         optional(
-    //           seq(
-    //             token.immediate(':'),
-    //             seq(
-    //               $._assert_no_space_between_rules,
-    //               field('mnspace', $.expression),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-
     use_parameter: ($) =>
       seq(
         field('device', $.expression),

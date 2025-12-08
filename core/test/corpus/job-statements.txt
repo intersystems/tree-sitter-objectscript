@@ -1,0 +1,351 @@
+==============
+JOB statements
+==============
+  JOB ^monitor::20
+  JOB Disp^monitor
+  JOB ^Add(num1,8,a+2)
+  JOB ^Add()
+  JOB AA:("":1) 
+  JOB ABC^PROG(VAL1,"DR."):(:0:"tta5:")
+  JOB ##class(MyClass).Run():(:0:"tta5:"):10
+  JOB $CLASSMETHOD("MyClass","Run"):(:0:"tta5:"):10
+  JOB ..CleanUp():(:0:"tta5:"):10
+  JOB ..CleanUp()::10
+  JOB child:(:4:tcp:tcp)
+  JOB child:(:17::)
+---
+(source_file
+  (statements
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token))))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token)))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    operator: (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token)))
+            (method_args)))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token)))
+            (method_args
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (class_method_call
+            (class_ref
+              preproc_keyword: (keyword_pound_pound_class)
+              (class_name
+                (dotted_identifier_strict_token_immediate)))
+            (method_name
+              (identifier_segment_immediate))
+            (method_args))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args)))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              label: (label_ref)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+=============
+^JOB Commands
+=============
+   SET x=$JOB
+   WRITE !,$DATA(^$JOB(x))
+   SET pid=$ORDER(^$JOB(pid))
+   SET x=$QUERY(^$JOB(""))
+   WRITE !,x
+   WRITE !,$QUERY(@x)
+---
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_variable))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (ssvn
+                      (identifier_segment_immediate)
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (ssvn
+                      (identifier_segment_immediate)
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (ssvn
+                      (identifier_segment_immediate)
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (string_literal)))))))))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_write
+        command_name: (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (unary_expression
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))))
+
+
+=========================
+JOB With Postconditionals
+=========================
+ JOB:name'?3U3N ^monitor::20
+---
+(source_file
+  (statements
+    (statement
+      (command_job
+        command_name: (keyword_job)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (_pattern_operator
+                right: (pattern_expression)))))
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              routine: (routine_ref
+                (dotted_identifier_relaxed_token))))
+          (timeout
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
