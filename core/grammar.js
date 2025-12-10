@@ -104,11 +104,15 @@ module.exports = grammar(objectscript_expr, {
     $.sentinel,
     $._bol,
     $._termination,
+    $.zbreak_command,
+    $._zbreak_device_termination,
   ],
   conflicts: ($, previous) =>
     previous.concat([
       [$.keyword_hang, $.keyword_halt],
       [$.command_xecute, $._parenthetical_expression],
+      [$.use_parameters, $._parenthetical_expression],
+      [$.open_parameters, $._parenthetical_expression],
       [ $.label_ref, $.objectscript_identifier ],
     ]),
 
@@ -167,7 +171,7 @@ module.exports = grammar(objectscript_expr, {
         $.command_else,
         $.command_throw,
         $.command_trycatch,
-        $.command_job, // GOT TO HERE
+        $.command_job, 
         $.command_break,
         $.command_merge,
         $.command_quit,
@@ -719,139 +723,238 @@ module.exports = grammar(objectscript_expr, {
       build_command_rule_argumentful(
         $,
         $.keyword_open,
-        repeat_with_commas($.open_parameter),
+        repeat_with_commas($.open_argument),
       ),
     keyword_open: (_) => /O(pen)?/i,
-    // NEW helper for items *inside* the (...) parameter list of OPEN
-    open_param_item: ($) =>
-        choice(
-            // Positional or expression parameter (numbers, strings, vars, etc.)
-            $.expression,
-            // Keyword parameter: /KEY=VALUE (VALUE can be anything without : or ))
-            token(/\/[A-Za-z][A-Za-z0-9]*=[^:)\n]*/),
-        ),
-
-    open_param_list: ($) =>
-        seq(
-            token.immediate('('),
-            optional(
-                seq(
-                    $.open_param_item,
-                    // colon-separated params, with optional omissions: (3::"NRW")
-                    repeat(
-                        seq(
-                            token.immediate(':'),
-                            optional($.open_param_item),
-                        ),
-                    ),
-                ),
+    open_argument: ($) => 
+      seq(
+        $.device,
+        optional(
+          choice(
+            seq(
+              token.immediate(':'),
+              $.open_parameters
             ),
-            token.immediate(')'),
-        ),
-    open_parameter: ($) =>
-        seq(
-            $.expression,
-
-            // Zero or more colon segments after the device.
-            // Each colon may have:
-            //   - a parenthesized param list, OR
-            //   - a bare expression (timeout, mnespace, or device-specific thing), OR
-            //   - nothing (for omitted position, like ::10)
-            repeat(
-                seq(
-                    token.immediate(':'),
-
-                    optional(
-                        choice(
-                            field('params', $.open_param_list),   // :( ... )
-                            field('arg', $.expression),           // :timeout, :"SAMPLES", etc.
-                        ),
-                    ),
-                ),
+            seq(
+              token.immediate(':'),token.immediate(':'),
+              field('timeout',$.expression)
             ),
-        ),
+            seq(
+              token.immediate(':'),
+              $.open_parameters,
+              token.immediate(':'),
+              field('timeout',$.expression)
+            ),
+             seq(
+              token.immediate(':'),
+              $.open_parameters,
+              token.immediate(':'),
+              field('timeout',$.expression),
+              token.immediate(':'),
+              field('mnespace', $.expression)
+            ),
+            seq(
+              token.immediate(':'),token.immediate(':'),token.immediate(':'),
+              field('mnespace', $.expression)
+            ),
+            seq(
+              token.immediate(':'),token.immediate(':'),
+              field('timeout',$.expression),
+              token.immediate(':'),
+              field('mnespace', $.expression)
+            ),
+            seq(
+              token.immediate(':'),
+              $.open_parameters,
+              token.immediate(':'),token.immediate(':'),
+              field('mnespace', $.expression)
+            ),
+          )
+        )
+      ),
 
+        
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cclose
     // eslint-disable-next-line max-len
     command_close: ($) =>
       build_command_rule_argumentful(
         $,
         $.keyword_close,
-        repeat_with_commas($.close_parameter),
+        repeat_with_commas($.close_argument),
+      ),
+    close_parameters: ($) => 
+      choice(
+        seq(
+        '(',
+        optional(
+          seq(
+            optional($.close_parameter_option_value),
+            repeat(
+              seq(
+                ':',
+                optional($.close_parameter_option_value),
+              )
+            )
+          )
+        ),
+        ')'
+        ),
+        $.close_parameter_option_value
       ),
     keyword_close: (_) => /Close/i,
-    close_parameter: ($) =>
-      seq($.expression, optional($.close_parameter_option)),
-    close_parameter_option: ($) =>
-      seq(
-        token.immediate(':'),
-        choice(
-          $.close_parameter_option_value,
-          seq(
-            '(',
-            $.close_parameter_option_value,
-            repeat(seq(token.immediate(':'), $.close_parameter_option_value)),
-            ')',
-          ),
-        ),
-      ),
+    close_argument: ($) =>
+      seq($.device, optional(seq(token.immediate(':'),$.close_parameters))),
     // "D", "K", ("R":newname or /REN=newname or /RENAME=newman)
-    close_parameter_option_value: (_) =>
+    close_rename: ($) => 
       choice(
-        '"D"',
-        '"K"',
-        token(seq('"R"', ':', /[A-Za-z0-9]+/)),
-        token(seq('/REN', '=', /[A-Za-z0-9]+/)),
-        token(seq('/RENAME', '=', /[A-Za-z0-9]+/)),
+        seq('"R"',':'),
+        seq(choice('/REN=','/RENAME='))
       ),
+    close_parameter_option_value: ($) =>
+      choice(
+        '"K"',
+        '"D"',
+        seq($.close_rename, $.device),
+        seq($.open_keyword_delete, optional(seq(token.immediate('='), $.expression))),
+      ),
+    
+    open_keyword_translate: (_) => /\/Tra(nslate)?/i,
+    open_keyword_translate_equals: (_) => /\/Tra(nslate)?=/i,
+    open_keyword_iotable: (_) => /\/IOT(able)?/i,
+    open_keyword_iotable_equals: (_) => /\/IOT(able)?=/i,
+    open_keyword_delete_equals: (_) => /\/DEL(ete)?=/i,
+    open_keyword_delete: (_) => /\/DEL(ete)?/i,
+    open_keyword_write: (_) => /\/WRI(TE)?/i,
+    open_keyword_create: (_) => /\/CRE(ATE)?/i,
+    open_keyword_xytable: (_) => /\/XYT(ABLE)?/i,
+    open_keyword_xytable_equals: (_) => /\/XYT(ABLE)?=/i,
+
+    open_keyword_record_size: (_) => /\/REC(ORDSIZE)?=/i,
+    open_keyword_params: (_) => /\/PAR(AMS)?=/i,
+    open_keyword_terminator: (_) => /\/TER(MINATOR)?=/i,
+    open_keyword_fixed: (_) => /\/fix(ed)?/i,
+    immediate_equal: (_) => token.immediate('='),
+    open_keywords: ($) => 
+      choice(
+        '/NEW',
+        $.open_keyword_create,
+        $.open_keyword_write,
+        '/TRUNCATE',
+        '/READ',
+        '/APPEND',
+        '/APP',
+        '/STREAM',
+        '/VARIABLE',
+        $.open_keyword_fixed,
+        '/UNDEFINED',
+
+        seq($.open_keyword_delete_equals, seq($.expression)),
+        $.open_keyword_delete,
+        '/NOXY',
+        seq('/NOXY=', $.expression),
+        seq('/OBUFSIZE=', $.expression),
+        '/GZIP',
+        seq('/GZIP=', $.expression),
+        seq('/COMPRESS=', $.expression),
+        $.open_keyword_translate,
+        $.open_keyword_translate,
+        $.open_keyword_xytable,
+        seq($.open_keyword_translate_equals, $.expression),
+        seq($.open_keyword_iotable_equals, choice($.string_literal,$.objectscript_identifier)),
+        seq($.open_keyword_xytable_equals, choice($.string_literal,$.objectscript_identifier)),
+        seq($.open_keyword_terminator, choice($.string_literal,$.objectscript_identifier)),
+        seq($.open_keyword_record_size, choice($.string_literal,$.objectscript_identifier)),
+        seq($.open_keyword_params, choice($.string_literal,$.objectscript_identifier)),
+      )
+      
+    ,
 
     // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cuse
     // USE:pc device:(parameters):"mnespace",...
     // U:pc device:(parameters):"mnespace",...
+    // command_use2: ($) => 
+    //   seq(
+    //     $.keyword_use,
+    //     optional($.post_conditional),
+    //     $._immediate_single_whitespace_followed_by_non_whitespace,
+    //     $.device,
+    //   ),
+
+    use_argument: ($) => 
+      seq(
+        $.device,
+        optional(
+          choice(
+            seq(
+            token.immediate(':'),
+            $.use_parameters
+            ),
+            seq(
+            token.immediate(':'),token.immediate(':'),
+            field('mnespace',$.expression)
+            ),
+            seq(
+            token.immediate(':'),
+            $.use_parameters,
+            token.immediate(':'),
+            field('mnespace',$.expression)
+            ),
+          )
+        )
+      )   
+      ,
+
+    use_keywords: ($) => seq('/POSITION=', $.expression),
+
+    use_parameters: ($) => 
+      choice(
+        seq(
+        '(',
+        optional(
+          seq(
+            optional(choice($.open_keywords,$.expression,$.use_keywords)),
+            repeat(
+              seq(
+                ':',
+                optional(choice($.open_keywords,$.expression,$.use_keywords)),
+              )
+            )
+          )
+        ),
+        ')'
+        ),
+        choice($.open_keywords,$.expression,$.use_keywords),
+      ),
+
+   
+
+    open_parameters: ($) => 
+      choice(
+        seq(
+        '(',
+        optional(
+          seq(
+            optional(choice($.open_keywords,$.expression)),
+            repeat(
+              seq(
+                ':',
+                optional(choice($.open_keywords,$.expression)),
+              )
+            )
+          )
+        ),
+        ')'
+        ),
+        choice($.open_keywords,$.expression),
+      ),
+      
     command_use: ($) =>
       build_command_rule_argumentful(
         $,
         $.keyword_use,
-        repeat_with_commas($.use_parameter),
+        repeat_with_commas($.use_argument),
       ),
     keyword_use: (_) => /U(se)?/i,
-    use_parameter: ($) =>
-      seq(
-        field('device', $.expression),
-        // zero or more colon-arguments
-        repeat(
-          seq(
-            token.immediate(':'),          // no space before colon
-            field('arg', $.use_colon_argument),
-          ),
-        ),
-      ),
-
-    use_colon_argument: ($) =>
-    choice(
-      seq(
-        token.immediate('('),
-        field('parameters', repeat_with_colons($.use_parameter_item)),
-        token.immediate(')'),
-      ),
-
-      field('expr', $.expression),
-    ),
-    use_parameter_item: ($) =>
-      choice(
-        field('keyword', $.use_keyword_parameter),
-        field('positional', $.expression),
-      ),
-
-    use_keyword_parameter: (_) =>
-      token(
-        seq(
-          '/',                        // leading slash
-          /[A-Za-z][A-Za-z0-9]*/,     // KEYWORD
-          '=',
-          /[^:\s)]+/,                 // value: up to ':', ')', or whitespace
-        ),
-      ),
 
     command_dowhile: ($) =>
       seq(
@@ -1072,7 +1175,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     break_argument: ($) =>
       choice(field('extend', $.string_literal), field('flag', /[0145]/)),
-    keyword_break: (_) => /B(REAK)/i,
+    keyword_break: (_) => /B(REAK)?/i,
 
     command_merge: ($) =>
       build_command_rule_argumentful(
@@ -1205,20 +1308,193 @@ module.exports = grammar(objectscript_expr, {
     command_zbreak: ($) =>
       choice(
         build_command_rule_argumentless($, $.keyword_zbreak),
-        build_command_rule_argumentful($, $.keyword_zbreak, $.zbreak_arguments),
+        seq(
+          field('command_name', $.keyword_zbreak),
+          optional($.post_conditional),
+          $.zbreak_arguments,
+        )
       ),
     keyword_zbreak: (_) => /ZB(REAK)?/i,
-    zbreak_arguments: ($) =>
+    zbreak_execute_command: ($) => $.string_literal,
+    zbreak_arg: ($) => 
       seq(
-        token.immediate('/'),
-        $.objectscript_identifier,
+        $.zbreak_location,
         optional(
-          token(seq(
-            ':',
-            /[A-Za-z0-9]+/,
-          )),
+          choice(
+            seq(
+            token.immediate(':'),
+            field('zbreak_action',$.string_literal), 
+            token.immediate(':'),
+            $.zbreak_condition,
+            token.immediate(':'),
+            $.zbreak_execute_command,
+            ),
+            seq(
+              token.immediate(':'),token.immediate(':'),
+              $.zbreak_condition,
+              token.immediate(':'),
+              $.zbreak_execute_command,
+            ),
+            seq(
+              token.immediate(':'),token.immediate(':'),
+              $.zbreak_condition,
+            ),
+            seq(
+              token.immediate(':'),token.immediate(':'), token.immediate(':'),
+              $.zbreak_execute_command,
+            ),
+            seq(
+              token.immediate(':'),
+              field('zbreak_action',$.string_literal),
+              token.immediate(':'),token.immediate(':'),
+              $.zbreak_execute_command,
+            ),
+            seq(
+              token.immediate(':'),
+              field('zbreak_action',$.string_literal), 
+              token.immediate(':'),
+              $.zbreak_condition,
+            ),
+            seq(
+              token.immediate(':'),
+              field('zbreak_action',$.string_literal), 
+            )
+          )
+        ),
+        
+      ),
+    zbreak_location: ($) => 
+      seq(
+        optional(choice('+', '-', '--')),
+        choice(
+          // code line location?,
+          $.line_ref,
+          // local var *var
+          seq('*', $.objectscript_identifier),
+          // single step breakpoint
+          '$'
+        ),
+        optional('#delay'),
+      ),
+    
+
+    zbreak_condition: ($) => 
+        seq('"', $.expression, '"'),
+    
+    zbreak_arguments: ($) =>
+      choice(
+        seq(
+          $._immediate_single_whitespace_followed_by_non_whitespace,
+          choice(
+            '+',
+            '-',
+            $.zbreak_arg
+          ),
+          $._termination
+        ),
+        seq(
+          $.zbreak_command,
+          token.immediate('/'),
+          choice(
+            $.keyword_clear,
+            seq(
+              $.keyword_debug,
+              optional(
+                seq(
+                  token.immediate(':'),
+                  $.device,
+                )
+              )
+            ),
+            seq(
+              $.keyword_errortrap,
+              token.immediate(':'),
+              choice(
+              $.keyword_on,
+              $.keyword_off
+              )
+            ),
+            seq(
+              $.keyword_trace,
+              optional(
+                seq(
+                  token.immediate(':'),
+                  choice(
+                  $.keyword_on,
+                  $.keyword_off,
+                  $.keyword_all
+                  ),
+                  optional(
+                    seq(
+                      token.immediate(':'),
+                      $.device
+                    )
+                  )
+                )
+              )
+            ),
+            seq(
+              choice(
+                $.keyword_step,
+                $.keyword_nostep
+              ),
+              repeat1(
+                seq(
+                  token.immediate(':'),
+                  choice(
+                    $.keyword_ext,
+                    $.keyword_destruct,
+                    $.keyword_stepmethod,
+                  )
+                )
+              )
+            ),
+            seq(
+              $.keyword_interrupt,
+              optional(
+                seq(
+                  token.immediate(':'),
+                  choice(
+                    $.keyword_break,
+                    $.keyword_normal,
+                  )
+                )
+              )
+            )
+          )
         ),
       ),
+     device: ($) => 
+      seq(
+        $.expression,
+        optional(
+              repeat(
+              seq(
+                token.immediate('/'),
+                $.expression,
+              ) 
+            ),
+        )
+      ),
+    keyword_normal: (_) => /N(ormal)?/i,
+    keyword_ext: (_) => /EXT/i,
+    keyword_destruct: (_) => /DESTRUCT/i,
+    keyword_stepmethod: (_) => /METHOD/i,
+
+    keyword_interrupt: (_) => /I(nterrupt)?/i,
+    
+    keyword_on: (_) => /ON/i,
+    keyword_off: (_) => /OFF/i,
+    keyword_all: (_) => /All/i,
+    // one :
+    keyword_debug: (_) => /D(ebug)?/i,
+    keyword_errortrap: (_) => /ErrorTrap/i,
+    // two :
+    keyword_trace: (_) => /T(race)?/i,
+    keyword_step: (_) => /Step/i,
+    keyword_nostep: (_) => /NoStep/i,
+    // 0 :
+    keyword_clear: (_) => /C(lear)?/i,
     command_zkill: ($) =>
       build_command_rule_argumentful(
         $,

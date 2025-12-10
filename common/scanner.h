@@ -20,6 +20,8 @@ enum ObjectScript_Core_Scanner_TokenType {
   SENTINEL,
   _BOL,
   _TERMINATION,
+  ZBREAK_COMMAND,
+  _ZBREAK_DEVICE_TERMINATION,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -43,6 +45,8 @@ static const char* token_names[] = {
   "_BOL",
   "_INLINE_STATEMENT_SEPARATOR",
   "_TERMINATION",
+  "ZBREAK_COMMAND",
+  "_ZBREAK_DEVICE_TERMINATION",
 };
 
 #if 0
@@ -164,6 +168,11 @@ if (valid_symbols[_TERMINATION]) {
         }
   }
 
+  if (valid_symbols[_ZBREAK_DEVICE_TERMINATION] && iswspace(lexer->lookahead)) {
+    lexer->result_symbol = _ZBREAK_DEVICE_TERMINATION;  
+    scanner->terminated_newline = false;
+    return true;  
+  }
 
 
 if (valid_symbols[_ARGUMENTLESS_LOOP]) {
@@ -198,9 +207,9 @@ if (valid_symbols[_ARGUMENTLESS_LOOP]) {
 
         bool is_block = (lexer->lookahead == '{');
 
-//         fprintf(stderr, "DEBUG[BUNCH] col=%u lookahead='%c'\n",
-//                         lexer->get_column(lexer), lexer->lookahead);
-//
+        // fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
+        //                 lexer->get_column(lexer), lexer->lookahead);
+
 
         if (count == 1 && !is_block && !is_termination) {
             if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
@@ -208,6 +217,30 @@ if (valid_symbols[_ARGUMENTLESS_LOOP]) {
                 scanner->terminated_newline = false;
                 return true;
             }
+        }
+        if (count == 1 && !is_block && lexer->lookahead=='/' && valid_symbols[ZBREAK_COMMAND]) {
+            // CHANGES HERE
+            lexer->mark_end(lexer);
+            lexer->advance(lexer, false);
+            // c, d, t, e, i, s, n
+            if (lexer->lookahead == 'c' || 
+                    lexer->lookahead == 'C' || 
+                    lexer->lookahead == 'd' || 
+                    lexer->lookahead == 'D' ||
+                  lexer->lookahead == 't' || 
+                    lexer->lookahead == 'T' ||
+                  lexer->lookahead == 'e' || 
+                    lexer->lookahead == 'E' ||
+                  lexer->lookahead == 'i' || 
+                    lexer->lookahead == 'I' ||
+                  lexer->lookahead == 's' || 
+                    lexer->lookahead == 'S' ||
+                  lexer->lookahead == 'n' || 
+                    lexer->lookahead == 'N') {  
+            lexer->result_symbol = ZBREAK_COMMAND;  
+            scanner->terminated_newline = false;
+            return true;  
+          }  
         }
 
         if (valid_symbols[_ARGUMENTLESS_LOOP] && is_block) {
