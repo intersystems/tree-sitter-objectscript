@@ -2057,7 +2057,81 @@
         },
         {
           "type": "SYMBOL",
+          "name": "dollar_view"
+        },
+        {
+          "type": "SYMBOL",
           "name": "dollar_function"
+        }
+      ]
+    },
+    "dollar_view": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "\\$V(IEW)?",
+          "flags": "i"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "("
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expression"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "expression"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": ","
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "expression"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          }
         }
       ]
     },
@@ -2630,11 +2704,6 @@
                           "flags": "i"
                         }
                       ]
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "\\$V(IEW)?",
-                      "flags": "i"
                     },
                     {
                       "type": "PATTERN",
