@@ -110,7 +110,6 @@ module.exports = grammar(objectscript_expr, {
   ],
   conflicts: ($, previous) =>
     previous.concat([
-      // [$.command_hang, $.command_halt],
       [$.command_xecute, $._parenthetical_expression],
       [$.use_parameters, $._parenthetical_expression],
       [$.open_parameters, $._parenthetical_expression],
@@ -177,7 +176,6 @@ module.exports = grammar(objectscript_expr, {
         $.command_quit,
         $.command_goto,
         $.command_return,
-        // $.command_hang,
         $.command_halt_or_hang,
         $.command_dowhile,
         $.command_continue,
@@ -1225,12 +1223,6 @@ module.exports = grammar(objectscript_expr, {
       $.line_ref,
       optional($.post_conditional),
     ),
-    //  field('command_name', commandKeyword),
-    // optional($.post_conditional),
-    // choice(
-    //     $._argumentless_command_end,
-    //     $._termination,
-    // )
 
     command_halt_or_hang: ($) => 
       // hang or h is argumentless
@@ -1264,21 +1256,8 @@ module.exports = grammar(objectscript_expr, {
       )
       ,
 
-
-    // NOTE: It seems that using /H(alt)?/i doesn't work, we need this choice() along with
-    //       the conflict with keyword_hang
-    // command_halt: ($) =>
-    //   build_command_rule_argumentless($, $.keyword_halt),
     keyword_halt: (_) => /Halt/i,
-
-    // command_hang: ($) =>
-    //   build_command_rule_argumentful(
-    //     $,
-    //     $.keyword_hang,
-    //     repeat_with_commas($.expression),
-    //   ),
     keyword_hang: (_) => /Hang/i,
-    // keyword_hang: (_) => choice(/[Hh]/, /Hang/i),
 
     command_continue: ($) =>
         // this one is special, becuase if there is anything after the
