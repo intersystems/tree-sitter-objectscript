@@ -1,5 +1,5 @@
 =====================
-Valid View Statements
+Valid $View Statements
 =====================
   WRITE $VIEW(-1,-3,1)
   ZWRITE $V(-1,-3,2)
@@ -590,7 +590,7 @@ Valid View Statements
                     (numeric_literal)))))))))))
 
 ========================
-Invalid View (No parens)
+Invalid $View (No parens)
 :error
 ========================
  set x = $VIEW
@@ -599,7 +599,7 @@ Invalid View (No parens)
 
 
 ========================
-Invalid View (No offset)
+Invalid $View (No offset)
 :error
 ========================
  set x = $VIEW()
@@ -608,7 +608,7 @@ Invalid View (No offset)
 
 
 ============================
-Invalid View (too many args)
+Invalid $View (too many args)
 :error
 ============================
  SET x = $VIEW(0,0,1,2)
@@ -617,17 +617,179 @@ Invalid View (too many args)
 
 
 ==============================
-Invalid View (trailing commas)
+Invalid $View (trailing commas)
 :error
 ==============================
  SET x = $VIEW(0,)
 ---
 
+
+
 ==============================
-Invalid View (postconditional)
+Invalid $View (postconditional)
 :error
 ==============================
  SET x = $VIEW:x>7(0,)
 ---
 
 
+
+====
+Valid View Statements
+====
+   VIEW 6
+   VIEW:x>7 -6
+   VIEW ADDR:0:-4:"WXYZ"
+   V 4
+   VIEW (1+2)
+   VIEW:$TLEVEL>0 6
+   VIEW 0:-1:4:1234
+   VIEW:x>0 ADDR:0:-4:"WXYZ"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameters
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (view_parameters
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameters
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameters
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameters
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (numeric_literal))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (post_conditional
+          (expression
+            (expr_atom
+              (system_defined_variable))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (view_parameters
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameters
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_view
+        (keyword_view)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (view_parameters
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===
+Invalid View (incomplete offset:mode)
+:error
+===
+ VIEW ADDR:0
+---
+
+
+
+===
+Invalid View (incomplete offset:mode:length)
+:error
+===
+ VIEW ADDR:0:-4
+---
+
+===
+Invalid View (commas)
+:error
+===
+ VIEW ADDR,0,-4
+---
