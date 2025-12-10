@@ -266,7 +266,7 @@
     }
   },
   {
-    "type": "close_parameter",
+    "type": "close_argument",
     "named": true,
     "fields": {},
     "children": {
@@ -274,23 +274,50 @@
       "required": true,
       "types": [
         {
-          "type": "close_parameter_option",
+          "type": "close_parameters",
           "named": true
         },
         {
-          "type": "expression",
+          "type": "device",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "close_parameter_option",
+    "type": "close_parameter_option_value",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
+      "types": [
+        {
+          "type": "close_rename",
+          "named": true
+        },
+        {
+          "type": "device",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "open_keyword_delete",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "close_parameters",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
       "types": [
         {
           "type": "close_parameter_option_value",
@@ -300,7 +327,7 @@
     }
   },
   {
-    "type": "close_parameter_option_value",
+    "type": "close_rename",
     "named": true,
     "fields": {}
   },
@@ -354,7 +381,7 @@
       "required": true,
       "types": [
         {
-          "type": "close_parameter",
+          "type": "close_argument",
           "named": true
         },
         {
@@ -925,7 +952,7 @@
       "required": true,
       "types": [
         {
-          "type": "open_parameter",
+          "type": "open_argument",
           "named": true
         },
         {
@@ -1241,7 +1268,7 @@
           "named": true
         },
         {
-          "type": "use_parameter",
+          "type": "use_argument",
           "named": true
         }
       ]
@@ -1572,6 +1599,21 @@
         },
         {
           "type": "post_conditional",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "device",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
           "named": true
         }
       ]
@@ -2906,41 +2948,11 @@
     "fields": {}
   },
   {
-    "type": "open_param_item",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "open_param_list",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "open_param_item",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "open_parameter",
+    "type": "open_argument",
     "named": true,
     "fields": {
-      "arg": {
-        "multiple": true,
+      "mnespace": {
+        "multiple": false,
         "required": false,
         "types": [
           {
@@ -2949,23 +2961,121 @@
           }
         ]
       },
-      "params": {
-        "multiple": true,
+      "timeout": {
+        "multiple": false,
         "required": false,
         "types": [
           {
-            "type": "open_param_list",
+            "type": "expression",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
+          "type": "device",
+          "named": true
+        },
+        {
+          "type": "open_parameters",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "open_keywords",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "open_keyword_create",
+          "named": true
+        },
+        {
+          "type": "open_keyword_delete",
+          "named": true
+        },
+        {
+          "type": "open_keyword_delete_equals",
+          "named": true
+        },
+        {
+          "type": "open_keyword_fixed",
+          "named": true
+        },
+        {
+          "type": "open_keyword_iotable_equals",
+          "named": true
+        },
+        {
+          "type": "open_keyword_params",
+          "named": true
+        },
+        {
+          "type": "open_keyword_record_size",
+          "named": true
+        },
+        {
+          "type": "open_keyword_terminator",
+          "named": true
+        },
+        {
+          "type": "open_keyword_translate",
+          "named": true
+        },
+        {
+          "type": "open_keyword_translate_equals",
+          "named": true
+        },
+        {
+          "type": "open_keyword_write",
+          "named": true
+        },
+        {
+          "type": "open_keyword_xytable",
+          "named": true
+        },
+        {
+          "type": "open_keyword_xytable_equals",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "open_parameters",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "open_keywords",
           "named": true
         }
       ]
@@ -4528,10 +4638,10 @@
     }
   },
   {
-    "type": "use_colon_argument",
+    "type": "use_argument",
     "named": true,
     "fields": {
-      "expr": {
+      "mnespace": {
         "multiple": false,
         "required": false,
         "types": [
@@ -4540,73 +4650,59 @@
             "named": true
           }
         ]
-      },
-      "parameters": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": ":",
-            "named": false
-          },
-          {
-            "type": "use_parameter_item",
-            "named": true
-          }
-        ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "device",
+          "named": true
+        },
+        {
+          "type": "use_parameters",
+          "named": true
+        }
+      ]
     }
   },
   {
-    "type": "use_parameter",
+    "type": "use_keywords",
     "named": true,
-    "fields": {
-      "arg": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "use_colon_argument",
-            "named": true
-          }
-        ]
-      },
-      "device": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "expression",
-            "named": true
-          }
-        ]
-      }
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
     }
   },
   {
-    "type": "use_parameter_item",
+    "type": "use_parameters",
     "named": true,
-    "fields": {
-      "keyword": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "use_keyword_parameter",
-            "named": true
-          }
-        ]
-      },
-      "positional": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "expression",
-            "named": true
-          }
-        ]
-      }
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "open_keywords",
+          "named": true
+        },
+        {
+          "type": "use_keywords",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4788,13 +4884,164 @@
     }
   },
   {
+    "type": "zbreak_arg",
+    "named": true,
+    "fields": {
+      "zbreak_action": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "zbreak_condition",
+          "named": true
+        },
+        {
+          "type": "zbreak_execute_command",
+          "named": true
+        },
+        {
+          "type": "zbreak_location",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "zbreak_arguments",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "device",
+          "named": true
+        },
+        {
+          "type": "keyword_all",
+          "named": true
+        },
+        {
+          "type": "keyword_break",
+          "named": true
+        },
+        {
+          "type": "keyword_clear",
+          "named": true
+        },
+        {
+          "type": "keyword_debug",
+          "named": true
+        },
+        {
+          "type": "keyword_destruct",
+          "named": true
+        },
+        {
+          "type": "keyword_errortrap",
+          "named": true
+        },
+        {
+          "type": "keyword_ext",
+          "named": true
+        },
+        {
+          "type": "keyword_interrupt",
+          "named": true
+        },
+        {
+          "type": "keyword_normal",
+          "named": true
+        },
+        {
+          "type": "keyword_nostep",
+          "named": true
+        },
+        {
+          "type": "keyword_off",
+          "named": true
+        },
+        {
+          "type": "keyword_on",
+          "named": true
+        },
+        {
+          "type": "keyword_step",
+          "named": true
+        },
+        {
+          "type": "keyword_stepmethod",
+          "named": true
+        },
+        {
+          "type": "keyword_trace",
+          "named": true
+        },
+        {
+          "type": "zbreak_arg",
+          "named": true
+        },
+        {
+          "type": "zbreak_command",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "zbreak_condition",
     "named": true,
     "fields": {},
     "children": {
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "zbreak_execute_command",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "zbreak_location",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "line_ref",
+          "named": true
+        },
         {
           "type": "objectscript_identifier",
           "named": true
@@ -4823,11 +5070,23 @@
     "named": false
   },
   {
+    "type": "\"R\"",
+    "named": false
+  },
+  {
     "type": "#",
     "named": false
   },
   {
     "type": "#;",
+    "named": false
+  },
+  {
+    "type": "#delay",
+    "named": false
+  },
+  {
+    "type": "$",
     "named": false
   },
   {
@@ -4915,6 +5174,10 @@
     "named": false
   },
   {
+    "type": "--",
+    "named": false
+  },
+  {
     "type": ".",
     "named": false
   },
@@ -4936,6 +5199,74 @@
   },
   {
     "type": "//",
+    "named": false
+  },
+  {
+    "type": "/APP",
+    "named": false
+  },
+  {
+    "type": "/APPEND",
+    "named": false
+  },
+  {
+    "type": "/COMPRESS=",
+    "named": false
+  },
+  {
+    "type": "/GZIP",
+    "named": false
+  },
+  {
+    "type": "/GZIP=",
+    "named": false
+  },
+  {
+    "type": "/NEW",
+    "named": false
+  },
+  {
+    "type": "/NOXY",
+    "named": false
+  },
+  {
+    "type": "/NOXY=",
+    "named": false
+  },
+  {
+    "type": "/OBUFSIZE=",
+    "named": false
+  },
+  {
+    "type": "/POSITION=",
+    "named": false
+  },
+  {
+    "type": "/READ",
+    "named": false
+  },
+  {
+    "type": "/REN=",
+    "named": false
+  },
+  {
+    "type": "/RENAME=",
+    "named": false
+  },
+  {
+    "type": "/STREAM",
+    "named": false
+  },
+  {
+    "type": "/TRUNCATE",
+    "named": false
+  },
+  {
+    "type": "/UNDEFINED",
+    "named": false
+  },
+  {
+    "type": "/VARIABLE",
     "named": false
   },
   {
@@ -5055,6 +5386,10 @@
     "named": true
   },
   {
+    "type": "keyword_all",
+    "named": true
+  },
+  {
     "type": "keyword_break",
     "named": true
   },
@@ -5063,11 +5398,23 @@
     "named": true
   },
   {
+    "type": "keyword_clear",
+    "named": true
+  },
+  {
     "type": "keyword_close",
     "named": true
   },
   {
     "type": "keyword_continue",
+    "named": true
+  },
+  {
+    "type": "keyword_debug",
+    "named": true
+  },
+  {
+    "type": "keyword_destruct",
     "named": true
   },
   {
@@ -5107,6 +5454,14 @@
     "named": true
   },
   {
+    "type": "keyword_errortrap",
+    "named": true
+  },
+  {
+    "type": "keyword_ext",
+    "named": true
+  },
+  {
     "type": "keyword_for",
     "named": true
   },
@@ -5116,6 +5471,10 @@
   },
   {
     "type": "keyword_if",
+    "named": true
+  },
+  {
+    "type": "keyword_interrupt",
     "named": true
   },
   {
@@ -5143,7 +5502,23 @@
     "named": true
   },
   {
+    "type": "keyword_normal",
+    "named": true
+  },
+  {
+    "type": "keyword_nostep",
+    "named": true
+  },
+  {
+    "type": "keyword_off",
+    "named": true
+  },
+  {
     "type": "keyword_oldelse",
+    "named": true
+  },
+  {
+    "type": "keyword_on",
     "named": true
   },
   {
@@ -5211,11 +5586,23 @@
     "named": true
   },
   {
+    "type": "keyword_step",
+    "named": true
+  },
+  {
+    "type": "keyword_stepmethod",
+    "named": true
+  },
+  {
     "type": "keyword_tcommit",
     "named": true
   },
   {
     "type": "keyword_throw",
+    "named": true
+  },
+  {
+    "type": "keyword_trace",
     "named": true
   },
   {
@@ -5315,6 +5702,58 @@
     "named": true
   },
   {
+    "type": "open_keyword_create",
+    "named": true
+  },
+  {
+    "type": "open_keyword_delete",
+    "named": true
+  },
+  {
+    "type": "open_keyword_delete_equals",
+    "named": true
+  },
+  {
+    "type": "open_keyword_fixed",
+    "named": true
+  },
+  {
+    "type": "open_keyword_iotable_equals",
+    "named": true
+  },
+  {
+    "type": "open_keyword_params",
+    "named": true
+  },
+  {
+    "type": "open_keyword_record_size",
+    "named": true
+  },
+  {
+    "type": "open_keyword_terminator",
+    "named": true
+  },
+  {
+    "type": "open_keyword_translate",
+    "named": true
+  },
+  {
+    "type": "open_keyword_translate_equals",
+    "named": true
+  },
+  {
+    "type": "open_keyword_write",
+    "named": true
+  },
+  {
+    "type": "open_keyword_xytable",
+    "named": true
+  },
+  {
+    "type": "open_keyword_xytable_equals",
+    "named": true
+  },
+  {
     "type": "paren_fenced_text",
     "named": true
   },
@@ -5339,7 +5778,7 @@
     "named": false
   },
   {
-    "type": "use_keyword_parameter",
+    "type": "zbreak_command",
     "named": true
   },
   {
