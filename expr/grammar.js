@@ -617,8 +617,29 @@ module.exports = grammar({
         $.dollar_select,
         $.dollar_classmethod,
         $.dollar_text,
+        $.dollar_view,
         $.dollar_function,    // Fallback case
       ),
+    dollar_view: ($) => 
+      seq(
+        /\$V(IEW)?/i,
+        token.immediate('('),
+        $.expression, //offset
+        optional(
+          seq(
+            ',',
+            $.expression,
+            optional(
+              seq(
+                ',',
+                $.expression
+              )
+            )
+          )
+        ),
+        token.immediate(')')
+      ),
+
     dollar_text: ($) =>
       seq(
         // $T or $TEXT, followed by '(' with no space
@@ -726,7 +747,6 @@ module.exports = grammar({
                 choice(/\$LISTDATA/i, /\$LD/i),
                 choice(/\$LISTFROMSTRING/i, /\$LFS/i),
                 choice(/\$LISTTOSTRING/i, /\$LTS/i),
-                /\$V(IEW)?/i,
                 /\$ZNAME/i,
                 choice(/\$ZTIMEH/i, /\$ZTH/i),
                 /\$ZZENKAKU/i,
