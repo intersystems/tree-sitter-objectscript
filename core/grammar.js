@@ -1270,7 +1270,7 @@ module.exports = grammar(objectscript_expr, {
 
     command_tcommit: ($) =>
       build_command_rule_argumentless($, $.keyword_tcommit),
-    keyword_tcommit: (_) => /TCOMMIT/i,
+    keyword_tcommit: (_) => /TC(OMMIT)?/i,
 
     command_trollback: ($) =>
       choice(
