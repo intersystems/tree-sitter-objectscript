@@ -22,6 +22,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   _TERMINATION,
   ZBREAK_COMMAND,
   _ZBREAK_DEVICE_TERMINATION,
+  _POST_CONDITIONAL_ID,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -47,6 +48,7 @@ static const char* token_names[] = {
   "_TERMINATION",
   "ZBREAK_COMMAND",
   "_ZBREAK_DEVICE_TERMINATION",
+  "_POST_CONDITIONAL_ID",
 };
 
 #if 0
@@ -185,6 +187,16 @@ if (valid_symbols[_ARGUMENTLESS_LOOP]) {
     }
 }
 
+if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
+  lexer->mark_end(lexer);
+  lexer->advance(lexer, false);
+  if (!(iswspace(lexer->lookahead))) {
+    lexer->result_symbol = _POST_CONDITIONAL_ID;
+    scanner->terminated_newline = false;
+    return true;
+  }
+}
+
   if((valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] ||
   valid_symbols[_ARGUMENTLESS_COMMAND_END] ||
   valid_symbols[_ARGUMENTLESS_LOOP])
@@ -218,6 +230,7 @@ if (valid_symbols[_ARGUMENTLESS_LOOP]) {
                 return true;
             }
         }
+        
         if (count == 1 && !is_block && lexer->lookahead=='/' && valid_symbols[ZBREAK_COMMAND]) {
             // CHANGES HERE
             lexer->mark_end(lexer);
