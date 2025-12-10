@@ -7,6 +7,9 @@ Use Valid Statements
  USE device::mnespace
  use "test":(x=1 : x=2):"space"
  use "test":(x=1:x=2):"space"
+ USE "/dev/tty06"::"^%x364"
+
+
 ---
 
 (source_file
@@ -135,6 +138,17 @@ Use Valid Statements
                 (expression
                   (expr_atom
                     (numeric_literal))))))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_use
+        (keyword_use)
+        (use_argument
+          (device
+            (expression
+              (expr_atom
+                (string_literal))))
           (expression
             (expr_atom
               (string_literal))))))))

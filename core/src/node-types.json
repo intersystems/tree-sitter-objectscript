@@ -580,41 +580,19 @@
     }
   },
   {
-    "type": "command_halt",
+    "type": "command_halt_or_hang",
     "named": true,
     "fields": {
-      "command_name": {
-        "multiple": false,
-        "required": true,
+      "hang_argument": {
+        "multiple": true,
+        "required": false,
         "types": [
           {
-            "type": "keyword_halt",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "post_conditional",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "command_hang",
-    "named": true,
-    "fields": {
-      "command_name": {
-        "multiple": false,
-        "required": true,
-        "types": [
+            "type": ",",
+            "named": false
+          },
           {
-            "type": "keyword_hang",
+            "type": "expression",
             "named": true
           }
         ]
@@ -622,10 +600,18 @@
     },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "keyword_halt",
+          "named": true
+        },
+        {
+          "type": "keyword_hang",
           "named": true
         },
         {
@@ -2602,16 +2588,6 @@
     }
   },
   {
-    "type": "keyword_halt",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "keyword_hang",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "kill_argument",
     "named": true,
     "fields": {},
@@ -4173,11 +4149,7 @@
           "named": true
         },
         {
-          "type": "command_halt",
-          "named": true
-        },
-        {
-          "type": "command_hang",
+          "type": "command_halt_or_hang",
           "named": true
         },
         {
@@ -5310,6 +5282,10 @@
     "named": false
   },
   {
+    "type": "H",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
@@ -5371,6 +5347,10 @@
   },
   {
     "type": "false",
+    "named": false
+  },
+  {
+    "type": "h",
     "named": false
   },
   {
@@ -5467,6 +5447,14 @@
   },
   {
     "type": "keyword_goto",
+    "named": true
+  },
+  {
+    "type": "keyword_halt",
+    "named": true
+  },
+  {
+    "type": "keyword_hang",
     "named": true
   },
   {
