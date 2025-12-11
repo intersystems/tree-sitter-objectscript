@@ -14,6 +14,7 @@ WRITE WITH INPUTS
     GOTO Test
   }
 ---
+
 (source_file
   (statements
     (statement
@@ -165,6 +166,7 @@ WRITE OBJECT PROPERTIES
   SET myoref=##class(%SYS.NLS.Format).%New()
   WRITE myoref.GetFormatItem("MonthAbbr")
 ---
+
 (source_file
   (statements
     (statement
@@ -237,6 +239,7 @@ WRITE: CASCADING DOT SYNTAX
   WRITE ##class(Patient)patient.Doctor.Hospital.Name
   WRITE ##class(Patient)patient.AdmitDateIsValid(date)
 ---
+
 (source_file
   (statements
     (statement
@@ -291,6 +294,7 @@ WRITE WITH $X AND $Y
   WRITE $X," "_$Y
   WRITE ?5,"Hello world",!
 ---
+
 (source_file
   (statements
     (statement
@@ -368,6 +372,7 @@ MULTIPLE DEVICE CONTROL CHARS
    WRITE "Hello",!?5,"world"
    WRITE !!,"Its cube is: ",?col,ans
 ---
+
 (source_file
   (statements
     (statement
@@ -416,6 +421,7 @@ MULTIPLE DEVICE CONTROL CHARS
 =============================
   WRITE $$$WriteMacro
 ---
+
 (source_file
   (statements
     (statement
@@ -433,6 +439,7 @@ WRITE WITH ESCAPE SEQUENCES
    WRITE *27,"char"
    WRITE *27,"[2J"
 ---
+
 (source_file
   (statements
     (statement
@@ -462,7 +469,6 @@ WRITE WITH ESCAPE SEQUENCES
             (expr_atom
               (string_literal))))))))
 
-
 ======
 ZWRITE
 ======
@@ -474,6 +480,7 @@ ZWRITE
  ZWRITE fruit
  ZWRITE jobj.%ToJSON()
 ---
+
 (source_file
   (statements
     (statement
@@ -554,6 +561,7 @@ Write with Indirections
   WRITE !,@array@(i,x)
   WRITE !,@array@(i,x,y)
 ---
+
 (source_file
   (statements
     (statement
@@ -628,6 +636,7 @@ ZWRITE WITH INDIRECTION
 ===========================
  zw @table
 ---
+
 (source_file
   (statements
     (statement
@@ -639,3 +648,392 @@ ZWRITE WITH INDIRECTION
               (glvn
                 (lvn
                   (objectscript_identifier))))))))))
+
+======================
+Valid Write Statements
+======================
+  WRITE L[S
+  WRITE "LAMPOON"]"LAMP"
+  WRITE 122]]2
+  WRITE "Fred" = "Fred",!  // TRUE
+  WRITE "Fred" = "FRED",!  // FALSE
+  WRITE "-7" = -007.0,!    // TRUE
+  WRITE "-007.0" = -7,!    // FALSE
+  WRITE "0" = -0,!         // TRUE
+  WRITE "-0" = 0,!         // FALSE
+  WRITE "-0" = -0,!        // FALSE
+  WRITE test1 ? 3N1"-"2N1"-"4N
+  WRITE $LENGTH("How long is this?")
+  WRITE "one",!,$JUSTIFY("two",8),!,"three"
+  WRITE $ZCONVERT("cRAZy cAPs","t")
+  WRITE $FIND("Once upon a time...", "upon")
+  SET text = "11/04/2008"
+  WRITE $TRANSLATE(text,"/","-")
+  SET text = "green leaves, brown leaves"
+  WRITE text,!
+  WRITE $REPLACE(text,"leaves","eyes"),!
+  WRITE $REPLACE(text,"leaves","hair",15),!
+  WRITE text,!
+  WRITE $EXTRACT("Nevermore"),$EXTRACT("prediction",5),$EXTRACT("xon/xoff",1,3)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (numeric_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (line_comment_1)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (pattern_expression))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))))))
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
