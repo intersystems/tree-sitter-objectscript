@@ -1,0 +1,532 @@
+===
+Valid ZZDUMP statements
+===
+ ZZDUMP x,y
+ ZZDUMP +007,"","+007"
+ ZZDUMP:x>3 x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (numeric_literal)))
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+Invalid ZZDUMP (Argumentless)
+:error
+===
+ ZZDUMP
+---
+
+
+
+===
+Invalid ZZDUMP (Argumentless, postconditional)
+:error
+===
+ ZZDUMP:x>3
+---
+
+
+
+===
+zzdump_single_local_variable
+===
+ ZZDUMP x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzdump_multiple_local_variables
+===
+ ZZDUMP x,y,z
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzdump_numeric_literal
+===
+ ZZDUMP 123
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+zzdump_string_literal
+===
+ ZZDUMP "ABC"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+zzdump_mixed_expressions
+===
+ ZZDUMP x,"ABC",42
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+zzdump_with_postconditional_simple
+===
+ ZZDUMP:(1=1) x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (numeric_literal))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzdump_with_postconditional_complex
+===
+ ZZDUMP:(a>0&(b<3)) x,y
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzdump_global_variable
+===
+ ZZDUMP ^G(1,2)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+===
+zzdump_global_variable_no_subscripts
+===
+ ZZDUMP ^G
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn)))))))
+
+===
+zzdump_extended_ref_global
+===
+ ZZDUMP ^|"OTHERNS"|Patient(1)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+===
+zzdump_special_variable
+===
+ ZZDUMP $JOB
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (system_defined_variable)))))))
+
+===
+zzdump_process_private_global
+===
+ ZZDUMP ^||Temp("session","key")
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
+
+===
+zzdump_multiple_lines_in_routine
+===
+ ZZDUMP "FIRST"
+ ZZDUMP "SECOND",x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzdump_mixed_with_other_commands
+===
+    SET x="A",y="B"
+    ZZDUMP x,y
+    WRITE "done"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (string_literal))))
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+zzdump_spacing_variations
+===
+ ZZDUMP x ,  y ,   "ABC"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+zzdump_postconditional_without_space
+===
+ ZZDUMP:(x>0) "POSITIVE"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+zzdump_postconditional_with_commas
+===
+ ZZDUMP:(cnt>0) x,y,z
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+====
+ZZDUMP objects
+====
+ zzdump ["apples","oranges"]
+ zzdump {"fruit":"apples","count":24}
+ zzdump {"doub":($DOUBLE(1.234))}
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_literal
+                (json_string_literal))
+              (json_literal
+                (json_string_literal)))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_literal
+                (json_string_literal))
+              (json_string_literal)
+              (json_literal
+                (json_number_literal)))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_objectscript_expr
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))))))
