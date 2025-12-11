@@ -191,7 +191,7 @@ module.exports = grammar(objectscript_expr, {
         $.command_zn,
         $.command_zsu,
         $.command_ztrap,
-        $.command_zz,
+        $.command_zz, // HERE
         $.embedded_html,
         $.embedded_xml,
         $.embedded_sql,
@@ -407,11 +407,12 @@ module.exports = grammar(objectscript_expr, {
       prec.right(
         choice(
           build_command_rule_argumentless($, $.keyword_write),
-          build_command_rule_argumentful(
-            $,
-            $.keyword_write,
-            repeat_with_commas($.write_argument),
-          ),
+          seq(
+          $.keyword_write,
+          optional($.post_conditional),
+          choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
+          repeat_with_commas($.write_argument)
+        )
         ),
       ),
     keyword_write: (_) => /[wW]([rR][iI][tT][eE])?/,
@@ -1584,11 +1585,12 @@ module.exports = grammar(objectscript_expr, {
     keyword_zwrite: (_) => /ZW(RITE)?/i,
 
     command_zz: ($) =>
-      build_command_rule_argumentful(
-        $,
-        $.keyword_zz,
-        repeat_with_commas($.expression),
-      ),
+      seq(
+          $.keyword_zz,
+          optional($.post_conditional),
+          choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
+          repeat_with_commas($.expression)
+        ),
     keyword_zz: (_) => /ZZ[A-Z0-9]+/i,
 
     embedded_html: ($) =>

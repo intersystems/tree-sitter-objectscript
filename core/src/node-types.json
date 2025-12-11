@@ -1326,7 +1326,7 @@
     "fields": {
       "command_name": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "keyword_write",
@@ -1339,6 +1339,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "keyword_write",
+          "named": true
+        },
         {
           "type": "post_conditional",
           "named": true
@@ -1567,24 +1571,17 @@
   {
     "type": "command_zz",
     "named": true,
-    "fields": {
-      "command_name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_zz",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "keyword_zz",
           "named": true
         },
         {
