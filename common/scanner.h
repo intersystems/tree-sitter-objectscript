@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-// #include <stdio.h>
+#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -24,6 +24,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   _ZBREAK_DEVICE_TERMINATION,
   _POST_CONDITIONAL_ID,
   _XECUTE_ARG_INVALID,
+  _ZW_BLOCK,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -50,7 +51,8 @@ static const char* token_names[] = {
   "ZBREAK_COMMAND",
   "_ZBREAK_DEVICE_TERMINATION",
   "_POST_CONDITIONAL_ID",
-  "_XECUTE_ARG_INVALID"
+  "_XECUTE_ARG_INVALID",
+  "_ZW_BLOCK"
 };
 
 #if 0
@@ -222,8 +224,8 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
 
         bool is_block = (lexer->lookahead == '{');
 
-        // fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
-        //                 lexer->get_column(lexer), lexer->lookahead);
+        fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
+                        lexer->get_column(lexer), is_termination, is_block,lexer->lookahead);
 
 
         if (count == 1 && !is_block && !is_termination) {
@@ -232,6 +234,12 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
                 scanner->terminated_newline = false;
                 return true;
             }
+        }
+
+        if (count == 1 && is_block && valid_symbols[_ZW_BLOCK]) {
+          lexer->result_symbol = _ZW_BLOCK;
+          scanner->terminated_newline = false;
+          return true;
         }
         
         if (count == 1 && !is_block && lexer->lookahead=='/' && valid_symbols[ZBREAK_COMMAND]) {

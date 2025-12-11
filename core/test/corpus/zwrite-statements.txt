@@ -1,0 +1,304 @@
+======
+ZWRITE
+======
+
+ ZWRITE
+ ZW
+ ZWRITE x,sum,alpha
+ ZWRITE a,b,c,d,e,f
+ ZWRITE ^||fruit
+ ZWRITE fruit
+ ZWRITE jobj.%ToJSON()
+ ZW $CHAR(65,7,66,67,0,68,11,49,50)
+ ZWRITE ^Sample.PersonD
+ ZWRITE ^Sample.PersonD(22)
+ ZWRITE ^Sample.PersonI("NameIDX")
+ ZWRITE ^["USER"]Sample.PersonD
+ ZWRITE ##class(%SQL.Statement).%New()
+ zw oref.%Execute()
+ zw x+y, y
+ ZW $LISTBUILD("Red","Blue","Green","Yellow"),$LIST(FullList,2,4),$LISTFROMSTRING("Crimson^Azure^Lime","^")
+
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zwrite
+        command_name: (keyword_zwrite)))
+    (statement
+      (command_zwrite
+        command_name: (keyword_zwrite)))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (gvn)))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (oref_chain_expr
+              (lvn
+                (objectscript_identifier))
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args)))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (gvn)))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (gvn
+              (expression
+                (expr_atom
+                  (string_literal))))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (class_method_call
+              (class_ref
+                preproc_keyword: (keyword_pound_pound_class)
+                (class_name
+                  (dotted_identifier_strict_token_immediate)))
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (oref_chain_expr
+              (lvn
+                (objectscript_identifier))
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args)))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (expression
+                (expr_atom
+                  (string_literal))))))))))
+
+===
+ZWrite JSON objects
+===
+ zw ["apples","oranges"]
+ zw {"fruit":"apples","count":24}
+ zw {"doub":($DOUBLE(1.234))}
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_literal
+                (json_string_literal))
+              (json_literal
+                (json_string_literal)))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_literal
+                (json_string_literal))
+              (json_string_literal)
+              (json_literal
+                (json_number_literal)))))))
+    (statement
+      (command_zwrite
+        (keyword_zwrite)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_objectscript_expr
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))))))
+
+========================================
+Zwrite invalid space between expressions
+:error
+========================================
+ ZWRITE x y
+---
+
+
