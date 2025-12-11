@@ -1548,7 +1548,7 @@ module.exports = grammar(objectscript_expr, {
         $.keyword_zn,
         repeat_with_commas($.expression),
       ),
-    keyword_zn: (_) => /ZN(SPACE)/i,
+    keyword_zn: (_) => /ZN(SPACE)?/i,
 
     command_zsu: ($) =>
       choice(
