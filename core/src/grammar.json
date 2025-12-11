@@ -32,6 +32,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "json_object_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_parenthetical_expression"
         },
         {
@@ -49,10 +53,6 @@
         {
           "type": "SYMBOL",
           "name": "numeric_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "json_object_literal"
         },
         {
           "type": "SYMBOL",
@@ -4123,15 +4123,15 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "json_object_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "json_string_literal"
         },
         {
           "type": "SYMBOL",
           "name": "json_number_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "json_object_literal"
         },
         {
           "type": "SYMBOL",
@@ -4462,10 +4462,6 @@
         {
           "type": "SYMBOL",
           "name": "command_ztrap"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "command_zwrite"
         },
         {
           "type": "SYMBOL",
@@ -11912,12 +11908,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "FIELD",
-              "name": "command_name",
-              "content": {
-                "type": "SYMBOL",
-                "name": "keyword_zwrite"
-              }
+              "type": "SYMBOL",
+              "name": "keyword_zwrite"
             },
             {
               "type": "CHOICE",
@@ -11932,8 +11924,17 @@
               ]
             },
             {
-              "type": "SYMBOL",
-              "name": "_immediate_single_whitespace_followed_by_non_whitespace"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_immediate_single_whitespace_followed_by_non_whitespace"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_zw_block"
+                }
+              ]
             },
             {
               "type": "SEQ",
@@ -12454,6 +12455,354 @@
           "value": "expression"
         }
       ]
+    },
+    "json_string_literal_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "\""
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[^\"\\\\\\n]"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\[\"\\\\/bfnrt]"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\\\u[0-9a-fA-F]{4}"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "\""
+            }
+          ]
+        }
+      }
+    },
+    "json_number_literal_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "PATTERN",
+          "value": "-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?"
+        }
+      }
+    },
+    "json_array_literal_post_cond": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "["
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "json_literal_post_cond"
+                  },
+                  "named": true,
+                  "value": "json_literal"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "IMMEDIATE_TOKEN",
+                        "content": {
+                          "type": "STRING",
+                          "value": ","
+                        }
+                      },
+                      {
+                        "type": "ALIAS",
+                        "content": {
+                          "type": "SYMBOL",
+                          "name": "json_literal_post_cond"
+                        },
+                        "named": true,
+                        "value": "json_literal"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "]"
+          }
+        }
+      ]
+    },
+    "json_boolean_literal_post_cond": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "true"
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "false"
+          }
+        }
+      ]
+    },
+    "json_null_literal_post_cond": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "null"
+      }
+    },
+    "json_literal_post_cond": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_object_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_object_literal"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_string_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_string_literal"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_number_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_number_literal"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_array_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_array_literal"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_boolean_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_boolean_literal"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_null_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_null_literal"
+        }
+      ]
+    },
+    "json_objectscript_expr_post_cond": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "("
+          }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "expression_post_cond"
+          },
+          "named": true,
+          "value": "expression"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          }
+        }
+      ]
+    },
+    "_json_object_literal_pair_post_cond": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "key",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "json_string_literal_post_cond"
+            },
+            "named": true,
+            "value": "json_string_literal"
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ":"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "json_literal_post_cond"
+                },
+                "named": true,
+                "value": "json_literal"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "json_objectscript_expr_post_cond"
+                },
+                "named": true,
+                "value": "json_objectscript_expr"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "json_object_literal_post_cond": {
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "{"
+            }
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_json_object_literal_pair_post_cond"
+                    },
+                    "named": true,
+                    "value": "_json_object_literal_pair"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "IMMEDIATE_TOKEN",
+                          "content": {
+                            "type": "STRING",
+                            "value": ","
+                          }
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "_json_object_literal_pair_post_cond"
+                          },
+                          "named": true,
+                          "value": "_json_object_literal_pair"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "}"
+            }
+          }
+        ]
+      }
     },
     "_unary_operator_post_cond": {
       "type": "CHOICE",
@@ -13290,354 +13639,6 @@
           "type": "PATTERN",
           "value": "[+-]?(?:\\d+\\.\\d+(?:[eE][+-]?\\d+)?|\\.\\d+(?:[eE][+-]?\\d+)?|\\d+(?:[eE][+-]?\\d+)?)"
         }
-      }
-    },
-    "json_string_literal_post_cond": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "TOKEN",
-        "content": {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "\""
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "PATTERN",
-                    "value": "[^\"\\\\\\n]"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\\\[\"\\\\/bfnrt]"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\\\u[0-9a-fA-F]{4}"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "\""
-            }
-          ]
-        }
-      }
-    },
-    "json_number_literal_post_cond": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "TOKEN",
-        "content": {
-          "type": "PATTERN",
-          "value": "-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?"
-        }
-      }
-    },
-    "json_array_literal_post_cond": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "["
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "json_literal_post_cond"
-                  },
-                  "named": true,
-                  "value": "json_literal"
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "IMMEDIATE_TOKEN",
-                        "content": {
-                          "type": "STRING",
-                          "value": ","
-                        }
-                      },
-                      {
-                        "type": "ALIAS",
-                        "content": {
-                          "type": "SYMBOL",
-                          "name": "json_literal_post_cond"
-                        },
-                        "named": true,
-                        "value": "json_literal"
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "]"
-          }
-        }
-      ]
-    },
-    "json_boolean_literal_post_cond": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "true"
-          }
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "false"
-          }
-        }
-      ]
-    },
-    "json_null_literal_post_cond": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "STRING",
-        "value": "null"
-      }
-    },
-    "json_literal_post_cond": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_string_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_string_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_number_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_number_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_object_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_object_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_array_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_array_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_boolean_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_boolean_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_null_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_null_literal"
-        }
-      ]
-    },
-    "json_objectscript_expr_post_cond": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "("
-          }
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "expression_post_cond"
-          },
-          "named": true,
-          "value": "expression"
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": ")"
-          }
-        }
-      ]
-    },
-    "_json_object_literal_pair_post_cond": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "key",
-          "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "json_string_literal_post_cond"
-            },
-            "named": true,
-            "value": "json_string_literal"
-          }
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": ":"
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "value",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "json_literal_post_cond"
-                },
-                "named": true,
-                "value": "json_literal"
-              },
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "json_objectscript_expr_post_cond"
-                },
-                "named": true,
-                "value": "json_objectscript_expr"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "json_object_literal_post_cond": {
-      "type": "PREC",
-      "value": 2,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{"
-            }
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "ALIAS",
-                    "content": {
-                      "type": "SYMBOL",
-                      "name": "_json_object_literal_pair_post_cond"
-                    },
-                    "named": true,
-                    "value": "_json_object_literal_pair"
-                  },
-                  {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "IMMEDIATE_TOKEN",
-                          "content": {
-                            "type": "STRING",
-                            "value": ","
-                          }
-                        },
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "SYMBOL",
-                            "name": "_json_object_literal_pair_post_cond"
-                          },
-                          "named": true,
-                          "value": "_json_object_literal_pair"
-                        }
-                      ]
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          },
-          {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "}"
-            }
-          }
-        ]
       }
     },
     "instance_variable_post_cond": {
@@ -14972,6 +14973,15 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "json_object_literal_post_cond"
+          },
+          "named": true,
+          "value": "json_object_literal"
+        },
+        {
           "type": "SYMBOL",
           "name": "_parenthetical_expression"
         },
@@ -15010,15 +15020,6 @@
           },
           "named": true,
           "value": "numeric_literal"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "json_object_literal_post_cond"
-          },
-          "named": true,
-          "value": "json_object_literal"
         },
         {
           "type": "ALIAS",
@@ -15723,6 +15724,10 @@
     {
       "type": "SYMBOL",
       "name": "_xecute_arg_invalid"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_zw_block"
     }
   ],
   "inline": [

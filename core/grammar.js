@@ -108,6 +108,7 @@ module.exports = grammar(objectscript_expr, {
     $._zbreak_device_termination,
     $._post_conditional_id,
     $._xecute_arg_invalid,
+    $._zw_block,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -190,7 +191,6 @@ module.exports = grammar(objectscript_expr, {
         $.command_zn,
         $.command_zsu,
         $.command_ztrap,
-        $.command_zwrite,
         $.command_zz,
         $.embedded_html,
         $.embedded_xml,
@@ -1571,15 +1571,15 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     keyword_ztrap: (_) => /ZT(RAP)?/i,
-
     command_zwrite: ($) =>
       choice(
         build_command_rule_argumentless($, $.keyword_zwrite),
-        build_command_rule_argumentful(
-          $,
+        seq(
           $.keyword_zwrite,
-          repeat_with_commas($.expression),
-        ),
+          optional($.post_conditional),
+          choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
+          repeat_with_commas($.expression)
+        )
       ),
     keyword_zwrite: (_) => /ZW(RITE)?/i,
 

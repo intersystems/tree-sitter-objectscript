@@ -57,6 +57,7 @@ module.exports = grammar({
 
     expr_atom: ($) =>
       choice(
+        $.json_object_literal,
         $._parenthetical_expression,
         $.unary_expression,
         $.macro,
@@ -64,7 +65,6 @@ module.exports = grammar({
         // Literals
         $.string_literal,
         $.numeric_literal,
-        $.json_object_literal,
         $.json_array_literal,
 
         // Variables
@@ -983,9 +983,9 @@ module.exports = grammar({
       ')',
     ),
     json_literal: ($) => choice(
+      $.json_object_literal,
       $.json_string_literal,
       $.json_number_literal,
-      $.json_object_literal,
       $.json_array_literal,
       $.json_boolean_literal,
       $.json_null_literal,
