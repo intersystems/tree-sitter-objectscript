@@ -1032,8 +1032,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "."
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "."
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_xecute_byref_arg"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -4515,6 +4524,13 @@
         {
           "type": "SYMBOL",
           "name": "_bol"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "STRING",
+            "value": "."
+          }
         },
         {
           "type": "SYMBOL",
@@ -10458,6 +10474,98 @@
       "value": "TS(TART)?",
       "flags": "i"
     },
+    "xecute_argument": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_xecute_arg_invalid"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "expression"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "post_conditional"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "("
+            },
+            {
+              "type": "SYMBOL",
+              "name": "expression"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "byref_arg"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "expression"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "STRING",
+              "value": ")"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "post_conditional"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "command_xecute": {
       "type": "SEQ",
       "members": [
@@ -10486,49 +10594,27 @@
           "name": "_immediate_single_whitespace_followed_by_non_whitespace"
         },
         {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "expression"
+              "name": "xecute_argument"
             },
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "expression"
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": ","
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "expression"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "STRING",
-                  "value": ")"
-                }
-              ]
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "xecute_argument"
+                  }
+                ]
+              }
             }
           ]
         }
@@ -15404,10 +15490,6 @@
   ],
   "conflicts": [
     [
-      "command_xecute",
-      "_parenthetical_expression"
-    ],
-    [
       "use_parameters",
       "_parenthetical_expression"
     ],
@@ -15418,6 +15500,10 @@
     [
       "label_ref",
       "objectscript_identifier"
+    ],
+    [
+      "xecute_argument",
+      "_parenthetical_expression"
     ]
   ],
   "precedences": [
@@ -15578,6 +15664,14 @@
     {
       "type": "SYMBOL",
       "name": "_post_conditional_id"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_xecute_byref_arg"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_xecute_arg_invalid"
     }
   ],
   "inline": [

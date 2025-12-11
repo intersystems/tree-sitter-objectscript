@@ -8,6 +8,7 @@ Do Statement No Param Passing
  SET $NAMESPACE="USER"
  DO ^|"SAMPLES"|fibonacci
 ---
+
 (source_file
   (statements
     (statement
@@ -91,6 +92,7 @@ Do Statement With Param Passing
  WRITE !,"In Main ",x,y,z
  DO Sub1(.x,.y,.z)
 ---
+
 (source_file
   (statements
     (statement
@@ -192,7 +194,7 @@ Do Statement With Param Passing
                 (objectscript_identifier)))))))
     (statement
       (command_quit
-         command_name: (keyword_quit)))
+        command_name: (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -287,7 +289,7 @@ Do Statement With Param Passing
                 (objectscript_identifier)))))))
     (statement
       (command_quit
-         command_name: (keyword_quit)))
+        command_name: (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -345,7 +347,7 @@ Do Statement With Param Passing
                     (objectscript_identifier)))))))))
     (statement
       (command_quit
-         command_name: (keyword_quit)))
+        command_name: (keyword_quit)))
     (statement
       (command_set
         command_name: (keyword_set)
@@ -424,6 +426,7 @@ Do Statement Object Method
  DO i%prop(subs).Method()
  DO ##class(cname).Method()
 ---
+
 (source_file
   (statements
     (statement
@@ -486,6 +489,7 @@ Do Statement with Indirection
  SET loc = "Choice"_num_rout
  DO @loc
 ---
+
 (source_file
   (statements
     (statement
@@ -500,7 +504,7 @@ Do Statement with Indirection
               (objectscript_identifier))))))
     (statement
       (command_quit
-       command_name: (keyword_quit)
+        command_name: (keyword_quit)
         (post_conditional
           (expression
             (expr_atom
@@ -592,6 +596,7 @@ Do Statement with Argument Postconditionals
  DO:0 $INCREMENT(myvar($INCREMENT(subvar))):1  /* myvar and subvar not incremented */
  DO:1 $INCREMENT(myvar($INCREMENT(subvar))):0  /* myvar not incremented, subvar incremented */
 ---
+
 (source_file
   (statements
     (statement
@@ -824,6 +829,7 @@ Do While Statement and Continue
 ===============================
  DO {SET x=x+1 IF x#2=0 {CONTINUE} WRITE !,"Loop ",x} WHILE x<20
 ---
+
 (source_file
   (statements
     (statement
@@ -908,6 +914,7 @@ Do While Statement and Quit
      } WHILE x<6
   WRITE "Done"
 ---
+
 (source_file
   (statements
     (statement
@@ -967,7 +974,7 @@ Do While Statement and Quit
                     (write_device_fflf)))))
             (statement
               (command_quit
-                 command_name: (keyword_quit)
+                command_name: (keyword_quit)
                 (post_conditional
                   (expression
                     (expr_atom
@@ -1063,6 +1070,7 @@ Do While Statement and Goto
   } WHILE 1=1
   WRITE !,"This should not display"
 ---
+
 (source_file
   (statements
     (statement
@@ -1161,6 +1169,7 @@ Do Statement Dot Syntax
   WRITE !,"Back at top level" ; Mainline code resumes
 
 ---
+
 (source_file
   (statements
     (statement
@@ -1502,12 +1511,12 @@ Do Statement Dot Syntax
               (string_literal)))))))
   (line_comment_3))
 
-
 ====================================================
 do while block no whitespace in between do and block
 ====================================================
  do{ w hi} while x < 2
 ---
+
 (source_file
   (statements
     (statement

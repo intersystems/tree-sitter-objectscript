@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-// #include <stdio.h>
+#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -23,6 +23,8 @@ enum ObjectScript_Core_Scanner_TokenType {
   ZBREAK_COMMAND,
   _ZBREAK_DEVICE_TERMINATION,
   _POST_CONDITIONAL_ID,
+  _XECUTE_BYREF_ARG,
+  _XECUTE_ARG_INVALID,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -49,6 +51,8 @@ static const char* token_names[] = {
   "ZBREAK_COMMAND",
   "_ZBREAK_DEVICE_TERMINATION",
   "_POST_CONDITIONAL_ID",
+  "_XECUTE_BYREF_ARG",
+  "_XECUTE_ARG_INVALID"
 };
 
 #if 0
@@ -131,6 +135,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     //         lexer->get_column(lexer));
     return false;
   }
+  
 
 if (valid_symbols[_TERMINATION] && valid_symbols[_ARGUMENTLESS_LOOP] && lexer->lookahead=='\n') {
     // normally this would be a termination, but we need to make sure that it isn't a block.
@@ -353,7 +358,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             }
 
             if(valid_symbols[_BOL] && is_dot) {
-//                fprintf(stderr,"DOES IT EVER GET TO BOL BLOCK");
+              //  fprintf(stderr,"DOES IT EVER GET TO BOL BLOCK");
                 unsigned dots = 0;
                 while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }
                 // Don’t collide with decimals or relative-dot
@@ -614,8 +619,23 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     }
 //     fprintf(stderr, " CONSUMED scan: lookahead='%c' (%d), col=%u\n",
 //                   lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
+    fprintf(stderr, "saw_nl, valid_symbols[_BOL]  %d %d", saw_nl, valid_symbols[_BOL]);
 
     unsigned dots = 0;
+    if (lexer->lookahead=='.' && valid_symbols[_XECUTE_BYREF_ARG]) {
+      lexer->advance(lexer,false);
+      if (iswalpha(lexer->lookahead)) {
+        lexer->result_symbol = _XECUTE_BYREF_ARG;
+        scanner->terminated_newline = false;
+        return true;
+      }
+    }
+
+    else if (lexer->lookahead=='.' && valid_symbols[_XECUTE_ARG_INVALID]) {
+      lexer->mark_end(lexer);
+    }
+    
+    
     while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }
     // Don’t collide with decimals or relative-dot
     bool is_decimal = false;
@@ -626,7 +646,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     // fprintf(stderr, "DEBUG[BOL] dots=%u lookahead='%c'\n",
     //             dots, lexer->lookahead);
 
-    //             fprintf(stderr, "is_decimal, saw_nl, valid_symbols[_BOL] %d %d %d", is_decimal, saw_nl, valid_symbols[_BOL]);
+    fprintf(stderr, "is_decimal, saw_nl, valid_symbols[_BOL] %d %d %d", is_decimal, saw_nl, valid_symbols[_BOL]);
 
     if (saw_nl && valid_symbols[_BOL] && dots > 0 && !is_decimal) {
         lexer->result_symbol = _BOL;
