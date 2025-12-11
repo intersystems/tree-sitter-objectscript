@@ -126,6 +126,37 @@
     }
   },
   {
+    "type": "dollar_text",
+    "named": true,
+    "fields": {
+      "arg": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "line_ref",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "dollar_view",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "dollarsf",
     "named": true,
     "fields": {
@@ -273,6 +304,10 @@
         "required": true,
         "types": [
           {
+            "type": "'?",
+            "named": false
+          },
+          {
             "type": "?",
             "named": false
           },
@@ -390,6 +425,10 @@
           "named": true
         },
         {
+          "type": "indirected_glvn",
+          "named": true
+        },
+        {
           "type": "lvn",
           "named": true
         },
@@ -416,6 +455,48 @@
           "type": "expression",
           "named": true
         },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "indirected_glvn",
+    "named": true,
+    "fields": {
+      "base": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "class_parameter_ref",
+            "named": true
+          },
+          {
+            "type": "gvn",
+            "named": true
+          },
+          {
+            "type": "lvn",
+            "named": true
+          },
+          {
+            "type": "relative_dot_parameter",
+            "named": true
+          },
+          {
+            "type": "ssvn",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
         {
           "type": "subscripts",
           "named": true
@@ -589,6 +670,64 @@
     "fields": {}
   },
   {
+    "type": "line_ref",
+    "named": true,
+    "fields": {
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "indirection",
+            "named": true
+          },
+          {
+            "type": "label_ref",
+            "named": true
+          }
+        ]
+      },
+      "offset": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label_offset",
+            "named": true
+          }
+        ]
+      },
+      "routine": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "indirection",
+            "named": true
+          },
+          {
+            "type": "routine_ref",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "indirection",
+          "named": true
+        },
+        {
+          "type": "routine_ref",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "lvn",
     "named": true,
     "fields": {},
@@ -714,6 +853,10 @@
       "types": [
         {
           "type": "class_method_call",
+          "named": true
+        },
+        {
+          "type": "class_ref",
           "named": true
         },
         {
@@ -1087,6 +1230,14 @@
           "named": true
         },
         {
+          "type": "dollar_text",
+          "named": true
+        },
+        {
+          "type": "dollar_view",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         },
@@ -1152,7 +1303,7 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -1161,6 +1312,10 @@
         },
         {
           "type": "glvn",
+          "named": true
+        },
+        {
+          "type": "subscripts",
           "named": true
         }
       ]
@@ -1231,6 +1386,10 @@
   },
   {
     "type": "'>",
+    "named": false
+  },
+  {
+    "type": "'?",
     "named": false
   },
   {

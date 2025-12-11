@@ -107,13 +107,15 @@ module.exports = grammar(objectscript_expr, {
     $.zbreak_command,
     $._zbreak_device_termination,
     $._post_conditional_id,
+    $._xecute_byref_arg,
+    $._xecute_arg_invalid,
   ],
   conflicts: ($, previous) =>
     previous.concat([
-      [$.command_xecute, $._parenthetical_expression],
       [$.use_parameters, $._parenthetical_expression],
       [$.open_parameters, $._parenthetical_expression],
       [ $.label_ref, $.objectscript_identifier ],
+      [$.xecute_argument, $._parenthetical_expression],
     ]),
 
   // These are what I can think of
@@ -183,7 +185,7 @@ module.exports = grammar(objectscript_expr, {
         $.command_trollback,
         $.command_tstart,
         $.command_view,
-        $.command_xecute,
+        $.command_xecute, //HERE
         $.command_zbreak,
         $.command_zkill,
         $.command_zn,
@@ -214,6 +216,7 @@ module.exports = grammar(objectscript_expr, {
          // this is from the external scanner, and it means that it was
          // at the start of a line and there were dots matching the dotted statement
         $._bol,
+        repeat('.'), // in the whitespace case, I don't want to consume the . in the scanner, so they would appear here
         $.statement,
       ),
     pound_dim: ($) =>
@@ -1281,18 +1284,43 @@ module.exports = grammar(objectscript_expr, {
 
     command_tstart: ($) => build_command_rule_argumentless($, $.keyword_tstart),
     keyword_tstart: (_) => /TS(TART)?/i,
+    
+    byref_arg: ($) =>
+      seq(
+        choice('.',$._xecute_byref_arg),
+        $.lvn,
+      ),
 
+    xecute_argument: ($) =>
+      choice(
+        // Simple form: XECUTE cmdline[:pc]
+        seq(
+          optional($._xecute_arg_invalid),
+          $.expression,
+          optional($.post_conditional),
+        ),
+
+        // Parameter-passing form: XECUTE ("cmdline", params... )[:pc]
+        seq(
+          '(',
+          $.expression,                 
+          repeat(
+            seq(
+              ',',
+              choice($.byref_arg,$.expression),                
+            ),
+          ),
+          ')',
+          optional($.post_conditional),
+        ),
+      ),
     command_xecute: ($) =>
       build_command_rule_argumentful(
         $,
         $.keyword_xecute,
-        choice(
-          $.expression,
-          seq(
-            '(', repeat_with_commas($.expression), ')'
-          ),
-        ),
-      ),
+        repeat_with_commas($.xecute_argument),
+      )
+    ,
     keyword_xecute: (_) => /X(ECUTE)?/i,
 
     // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cview
