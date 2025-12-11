@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-#include <stdio.h>
+// #include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -224,8 +224,8 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
 
         bool is_block = (lexer->lookahead == '{');
 
-        fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
-                        lexer->get_column(lexer), is_termination, is_block,lexer->lookahead);
+        // fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
+        //                 lexer->get_column(lexer), is_termination, is_block,lexer->lookahead);
 
 
         if (count == 1 && !is_block && !is_termination) {

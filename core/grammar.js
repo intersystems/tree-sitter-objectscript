@@ -1594,13 +1594,27 @@ module.exports = grammar(objectscript_expr, {
     keyword_zz: (_) => /ZZ[A-Z0-9]+/i,
 
     embedded_html: ($) =>
-      seq(
+      choice(
+        seq(
         $.keyword_embedded_html,
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
       ),
+        seq(
+        $.keyword_embedded_html,
+        $.html_marker,
+        token.immediate('<'),
+        $.angled_bracket_fenced_text,
+        '>',
+        $.html_marker,
+      ),
+    ),
+      
     keyword_embedded_html: (_) => /&html/i,
+    html_marker: (_) =>
+    // One or more non-whitespace chars EXCLUDING < ( { + - / \ | * } ) >
+    token.immediate(/[^\s<({+\-\/\\|*})>]+/),
 
     embedded_xml: ($) =>
       seq(
