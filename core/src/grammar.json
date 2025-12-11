@@ -12040,26 +12040,63 @@
       "flags": "i"
     },
     "embedded_html": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_embedded_html"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_embedded_html"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "<"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "angled_bracket_fenced_text"
+            },
+            {
+              "type": "STRING",
+              "value": ">"
+            }
+          ]
         },
         {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "<"
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "angled_bracket_fenced_text"
-        },
-        {
-          "type": "STRING",
-          "value": ">"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_embedded_html"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "html_marker"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "<"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "angled_bracket_fenced_text"
+            },
+            {
+              "type": "STRING",
+              "value": ">"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "html_marker"
+            }
+          ]
         }
       ]
     },
@@ -12067,6 +12104,13 @@
       "type": "PATTERN",
       "value": "&html",
       "flags": "i"
+    },
+    "html_marker": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[^\\s<({+\\-\\/\\\\|*})>]+"
+      }
     },
     "embedded_xml": {
       "type": "SEQ",

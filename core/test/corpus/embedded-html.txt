@@ -1,0 +1,293 @@
+===
+Valid Embedded HTML
+===
+  WRITE "start",!
+  &html<
+    <html>
+      <body>
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      </body>
+    </html>
+  >
+  WRITE "end"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (angled_bracket_fenced_text)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===
+Embedded HTML with Macro PreProcessor
+===
+  WRITE "start",!
+  &html<
+        <b>I'm bold!</b>
+        <i>I'm italic $$$NumFunc</i>
+        <u>I'm underlined</u>
+      >
+  WRITE "end"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (angled_bracket_fenced_text)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===
+&html marker SYNTAX
+===
+  WRITE "start",!
+  &html7<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >7
+  WRITE "end"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (html_marker)
+        (angled_bracket_fenced_text)
+        (html_marker)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===
+html invalid marker +
+:error
+===
+  WRITE "start",!
+  &html+<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >+
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker -
+:error
+===
+  WRITE "start",!
+  &html-<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >-
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker <
+:error
+===
+  WRITE "start",!
+  &html<<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      ><
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker >
+:error
+===
+  WRITE "start",!
+  &html><
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >>
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker (
+:error
+===
+  WRITE "start",!
+  &html(<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >(
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker {
+:error
+===
+  WRITE "start",!
+  &html{<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >{
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker /
+:error
+===
+  WRITE "start",!
+  &html/<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >/
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker \
+:error
+===
+  WRITE "start",!
+  &html\<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >\
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker |
+:error
+===
+  WRITE "start",!
+  &html|<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >|
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker *
+:error
+===
+  WRITE "start",!
+  &html*<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >*
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker }
+:error
+===
+  WRITE "start",!
+  &html}<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >}
+  WRITE "end"
+---
+
+
+
+===
+html invalid marker )
+:error
+===
+  WRITE "start",!
+  &html)<
+        <b>I'm bold!</b>
+        <i>I'm italic</i>
+        <u>I'm underlined</u>
+      >)
+  WRITE "end"
+---
+
+
