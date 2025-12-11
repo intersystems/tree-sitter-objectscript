@@ -1,0 +1,115 @@
+===
+Valid Znspace commands
+===
+    ZNSPACE "^^c:\InterSystems\Cache\mgr\user\"
+    ZNSPACE "^RemoteLinuxSystem^/usr/Cache/mgr/user/"
+    WRITE $NAMESPACE
+    ZNSPACE "%SYS"
+    ZNSPACE ns
+    ZN:($DATA(^USER)) "USER"
+    ZNSPACE ^nsGlobal
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zn
+        (keyword_zn)
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zn
+        (keyword_zn)
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_variable
+                (namespace_token)))))))
+    (statement
+      (command_zn
+        (keyword_zn)
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zn
+        (keyword_zn)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zn
+        (keyword_zn)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (expression
+                      (expr_atom
+                        (gvn)))))))))
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zn
+        (keyword_zn)
+        (expression
+          (expr_atom
+            (gvn)))))))
+
+===
+Invalid ZNSPACE command (Argumentless)
+:error
+===
+ ZN
+---
+
+
+
+==============
+Valid $ZNSPACE
+==============
+    WRITE $ZNSPACE
+    WRITE $SYSTEM.SYS.NameSpace()
+    set $ZNSPACE = ns
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_variable))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (dollarsf
+                (dollar_system_keyword)
+                (identifier_segment_immediate)
+                (identifier_segment_immediate)
+                (method_args)))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (system_defined_variable)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
