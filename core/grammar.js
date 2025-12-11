@@ -107,7 +107,6 @@ module.exports = grammar(objectscript_expr, {
     $.zbreak_command,
     $._zbreak_device_termination,
     $._post_conditional_id,
-    $._xecute_byref_arg,
     $._xecute_arg_invalid,
   ],
   conflicts: ($, previous) =>
@@ -185,9 +184,9 @@ module.exports = grammar(objectscript_expr, {
         $.command_trollback,
         $.command_tstart,
         $.command_view,
-        $.command_xecute, //HERE
+        $.command_xecute,
         $.command_zbreak,
-        $.command_zkill,
+        $.command_zkill, 
         $.command_zn,
         $.command_zsu,
         $.command_ztrap,
@@ -1287,7 +1286,7 @@ module.exports = grammar(objectscript_expr, {
     
     byref_arg: ($) =>
       seq(
-        choice('.',$._xecute_byref_arg),
+        '.',
         $.lvn,
       ),
 
@@ -1541,7 +1540,7 @@ module.exports = grammar(objectscript_expr, {
         $.keyword_zkill,
         repeat_with_commas($.glvn),
       ),
-    keyword_zkill: (_) => /ZKILL/i,
+    keyword_zkill: (_) => /ZK(ILL)?/i,
 
     command_zn: ($) =>
       build_command_rule_argumentful(

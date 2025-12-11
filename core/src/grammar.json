@@ -1032,17 +1032,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "."
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_xecute_byref_arg"
-            }
-          ]
+          "type": "STRING",
+          "value": "."
         },
         {
           "type": "SYMBOL",
@@ -1187,6 +1178,26 @@
                         "value": "|"
                       }
                     ]
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "IMMEDIATE_TOKEN",
+                        "content": {
+                          "type": "STRING",
+                          "value": "["
+                        }
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "expression"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "]"
+                      }
+                    ]
                   }
                 ]
               },
@@ -1196,11 +1207,19 @@
             ]
           },
           {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "PATTERN",
-              "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
-            }
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "CHOICE",
@@ -11582,7 +11601,7 @@
     },
     "keyword_zkill": {
       "type": "PATTERN",
-      "value": "ZKILL",
+      "value": "ZK(ILL)?",
       "flags": "i"
     },
     "command_zn": {
@@ -12515,6 +12534,34 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "IMMEDIATE_TOKEN",
+                        "content": {
+                          "type": "STRING",
+                          "value": "["
+                        }
+                      },
+                      {
+                        "type": "ALIAS",
+                        "content": {
+                          "type": "SYMBOL",
+                          "name": "expression_post_cond"
+                        },
+                        "named": true,
+                        "value": "expression"
+                      },
+                      {
+                        "type": "IMMEDIATE_TOKEN",
+                        "content": {
+                          "type": "STRING",
+                          "value": "]"
+                        }
+                      }
+                    ]
                   }
                 ]
               },
@@ -12524,11 +12571,19 @@
             ]
           },
           {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "PATTERN",
-              "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
-            }
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "CHOICE",
@@ -15664,10 +15719,6 @@
     {
       "type": "SYMBOL",
       "name": "_post_conditional_id"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_xecute_byref_arg"
     },
     {
       "type": "SYMBOL",

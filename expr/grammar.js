@@ -386,9 +386,10 @@ module.exports = grammar({
             choice(
               token.immediate('||'),
               seq(token.immediate('|'), $.expression, '|'),
+              seq(token.immediate('['), $.expression, ']'),
             ),
           ),
-          token.immediate(/[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+          optional(token.immediate(/[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/)),
           optional($.subscripts),
         )
       ),

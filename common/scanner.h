@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-#include <stdio.h>
+// #include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -23,7 +23,6 @@ enum ObjectScript_Core_Scanner_TokenType {
   ZBREAK_COMMAND,
   _ZBREAK_DEVICE_TERMINATION,
   _POST_CONDITIONAL_ID,
-  _XECUTE_BYREF_ARG,
   _XECUTE_ARG_INVALID,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
@@ -51,7 +50,6 @@ static const char* token_names[] = {
   "ZBREAK_COMMAND",
   "_ZBREAK_DEVICE_TERMINATION",
   "_POST_CONDITIONAL_ID",
-  "_XECUTE_BYREF_ARG",
   "_XECUTE_ARG_INVALID"
 };
 
@@ -617,21 +615,11 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
       lexer->advance(lexer,false);         // <-- advance(false): add char to this token
       consumed = true;
     }
-//     fprintf(stderr, " CONSUMED scan: lookahead='%c' (%d), col=%u\n",
-//                   lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
-    fprintf(stderr, "saw_nl, valid_symbols[_BOL]  %d %d", saw_nl, valid_symbols[_BOL]);
+
 
     unsigned dots = 0;
-    if (lexer->lookahead=='.' && valid_symbols[_XECUTE_BYREF_ARG]) {
-      lexer->advance(lexer,false);
-      if (iswalpha(lexer->lookahead)) {
-        lexer->result_symbol = _XECUTE_BYREF_ARG;
-        scanner->terminated_newline = false;
-        return true;
-      }
-    }
 
-    else if (lexer->lookahead=='.' && valid_symbols[_XECUTE_ARG_INVALID]) {
+    if (lexer->lookahead=='.' && valid_symbols[_XECUTE_ARG_INVALID]) {
       lexer->mark_end(lexer);
     }
     
@@ -646,7 +634,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     // fprintf(stderr, "DEBUG[BOL] dots=%u lookahead='%c'\n",
     //             dots, lexer->lookahead);
 
-    fprintf(stderr, "is_decimal, saw_nl, valid_symbols[_BOL] %d %d %d", is_decimal, saw_nl, valid_symbols[_BOL]);
+    // fprintf(stderr, "is_decimal, saw_nl, valid_symbols[_BOL] %d %d %d", is_decimal, saw_nl, valid_symbols[_BOL]);
 
     if (saw_nl && valid_symbols[_BOL] && dots > 0 && !is_decimal) {
         lexer->result_symbol = _BOL;
