@@ -31,7 +31,7 @@ For Loop var = expr
                     (string_literal)))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -106,7 +106,7 @@ For Loop var=start:increment:end
                     (numeric_literal)))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -170,7 +170,7 @@ For Loop var=start:increment
                       (numeric_literal))))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -237,7 +237,7 @@ For Loop with Multiple forparameters
                 (numeric_literal)))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -308,7 +308,7 @@ For Loop with New
                   (objectscript_identifier))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (write_device_control
                 (write_device_fflf)))
@@ -330,7 +330,7 @@ For Loop with New
               (objectscript_identifier))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -342,7 +342,7 @@ For Loop with New
               (objectscript_identifier))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -496,7 +496,7 @@ Old Style For Loop var=start:increment:end
                     (numeric_literal)))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -603,7 +603,7 @@ Old Style For Loop var=expr
                   (objectscript_identifier))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -623,11 +623,12 @@ For Alone
 =========
  For
 ---
- (source_file
-      (statements
-        (statement
-          (command_for
-            command_name: (keyword_for)))))
+
+(source_file
+  (statements
+    (statement
+      (command_for
+        command_name: (keyword_for)))))
 
 =========================================
 For Block Alone, Block Starts on new line
@@ -635,11 +636,12 @@ For Block Alone, Block Starts on new line
  For
  {}
 ---
- (source_file
-      (statements
-        (statement
-          (command_for
-            command_name: (keyword_for)))))
+
+(source_file
+  (statements
+    (statement
+      (command_for
+        command_name: (keyword_for)))))
 
 =================================================
 For Block Alone, 1 space and newline before block
@@ -647,22 +649,24 @@ For Block Alone, 1 space and newline before block
  For
  {}
 ---
- (source_file
-      (statements
-        (statement
-          (command_for
-            command_name: (keyword_for)))))
+
+(source_file
+  (statements
+    (statement
+      (command_for
+        command_name: (keyword_for)))))
 
 ======================================
 For Block Alone, no space before block
 ======================================
  For{}
 ---
- (source_file
-      (statements
-        (statement
-          (command_for
-            command_name: (keyword_for)))))
+
+(source_file
+  (statements
+    (statement
+      (command_for
+        command_name: (keyword_for)))))
 
 ====================================
 For with parameter, block on newline
@@ -671,6 +675,7 @@ For with parameter, block on newline
     {
     }
 ---
+
 (source_file
   (statements
     (statement

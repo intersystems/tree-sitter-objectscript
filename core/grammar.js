@@ -134,6 +134,8 @@ module.exports = grammar(objectscript_expr, {
     $.line_comment_1,
     $.line_comment_2,
     $.line_comment_3,
+    $.line_comment_4,
+    $.line_comment_5,
     $.block_comment,
   ],
   // Note that adding the word key
@@ -155,6 +157,8 @@ module.exports = grammar(objectscript_expr, {
     line_comment_1: ($) => seq('//', $._line_comment_inner),
     line_comment_2: ($) => seq('#;', $._line_comment_inner),
     line_comment_3: ($) => seq(';', $._line_comment_inner),
+    line_comment_4: ($) => seq('##;', $._line_comment_inner),
+    line_comment_5: ($) => seq('///', $._line_comment_inner),
     block_comment: ($) => seq('/*', $._block_comment_inner, '*/'),
     statement: ($) =>
       choice(
@@ -196,10 +200,10 @@ module.exports = grammar(objectscript_expr, {
         $.command_ztrap,
         $.command_zz, 
         $.embedded_html,
-        $.embedded_xml, // need to come back to this
+        $.embedded_xml, 
         $.embedded_sql,
         $.embedded_js,
-        $.pound_dim,
+        $.pound_dim, //
         $.pound_define,
         $.pound_def1arg,
         $.pound_if,
@@ -224,17 +228,31 @@ module.exports = grammar(objectscript_expr, {
     pound_dim: ($) =>
       seq(
         field('preproc_keyword', $.keyword_dim),
-        alias($.objectscript_identifier, $.lvn),
+        repeat_with_commas(alias($.objectscript_identifier, $.lvn)),
         optional(
           seq(
-            field('preproc_keyword', /[aA][sS]/),
-            alias($.objectscript_identifier, $.typename),
+            field('preproc_keyword', /As/i),
+            choice(
+              $.objectscript_identifier,
+              $.oref_set_target,
+            ),
+            optional(
+              seq(
+                /Of/i,
+                choice(
+                  $.objectscript_identifier,
+                  $.oref_set_target
+                )
+              )
+            ),
           ),
         ),
         optional(seq('=', $.expression)),
       ),
 
     keyword_dim: (_) => /\#[dD][iI][mM]/,
+    keyword_list:(_)=> /list/i,
+    keyword_array:(_)=> /array/i,
 
     pound_define: ($) =>
       seq(
