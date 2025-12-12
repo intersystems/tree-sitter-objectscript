@@ -109,6 +109,9 @@ module.exports = grammar(objectscript_expr, {
     $._post_conditional_id,
     $._xecute_arg_invalid,
     $._zw_block,
+    $.html_marker,
+    $.html_marker_reversed,
+    $.embedded_js_special_case,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -191,9 +194,9 @@ module.exports = grammar(objectscript_expr, {
         $.command_zn,
         $.command_zsu,
         $.command_ztrap,
-        $.command_zz, // HERE
+        $.command_zz, 
         $.embedded_html,
-        $.embedded_xml,
+        $.embedded_xml, // need to come back to this
         $.embedded_sql,
         $.embedded_js,
         $.pound_dim,
@@ -1607,14 +1610,11 @@ module.exports = grammar(objectscript_expr, {
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
-        $.html_marker,
+        $.html_marker_reversed,
       ),
     ),
       
     keyword_embedded_html: (_) => /&html/i,
-    html_marker: (_) =>
-    // One or more non-whitespace chars EXCLUDING < ( { + - / \ | * } ) >
-    token.immediate(/[^\s<({+\-\/\\|*})>]+/),
 
     embedded_xml: ($) =>
       seq(
@@ -1627,7 +1627,8 @@ module.exports = grammar(objectscript_expr, {
 
     embedded_sql: ($) => choice($.embedded_sql_amp, $.embedded_sql_hash),
     embedded_sql_amp: ($) =>
-      seq(
+      choice(
+        seq(
         $.keyword_embedded_sql_amp,
         $.embedded_sql_marker,
         token.immediate('('),
@@ -1635,9 +1636,15 @@ module.exports = grammar(objectscript_expr, {
         token.immediate(')'),
         $.embedded_sql_reverse_marker,
       ),
+      seq(
+        $.keyword_embedded_sql_amp,
+        token.immediate('('),
+        $.paren_fenced_text,
+        token.immediate(')'),
+      ),
+      ),
+      
     // NOTE: We put the marker within the &sql keyword def to make it easier to query for highlighting
-    // keyword_embedded_sql_amp: ($) =>
-    //   seq(field('non_marker_part', /&sql/i), $.embedded_sql_marker),
     embedded_sql_hash: ($) =>
       seq(
         $.keyword_embedded_sql_hash,
@@ -1649,13 +1656,21 @@ module.exports = grammar(objectscript_expr, {
     keyword_embedded_sql_hash: (_) => /##sql/i,
 
     embedded_js: ($) =>
-      seq(
-        $.keyword_embedded_js,
+      choice(
+        seq(
+        choice('&js','&jscript','&javascript'),
+        $.html_marker,
+        token.immediate('<'),
+        $.embedded_js_special_case,
+        ),
+        seq(
+        choice('&js','&jscript','&javascript'),
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
+        ),
       ),
-    keyword_embedded_js: (_) => /&js/i,
+      
 
     // Simple parameterized tag/label: tagname(params) - no modifiers, no body
     // Example: bar(a,b=2)

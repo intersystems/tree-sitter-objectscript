@@ -12,6 +12,10 @@ Valid Embedded HTML
     </html>
   >
   WRITE "end"
+  &html@@< <b>Be bold!</b> >@@
+  &html[< <b>Be bold!</b> >]
+  &htmlMyTest< <b>Be bold!</b> >tseTyM
+  &htmlA16[a< <b>Be bold!</b> >a]61A
 ---
 
 (source_file
@@ -36,7 +40,31 @@ Valid Embedded HTML
         (write_argument
           (expression
             (expr_atom
-              (string_literal))))))))
+              (string_literal))))))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (html_marker)
+        (angled_bracket_fenced_text)
+        (html_marker_reversed)))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (html_marker)
+        (angled_bracket_fenced_text)
+        (html_marker_reversed)))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (html_marker)
+        (angled_bracket_fenced_text)
+        (html_marker_reversed)))
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (html_marker)
+        (angled_bracket_fenced_text)
+        (html_marker_reversed)))))
 
 ===
 Embedded HTML with Macro PreProcessor
@@ -103,7 +131,7 @@ Embedded HTML with Macro PreProcessor
         (keyword_embedded_html)
         (html_marker)
         (angled_bracket_fenced_text)
-        (html_marker)))
+        (html_marker_reversed)))
     (statement
       (command_write
         (keyword_write)

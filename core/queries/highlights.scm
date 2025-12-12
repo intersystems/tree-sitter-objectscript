@@ -42,15 +42,15 @@
   "<" @keyword.directive
   ">" @keyword.directive
 )
-; (embedded_sql_hash
-;   (keyword_embedded_sql_hash) @keyword.directive
-; )
-; (embedded_sql_amp
-;   (keyword_embedded_sql_amp) @keyword.directive
-;   "(" @keyword.directive
-;   ")" @keyword.directive
-;   (embedded_sql_reverse_marker) @keyword.directive
-; )
+
+(embedded_html
+  (keyword_embedded_html) @keyword.directive
+  (html_marker) @marker
+  "<" @keyword.directive
+  ">" @keyword.directive
+  (html_marker_reversed) @marker
+)
+
 
 (embedded_sql_amp
   (keyword_embedded_sql_amp) @keyword.directive
@@ -58,14 +58,25 @@
   ")" @keyword.directive
 )
 
+(embedded_sql_amp
+  (keyword_embedded_sql_amp) @keyword.directive
+  (embedded_sql_marker) @marker
+  "(" @keyword.directive
+  ")" @keyword.directive
+  (embedded_sql_reverse_marker) @marker
+)
+
 (embedded_sql_hash
   (keyword_embedded_sql_hash) @keyword.directive
   "(" @keyword.directive
   ")" @keyword.directive
 )
+(embedded_js
+  (html_marker) @marker
+  (embedded_js_special_case)
+) @embeddedJS
 
 (embedded_js
-  (keyword_embedded_js) @keyword.directive
   "<" @keyword.directive
   ">" @keyword.directive
 )
