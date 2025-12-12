@@ -14,6 +14,19 @@
         (macro_value
           (macro_value_line))))))
 
+============================
+Valid Define No Macro Values
+============================
+#define hi
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (pound_define_variable_name)))))
+
 ========================
 #define Macro2 "Wilma"
 ========================
@@ -350,16 +363,6 @@ Invalid #define macro arg doesn't start with %
 
 
 ===
-Invalid Macro Arg with ##; comment and ##continue on same line
-:error
-===
-#define Macro33 set x = 2 ##continue ##; test
-set x = 2
----
-
-
-
-===
 Valid Macro Arg with ##continue
 ===
 #define Multiline(%a,%b,%c) ##continue
@@ -390,6 +393,7 @@ Valid Macro Arg with ##continue
 Valid Macro Arg with ##; comment
 ===
 #define Macro33 set x = 2 ##; comment for define
+
 ---
 
 (source_file

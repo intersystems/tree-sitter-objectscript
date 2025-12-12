@@ -261,7 +261,7 @@ module.exports = grammar(objectscript_expr, {
           field('macro_name', $.pound_define_variable_name),
           optional($.pound_define_variable_args),
         )),
-        optional($.macro_value),
+        choice($.macro_value, $._termination),
       ),
     pound_define_variable_name: ($) =>
       /[A-Za-z0-9]+/,
@@ -277,8 +277,6 @@ module.exports = grammar(objectscript_expr, {
         token.immediate(')'),
       )),
     keyword_pound_define: (_) => /\#define/i,
-    keyword_pound_pound_continue: (_) => /\##continue/i,
-
     pound_def1arg: ($) =>
       seq(
         field('preproc_keyword', $.keyword_pound_def1arg),
