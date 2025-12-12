@@ -1,0 +1,435 @@
+========================================
+Valid — simplest ClassMethod, no args
+========================================
+Class MyApp.Test {
+  ClassMethod DoSomething()
+  {
+    Quit
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit))))))))))
+
+===================================================
+Valid — ClassMethod with arguments and return type
+===================================================
+Class MyApp.Test {
+  ClassMethod ComputeArea(a As %Double, b As %Double) As %Double
+  {
+    Quit a*b
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+======================================================
+Valid — ClassMethod with no return type and arguments
+======================================================
+Class MyApp.Test {
+  ClassMethod LogMessage(msg As %String)
+  {
+    Write msg,!
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (write_argument
+                    (write_device_control
+                      (write_device_fflf))))))))))))
+
+===========================================================
+Valid — ClassMethod with method keywords (CodeMode, Final)
+===========================================================
+Class MyApp.Test {
+  ClassMethod Utility(arg1 As %String = "default") As %Status
+  [ CodeMode = objectgenerator, Final ]
+  {
+    Quit $$$OK
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (string_literal))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode))
+              (method_keyword
+                (parameter_keyword_final)))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))))))))
+
+========================================================
+Valid — ClassMethod referenced as class member only
+========================================================
+Class MyApp.Test {
+  ClassMethod Main()
+  {
+    Do ..Helper()
+    Quit
+  }
+
+  ClassMethod Helper()
+  {
+    Write "Hello",!
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_do
+                  (keyword_do)
+                  (do_parameter
+                    (instance_method_call
+                      (relative_dot_method
+                        (oref_method
+                          (method_name
+                            (identifier_segment_immediate))
+                          (method_args)))))))
+              (statement
+                (command_quit
+                  (keyword_quit)))))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (write_argument
+                    (write_device_control
+                      (write_device_fflf))))))))))))
+
+================================================
+Valid — ClassMethod used as SQL stored procedure
+================================================
+Class MyApp.Test {
+  ClassMethod GetNow() As %String
+  [ SqlProc ]
+  {
+    Quit $ZDATETIME($HOROLOG,3)
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_sql_proc)))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (expression
+                          (expr_atom
+                            (system_defined_variable)))
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))))))))
+
+========================================================
+Valid — ClassMethod with ByRef and Output arguments
+========================================================
+Class MyApp.Test {
+  ClassMethod Process(ByRef p1 As %String, Output status As %Status) As %Boolean
+  {
+    Set p1 = p1_" processed"
+    Set status = $$$OK
+    Quit 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (keyword_byref)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (argument
+                (keyword_output)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (string_literal))))))))
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_constant)))))))
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+======================================
+Invalid — missing parentheses on body
+:error
+======================================
+Class MyApp.Test {
+  ClassMethod BadMethod
+  {
+    Quit
+  }
+}
+---
+
+
+
+==============================================
+Invalid — missing method body braces
+:error
+==============================================
+Class MyApp.Test {
+  ClassMethod BadMethod()
+    Quit
+}
+---
+
+
+
+============================================================
+Invalid — ClassMethod with malformed argument declaration
+:error
+============================================================
+Class MyApp.Test {
+  ClassMethod BadArgs(a %String, b As %Integer)
+  {
+    Quit
+  }
+}
+---
+
+
+
+=========================================================
+Invalid — ClassMethod return type missing `As` keyword
+:error
+=========================================================
+Class MyApp.Test {
+  ClassMethod BadReturnType(a As %String) %Integer
+  {
+    Quit 1
+  }
+}
+---
+
+
+
+======================================================
+Invalid — ClassMethod keywords without enclosing `[]`
+:error
+======================================================
+Class MyApp.Test {
+  ClassMethod BadKeywords() As %Status
+  SqlProc
+  {
+    Quit $$$OK
+  }
+}
+---
+
+
+
+=========================================================
+Invalid — ClassMethod with extra garbage after closing }
+:error
+=========================================================
+Class MyApp.Test {
+  ClassMethod ExtraStuff() As %String
+  {
+    Quit "ok"
+  } junk
+}
+---
+
+

@@ -4104,22 +4104,6 @@
     }
   },
   {
-    "type": "kw_ForceGenerate",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "kw_Foreach",
     "named": true,
     "fields": {
@@ -4148,32 +4132,6 @@
           {
             "type": "statement",
             "named": false
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "kw_GenerateAfter",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
           }
         ]
       }
@@ -4456,78 +4414,6 @@
           {
             "type": "identifier",
             "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "kw_Native_CodeMode",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "call",
-            "named": false
-          },
-          {
-            "type": "code",
-            "named": false
-          },
-          {
-            "type": "generator",
-            "named": false
-          },
-          {
-            "type": "objectgenerator",
-            "named": false
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "kw_Native_Language",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "basic",
-            "named": false
-          },
-          {
-            "type": "mvbasic",
-            "named": false
-          },
-          {
-            "type": "objectscript",
-            "named": false
           }
         ]
       }
@@ -4898,32 +4784,6 @@
     }
   },
   {
-    "type": "kw_PlaceAfter",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "kw_PrimaryKey",
     "named": true,
     "fields": {
@@ -5034,42 +4894,6 @@
     }
   },
   {
-    "type": "kw_PublicList",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "kw_QueryClass",
     "named": true,
     "fields": {
@@ -5089,22 +4913,6 @@
         "types": [
           {
             "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "kw_ReturnResultsets",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
             "named": true
           }
         ]
@@ -5356,36 +5164,6 @@
           {
             "type": "keyword_name",
             "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "kw_SqlRoutine",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      },
-      "rhs": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "function",
-            "named": false
-          },
-          {
-            "type": "procedure",
-            "named": false
           }
         ]
       }
@@ -5820,22 +5598,6 @@
     }
   },
   {
-    "type": "kw_ZenMethod",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "keyword_name",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "label_offset",
     "named": true,
     "fields": {},
@@ -6189,7 +5951,151 @@
     }
   },
   {
-    "type": "method_keywords",
+    "type": "method_keyword",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "method_keyword_codemode",
+          "named": true
+        },
+        {
+          "type": "method_keyword_external_proc_name",
+          "named": true
+        },
+        {
+          "type": "method_keyword_force_generate",
+          "named": true
+        },
+        {
+          "type": "method_keyword_generate_after",
+          "named": true
+        },
+        {
+          "type": "method_keyword_language",
+          "named": true
+        },
+        {
+          "type": "method_keyword_not_inheritable",
+          "named": true
+        },
+        {
+          "type": "method_keyword_place_after",
+          "named": true
+        },
+        {
+          "type": "method_keyword_procedure_block",
+          "named": true
+        },
+        {
+          "type": "method_keyword_public_list",
+          "named": true
+        },
+        {
+          "type": "method_keyword_requires",
+          "named": true
+        },
+        {
+          "type": "method_keyword_return_results_set",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_action",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_binding_style",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_body_use",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_message_name",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_namespace",
+          "named": true
+        },
+        {
+          "type": "method_keyword_soap_request_message",
+          "named": true
+        },
+        {
+          "type": "method_keyword_sql_name",
+          "named": true
+        },
+        {
+          "type": "method_keyword_sql_proc",
+          "named": true
+        },
+        {
+          "type": "method_keyword_web_method",
+          "named": true
+        },
+        {
+          "type": "parameter_keyword_abstract",
+          "named": true
+        },
+        {
+          "type": "parameter_keyword_deprecated",
+          "named": true
+        },
+        {
+          "type": "parameter_keyword_final",
+          "named": true
+        },
+        {
+          "type": "parameter_keyword_internal",
+          "named": true
+        },
+        {
+          "type": "property_keyword_client_name",
+          "named": true
+        },
+        {
+          "type": "property_keyword_private",
+          "named": true
+        },
+        {
+          "type": "property_keyword_server_only",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_codemode",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_external_proc_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_force_generate",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_generate_after",
     "named": true,
     "fields": {},
     "children": {
@@ -6197,13 +6103,189 @@
       "required": true,
       "types": [
         {
-          "type": "kw_Abstract",
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_language",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_not_inheritable",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_place_after",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_procedure_block",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_public_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_requires",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_return_results_set",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_soap_action",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
           "named": true
         },
         {
-          "type": "kw_Deprecated",
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_soap_binding_style",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_soap_body_use",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_soap_message_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_soap_namespace",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
           "named": true
         },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_soap_request_message",
+    "named": true,
+    "fields": {
+      "soap_request_message": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "xml_identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "method_keyword_sql_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "sql_id",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_keyword_sql_proc",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keyword_web_method",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "method_keywords",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
         {
           "type": "kw_Expression_CodeMode",
           "named": true
@@ -6213,91 +6295,7 @@
           "named": true
         },
         {
-          "type": "kw_Final",
-          "named": true
-        },
-        {
-          "type": "kw_ForceGenerate",
-          "named": true
-        },
-        {
-          "type": "kw_GenerateAfter",
-          "named": true
-        },
-        {
-          "type": "kw_Internal",
-          "named": true
-        },
-        {
-          "type": "kw_Native_CodeMode",
-          "named": true
-        },
-        {
-          "type": "kw_Native_Language",
-          "named": true
-        },
-        {
-          "type": "kw_NoContext",
-          "named": true
-        },
-        {
-          "type": "kw_NotInheritable",
-          "named": true
-        },
-        {
-          "type": "kw_NotProcedureBlock",
-          "named": true
-        },
-        {
-          "type": "kw_PlaceAfter",
-          "named": true
-        },
-        {
-          "type": "kw_Private",
-          "named": true
-        },
-        {
-          "type": "kw_ProcedureBlock",
-          "named": true
-        },
-        {
-          "type": "kw_PublicList",
-          "named": true
-        },
-        {
-          "type": "kw_ReturnResultsets",
-          "named": true
-        },
-        {
-          "type": "kw_ServerOnly",
-          "named": true
-        },
-        {
-          "type": "kw_SoapBindingStyle",
-          "named": true
-        },
-        {
-          "type": "kw_SoapBodyUse",
-          "named": true
-        },
-        {
-          "type": "kw_SqlName",
-          "named": true
-        },
-        {
-          "type": "kw_SqlProc",
-          "named": true
-        },
-        {
-          "type": "kw_SqlRoutine",
-          "named": true
-        },
-        {
-          "type": "kw_WebMethod",
-          "named": true
-        },
-        {
-          "type": "kw_ZenMethod",
+          "type": "method_keyword",
           "named": true
         }
       ]
@@ -10219,10 +10217,6 @@
     "named": true
   },
   {
-    "type": "basic",
-    "named": false
-  },
-  {
     "type": "bitmap",
     "named": false
   },
@@ -10231,15 +10225,7 @@
     "named": false
   },
   {
-    "type": "call",
-    "named": false
-  },
-  {
     "type": "cascade",
-    "named": false
-  },
-  {
-    "type": "code",
     "named": false
   },
   {
@@ -10308,14 +10294,6 @@
   },
   {
     "type": "false",
-    "named": false
-  },
-  {
-    "type": "function",
-    "named": false
-  },
-  {
-    "type": "generator",
     "named": false
   },
   {
@@ -10783,10 +10761,6 @@
     "named": true
   },
   {
-    "type": "mvbasic",
-    "named": false
-  },
-  {
     "type": "namespace_token",
     "named": true
   },
@@ -10801,14 +10775,6 @@
   {
     "type": "numeric_literal",
     "named": true
-  },
-  {
-    "type": "objectgenerator",
-    "named": false
-  },
-  {
-    "type": "objectscript",
-    "named": false
   },
   {
     "type": "open_keyword_create",
@@ -10873,10 +10839,6 @@
   {
     "type": "pound_define_variable_name",
     "named": true
-  },
-  {
-    "type": "procedure",
-    "named": false
   },
   {
     "type": "python",
@@ -10972,6 +10934,10 @@
   },
   {
     "type": "xdata_body_content_xml",
+    "named": true
+  },
+  {
+    "type": "xml_identifier",
     "named": true
   },
   {
