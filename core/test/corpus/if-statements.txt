@@ -663,3 +663,34 @@ If with Expression, Block on newline
           (expr_atom
             (lvn
               (objectscript_identifier))))))))
+
+====
+Valid If
+====
+  if ..#PARMNAME=1 { 
+  //do something
+  } else { 
+  //do something else
+  }
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (expr_atom
+            (relative_dot_parameter
+              (oref_parameter
+                (parameter_name
+                  (identifier_segment_immediate)))))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (line_comment_1)
+        (else_block
+          (keyword_else)
+          (line_comment_1))))))

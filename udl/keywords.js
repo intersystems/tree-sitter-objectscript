@@ -351,12 +351,12 @@ kw_NotProcedureBlock: ($) => choice(
     ),
   index_keywords: ($) => define_keywords($._index_keyword),
 
-  _relationship_keyword: ($) =>
-    choice(
-      $.kw_Cardinality,
-      $.kw_Inverse,
-    ),
-  relationship_keywords: ($) => define_keywords($._relationship_keyword),
+  // _relationship_keyword: ($) =>
+  //   choice(
+  //     $.kw_Cardinality,
+  //     $.kw_Inverse,
+  //   ),
+  // relationship_keywords: ($) => define_keywords($._relationship_keyword),
 
   // // UDLText Rules
   // _udltext_keyword: $ => choice($.kw_Content, $.kw_Name, $.kw_SequenceNumber, $.kw_TextType,),
@@ -537,19 +537,27 @@ kw_NotProcedureBlock: ($) => choice(
       $.kw_SqlListType,
       $.kw_Transient,
     ),
-  property_keywords: ($) => define_keywords($._property_keyword),
+  // property_keywords: ($) => define_keywords($._property_keyword),
+  
+  // parameter_keyword_final: (_) => seq(optional(/Not/i), /Final/i),
+  // parameter_keyword_abstract: (_) => seq(optional(/Not/i),/Abstract/i),
+  // parameter_keyword_deprecated: (_) => seq(optional(/Not/i),/Deprecated/i),
+  // parameter_keyword_internal: (_) => seq(optional(/Not/i),/Internal/i),
+  // parameter_keyword_flags: ($) => seq(/Flags/i,'=', choice($.enum_flag,$.list_flag)),
+  // enum_flag: (_) => /ENUM/i,
+  // list_flag: (_) => /LIST/i,
+  // // Parameter Rules
+  // _parameter_keyword: ($) =>
+  //   choice(
+  //     $.parameter_keyword_abstract,
+  //     $.parameter_keyword_deprecated,
+  //     $.parameter_keyword_final,
+  //     $.parameter_keyword_flags,
+  //     $.parameter_keyword_internal,
 
-  // Parameter Rules
-  _parameter_keyword: ($) =>
-    choice(
-      $.kw_Abstract,
-      $.kw_Deprecated,
-      $.kw_Encoded,
-      $.kw_Final,
-      $.kw_Flags,
-      $.kw_Internal,
-    ),
-  parameter_keywords: ($) => define_keywords($._parameter_keyword),
+    
+  //   ),
+  // parameter_keywords: ($) => define_keywords($._parameter_keyword),
 
   // Query Rules
   _query_keyword: ($) =>
