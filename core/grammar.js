@@ -203,7 +203,7 @@ module.exports = grammar(objectscript_expr, {
         $.embedded_xml, 
         $.embedded_sql,
         $.embedded_js,
-        $.pound_dim, //
+        $.pound_dim, 
         $.pound_define,
         $.pound_def1arg,
         $.pound_if,
@@ -361,19 +361,17 @@ module.exports = grammar(objectscript_expr, {
 
     macro_arg: (_) =>
       /\%[A-Za-z0-9]+/,
-    macro_value_line: (_) => prec(0,
+    macro_value_line: ($) => prec(0,
       seq(
         /[ \t]+/,
-        /[^\n]*\n/,
+        /[^\n]*/,
+        $._termination,
       )),
     macro_value: ($) =>
       seq(
         repeat(
           // Multi-line macro (starts with continuation and can have more)
-          seq(
-            $.macro_value_line_with_continue,
-            field('preproc_keyword', $.keyword_pound_pound_continue),
-          ),
+          $.macro_value_line_with_continue,  
         ),
         $.macro_value_line, // Final line without continuation
       ),

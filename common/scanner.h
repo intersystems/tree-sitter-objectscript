@@ -380,13 +380,26 @@ if (valid_symbols[_TERMINATION]) {
             lexer->result_symbol = _TERMINATION;
             return true;
         }
-  }
+        if (lexer->lookahead=='#') {
+          lexer->mark_end(lexer); // check if it is a comment 
+          advance(lexer);
+          if(lexer->lookahead=='#') {
+            advance(lexer);
+            if(lexer->lookahead==';') {
+              // confirmed comment
+              lexer->result_symbol = _TERMINATION;
+              return true;
+            }
+          }
+          
+        }
+}
 
-  if (valid_symbols[_ZBREAK_DEVICE_TERMINATION] && iswspace(lexer->lookahead)) {
-    lexer->result_symbol = _ZBREAK_DEVICE_TERMINATION;  
-    scanner->terminated_newline = false;
-    return true;  
-  }
+if (valid_symbols[_ZBREAK_DEVICE_TERMINATION] && iswspace(lexer->lookahead)) {
+  lexer->result_symbol = _ZBREAK_DEVICE_TERMINATION;  
+  scanner->terminated_newline = false;
+  return true;  
+}
 
 
 if (valid_symbols[_ARGUMENTLESS_LOOP]) {
@@ -667,7 +680,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
         lexer, PAREN_FENCED_TEXT, '(', ')');
     return ok;
   }
-  
+
   else if (valid_symbols[_LINE_COMMENT_INNER]) {
     lexer->result_symbol = _LINE_COMMENT_INNER;
     for (;;) {
@@ -726,9 +739,19 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
         if (pos == len) {
           // Found complete ##continue pattern
           advance(lexer);
-          lexer->result_symbol = MACRO_VALUE_LINE_WITH_CONTINUE;
-          scanner->terminated_newline = false;
-          return true;
+          int new_line_count = 0;
+          while(iswspace(lexer->lookahead) && new_line_count<1) {
+            if(lexer->lookahead=='\n') {
+              new_line_count++;
+            }
+            advance(lexer);
+          }
+          if(new_line_count==1) {
+            lexer->mark_end(lexer); // consume ##continue and the newline 
+            lexer->result_symbol = MACRO_VALUE_LINE_WITH_CONTINUE;
+            scanner->terminated_newline = false;
+            return true;
+          }
         }
       } else {
         // Character doesn't match, reset and check if current char starts pattern
