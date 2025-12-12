@@ -238,7 +238,7 @@ kw_NotProcedureBlock: ($) => choice(
   kw_System: ($) => kw_enum($, /System/i, ['0', '1', '2', '3', '4']),
   kw_TriggerClass: ($) => kw_identifier($, /TriggerClass/i),
   kw_ViewQuery: ($) => kw_sql($, /ViewQuery/i),
-  kw_ForceGenerate: ($) => kw_boolean($, /ForceGenerate/i),
+  // kw_ForceGenerate: ($) => kw_boolean($, /ForceGenerate/i),
   kw_GenerateAfter: ($) => kw_identifier($, /GenerateAfter/i),
   kw_NotInheritable: ($) => kw_boolean($, /NotInheritable/i),
   kw_PlaceAfter: ($) => kw_identifier($, /PlaceAfter/i),
@@ -415,36 +415,6 @@ kw_NotProcedureBlock: ($) => choice(
       $.kw_ViewQuery,
     ),
   class_keywords: ($) => define_keywords($._class_keyword),
-
-  // Method Rules
-  _method_keyword: ($) =>
-    choice(
-      $.kw_Native_Language,
-      $.kw_Native_CodeMode,
-      $.kw_Abstract,
-      $.kw_Deprecated,
-      $.kw_Final,
-      $.kw_ForceGenerate,
-      $.kw_GenerateAfter,
-      $.kw_Internal,
-      $.kw_NoContext,
-      $.kw_NotInheritable,
-      $.kw_PlaceAfter,
-      $.kw_Private,
-      $.kw_ProcedureBlock,
-      $.kw_NotProcedureBlock,
-      $.kw_PublicList,
-      $.kw_ReturnResultsets,
-      $.kw_ServerOnly,
-      $.kw_SoapBindingStyle,
-      $.kw_SoapBodyUse,
-      $.kw_SqlName,
-      $.kw_SqlProc,
-      $.kw_SqlRoutine,
-      $.kw_WebMethod,
-      $.kw_ZenMethod,
-    ),
-  method_keywords: ($) => define_keywords($._method_keyword),
 
   // Trigger Rules
   _trigger_keyword: ($) =>

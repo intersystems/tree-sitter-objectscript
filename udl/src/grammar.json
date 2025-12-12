@@ -17279,6 +17279,774 @@
         }
       ]
     },
+    "method_keyword_codemode": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "CodeMode",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "call",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "code",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "expression",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "objectgenerator",
+              "flags": "i"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_language": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "Language",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "objectscript",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "python",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "tsql",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "ispl",
+              "flags": "i"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_external_proc_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "ExternalProcName",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "objectscript_identifier"
+        }
+      ]
+    },
+    "method_keyword_force_generate": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "Not",
+              "flags": "i"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "ForceGenerate",
+          "flags": "i"
+        }
+      ]
+    },
+    "method_keyword_not_inheritable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "Not",
+              "flags": "i"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "NotInheritable",
+          "flags": "i"
+        }
+      ]
+    },
+    "method_keyword_sql_proc": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "Not",
+              "flags": "i"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "SqlProc",
+          "flags": "i"
+        }
+      ]
+    },
+    "method_keyword_web_method": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "Not",
+              "flags": "i"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "WebMethod",
+          "flags": "i"
+        }
+      ]
+    },
+    "method_keyword_return_results_set": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "Not",
+              "flags": "i"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "ReturnResultsets",
+          "flags": "i"
+        }
+      ]
+    },
+    "method_keyword_public_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "PublicList",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "objectscript_identifier"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "objectscript_identifier"
+                    },
+                    {
+                      "type": "REPEAT",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "objectscript_identifier"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_procedure_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "ProcedureBlock",
+          "flags": "i"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[0-1]"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_soap_binding_style": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapBindingStyle",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "document",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "rpc",
+              "flags": "i"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_soap_body_use": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapBodyUse",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "literal",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "encoded",
+              "flags": "i"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_soap_namespace": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapNameSpace",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "objectscript_identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "string_literal"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_sql_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SqlName",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "sql_id"
+        }
+      ]
+    },
+    "method_keyword_generate_after": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "GenerateAfter",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    {
+                      "type": "REPEAT",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "identifier"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_place_after": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "PlaceAfter",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    {
+                      "type": "REPEAT",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "identifier"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword_requires": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "Requires",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_literal"
+        }
+      ]
+    },
+    "method_keyword_soap_message_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapMessageName",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "objectscript_identifier"
+        }
+      ]
+    },
+    "method_keyword_soap_action": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapAction",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "string_literal"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "objectscript_identifier"
+            }
+          ]
+        }
+      ]
+    },
+    "method_keyword": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "parameter_keyword_abstract"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "property_keyword_client_name"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_codemode"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parameter_keyword_deprecated"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_external_proc_name"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parameter_keyword_final"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_force_generate"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_generate_after"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parameter_keyword_internal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_language"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_not_inheritable"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_place_after"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "property_keyword_private"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_procedure_block"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_return_results_set"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_public_list"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "property_keyword_server_only"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_requires"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_binding_style"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_body_use"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_action"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_namespace"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_message_name"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_web_method"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_sql_proc"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_sql_name"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "method_keyword_soap_request_message"
+        }
+      ]
+    },
+    "method_keywords": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "method_keyword"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "method_keyword"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
+    "xml_identifier": {
+      "type": "PATTERN",
+      "value": "[A-Za-z_][A-Za-z0-9._-]*"
+    },
+    "method_keyword_soap_request_message": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "SoapRequestMessage",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "FIELD",
+          "name": "soap_request_message",
+          "content": {
+            "type": "SYMBOL",
+            "name": "xml_identifier"
+          }
+        }
+      ]
+    },
     "relationship": {
       "type": "SEQ",
       "members": [
@@ -18775,7 +19543,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_method_keyword"
+                "name": "method_keyword"
               },
               {
                 "type": "STRING",
@@ -18799,7 +19567,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_method_keyword"
+                "name": "method_keyword"
               }
             ]
           }
@@ -18824,7 +19592,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_method_keyword"
+                "name": "method_keyword"
               },
               {
                 "type": "STRING",
@@ -18848,7 +19616,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_method_keyword"
+                "name": "method_keyword"
               }
             ]
           }
@@ -18932,8 +19700,11 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "("
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "("
+          }
         },
         {
           "type": "CHOICE",
@@ -22284,83 +23055,6 @@
         }
       ]
     },
-    "kw_ForceGenerate": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "PATTERN",
-              "value": "ForceGenerate",
-              "flags": "i"
-            },
-            "named": true,
-            "value": "keyword_name"
-          }
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "name",
-              "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "ForceGenerate",
-                  "flags": "i"
-                },
-                "named": true,
-                "value": "keyword_name"
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "="
-            },
-            {
-              "type": "FIELD",
-              "name": "rhs",
-              "content": {
-                "type": "PATTERN",
-                "value": "[0-1]"
-              }
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "not",
-              "content": {
-                "type": "PATTERN",
-                "value": "[nN][oO][tT] "
-              }
-            },
-            {
-              "type": "FIELD",
-              "name": "name",
-              "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "ForceGenerate",
-                  "flags": "i"
-                },
-                "named": true,
-                "value": "keyword_name"
-              }
-            }
-          ]
-        }
-      ]
-    },
     "kw_GenerateAfter": {
       "type": "SEQ",
       "members": [
@@ -25244,140 +25938,6 @@
               {
                 "type": "SYMBOL",
                 "name": "_class_keyword"
-              }
-            ]
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "]"
-        }
-      ]
-    },
-    "_method_keyword": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "kw_Native_Language"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Native_CodeMode"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Abstract"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Deprecated"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Final"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_ForceGenerate"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_GenerateAfter"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Internal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_NoContext"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_NotInheritable"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_PlaceAfter"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_Private"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_ProcedureBlock"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_NotProcedureBlock"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_PublicList"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_ReturnResultsets"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_ServerOnly"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_SoapBindingStyle"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_SoapBodyUse"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_SqlName"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_SqlProc"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_SqlRoutine"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_WebMethod"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "kw_ZenMethod"
-        }
-      ]
-    },
-    "method_keywords": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "["
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_method_keyword"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_method_keyword"
               }
             ]
           }

@@ -280,6 +280,109 @@ module.exports = define_grammar(objectscript_core, {
       ']'
       )
     ,
+    method_keyword_codemode: (_) => seq(/CodeMode/i,'=', choice(/call/i,/code/i,/expression/i,/objectgenerator/i)),
+    method_keyword_language: (_) => seq(/Language/i,'=', choice(/objectscript/i,/python/i,/tsql/i,/ispl/i)),
+    method_keyword_external_proc_name: ($) => seq(/ExternalProcName/i,'=', $.objectscript_identifier),
+    method_keyword_force_generate: (_) => seq(optional(/Not/i),/ForceGenerate/i),
+    method_keyword_not_inheritable: (_) => seq(optional(/Not/i),/NotInheritable/i),
+    method_keyword_sql_proc: (_) => seq(optional(/Not/i),/SqlProc/i),
+    method_keyword_web_method: (_) => seq(optional(/Not/i),/WebMethod/i),
+    method_keyword_return_results_set: (_) => seq(optional(/Not/i),/ReturnResultsets/i),
+    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice($.objectscript_identifier, seq('(',repeat_with_commas($.objectscript_identifier), ')'))),
+    method_keyword_procedure_block: (_) => seq(/ProcedureBlock/i,optional(seq('=',/[0-1]/))),
+    method_keyword_soap_binding_style: (_) => seq(/SoapBindingStyle/i,'=',choice(/document/i,/rpc/i)),
+    method_keyword_soap_body_use: (_) => seq(/SoapBodyUse/i,'=',choice(/literal/i,/encoded/i)),
+    method_keyword_soap_namespace: ($) => seq(/SoapNameSpace/i,'=',choice($.objectscript_identifier,$.string_literal)),
+    method_keyword_sql_name: ($) => seq(/SqlName/i,'=',$.sql_id),
+    method_keyword_generate_after: ($) => 
+      seq(
+        /GenerateAfter/i,
+        '=',
+        choice(
+          seq(
+            '(',
+            repeat_with_commas($.identifier),
+            ')'
+          ),
+          $.identifier
+        )
+      ),
+    method_keyword_place_after: ($) => 
+      seq(
+        /PlaceAfter/i,
+        '=',
+        choice(
+          seq(
+            '(',
+            repeat_with_commas($.identifier),
+            ')'
+          ),
+          $.identifier
+        )
+      ),
+    method_keyword_requires: ($) =>
+      seq(
+        /Requires/i,
+        '=',
+        $.string_literal,
+      ),
+    method_keyword_soap_message_name: ($) =>
+  seq(
+    /SoapMessageName/i,
+    '=',
+    $.objectscript_identifier, 
+  ),
+    method_keyword_soap_action: ($) =>
+  seq(
+    /SoapAction/i,
+    '=',
+    choice($.string_literal, $.objectscript_identifier)
+  ),
+  method_keyword: ($) => 
+    choice(
+            $.parameter_keyword_abstract,
+            $.property_keyword_client_name,
+            $.method_keyword_codemode,
+            $.parameter_keyword_deprecated,
+            $.method_keyword_external_proc_name,
+            $.parameter_keyword_final,
+            $.method_keyword_force_generate,
+            $.method_keyword_generate_after,
+            $.parameter_keyword_internal,
+            $.method_keyword_language,
+            $.method_keyword_not_inheritable,
+            $.method_keyword_place_after,
+            $.property_keyword_private,
+            $.method_keyword_procedure_block,
+            $.method_keyword_return_results_set,
+            $.method_keyword_public_list,
+            $.property_keyword_server_only,
+            $.method_keyword_requires,
+            $.method_keyword_soap_binding_style,
+            $.method_keyword_soap_body_use,
+            $.method_keyword_soap_action,
+            $.method_keyword_soap_namespace,
+            $.method_keyword_soap_message_name,
+            $.method_keyword_web_method,
+            $.method_keyword_sql_proc,
+            $.method_keyword_sql_name,
+            $.method_keyword_soap_request_message,
+          ),
+    method_keywords: ($) => 
+      seq(
+        '[',
+        repeat_with_commas(
+          $.method_keyword,
+        ),
+        ']'
+      ),
+    xml_identifier: _ => /[A-Za-z_][A-Za-z0-9._-]*/,
+    method_keyword_soap_request_message: ($) =>
+  seq(
+    /SoapRequestMessage/i,
+    '=',
+    field('soap_request_message', $.xml_identifier),
+  ),
 
     relationship: ($) =>
       seq(
@@ -555,18 +658,18 @@ module.exports = define_grammar(objectscript_core, {
     expression_method_keywords: ($) =>
       seq(
         '[',
-        repeat(seq($._method_keyword, ',')),
+        repeat(seq($.method_keyword, ',')),
         $.kw_Expression_CodeMode,
-        repeat(seq(',', $._method_keyword)),
+        repeat(seq(',', $.method_keyword)),
         ']',
       ),
 
     external_method_keywords: ($) =>
       seq(
         '[',
-        repeat(seq($._method_keyword, ',')),
+        repeat(seq($.method_keyword, ',')),
         $.kw_External_Language,
-        repeat(seq(',', $._method_keyword)),
+        repeat(seq(',', $.method_keyword)),
         ']',
       ),
 
@@ -587,7 +690,7 @@ module.exports = define_grammar(objectscript_core, {
     keyword_of: (_) => /Of/i,
 
     arguments: ($) =>
-      seq('(', optional(seq($.argument, repeat(seq(',', $.argument)))), ')'),
+      seq(token.immediate('('), optional(seq($.argument, repeat(seq(',', $.argument)))), ')'),
 
     argument: ($) =>
       seq(
