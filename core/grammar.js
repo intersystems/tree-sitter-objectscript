@@ -317,7 +317,7 @@ module.exports = grammar(objectscript_expr, {
 
     pound_ifndef: ($) =>
       seq(
-        field('preproc_keyword', alias(/\#ifndef/i, $.kw_pound_ifndef)),
+        choice(/\#ifndef/i,/\#ifundef/i,),
         field('condition', $.expression),
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),

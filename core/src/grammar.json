@@ -5091,18 +5091,19 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "FIELD",
-          "name": "preproc_keyword",
-          "content": {
-            "type": "ALIAS",
-            "content": {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "PATTERN",
               "value": "\\#ifndef",
               "flags": "i"
             },
-            "named": true,
-            "value": "kw_pound_ifndef"
-          }
+            {
+              "type": "PATTERN",
+              "value": "\\#ifundef",
+              "flags": "i"
+            }
+          ]
         },
         {
           "type": "FIELD",

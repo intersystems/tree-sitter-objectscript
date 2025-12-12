@@ -1,0 +1,71 @@
+=======================
+Valid Ifndef Statements
+=======================
+#define Multicolor 256
+ 
+#ifNDef Multicolor
+  SET NumberOfColors = 2
+#else
+  SET NumberOfColors = $$$Multicolor
+#endif
+  WRITE "There are ",NumberOfColors," colors in use.",!
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (pound_define_variable_name)
+        (macro_value
+          (macro_value_line))))
+    (statement
+      (pound_ifndef
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (pound_else
+          (keyword_pound_else)
+          (statements
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))))
+        (keyword_pound_endif)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))))
