@@ -1,0 +1,426 @@
+===
+Valid Dim
+===
+#dim d,e,f As %String = "abcdef"
+#dim j,k,l As Sample.Person = ##class(Sample.Person).%New()
+#dim j,k,l = ##class(Sample.Person).%New()
+#dim m,n,o As %DynamicObject = {"name":"Fred"}
+#dim p,q,r As %DynamicArray = ["element1","element2"]
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (oref_set_target
+          (lvn
+            (objectscript_identifier))
+          (oref_property
+            (property_name
+              (identifier_segment_immediate))))
+        (expression
+          (expr_atom
+            (class_method_call
+              (class_ref
+                (keyword_pound_pound_class)
+                (class_name
+                  (dotted_identifier_strict_token_immediate)))
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (expression
+          (expr_atom
+            (class_method_call
+              (class_ref
+                (keyword_pound_pound_class)
+                (class_name
+                  (dotted_identifier_strict_token_immediate)))
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_literal
+                (json_string_literal)))))))
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_literal
+                (json_string_literal))
+              (json_literal
+                (json_string_literal)))))))))
+
+===
+valid
+#dim single variable with simple type
+===
+#dim name As %String
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)))))
+
+===
+valid
+#dim single variable with fully-qualified class type
+===
+#dim person As Sample.Person
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (oref_set_target
+          (lvn
+            (objectscript_identifier))
+          (oref_property
+            (property_name
+              (identifier_segment_immediate))))))))
+
+===
+valid
+#dim single variable with type and numeric initializer
+===
+#dim total As %Integer = 0
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+valid
+#dim single variable with type and string initializer
+===
+#dim greeting As %String = "Hello"
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+valid
+#dim single variable with type and macro initializer
+===
+#dim sc As %Status = $$$OK
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (macro
+              (macro_constant))))))))
+
+===
+valid
+#dim single variable with initializer but no data type
+===
+#dim count = 42
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+valid
+#dim multiple variables sharing a type
+===
+#dim x, y, z As %Numeric
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (lvn)
+        (lvn)
+        (objectscript_identifier)))))
+
+===
+valid
+#dim List Of type
+===
+#dim names As List Of %String
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (objectscript_identifier)))))
+
+===
+valid
+#dim Array Of type
+===
+#dim items As Array Of %Library.Person
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (oref_set_target
+          (lvn
+            (objectscript_identifier))
+          (oref_property
+            (property_name
+              (identifier_segment_immediate))))))))
+
+===
+valid
+#dim List Of type with initializer
+===
+#dim ids As List Of %Integer = $LISTBUILD(1,2,3)
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
+
+===
+valid
+#dim Array Of type with initializer
+===
+#dim map As Array Of %String = ##class(%DynamicArray).%New()
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (class_method_call
+              (class_ref
+                (keyword_pound_pound_class)
+                (class_name
+                  (dotted_identifier_strict_token_immediate)))
+              (method_name
+                (identifier_segment_immediate))
+              (method_args))))))))
+
+===
+valid
+#dim with ##; inline preprocessor comment
+===
+#dim temp As %String ##; temporary work variable
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier))))
+  (line_comment_4))
+
+===
+valid
+#dim with leading whitespace and mixed case directive
+===
+   #DIM flag As %Boolean = 1
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn)
+        (objectscript_identifier)
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+invalid missing variable name before As
+:error
+===
+#dim As %String
+---
+
+
+
+===
+invalid missing DataType after As
+:error
+===
+#dim value As
+---
+
+
+
+===
+invalid List Of missing Of keyword
+:error
+===
+#dim names As List %String
+---
+
+
+
+===
+invalid List Of missing DataType
+:error
+===
+#dim names As List Of
+---
+
+
+
+===
+invalid Array Of missing Of keyword
+:error
+===
+#dim cache As Array %Integer
+---
+
+
+
+===
+invalid Array Of missing DataType
+:error
+===
+#dim cache As Array Of
+---
+
+
+
+===
+invalid missing variable name before comma
+:error
+===
+#dim ,x As %Integer
+---
+
+
+
+===
+invalid trailing comma in variable list
+:error
+===
+#dim a As %String,
+---
+
+
+
+===
+invalid #dim line with only directive and no variable or initializer
+:error
+===
+#dim
+---
+
+
+
+===
+invalid ##; comment used without any variable definition
+:error
+===
+#dim ##; this line has no variable
+---
+
+

@@ -4299,6 +4299,32 @@
         }
       ]
     },
+    "line_comment_4": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "##;"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_line_comment_inner"
+        }
+      ]
+    },
+    "line_comment_5": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "///"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_line_comment_inner"
+        }
+      ]
+    },
     "block_comment": {
       "type": "SEQ",
       "members": [
@@ -4565,13 +4591,39 @@
           }
         },
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "objectscript_identifier"
-          },
-          "named": true,
-          "value": "lvn"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "objectscript_identifier"
+              },
+              "named": true,
+              "value": "lvn"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "objectscript_identifier"
+                    },
+                    "named": true,
+                    "value": "lvn"
+                  }
+                ]
+              }
+            }
+          ]
         },
         {
           "type": "CHOICE",
@@ -4584,17 +4636,53 @@
                   "name": "preproc_keyword",
                   "content": {
                     "type": "PATTERN",
-                    "value": "[aA][sS]"
+                    "value": "As",
+                    "flags": "i"
                   }
                 },
                 {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "objectscript_identifier"
-                  },
-                  "named": true,
-                  "value": "typename"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "objectscript_identifier"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "oref_set_target"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "PATTERN",
+                          "value": "Of",
+                          "flags": "i"
+                        },
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "SYMBOL",
+                              "name": "objectscript_identifier"
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "oref_set_target"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 }
               ]
             },
@@ -4629,6 +4717,16 @@
     "keyword_dim": {
       "type": "PATTERN",
       "value": "\\#[dD][iI][mM]"
+    },
+    "keyword_list": {
+      "type": "PATTERN",
+      "value": "list",
+      "flags": "i"
+    },
+    "keyword_array": {
+      "type": "PATTERN",
+      "value": "array",
+      "flags": "i"
     },
     "pound_define": {
       "type": "SEQ",
@@ -15667,6 +15765,14 @@
     {
       "type": "SYMBOL",
       "name": "line_comment_3"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "line_comment_4"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "line_comment_5"
     },
     {
       "type": "SYMBOL",

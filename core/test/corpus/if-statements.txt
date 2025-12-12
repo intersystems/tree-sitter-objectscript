@@ -54,7 +54,7 @@ If Statements 0
           command_name: (keyword_else)
           (statement
             (command_write
-              command_name: (keyword_write)
+              (keyword_write)
               (write_argument
                 (expression
                   (expr_atom
@@ -157,7 +157,7 @@ If Statements 1
                 command_name: (keyword_else)
                 (statement
                   (command_write
-                    command_name: (keyword_write)
+                    (keyword_write)
                     (write_argument
                       (expression
                         (expr_atom
@@ -437,6 +437,7 @@ Else statements old version
  else /* */
  else /* */ w 0
 ---
+
 (source_file
   (statements
     (statement
@@ -444,7 +445,7 @@ Else statements old version
         command_name: (keyword_oldelse)
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -467,7 +468,7 @@ Else statements old version
         command_name: (keyword_oldelse)
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -481,6 +482,7 @@ Else Statement Invalid
 ---
 
 
+
 ====================
 If Statement Invalid
 :error
@@ -488,6 +490,8 @@ If Statement Invalid
  if set x = 2
 
 ---
+
+
 
 ============================
 If Block to old Else Invalid
@@ -501,12 +505,15 @@ If Block to old Else Invalid
   q
 ---
 
+
+
 ====================
 If Statement Invalid
 :error
 ====================
   if 0 { a=1 w 1 }
 ---
+
 
 
 ==========================
@@ -519,6 +526,7 @@ If Block to Old Else Valid
   e  w 0,!
   q
 ---
+
 (source_file
   (statements
     (statement
@@ -529,7 +537,7 @@ If Block to Old Else Valid
             (numeric_literal)))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -552,7 +560,7 @@ If Block to Old Else Valid
         command_name: (keyword_oldelse)
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (expression
                 (expr_atom
@@ -570,6 +578,7 @@ If Alone
  if
  i
 ---
+
 (source_file
   (statements
     (statement
@@ -585,6 +594,7 @@ Else alone
  else
  e
 ---
+
 (source_file
   (statements
     (statement
@@ -602,6 +612,7 @@ If Expression Indirection
    DO GetZip()
  }
 ---
+
 (source_file
   (statements
     (statement
@@ -619,7 +630,7 @@ If Expression Indirection
                     (objectscript_identifier)))))))
         (statement
           (command_write
-            command_name: (keyword_write)
+            (keyword_write)
             (write_argument
               (write_device_control
                 (write_device_fflf)))
@@ -642,6 +653,7 @@ If with Expression, Block on newline
  if x 
  {}
 ---
+
 (source_file
   (statements
     (statement
@@ -651,4 +663,3 @@ If with Expression, Block on newline
           (expr_atom
             (lvn
               (objectscript_identifier))))))))
-
