@@ -3686,42 +3686,25 @@
   {
     "type": "procedure",
     "named": true,
-    "fields": {
-      "keyword": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "keyword_methodimpl",
-            "named": true
-          },
-          {
-            "type": "keyword_private",
-            "named": true
-          },
-          {
-            "type": "keyword_public",
-            "named": true
-          }
-        ]
-      },
-      "parameter": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "objectscript_identifier",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "parameter_list",
+          "type": "keyword_methodimpl",
+          "named": true
+        },
+        {
+          "type": "keyword_private",
+          "named": true
+        },
+        {
+          "type": "keyword_public",
+          "named": true
+        },
+        {
+          "type": "procedure_pub_vars",
           "named": true
         },
         {
@@ -3729,7 +3712,22 @@
           "named": true
         },
         {
-          "type": "tag",
+          "type": "tag_with_params",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "procedure_pub_vars",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "objectscript_identifier",
           "named": true
         }
       ]

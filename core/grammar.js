@@ -1694,30 +1694,27 @@ module.exports = grammar(objectscript_expr, {
         $.parameter_list,
       ),
 
+    procedure_pub_vars: ($) => 
+      seq(
+        '[',
+        optional(
+          repeat_with_commas($.objectscript_identifier),
+        ),
+        ']',
+      ),
+
     // Full procedure definitions: tagname(params) [public_vars] access_modifier { body }
     procedure: ($) =>
       seq(
-        $.tag,
-        $.parameter_list,
+        $.tag_with_params,
         // Optional public variables list [var1, var2, ...]
+        optional($.procedure_pub_vars),
         optional(
-          seq(
-            '[',
-            optional(
-              seq(
-                field('parameter', $.objectscript_identifier),
-                repeat(seq(',', field('parameter', $.objectscript_identifier))),
-              ),
-            ),
-            ']',
-          ),
-        ),
-        optional(
-          field('keyword', choice(
+          choice(
             $.keyword_public,
             $.keyword_private,
             $.keyword_methodimpl,
-          )),
+          ),
         ),
         // Code block { statements }, separated by whitespace
         '{',
