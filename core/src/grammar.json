@@ -12094,7 +12094,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "html_marker"
+              "name": "html_marker_reversed"
             }
           ]
         }
@@ -12104,13 +12104,6 @@
       "type": "PATTERN",
       "value": "&html",
       "flags": "i"
-    },
-    "html_marker": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "PATTERN",
-        "value": "[^\\s<({+\\-\\/\\\\|*})>]+"
-      }
     },
     "embedded_xml": {
       "type": "SEQ",
@@ -12155,37 +12148,69 @@
       ]
     },
     "embedded_sql_amp": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_embedded_sql_amp"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_embedded_sql_amp"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "embedded_sql_marker"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "("
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "paren_fenced_text"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": ")"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "embedded_sql_reverse_marker"
+            }
+          ]
         },
         {
-          "type": "SYMBOL",
-          "name": "embedded_sql_marker"
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "("
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "paren_fenced_text"
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": ")"
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "embedded_sql_reverse_marker"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_embedded_sql_amp"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "("
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "paren_fenced_text"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": ")"
+              }
+            }
+          ]
         }
       ]
     },
@@ -12224,33 +12249,83 @@
       "flags": "i"
     },
     "embedded_js": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_embedded_js"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "&js"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&jscript"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&javascript"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "html_marker"
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "<"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "embedded_js_special_case"
+            }
+          ]
         },
         {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "STRING",
-            "value": "<"
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "angled_bracket_fenced_text"
-        },
-        {
-          "type": "STRING",
-          "value": ">"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "&js"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&jscript"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&javascript"
+                }
+              ]
+            },
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "<"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "angled_bracket_fenced_text"
+            },
+            {
+              "type": "STRING",
+              "value": ">"
+            }
+          ]
         }
       ]
-    },
-    "keyword_embedded_js": {
-      "type": "PATTERN",
-      "value": "&js",
-      "flags": "i"
     },
     "tag_with_params": {
       "type": "SEQ",
@@ -15782,6 +15857,18 @@
     {
       "type": "SYMBOL",
       "name": "_zw_block"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "html_marker"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "html_marker_reversed"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "embedded_js_special_case"
     }
   ],
   "inline": [

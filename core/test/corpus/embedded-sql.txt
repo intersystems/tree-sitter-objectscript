@@ -1,0 +1,375 @@
+===
+Valid Embedded SQL
+===
+    &sql(SELECT Name INTO :name
+    FROM Patient
+    WHERE %ID = 43)
+    &sql()
+    &sql(SELECT Name INTO :a FROM Sample.Person)
+    &sql(SELECT COUNT(*) INTO :count 
+    FROM MyApp.Student)
+    &sql(SELECT * INTO :tflds() FROM Sample.Person )
+    &sql(SELECT Name,Home_State
+    INTO :CName,:CAddr
+    FROM Sample.Person)
+    &sql(SELECT Name,Home_State
+    INTO :CInfo(1),:CInfo(2)
+    FROM Sample.Person)
+    &sql(SELECT Name,Salary INTO :outname, :outsalary
+    FROM MyApp.Employee
+    WHERE Salary > :minval AND Salary < :maxval)
+    &sql(SELECT Name,Age
+    INTO :a,:b
+    FROM Sample.Person
+    WHERE Age=:x)
+    &sql(SELECT Name, Title INTO :obj.Name, :obj.Title
+    FROM MyApp.Employee
+    WHERE %ID = :id )
+    &sql(OPEN MyCursor)
+    &sql(FETCH MyCursor)
+    &sql(FETCH MyCursor INTO :a, :b)
+    &sql(CLOSE MyCursor)
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))))
+
+===
+SQL Cursor
+===
+    &sql(DECLARE C1 CURSOR FOR
+    SELECT %ID,Name
+    INTO :id, :name
+    FROM Sample.Person
+    WHERE Name %STARTSWITH 'A'
+    ORDER BY Name
+    )
+
+    &sql(OPEN C1)
+        QUIT:(SQLCODE'=0)
+    &sql(FETCH C1)
+
+    While (SQLCODE = 0) {
+        Write id, ":  ", name,!        
+    &sql(FETCH C1)
+    }
+
+    &sql(CLOSE C1)
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))
+    (statement
+      (command_while
+        (keyword_while)
+        (expression
+          (expr_atom
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (embedded_sql
+            (embedded_sql_amp
+              (keyword_embedded_sql_amp)
+              (paren_fenced_text))))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))))
+
+===
+Declare Cursor
+===
+  &sql(DECLARE MyCursor CURSOR FOR
+    SELECT Name, DOB
+    FROM Sample.Person
+    WHERE Home_State = :state
+    ORDER BY Name
+ )
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (paren_fenced_text))))))
+
+===================
+Valid Marker SYNTAX
+===================
+  &sql@@( ... )@@
+  &sql[( ... )]
+  &sqltest( ... )tset
+  &sql[Aa{( ... )}aA]
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (embedded_sql_marker)
+          (paren_fenced_text)
+          (embedded_sql_reverse_marker))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (embedded_sql_marker)
+          (paren_fenced_text)
+          (embedded_sql_reverse_marker))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (embedded_sql_marker)
+          (paren_fenced_text)
+          (embedded_sql_reverse_marker))))
+    (statement
+      (embedded_sql
+        (embedded_sql_amp
+          (keyword_embedded_sql_amp)
+          (embedded_sql_marker)
+          (paren_fenced_text)
+          (embedded_sql_reverse_marker))))))
+
+===
+Valid ## syntax
+===
+    ##sql(DECLARE MyCursor CURSOR FOR
+    SELECT Name, DOB
+    FROM Sample.Person
+    WHERE Home_State = :state
+    ORDER BY Name
+    )
+    ##sql(DECLARE C1 CURSOR FOR
+    SELECT %ID,Name
+    INTO :id, :name
+    FROM Sample.Person
+    WHERE Name %STARTSWITH 'A'
+    ORDER BY Name
+    )
+
+    ##sql(OPEN C1)
+    QUIT:(SQLCODE'=0)
+    ##sql(FETCH C1)
+
+    While (SQLCODE = 0) {
+    Write id, ":  ", name,!        
+    ##sql(FETCH C1)
+    }
+
+    ##sql(CLOSE C1)
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_sql
+        (embedded_sql_hash
+          (keyword_embedded_sql_hash)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_hash
+          (keyword_embedded_sql_hash)
+          (paren_fenced_text))))
+    (statement
+      (embedded_sql
+        (embedded_sql_hash
+          (keyword_embedded_sql_hash)
+          (paren_fenced_text))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (embedded_sql
+        (embedded_sql_hash
+          (keyword_embedded_sql_hash)
+          (paren_fenced_text))))
+    (statement
+      (command_while
+        (keyword_while)
+        (expression
+          (expr_atom
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (embedded_sql
+            (embedded_sql_hash
+              (keyword_embedded_sql_hash)
+              (paren_fenced_text))))))
+    (statement
+      (embedded_sql
+        (embedded_sql_hash
+          (keyword_embedded_sql_hash)
+          (paren_fenced_text))))))

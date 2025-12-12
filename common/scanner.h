@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-// #include <stdio.h>
+#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -25,6 +25,9 @@ enum ObjectScript_Core_Scanner_TokenType {
   _POST_CONDITIONAL_ID,
   _XECUTE_ARG_INVALID,
   _ZW_BLOCK,
+  HTML_MARKER,
+  HTML_MARKER_REVERSED,
+  EMBEDDED_JS_SPECIAL_CASE,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -52,7 +55,10 @@ static const char* token_names[] = {
   "_ZBREAK_DEVICE_TERMINATION",
   "_POST_CONDITIONAL_ID",
   "_XECUTE_ARG_INVALID",
-  "_ZW_BLOCK"
+  "_ZW_BLOCK",
+  "HTML_MARKER",
+  "HTML_MARKER_REVERSED",
+  "EMBEDDED_JS_SPECIAL_CASE",
 };
 
 #if 0
@@ -82,6 +88,34 @@ static inline void advance(TSLexer *lexer) {
   lexer->advance(lexer, false);
   // printf("AT: '%c'\n", lexer->lookahead);
 }
+static inline bool is_validHTML_MARKER_char(int32_t c) {
+  if (iswspace(c)) return false;
+
+  switch (c) {
+    case '<': case '>':
+    case '(': case ')':
+    case '{': case '}':
+    case '+': case '-':
+    case '/': case '\\':
+    case '|': case '*':
+      return false;
+    default:
+      return true; 
+  }
+}
+static inline bool is_valid_sql_marker_char(int32_t c) {
+  if (iswspace(c)) return false;
+
+  switch (c) {
+    case '(': case ')':
+    case '+': case '-':
+    case '/': case '\\':
+    case '|': case '*':
+      return false;
+    default:
+      return true; 
+  }
+}
 
 static inline void skip   (TSLexer *lexer) { lexer->advance(lexer, true ); }
 
@@ -90,6 +124,12 @@ struct ObjectScript_Core_Scanner {
   int32_t marker_buffer[MARKER_BUFFER_MAX_LEN];
   int marker_buffer_len;
   bool terminated_newline;
+  int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
+  int html_marker_buffer_len;
+  int32_t sql_marker_buffer[MARKER_BUFFER_MAX_LEN];
+  int sql_marker_buffer_len;
+  int32_t js_marker_buffer_reversed[MARKER_BUFFER_MAX_LEN];
+  int js_marker_buffer_reversed_len;
 };
 
 static bool ObjectScript_Core_Scanner_lex_fenced_text(
@@ -112,6 +152,46 @@ static bool ObjectScript_Core_Scanner_lex_fenced_text(
   }
   return false;
 }
+
+
+static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
+    TSLexer *lexer,
+    enum ObjectScript_Core_Scanner_TokenType desired_symbol,
+    const int32_t *reverse_marker,
+    int reverse_marker_len,
+    char r_delim  
+) {
+  while (!lexer->eof(lexer)) {
+    if (lexer->lookahead == r_delim) {
+      // Potential start of closing sequence ">CBA"
+      advance(lexer); // consume '>'
+
+      uint8_t i = 0;
+      while (i < reverse_marker_len && !lexer->eof(lexer)
+             && lexer->lookahead == reverse_marker[i]) {
+        advance(lexer);
+        i++;
+      }
+
+      if (i == reverse_marker_len) {
+        // We just consumed ">CBA" (or whatever reverse_marker is)
+        lexer->result_symbol = desired_symbol;
+        return true;
+      }
+
+      // Not actually closing; treat what we consumed as part of the text
+      // and keep scanning.
+      continue;
+    }
+
+    // Ordinary character inside JS body
+    advance(lexer);
+  }
+
+  // EOF without closing fence – let parser produce an error
+  return false;
+}
+
 
 /// This is the interesting function. The rest is infrastructure
 static bool
@@ -136,10 +216,18 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
   
+if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE]) {
+  if (scanner->js_marker_buffer_reversed_len == 0) return false; // defensive
+  return ObjectScript_Core_Scanner_lex_marker_fenced_text(
+      lexer,
+      EMBEDDED_JS_SPECIAL_CASE,
+      scanner->js_marker_buffer_reversed,
+      scanner->js_marker_buffer_reversed_len,
+      '>');
+}
 
 if (valid_symbols[_TERMINATION] && valid_symbols[_ARGUMENTLESS_LOOP] && lexer->lookahead=='\n') {
     // normally this would be a termination, but we need to make sure that it isn't a block.
-//    fprintf(stderr,"HERE???");
     while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
         lexer->advance(lexer,false);
     }
@@ -155,6 +243,125 @@ if (valid_symbols[_TERMINATION] && valid_symbols[_ARGUMENTLESS_LOOP] && lexer->l
         return true;
 
     }
+}
+
+if (valid_symbols[HTML_MARKER_REVERSED]) {
+  // lexer->mark_end(lexer);
+  while (scanner->html_marker_buffer_len >0 && !lexer->eof(lexer)) {
+    int32_t expected = scanner->html_marker_buffer[scanner->html_marker_buffer_len - 1];
+
+    if (expected == '[') expected = ']';
+    else if (expected == ']') expected = '[';
+
+    if (lexer->lookahead != expected) {
+      scanner->terminated_newline = false;
+      return false;
+    }
+
+    advance(lexer);
+    // lexer->mark_end(lexer);
+    scanner->html_marker_buffer_len -= 1;
+  }
+
+  if (scanner->html_marker_buffer_len > 0) {
+    // Ran out of input before fully matching reverse marker
+    return false;
+  }
+
+  scanner->html_marker_buffer_len = 0;  // reset for next pair
+  lexer->result_symbol = HTML_MARKER_REVERSED;
+  scanner->terminated_newline = false;
+  return true;
+}
+
+
+if (valid_symbols[HTML_MARKER]) {
+    scanner->html_marker_buffer_len=0;
+    lexer->mark_end(lexer);
+
+    while (!lexer->eof(lexer) && is_validHTML_MARKER_char(lexer->lookahead)) {
+      if (scanner->html_marker_buffer_len == MARKER_BUFFER_MAX_LEN) {
+        return false; // too long
+      }
+      scanner->html_marker_buffer[scanner->html_marker_buffer_len] = lexer->lookahead;
+      scanner->html_marker_buffer_len +=1;
+      advance(lexer);
+      lexer->mark_end(lexer);
+    }
+
+    // Marker must be non-empty and must stop because of '<'
+    if (scanner->html_marker_buffer_len == 0 || lexer->lookahead != '<') {
+      return false;
+    }
+    scanner->js_marker_buffer_reversed_len = scanner->html_marker_buffer_len;
+    for (uint8_t i = 0; i < scanner->html_marker_buffer_len; i++) {
+      if (scanner->html_marker_buffer[scanner->html_marker_buffer_len - 1 - i] == '[') {
+        scanner->js_marker_buffer_reversed[i] = ']';
+      }
+      else if (scanner->html_marker_buffer[scanner->html_marker_buffer_len - 1 - i] == ']') {
+        scanner->js_marker_buffer_reversed[i] = '[';
+      }
+      else {
+        scanner->js_marker_buffer_reversed[i] =
+          scanner->html_marker_buffer[scanner->html_marker_buffer_len - 1 - i];
+      }
+    }
+
+    lexer->result_symbol = HTML_MARKER;
+    scanner->terminated_newline = false;
+    return true;
+}
+if (valid_symbols[EMBEDDED_SQL_REVERSE_MARKER]) {
+  while (scanner->sql_marker_buffer_len >0 && !lexer->eof(lexer)) {
+    int32_t expected = scanner->sql_marker_buffer[scanner->sql_marker_buffer_len - 1];
+
+    if (expected == '[') expected = ']';
+    else if (expected == ']') expected = '[';
+    else if (expected == '{') expected = '}';
+    else if (expected == '}') expected = '{';
+
+    if (lexer->lookahead != expected) {
+      scanner->terminated_newline = false;
+      return false;
+    }
+
+    advance(lexer);
+    // lexer->mark_end(lexer);
+    scanner->sql_marker_buffer_len -= 1;
+  }
+
+  if (scanner->sql_marker_buffer_len > 0) {
+    // Ran out of input before fully matching reverse marker
+    return false;
+  }
+
+  scanner->sql_marker_buffer_len = 0;  // reset for next pair
+  lexer->result_symbol = EMBEDDED_SQL_REVERSE_MARKER;
+  scanner->terminated_newline = false;
+  return true;
+}
+if (valid_symbols[EMBEDDED_SQL_MARKER]) {
+    scanner->sql_marker_buffer_len=0;
+    lexer->mark_end(lexer);
+
+    while (!lexer->eof(lexer) && is_valid_sql_marker_char(lexer->lookahead)) {
+      if (scanner->sql_marker_buffer_len == MARKER_BUFFER_MAX_LEN) {
+        return false; // too long
+      }
+      scanner->sql_marker_buffer[scanner->sql_marker_buffer_len] = lexer->lookahead;
+      scanner->sql_marker_buffer_len +=1;
+      advance(lexer);
+      lexer->mark_end(lexer);
+    }
+
+    // Marker must be non-empty and must stop because of '('
+    if (scanner->sql_marker_buffer_len == 0 || lexer->lookahead != '(') {
+      return false;
+    }
+    // Do NOT consume '<' – ANGLED_BRACKET_FENCED_TEXT will see it
+    lexer->result_symbol = EMBEDDED_SQL_MARKER;
+    scanner->terminated_newline = false;
+    return true;
 }
 
 if (valid_symbols[_TERMINATION]) {
@@ -321,13 +528,13 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
                         scanner->terminated_newline = false;
                         return true;
                       }
-                      else {
-                        if(valid_symbols[_TERMINATION]) {
-                            lexer->result_symbol = _TERMINATION;
-                            scanner->terminated_newline = true; // I THINK THIS SHOULD BE TRUE
-                            return true;
-                        }
+                    else {
+                      if(valid_symbols[_TERMINATION]) {
+                          lexer->result_symbol = _TERMINATION;
+                          scanner->terminated_newline = true; // I THINK THIS SHOULD BE TRUE
+                          return true;
                       }
+                    }
                 }
             }
 //            fprintf(stderr, "before checks");
@@ -453,70 +660,15 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     }
   } else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {
     bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
-        lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>');
+        lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>'); 
     return ok;
   } else if (valid_symbols[PAREN_FENCED_TEXT]) {
     bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
         lexer, PAREN_FENCED_TEXT, '(', ')');
     return ok;
-  } else if (valid_symbols[EMBEDDED_SQL_MARKER]) {
-    // First, wipe the buffer if its already been used
-    scanner->marker_buffer_len = 0;
-    while (!lexer->eof(lexer)) {
-      if (lexer->lookahead == '(') {
-        // Note that EMBEDDED_SQL_MARKER can be zero width
-        // That is ok and necessary.
-        // If we made non zero width and made the marker
-        // and its reverse optional,
-        // we could not signal an error if marker was valid
-        // but the reverse wasn't
-        lexer->result_symbol = EMBEDDED_SQL_MARKER;
-        scanner->terminated_newline = false;
-        return true;
-      }
-      // The docs say that a marker cannot contain the following:
-      // ( + - / \ | * )
-      // And no whitespace
-      if ((lexer->lookahead == '+') || (lexer->lookahead == '-') ||
-          (lexer->lookahead == '/') || (lexer->lookahead == '\\') ||
-          (lexer->lookahead == '*') || (lexer->lookahead == ')') ||
-          iswspace(lexer->lookahead)) {
-        // TODO: Whats the best error handling strategy here?
-        // Set result symbol as the expected symbol but return false?
-        lexer->result_symbol = EMBEDDED_SQL_MARKER;
-        scanner->terminated_newline = false;
-        return false;
-      }
-      // Assert that there is stil capacity in le buffer
-      if (scanner->marker_buffer_len == MARKER_BUFFER_MAX_LEN) {
-        // TODO: Whats the best error handling strategy here?
-        lexer->result_symbol = EMBEDDED_SQL_MARKER;
-        scanner->terminated_newline = false;
-        return false;
-      }
-      scanner->marker_buffer[scanner->marker_buffer_len] = lexer->lookahead;
-      scanner->marker_buffer_len += 1;
-      advance(lexer);
-    }
-    scanner->terminated_newline = false;
-    return false;
-  } else if (valid_symbols[EMBEDDED_SQL_REVERSE_MARKER]) {
-    while (scanner->marker_buffer_len > 0) {
-      if (scanner->marker_buffer[scanner->marker_buffer_len - 1] !=
-          lexer->lookahead) {
-        // TODO: Whats the best error handling strategy here?
-        // Set result symbol as the expected symbol but return false?
-        // I think not here as this is a critical error
-        // lexer->result_symbol = EMBEDDED_SQL_MARKER;
-        scanner->terminated_newline = false;
-        return false;
-      }
-      advance(lexer);
-      scanner->marker_buffer_len -= 1;
-    }
-    lexer->result_symbol = EMBEDDED_SQL_REVERSE_MARKER;
-    return true;
-  } else if (valid_symbols[_LINE_COMMENT_INNER]) {
+  }
+  
+  else if (valid_symbols[_LINE_COMMENT_INNER]) {
     lexer->result_symbol = _LINE_COMMENT_INNER;
     for (;;) {
       if (lexer->eof(lexer)) {
@@ -597,7 +749,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
 
 }
     else if (valid_symbols[_BOL] && scanner->terminated_newline && !iswspace(lexer->lookahead)) {
-        // fprintf(stderr, "GOT INTO BOLLL");
         unsigned dots = 0;
         while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }
         // Don’t collide with decimals or relative-dot
@@ -660,6 +811,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
   return false;
 }
 static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *scanner) {
-  scanner->marker_buffer_len = 0;
+  scanner->sql_marker_buffer_len = 0;
+  scanner->html_marker_buffer_len = 0;
   scanner->terminated_newline = false;
 }

@@ -1,0 +1,283 @@
+===
+Valid Embedded JavaScript
+===
+ &js@<
+    if ( a > 1) {
+        console.log('test')
+    }
+    >@
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (html_marker)
+        (embedded_js_special_case)))))
+
+===
+embedded javascript: basic &js directive
+===
+ &js< var x = 1; >
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (angled_bracket_fenced_text)))))
+
+===
+embedded javascript: &jscript alias
+===
+ &jscript< alert("hello"); >
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (angled_bracket_fenced_text)))))
+
+===
+embedded javascript: &javascript alias
+===
+ &javascript< function f() { return 42; } >
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (angled_bracket_fenced_text)))))
+
+===
+embedded javascript: &js with numeric marker
+===
+    &js7< 
+    var x = 1;
+    x++;
+    >7
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (html_marker)
+        (embedded_js_special_case)))))
+
+===
+embedded javascript: &js with multi-character marker and reverse-marker
+===
+    &jsABC<
+    var s = ">ABC";
+    function f() { return s.length; }
+    >CBA
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (html_marker)
+        (embedded_js_special_case)))))
+
+===
+embedded javascript: &js with @@ marker pair
+===
+    &js@@<
+    // simple function
+    function square(x) {
+        return x * x;
+    }
+    >@@
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (html_marker)
+        (embedded_js_special_case)))))
+
+===
+embedded javascript: &js with bracket marker [ and ] reverse-marker
+===
+    &js[<
+    var msg = "bracket marker";
+    console.log(msg);
+    >]
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (html_marker)
+        (embedded_js_special_case)))))
+
+===
+embedded javascript: mixed with ObjectScript command on previous line
+===
+ WRITE "before JS",!
+  &js<
+    console.log("inside embedded js");
+  >
+ WRITE "after JS",!
+
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (embedded_js
+        (angled_bracket_fenced_text)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))))
+
+===
+embedded javascript: directive after label and command
+===
+
+  &js<
+    var x = 10;
+    console.log("x = " + x);
+  >
+  WRITE "done",!
+
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_js
+        (angled_bracket_fenced_text)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))))
+
+===
+embedded javascript: space between &js and '<'
+:error
+===
+ &js < var x = 1; >
+
+---
+
+
+
+===
+embedded javascript: space between marker and '<'
+:error
+===
+ &js7 < var x = 1; >7
+
+---
+
+
+
+===
+embedded javascript: space between closing '>' and reverse-marker
+:error
+===
+ &js7<
+  var x = 1;
+ > 7
+
+---
+
+
+
+===
+embedded javascript: marker contains forbidden character '+'
+:error
+===
+ &js+<
+  var x = 1;
+ >+
+
+---
+
+
+
+===
+embedded javascript: missing closing angle bracket
+:error
+===
+ &js<
+  var x = 1;
+  x++;
+  // no terminating '>'
+  WRITE "oops"
+
+---
+
+
+
+===
+embedded javascript: missing opening '<' after directive
+:error
+===
+ &js var x = 1; >
+
+---
+
+
+
+===
+embedded javascript: mismatched reverse-marker (not reverse of marker)
+:error
+===
+    &jsABC<
+    var x = 1;
+    >ABC
+
+---
+
+
+
+===
+embedded javascript: marker without matching reverse-marker at end
+:error
+===
+    &jsABC<
+    var x = 1;
+    x++;
+    >
+
+---
+
+
