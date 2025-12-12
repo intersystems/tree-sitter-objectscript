@@ -1,0 +1,129 @@
+===
+Multiple Extends
+===
+Class User.MySubclass Extends (%Library.Persistent, %Library.Populate)
+{
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier)
+      (identifier))
+    (class_body)))
+
+===
+Extends Defined class
+===
+Class MyApp.Employee Extends Person
+{
+Property Salary As %Integer;
+Property Department As %String;
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (identifier
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (identifier
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+===
+Extends Persistent
+===
+/// This sample persistent class represents a person.
+Class MyApp.Person Extends %Persistent [ SqlTableName = MyAppPerson ]
+{
+
+/// Define a unique index for the SSN property.
+Index SSNKey On SSN [ Unique ];
+
+/// Name of the person.
+Property Name As %String [ Required ];
+
+/// Person's Social Security number.
+Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
+
+}
+---
+
+(source_file
+  (documatic_line)
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_keywords
+      (kw_SqlTableName
+        (keyword_name)
+        (identifier)))
+    (class_body
+      (documatic_line)
+      (class_statement
+        (index
+          (keyword_index)
+          (identifier
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (kw_Unique
+              (keyword_name)))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (identifier
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword_required))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (identifier
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (property_keywords
+            (property_keyword_required)))))))

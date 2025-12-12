@@ -15,6 +15,13 @@
 const keyword_rules = require('./keywords');
 const objectscript_core = require('../core/grammar');
 const define_grammar = require('../common/grammar');
+/**
+ * @param {RuleOrLiteral} rule
+ * @return {RuleOrLiteral}
+ */
+const repeat_with_commas = function (rule) {
+  return seq(rule, repeat(seq(',', rule)));
+};
 
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
@@ -187,7 +194,7 @@ module.exports = define_grammar(objectscript_core, {
         repeat(seq(',', $._trigger_keyword)),
         ']',
       ),
-
+      
     property: ($) =>
       seq(
         field('keyword', $.keyword_property),
@@ -197,17 +204,128 @@ module.exports = define_grammar(objectscript_core, {
         ';',
       ),
     keyword_property: (_) => /Property/i,
+    property_keyword_aliases: ($) => seq(/Aliases/i, '=', '{', repeat_with_commas($.objectscript_identifier), '}'),
+    property_keyword_calculated: (_) => seq(optional(/Not/i),/Calculated/i),
+    property_keyword_client_name: ($) => seq(/ClientName/i,'=', $.objectscript_identifier),
+    property_keyword_compute_local_only: (_) => seq(/ComputeLocalOnly/i,'=', /[0-1]/),
+    property_keyword_deferred: (_) => seq(optional(/Not/i),/Deferred/i),
+    property_keyword_identity: (_) => seq(optional(/Not/i),/Identity/i),
+    property_keyword_multidimensional: (_) => seq(optional(/Not/i),/Multidimensional/i),
+    property_keyword_private: (_) => seq(optional(/Not/i),/Private/i),
+    property_keyword_transient: (_) => seq(optional(/Not/i),/Transient/i),
+    property_keyword_readonly: (_) => seq(optional(/Not/i),/ReadOnly/i),
+    property_keyword_required: (_) => seq(optional(/Not/i),/Required/i),
+    property_keyword_server_only: (_) => seq(/ServerOnly/i,'=', /[0-1]/),
+    property_keyword_sql_column_number: ($) => seq(/SqlColumnNumber/i,'=', $.numeric_literal),
+    property_keyword_sql_computed: (_) => seq(optional(/Not/i),/SqlComputed/i),
+    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(',repeat_with_commas(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT')),')'),choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'))),
+    property_keyword_sql_field_name: ($) => seq(/SqlFieldName/i,'=',$.sql_id),
+    property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i,'=',$.string_literal),
+    property_keyword_sql_list_type: ($) => 
+      seq(/SqlListType/i,
+        '=',choice(/LIST/i,/DELIMITED/i,/SUBNODE/i)),
+    sql_id: (_) => /[A-Za-z%_][A-Za-z@_#$0-9]*/,
+    property_keyword_sql_compute_code: ($) => 
+      seq(
+        /SqlComputeCode/i, 
+        '=', 
+        '{',
+        /Set/i, 
+        '{', 
+        choice('*',$.objectscript_identifier), 
+        '}', 
+        '=',
+        choice(
+          seq(
+            '{',
+            $.expression,
+            '}',
+          ),
+          $.expression
+        ),
+        '}'
+      ),
+
+    property_keyword_initial_expression: ($) => 
+      seq(/InitialExpression/i,'=',choice(seq('{',$.expression,'}'), $.string_literal, $.objectscript_identifier)),
+    
+    property_keywords: ($) => 
+      seq(
+        '[',
+        repeat_with_commas(choice(
+        $.property_keyword_aliases,
+        $.property_keyword_calculated,
+        $.property_keyword_client_name,
+        $.property_keyword_compute_local_only,
+        $.property_keyword_deferred,
+        $.parameter_keyword_deprecated,
+        $.parameter_keyword_final,
+        $.property_keyword_identity,
+        $.property_keyword_initial_expression,
+        $.parameter_keyword_internal,
+        $.property_keyword_multidimensional,
+        $.property_keyword_private,
+        $.property_keyword_readonly,
+        $.property_keyword_required,
+        $.property_keyword_server_only,
+        $.property_keyword_sql_column_number,
+        $.property_keyword_sql_compute_code,
+        $.property_keyword_sql_computed,
+        $.property_keyword_sql_compute_on_change,
+        $.property_keyword_sql_field_name,
+        $.property_keyword_sql_list_delim,
+        $.property_keyword_sql_list_type,
+        $.property_keyword_transient
+      )),
+      ']'
+      )
+    ,
 
     relationship: ($) =>
       seq(
-        field('keyword', $.keyword_relationship),
+        field('keyword', /Relationship/i),
         field('name', alias($.quote_permitting_identifier, $.identifier)),
         field('keyword', $.keyword_as),
         $.typename,
-        optional($.relationship_keywords),
+        $.relationship_keywords,
         ';',
       ),
-    keyword_relationship: (_) => /Relationship/i,
+    relationship_keywords: ($) => 
+      choice(
+      seq(
+        '[', 
+        repeat_with_commas(
+          choice(
+            $.relationship_keyword_cardinality,
+            $.relationship_keyword_inverse,
+            $.relationship_keyword_on_delete
+          )
+        ),
+        ']'
+      ),
+      seq(
+        '[',
+        ']'
+      )
+      ),
+    relationship_keyword_cardinality: ($) => 
+      seq(
+        /Cardinality/i, 
+        '=', 
+        choice(/one/i,/many/i,/parent/i,/children/i), 
+      ),
+    relationship_keyword_inverse: ($) => 
+      seq(
+        /inverse/i,
+        '=',
+        choice($.objectscript_identifier,$.oref_set_target),
+      ),
+    relationship_keyword_on_delete: (_) => 
+      seq(
+        /OnDelete/i, 
+        '=', 
+        choice(/cascade/i,/noaction/i,/setdefault/i,/setnull/i), 
+      ),
 
     foreignkey: ($) =>
       seq(
@@ -231,14 +349,54 @@ module.exports = define_grammar(objectscript_core, {
       ),
     keyword_foreignkey: (_) => /ForeignKey/i,
     keyword_references: (_) => /References/i,
-
+    
+    parameter_type: ($) => 
+      seq(
+        $.keyword_as,
+        choice(
+          /Boolean/i,
+          /Classname/i,
+          /coscode/i,
+          /cosexpression/i,
+          /cosidentifier/i,
+          /integer/i,
+          /sql/i,
+          /sqlidentifier/i,
+          /string/i,
+          /text/i,
+          /configvalue/i,
+        )
+    ),
+    parameter_keyword_final: (_) => seq(optional(/Not/i), /Final/i),
+    parameter_keyword_abstract: (_) => seq(optional(/Not/i),/Abstract/i),
+    parameter_keyword_deprecated: (_) => seq(optional(/Not/i),/Deprecated/i),
+    parameter_keyword_internal: (_) => seq(optional(/Not/i),/Internal/i),
+    parameter_keyword_flags: ($) => seq(/Flags/i,'=', choice($.enum_flag,$.list_flag)),
+    parameter_keyword_constraint: ($) => seq(/Constraint/i,'=', choice($.string_literal,$.objectscript_identifier)),
+    enum_flag: (_) => /ENUM/i,
+    list_flag: (_) => /LIST/i,
+    // Parameter Rules
+    parameter_keywords: ($) =>
+      seq(
+        '[',
+        optional(repeat_with_commas(choice(
+        $.parameter_keyword_abstract,
+        $.parameter_keyword_deprecated,
+        $.parameter_keyword_final,
+        $.parameter_keyword_flags,
+        $.parameter_keyword_internal,
+        $.parameter_keyword_constraint,
+        ))),
+        ']'
+      ),
+      
     parameter: ($) =>
       seq(
         field('keyword', $.keyword_parameter),
         field('name', alias($.quote_permitting_identifier, $.identifier)),
-        optional($.property_type),
-        optional(seq('=', $.default_argument_value)),
+        optional($.parameter_type),
         optional($.parameter_keywords),
+        optional(seq('=', $.default_argument_value)),
         ';',
       ),
     keyword_parameter: (_) => /Parameter/i,
@@ -269,7 +427,6 @@ module.exports = define_grammar(objectscript_core, {
         ';',
       ),
     keyword_index: (_) => /Index/i,
-    keyword_on: (_) => /On/i,
     index_properties: ($) =>
       choice(
         seq('(', $.index_item, repeat(seq(',', $.index_item)), ')'),
@@ -427,8 +584,6 @@ module.exports = define_grammar(objectscript_core, {
       $.typename,
     ),
     keyword_as: (_) => /As/i,
-    keyword_list: (_) => /list/i,
-    keyword_array: (_) => /array/i,
     keyword_of: (_) => /Of/i,
 
     arguments: ($) =>

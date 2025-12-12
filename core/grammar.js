@@ -135,7 +135,6 @@ module.exports = grammar(objectscript_expr, {
     $.line_comment_2,
     $.line_comment_3,
     $.line_comment_4,
-    $.line_comment_5,
     $.block_comment,
   ],
   // Note that adding the word key
@@ -158,7 +157,6 @@ module.exports = grammar(objectscript_expr, {
     line_comment_2: ($) => seq('#;', $._line_comment_inner),
     line_comment_3: ($) => seq(';', $._line_comment_inner),
     line_comment_4: ($) => seq('##;', $._line_comment_inner),
-    line_comment_5: ($) => seq('///', $._line_comment_inner),
     block_comment: ($) => seq('/*', $._block_comment_inner, '*/'),
     statement: ($) =>
       choice(
