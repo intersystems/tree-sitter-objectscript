@@ -5306,7 +5306,11 @@
           },
           {
             "type": "PATTERN",
-            "value": "[^\\n]*\\n"
+            "value": "[^\\n]*"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_termination"
           }
         ]
       }
@@ -5317,21 +5321,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "macro_value_line_with_continue"
-              },
-              {
-                "type": "FIELD",
-                "name": "preproc_keyword",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "keyword_pound_pound_continue"
-                }
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "macro_value_line_with_continue"
           }
         },
         {
