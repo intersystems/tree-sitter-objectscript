@@ -28,6 +28,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   HTML_MARKER,
   HTML_MARKER_REVERSED,
   EMBEDDED_JS_SPECIAL_CASE,
+  EMBEDDED_JS_SPECIAL_CASE_COMPLETE,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -59,6 +60,7 @@ static const char* token_names[] = {
   "HTML_MARKER",
   "HTML_MARKER_REVERSED",
   "EMBEDDED_JS_SPECIAL_CASE",
+  "EMBEDDED_JS_SPECIAL_CASE_COMPLETE"
 };
 
 #if 0
@@ -164,6 +166,7 @@ static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
   while (!lexer->eof(lexer)) {
     if (lexer->lookahead == r_delim) {
       // Potential start of closing sequence ">CBA"
+      lexer->mark_end(lexer);
       advance(lexer); // consume '>'
 
       uint8_t i = 0;
@@ -181,6 +184,7 @@ static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
 
       // Not actually closing; treat what we consumed as part of the text
       // and keep scanning.
+      lexer->mark_end(lexer);
       continue;
     }
 
@@ -215,9 +219,21 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     //         lexer->get_column(lexer));
     return false;
   }
-  
+
+  if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE_COMPLETE]) {
+    int i = 0;
+    // we already know marker is valid, now we want to consume it
+    while (i<scanner->js_marker_buffer_reversed_len) {
+      advance(lexer);
+      i++;
+    }
+    lexer->result_symbol = EMBEDDED_JS_SPECIAL_CASE_COMPLETE;
+    scanner->terminated_newline = false;
+    return true;
+  }
+
 if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE]) {
-  if (scanner->js_marker_buffer_reversed_len == 0) return false; // defensive
+  if (scanner->js_marker_buffer_reversed_len == 0) return false;
   return ObjectScript_Core_Scanner_lex_marker_fenced_text(
       lexer,
       EMBEDDED_JS_SPECIAL_CASE,

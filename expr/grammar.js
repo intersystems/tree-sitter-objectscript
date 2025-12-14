@@ -335,7 +335,7 @@ module.exports = grammar({
         token.immediate('('),
         optional(
           seq(
-            $.method_arg,
+            optional($.method_arg,),
             repeat(
               seq(
                 ',',

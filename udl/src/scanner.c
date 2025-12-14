@@ -6,7 +6,8 @@
 // There is no way to extend enums, so keep this in sync with base.h
 // All new entries should be appended at the bottom of the list
 enum TokenType {
-  EXTERNAL_METHOD_BODY_CONTENT = OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
+  EXTERNAL_METHOD_BODY_CONTENT = OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX,
+  IRIS_USERNAME,
 };
 
 struct ObjectScript_Udl_Scanner {
@@ -64,6 +65,28 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     return lex_fenced_text(lexer, EXTERNAL_METHOD_BODY_CONTENT, '{',
                            '}');
   }
+
+  if (valid_symbols[IRIS_USERNAME] && !(lexer->lookahead=='}' || lexer->lookahead=='@' || lexer->lookahead=='*')) {
+    int count=0;
+    lexer->mark_end(lexer);
+    while(!lexer->eof(lexer) && !(lexer->lookahead=='}' || lexer->lookahead=='@' || lexer->lookahead=='*') && count<160 ) {
+      count++;
+      advance(lexer);
+    }
+    
+
+    if(lexer->lookahead=='}') {
+      lexer->mark_end(lexer);
+      lexer->result_symbol = IRIS_USERNAME;
+      return true;
+    }
+    else {
+      return false;
+    }
+  
+  }
+
+
   struct ObjectScript_Udl_Scanner *scanner =
       (struct ObjectScript_Udl_Scanner *)payload;
   return ObjectScript_Core_Scanner_scan(&scanner->core_scanner, lexer,

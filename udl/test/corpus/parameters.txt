@@ -73,8 +73,10 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
             (typename
               (identifier)))
           (property_keywords
-            (property_keyword_initial_expression
-              (string_literal)))))
+            (property_keyword
+              (property_keyword_initial_expression
+                (identifier)
+                (rhs))))))
       (class_statement
         (property
           (keyword_property)
@@ -85,8 +87,10 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
             (typename
               (identifier)))
           (property_keywords
-            (property_keyword_initial_expression
-              (string_literal)))))
+            (property_keyword
+              (property_keyword_initial_expression
+                (identifier)
+                (rhs))))))
       (class_statement
         (method
           (keyword_method)
@@ -149,7 +153,9 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_abstract))
+            (parameter_keyword
+              (parameter_keyword_abstract
+                (identifier))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -158,10 +164,14 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_constraint
-              (string_literal))
-            (parameter_keyword_flags
-              (enum_flag)))
+            (parameter_keyword
+              (parameter_keyword_constraint
+                (identifier)
+                (rhs)))
+            (parameter_keyword
+              (parameter_keyword_flags
+                (identifier)
+                (rhs))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -170,7 +180,9 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_deprecated))
+            (parameter_keyword
+              (parameter_keyword_deprecated
+                (identifier))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -179,7 +191,9 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_final))
+            (parameter_keyword
+              (parameter_keyword_final
+                (identifier))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -188,7 +202,9 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_internal))
+            (parameter_keyword
+              (parameter_keyword_internal
+                (identifier))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -412,8 +428,10 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_flags
-              (enum_flag))))))))
+            (parameter_keyword
+              (parameter_keyword_flags
+                (identifier)
+                (rhs)))))))))
 
 ========================
 Valid Parameter Keyword Flags LIST
@@ -434,8 +452,10 @@ Class hi {
           (identifier
             (identifier))
           (parameter_keywords
-            (parameter_keyword_flags
-              (list_flag))))))))
+            (parameter_keyword
+              (parameter_keyword_flags
+                (identifier)
+                (rhs)))))))))
 
 ========================
 Valid Parameter Types

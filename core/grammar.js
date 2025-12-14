@@ -112,6 +112,7 @@ module.exports = grammar(objectscript_expr, {
     $.html_marker,
     $.html_marker_reversed,
     $.embedded_js_special_case,
+    $.embedded_js_special_case_complete,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -1674,6 +1675,8 @@ module.exports = grammar(objectscript_expr, {
         $.html_marker,
         token.immediate('<'),
         $.embedded_js_special_case,
+        '>',
+        $.embedded_js_special_case_complete
         ),
         seq(
         choice('&js','&jscript','&javascript'),

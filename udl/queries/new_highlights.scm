@@ -1,5 +1,4 @@
 ;; inherits: objectscript_core
-; ------------------ UDL -------------------
 
 ; CLASS HIGHLIGHTING
 (class_definition
@@ -61,10 +60,8 @@
     (identifier) @key  
     (rhs)? @rhs))
 (parameter_type) @type
-
-; types and comments
+; types
 (typename) @type
-(documatic_line) @comment.doc
 
 ; RELATIONSHIP HIGHLIGHTING
 (relationship (identifier) @relationship)
@@ -104,7 +101,7 @@
   (_  
     (identifier) @key  
     (rhs)? @rhs))
-    
+
 ; XDATA HIGHLIGHTING
 (xdata (identifier) @constant)
 (xdata_keyword
@@ -124,6 +121,7 @@
   (_  
     (identifier) @key  
     (rhs)? @rhs))
+
 ; STORAGE HIGHLIGHTING
 (storage (identifier) @type.definition)
 (storage_body_content) @body
