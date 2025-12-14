@@ -1,7 +1,6 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -419,7 +418,6 @@ if (valid_symbols[_ZBREAK_DEVICE_TERMINATION] && iswspace(lexer->lookahead)) {
 
 
 if (valid_symbols[_ARGUMENTLESS_LOOP]) {
-//    fprintf(stderr,"ARG");
     bool is_block = (lexer->lookahead == '{');
     if (is_block) {
         lexer->result_symbol = _ARGUMENTLESS_LOOP;
@@ -443,7 +441,6 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
   valid_symbols[_ARGUMENTLESS_LOOP])
   && iswspace(lexer->lookahead)
   ) {
-//        fprintf(stderr, "HERE");
         int count = 0;
         if (lexer->lookahead == ' ') {
          while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
@@ -459,9 +456,6 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
         bool termination_new_line = (lexer->lookahead == '\n');
 
         bool is_block = (lexer->lookahead == '{');
-
-        // fprintf(stderr, "DEBUG[BUNCH] col=%u termination=%u block=%u lookahead='%c'\n",
-        //                 lexer->get_column(lexer), is_termination, is_block,lexer->lookahead);
 
 
         if (count == 1 && !is_block && !is_termination) {
@@ -566,7 +560,6 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
                     }
                 }
             }
-//            fprintf(stderr, "before checks");
             bool new_line = false;
             while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
                 if (lexer->lookahead == '\n') {
@@ -600,7 +593,6 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             }
 
             if(valid_symbols[_BOL] && is_dot) {
-              //  fprintf(stderr,"DOES IT EVER GET TO BOL BLOCK");
                 unsigned dots = 0;
                 while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }
                 // Don’t collide with decimals or relative-dot
@@ -802,9 +794,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
         }
     }
     else if ((valid_symbols[_WHITESPACE] || valid_symbols[_BOL]) && (iswspace(lexer->lookahead)))  {
-//     fprintf(stderr,"WHITESPACE  CHECK");
-//     fprintf(stderr, "scan: lookahead='%c' (%d), col=%u\n",
-//              lexer->lookahead, lexer->lookahead, lexer->get_column(lexer));
     bool consumed = false;
     bool saw_nl   = scanner->terminated_newline;
 
@@ -829,11 +818,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
         is_decimal = true;
     }
 
-    // fprintf(stderr, "DEBUG[BOL] dots=%u lookahead='%c'\n",
-    //             dots, lexer->lookahead);
-
-    // fprintf(stderr, "is_decimal, saw_nl, valid_symbols[_BOL] %d %d %d", is_decimal, saw_nl, valid_symbols[_BOL]);
-
     if (saw_nl && valid_symbols[_BOL] && dots > 0 && !is_decimal) {
         lexer->result_symbol = _BOL;
         scanner->terminated_newline = false;
@@ -841,7 +825,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     }
 
     if (!consumed && scanner->terminated_newline == false) return false;          // no whitespace -> not this token
-//    if (saw_nl) scanner->at_bol = true;
     lexer->result_symbol = _WHITESPACE;
     scanner->terminated_newline = false;
     return true;
