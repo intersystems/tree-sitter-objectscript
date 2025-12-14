@@ -156,9 +156,12 @@ Class MyApp.Test {
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_codemode))
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
               (method_keyword
-                (parameter_keyword_final)))
+                (parameter_keyword_final
+                  (identifier))))
             (core_method_body_content
               (statement
                 (command_quit
@@ -260,7 +263,8 @@ Class MyApp.Test {
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_sql_proc)))
+                (method_keyword_sql_proc
+                  (identifier))))
             (core_method_body_content
               (statement
                 (command_quit
@@ -429,6 +433,889 @@ Class MyApp.Test {
   {
     Quit "ok"
   } junk
+}
+---
+
+
+
+=====
+Method Arg  Literal
+=====
+Class MyApp.Test {
+ClassMethod Test(flag As %Integer = 0)
+{
+ //method implementation
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (numeric_literal))))
+            (line_comment_1)))))))
+
+=====
+Method Arg  Expression
+=====
+Class MyApp.Test {
+ClassMethod Test(time As %Integer = {$horolog} )
+{
+ //method implementation
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (expression
+                    (expr_atom
+                      (system_defined_variable))))))
+            (line_comment_1)))))))
+
+=====
+Method  Arg Diff Formats
+=====
+Class MyApp.Test {
+ClassMethod Calculate(count As %Integer, name, state As %String = "CA")
+{
+ // ...
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (argument
+                (identifier))
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (string_literal))))
+            (line_comment_1)))))))
+
+====
+Method Arg ByRef
+====
+Class MyApp.Test {
+/// Swap value of two integers
+Method Swap(ByRef x As %Integer, ByRef y As %Integer)
+{
+    Set temp = x
+    Set x = y
+    Set y = temp
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (keyword_byref)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (argument
+                (keyword_byref)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
+
+====
+Method Arg Output
+====
+Class MyApp.Test {
+Method CreateObject(Output newobj As MyApp.MyClass) As %Status
+{
+    Set newobj = ##class(MyApp.MyClass).%New()
+    Quit $$$OK
+    
+}}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (keyword_output)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (class_method_call
+                          (class_ref
+                            (keyword_pound_pound_class)
+                            (class_name
+                              (dotted_identifier_strict_token_immediate)))
+                          (method_name
+                            (identifier_segment_immediate))
+                          (method_args)))))))
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))))))))
+
+====
+ClassMethod Call
+====
+Class MyApp.Test {
+Method CreateObject(Output newobj As MyApp.MyClass) As %Status
+{
+    set myval=##class(mypackage.myclass).GetValue(,,,,,,4)
+    
+}}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (keyword_output)
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (class_method_call
+                          (class_ref
+                            (keyword_pound_pound_class)
+                            (class_name
+                              (dotted_identifier_strict_token_immediate)))
+                          (method_name
+                            (identifier_segment_immediate))
+                          (method_args
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal))))))))))))))))))
+
+====
+Valid ClassMethod
+====
+Class test {
+  ClassMethod Skip(a1, a2 As %Integer = 2, a3 As %Integer = 3) [ Language = python ]
+{
+  print(x)
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier))
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (numeric_literal)))
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))
+                (default_argument_value
+                  (numeric_literal))))
+            (external_method_keywords
+              (method_keyword_language
+                (identifier)
+                (rhs)))
+            (external_method_body_content)))))))
+
+===
+Expression Method
+===
+Class test {
+  /// An expression method
+Method Double(val As %Integer) As %Integer [ CodeMode = expression ] 
+{
+  val * 2
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (expression_method_keywords
+              (method_keyword_codemode_expression
+                (identifier)
+                (rhs)))
+            (expression_method_body_content
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+====
+MethodGenerator
+====
+Class MyApp.MyClass Extends %RegisteredObject
+{
+Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
+    {
+        Do %code.WriteLine(" Write """ _ %class.Name _ """")
+        Do %code.WriteLine(" Quit")
+        Quit $$$OK
+    }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_procedure_block
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_do
+                  (keyword_do)
+                  (do_parameter
+                    (instance_method_call
+                      (lvn
+                        (objectscript_identifier))
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (oref_chain_expr
+                                      (lvn
+                                        (objectscript_identifier))
+                                      (oref_property
+                                        (property_name
+                                          (identifier_segment_immediate)))))))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))))))))))
+              (statement
+                (command_do
+                  (keyword_do)
+                  (do_parameter
+                    (instance_method_call
+                      (lvn
+                        (objectscript_identifier))
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))))))))
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))))))))
+
+===
+Call Method
+===
+Class test {
+  Method Call() [ CodeMode = call ]
+{
+    Tag^Routine
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (call_method_keywords
+              (call_method_keyword
+                (identifier)
+                (rhs)))
+            (routine_tag_call
+              (line_ref
+                (label_ref)
+                (routine_ref
+                  (dotted_identifier_relaxed_token))))))))))
+
+===
+trigger
+===
+Class MyApp.Person Extends %Persistent [DdlAllowed]
+{
+    // ... Class Property Definitions
+
+    Trigger LogEvent [ Event = INSERT, Time = AFTER ]
+    {
+        // Trigger code to log an event 
+    }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_keywords
+      (class_keyword
+        (class_keyword_ddl_allowed
+          (identifier))))
+    (class_body
+      (line_comment_1)
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (trigger_keywords
+            (trigger_keyword
+              (trigger_keyword_event
+                (identifier)
+                (rhs)))
+            (trigger_keyword
+              (trigger_keyword_time
+                (identifier)
+                (rhs))))
+          (line_comment_1))))))
+
+===
+method keyword - WebMethod (instance method)
+===
+Class Test.WebMethod1
+{
+Method Add(p1 As %String) As %String [ WebMethod ]
+{
+    Quit p1
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===
+method keyword - WebMethod (no return type)
+===
+Class Test.WebMethod2
+{
+Method Ping() [ WebMethod ]
+{
+    Quit
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit))))))))))
+
+===
+method keyword - Not WebMethod
+===
+Class Test.WebMethodNot1
+{
+Method Add(p1 As %String) As %String [ Not WebMethod ]
+{
+    Quit p1
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (keyword_not)
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===
+method keyword - WebMethod with another keyword
+===
+Class Test.WebMethodWithPrivate
+{
+Method Add(p1 As %String) As %String [ Private, WebMethod ]
+{
+    Quit p1
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (property_keyword_private
+                  (identifier)))
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===
+method keyword - WebMethod (class method; parses even if discouraged)
+===
+Class Test.WebMethodClassMethod
+{
+ClassMethod Add(p1 As %String) As %String [ WebMethod ]
+{
+    Quit p1
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===
+method keyword - WebMethod (case-insensitive)
+===
+Class Test.WebMethodCase
+{
+Method Add(p1 As %String) As %String [ wEbMeThOd ]
+{
+    Quit p1
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (keyword_as)
+                (typename
+                  (identifier))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))))))
+
+===
+invalid - WebMethod missing brackets
+:error
+===
+Class Test.WebMethodInvalid1
+{
+Method Add(p1 As %String) As %String WebMethod
+{
+    Quit p1
+}
+}
+---
+
+
+
+===
+invalid - Not must be separate word before WebMethod
+:error
+===
+Class Test.WebMethodInvalid2
+{
+Method Add(p1 As %String) As %String [ NotWebMethod ]
+{
+    Quit p1
+}
+}
+---
+
+
+
+===
+invalid - WebMethod cannot take a value
+:error
+===
+Class Test.WebMethodInvalid3
+{
+Method Add(p1 As %String) As %String [ WebMethod = 1 ]
+{
+    Quit p1
+}
+}
+---
+
+
+
+===
+invalid - Not without keyword
+:error
+===
+Class Test.WebMethodInvalid4
+{
+Method Add(p1 As %String) As %String [ Not ]
+{
+    Quit p1
+}
 }
 ---
 

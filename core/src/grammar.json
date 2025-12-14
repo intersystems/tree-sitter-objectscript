@@ -971,8 +971,16 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "method_arg"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "method_arg"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 },
                 {
                   "type": "REPEAT",
@@ -12358,6 +12366,14 @@
             {
               "type": "SYMBOL",
               "name": "embedded_js_special_case"
+            },
+            {
+              "type": "STRING",
+              "value": ">"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "embedded_js_special_case_complete"
             }
           ]
         },
@@ -15934,6 +15950,10 @@
     {
       "type": "SYMBOL",
       "name": "embedded_js_special_case"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "embedded_js_special_case_complete"
     }
   ],
   "inline": [
