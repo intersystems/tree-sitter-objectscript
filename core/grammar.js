@@ -481,6 +481,7 @@ module.exports = grammar(objectscript_expr, {
                 $.class_method_call,
                 $.instance_method_call,
                 $.doable_dollar_functions,
+                $.superclass_method_call,
             ),
             optional($.post_conditional)
         ),
