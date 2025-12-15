@@ -1540,3 +1540,19 @@ do while block no whitespace in between do and block
             (expression
               (expr_atom
                 (numeric_literal)))))))))
+
+============
+do ##super()
+============
+ do ##super()
+---
+
+(source_file
+  (statements
+    (statement
+      (command_do
+        (keyword_do)
+        (do_parameter
+          (superclass_method_call
+            (keyword_pound_pound_super)
+            (method_args)))))))
