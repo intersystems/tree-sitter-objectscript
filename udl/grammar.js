@@ -470,7 +470,7 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         optional(field('keyword', choice($.keyword_byref, $.keyword_output))),
         $.identifier,
-        optional(seq(field('keyword', $.keyword_as), $.typename)),
+        optional(alias($.return_type, $.argument_type)),
         optional(seq('=', $.default_argument_value)),
       ),
 

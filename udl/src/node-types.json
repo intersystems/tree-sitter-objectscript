@@ -107,13 +107,9 @@
     "named": true,
     "fields": {
       "keyword": {
-        "multiple": true,
+        "multiple": false,
         "required": false,
         "types": [
-          {
-            "type": "keyword_as",
-            "named": true
-          },
           {
             "type": "keyword_byref",
             "named": true
@@ -130,13 +126,39 @@
       "required": true,
       "types": [
         {
+          "type": "argument_type",
+          "named": true
+        },
+        {
           "type": "default_argument_value",
           "named": true
         },
         {
           "type": "identifier",
           "named": true
-        },
+        }
+      ]
+    }
+  },
+  {
+    "type": "argument_type",
+    "named": true,
+    "fields": {
+      "keyword": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_as",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
         {
           "type": "typename",
           "named": true
