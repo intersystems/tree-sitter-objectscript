@@ -27,9 +27,10 @@ Query ByName(name As %String = "")
           (arguments
             (argument
               (identifier)
-              (keyword_as)
-              (typename
-                (identifier))
+              (argument_type
+                (keyword_as)
+                (typename
+                  (identifier)))
               (default_argument_value
                 (string_literal))))
           (query_type
@@ -83,9 +84,10 @@ SELECT ID,Name,Title FROM Employee
           (arguments
             (argument
               (identifier)
-              (keyword_as)
-              (typename
-                (identifier))
+              (argument_type
+                (keyword_as)
+                (typename
+                  (identifier)))
               (default_argument_value
                 (string_literal))))
           (query_type
@@ -134,12 +136,13 @@ Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc]
           (arguments
             (argument
               (identifier)
-              (keyword_as)
-              (typename
-                (identifier)
-                (typename_param
+              (argument_type
+                (keyword_as)
+                (typename
                   (identifier)
-                  (numeric_literal)))))
+                  (typename_param
+                    (identifier)
+                    (numeric_literal))))))
           (query_type
             (keyword_as)
             (typename

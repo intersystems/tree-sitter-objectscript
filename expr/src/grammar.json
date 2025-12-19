@@ -31,6 +31,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "json_object_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_parenthetical_expression"
         },
         {
@@ -48,10 +52,6 @@
         {
           "type": "SYMBOL",
           "name": "numeric_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "json_object_literal"
         },
         {
           "type": "SYMBOL",
@@ -970,8 +970,16 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "method_arg"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "method_arg"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 },
                 {
                   "type": "REPEAT",
@@ -1177,6 +1185,26 @@
                         "value": "|"
                       }
                     ]
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "IMMEDIATE_TOKEN",
+                        "content": {
+                          "type": "STRING",
+                          "value": "["
+                        }
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "expression"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": "]"
+                      }
+                    ]
                   }
                 ]
               },
@@ -1186,11 +1214,19 @@
             ]
           },
           {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "PATTERN",
-              "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
-            }
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "CHOICE",
@@ -4094,15 +4130,15 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "json_object_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "json_string_literal"
         },
         {
           "type": "SYMBOL",
           "name": "json_number_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "json_object_literal"
         },
         {
           "type": "SYMBOL",
