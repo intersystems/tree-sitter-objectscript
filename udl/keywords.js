@@ -49,7 +49,7 @@ module.exports = {
     method_keyword_sql_proc: ($) => seq(optional($.keyword_not),alias(/SqlProc/i,$.identifier)),
     method_keyword_web_method: ($) => seq(optional($.keyword_not),alias(/WebMethod/i,$.identifier)),
     method_keyword_return_results_set: ($) => seq(optional($.keyword_not),alias(/ReturnResultsets/i,$.identifier)),
-    method_keyword_public_list: ($) => seq(alias(/PublicList/i,$.identifier), '=', alias(choice($.objectscript_identifier, seq('(',repeat_with_commas($.objectscript_identifier), ')')),$.rhs)),
+    method_keyword_public_list: ($) => seq(alias(/PublicList/i,$.identifier), '=', choice(alias($.objectscript_identifier,$.rhs), seq('(',repeat_with_commas(alias($.objectscript_identifier,$.rhs)), ')'))),
     method_keyword_procedure_block: ($) => seq(alias(/ProcedureBlock/i,$.identifier),optional(seq('=',alias(/[0-1]/,$.rhs)))),
     method_keyword_soap_binding_style: ($) => seq(alias(/SoapBindingStyle/i,$.identifier),'=',alias(choice(/document/i,/rpc/i),$.rhs)),
     method_keyword_soap_body_use: ($) => seq(alias(/SoapBodyUse/i,$.identifier),'=',alias(choice(/literal/i,/encoded/i),$.rhs)),
@@ -62,7 +62,7 @@ module.exports = {
           choice(
           seq(
             '(',
-            alias(repeat_with_commas($.identifier),$.rhs),
+            repeat_with_commas(alias($.identifier, $.rhs)),
             ')'
           ),
           alias($.identifier,$.rhs)
@@ -75,7 +75,7 @@ module.exports = {
         choice(
           seq(
             '(',
-            alias(repeat_with_commas($.identifier),$.rhs),
+            repeat_with_commas(alias($.identifier, $.rhs)),
             ')'
           ),
           alias($.identifier,$.rhs)
@@ -288,7 +288,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          alias(repeat_with_commas($.identifier), $.rhs),
+          repeat_with_commas(alias($.identifier, $.rhs)),
           ')'
         ),
         seq(
@@ -303,7 +303,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          alias(repeat_with_commas($.identifier), $.rhs),
+          repeat_with_commas(alias($.identifier, $.rhs)),
           ')'
         ),
         seq(
@@ -319,7 +319,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          alias(repeat_with_commas($.identifier), $.rhs),
+          repeat_with_commas(alias($.identifier, $.rhs)),
           ')'
         ),
         seq(
@@ -585,7 +585,7 @@ module.exports = {
     PROPERTY KEYWORDS
     */
        keyword_property: (_) => field('name',/Property/i),
-    property_keyword_aliases: ($) => seq(alias(/Aliases/i,$.identifier), '=', '{', alias(repeat_with_commas($.objectscript_identifier),$.rhs), '}'),
+    property_keyword_aliases: ($) => seq(alias(/Aliases/i,$.identifier), '=', '{', repeat_with_commas(alias($.objectscript_identifier, $.rhs)), '}'),
     property_keyword_calculated: ($) => seq(optional($.keyword_not),alias(/Calculated/i,$.identifier)),
     property_keyword_client_name: ($) => seq(alias(/ClientName/i,$.identifier),'=', alias(/[^\s'`,\[\]\(\)\{\}]+/,$.rhs)),
     property_keyword_compute_local_only: ($) => seq(alias(/ComputeLocalOnly/i,$.identifier),'=', alias(/[0-1]/,$.rhs)),
@@ -833,7 +833,7 @@ module.exports = {
       seq(
         alias(/Condition/i,$.identifier),
         '=',
-        alias(choice($.string_literal,$.numeric_literal, seq('{', $.expression, '}')),$.rhs),
+        choice(alias($.string_literal, $.rhs),alias($.numeric_literal, $.rhs), seq('{', alias($.expression, $.rhs), '}')),
       ),
 
     index_keyword: ($) =>
