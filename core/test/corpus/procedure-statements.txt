@@ -1,0 +1,336 @@
+====================================================
+Valid Public Variable List, Block starts on new line
+====================================================
+proc1() [a, b]
+    {
+    WRITE !, "setting a"  SET a = 1
+    WRITE !, "setting b"  SET b = 2
+    WRITE !, "setting c"  SET c = 3
+    SET d = a + b + c
+    WRITE !, "The sum is: ", d
+    }
+---
+
+(source_file
+  (statements
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list))
+        (procedure_pub_vars
+          (objectscript_identifier)
+          (objectscript_identifier))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))))
+
+======================
+Valid Public Procedure
+======================
+MyProc(x,y) PUBLIC { }
+---
+
+(source_file
+  (statements
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (keyword_public)))))
+
+========================
+Valid Private Procedures
+========================
+MyProc(x,y) PRIVATE { }
+
+MyProc2(x,y) { }
+---
+
+(source_file
+  (statements
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (keyword_private)))
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))))))
+
+================
+Valid Procedures
+================
+MyProc(x,y)[x] {
+ DO abc^rou
+ }
+---
+
+(source_file
+  (statements
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (procedure_pub_vars
+          (objectscript_identifier))
+        (statement
+          (command_do
+            (keyword_do)
+            (do_parameter
+              (routine_tag_call
+                (line_ref
+                  (label_ref)
+                  (routine_ref
+                    (dotted_identifier_relaxed_token)))))))))))
+
+==============
+Procedure Code
+==============
+Rou1 // Rou1 routine
+Proc1(x,y) { 
+Label1 // Label1 within the proc1 procedure within the Rou1 routine
+} 
+
+Proc2(a,b,c) { 
+Label1 // Label1 within the Proc2 procedure (local, as with previous Label1)
+} 
+
+Label1 // Label1 that is part of Rou1 and neither procedure
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (line_comment_1)
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (statement
+          (tag))
+        (line_comment_1)))
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (statement
+          (tag))
+        (line_comment_1)))
+    (statement
+      (tag)))
+  (line_comment_1))
+
+=================
+Procedure with do
+=================
+ROU1 ;
+PROC1(x,y) {
+ DO Label1^ROU1
+Label1 ;
+ }
+Label1 ; The DO calls this label
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (line_comment_3)
+    (statement
+      (procedure
+        (tag_with_params
+          (tag)
+          (parameter_list
+            (tag_parameter
+              (objectscript_identifier))
+            (tag_parameter
+              (objectscript_identifier))))
+        (statement
+          (command_do
+            (keyword_do)
+            (do_parameter
+              (routine_tag_call
+                (line_ref
+                  (label_ref)
+                  (routine_ref
+                    (dotted_identifier_relaxed_token)))))))
+        (statement
+          (tag))
+        (line_comment_3)))
+    (statement
+      (tag)))
+  (line_comment_3))
+
+===================================
+Invalid Procedure (no argumentlist)
+:error
+===================================
+PROC1 {
+ DO Label1^ROU1
+Label1 ;
+ }
+---
+
+
+
+===================================
+Invalid Procedure (no argumentlist, has pub var list)
+:error
+===================================
+PROC1 [x] {
+ DO Label1^ROU1
+Label1 ;
+ }
+---
+
+
+
+===================================
+Invalid Procedure (pub var list separated by : not ,)
+:error
+===================================
+PROC1() [x:y] {
+ }
+---
+
+
+
+===================================
+Invalid Procedure Access Mode
+:error
+===================================
+PROC1() [x] HELLO {
+ }
+---
+
+

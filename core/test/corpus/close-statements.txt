@@ -1,0 +1,189 @@
+=============
+Close Command
+=============
+ CLOSE:$IO'=C C
+ CLOSE seqfilename:"D"
+ CLOSE device:()
+ CLOSE device:("D":"R":"hi")
+ CLOSE file:("R":newname)
+ CLOSE device:("D"::::::"R":newname)
+ CLOSE device:("D": :::: :"R":newname)
+ CLOSE device:("D": :::: :"R" : newname)
+ CLOSE myf
+---
+
+(source_file
+  (statements
+    (statement
+      (command_close
+        (keyword_close)
+        (post_conditional
+          (expression
+            (expr_atom
+              (system_defined_variable))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value)))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value)
+            (close_parameter_option_value
+              (close_rename)
+              (device
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value
+              (close_rename)
+              (device
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value)
+            (close_parameter_option_value
+              (close_rename)
+              (device
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value)
+            (close_parameter_option_value
+              (close_rename)
+              (device
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (close_parameters
+            (close_parameter_option_value)
+            (close_parameter_option_value
+              (close_rename)
+              (device
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_close
+        (keyword_close)
+        (close_argument
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+================
+Close Invalid "R"
+:error
+================
+ Close device:"R"
+---
+
+
+
+=========================
+Close Invalid /REN no arg
+:error
+=========================
+ Close device:/REN
+---
+
+
+
+=========================
+Close Invalid Whitespace
+:error
+=========================
+ Close device:/REN =hi
+---
+
+
+
+============================
+Close Invalid /RENAME no arg
+:error
+============================
+ Close device:/RENAME
+---
+
+

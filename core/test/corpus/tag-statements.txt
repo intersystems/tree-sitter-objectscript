@@ -1,0 +1,44 @@
+====
+Valid Tags
+====
+maximum
+Max
+MAX
+%control
+label()
+label(name1,name2,name3)
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (tag_with_params
+        (tag)
+        (parameter_list)))
+    (statement
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (tag_parameter
+            (objectscript_identifier))
+          (tag_parameter
+            (objectscript_identifier))
+          (tag_parameter
+            (objectscript_identifier)))))))
+
+===
+Invalid tag (invalid start char)
+:error
+===
+^test
+---
+
+

@@ -68,3 +68,7 @@
 (macro (macro_constant)) @constant.macro
 (macro (macro_function)) @function.macro
 
+(namespace_token) @namespace
+(etrap_token) @etrap
+(estack_token) @estack
+(roles_token) @roles

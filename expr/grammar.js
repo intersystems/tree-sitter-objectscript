@@ -26,6 +26,8 @@ module.exports = grammar({
     [$.method_arg, $.subscripts],
     [$.oref_chain_expr, $.expr_atom],
     [$.label_ref, $.lvn],
+    [$.class_method_call, $.oref_method],
+
   ],
   conflicts: ($) => [
   ],
@@ -55,6 +57,7 @@ module.exports = grammar({
 
     expr_atom: ($) =>
       choice(
+        $.json_object_literal,
         $._parenthetical_expression,
         $.unary_expression,
         $.macro,
@@ -62,7 +65,6 @@ module.exports = grammar({
         // Literals
         $.string_literal,
         $.numeric_literal,
-        $.json_object_literal,
         $.json_array_literal,
 
         // Variables
@@ -108,7 +110,12 @@ module.exports = grammar({
     unary_expression: ($) =>
       choice(
         seq(field('operator', $._unary_operator), $.expression),
-        seq(field('operator', '@'), $.glvn),
+        seq(field('operator', '@'), $.glvn, optional(
+          seq(
+      token.immediate('@'),
+      $.subscripts,   // existing: '(' expr (',' expr)* ')'
+  ),
+),),
       ),
     _unary_operator: (_) => choice('+', '-', "'"),
 
@@ -148,13 +155,13 @@ module.exports = grammar({
 // Keep `@glvn` as a separate alternative so spaces are allowed there.
     _pattern_operator: ($) =>
       seq(
-        field('operator', '?'),
+        field('operator', choice('?',"'?")),
         field('right', choice(
           alias($.indirection, $.unary_expression), // ? @var
           $.pattern_expression                      // ?<pattern>
         )),
       ),
-    indirection: ($) => seq(field('operator', '@'), $.glvn),
+    indirection: ($) => seq(field('operator', '@'), $.expression),
 
     pattern_expression: _ =>
       // A pattern expression looks like this:
@@ -181,7 +188,6 @@ module.exports = grammar({
       token.immediate(
         /[ \t]*[ \n]*(?:(?:\d*(?:\.\d*)?|\.)((?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"|\(((?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))(?:,(?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))*\)))+)+/
       ),
-
 
     // So far it looks like DO + SET: ##class(, ..Method(
     // So far it looks like DO only: [label]^routine[(args)]]
@@ -277,7 +283,15 @@ module.exports = grammar({
         field('routine', $.routine_ref),
       ),
       // Full indirection
-      $.indirection,
+      seq(
+          $.indirection,
+          optional($.routine_ref)
+      ),
+      seq(
+        field('label', $.indirection),      
+        token.immediate('^'),
+        field('routine', $.indirection),    
+      ),
     ),
     label_ref: (_) =>
       token(/[%A-Za-z][A-Za-z0-9]*/),
@@ -287,7 +301,18 @@ module.exports = grammar({
         $.expression,
       ),
     routine_ref: ($) =>
-      seq(token.immediate('^'), $.dotted_identifier_relaxed_token),
+      seq(token.immediate('^'),
+          optional(
+              choice(
+                  token.immediate('||'),
+                  seq(
+                      token.immediate('|'),
+                      $.expression,
+                      token.immediate('|'),
+                  ),
+              ),
+          ),
+          $.dotted_identifier_relaxed_token),
 
     dollarsf: ($) =>
       seq(
@@ -310,7 +335,7 @@ module.exports = grammar({
         token.immediate('('),
         optional(
           seq(
-            $.method_arg,
+            optional($.method_arg,),
             repeat(
               seq(
                 ',',
@@ -338,7 +363,21 @@ module.exports = grammar({
         token.immediate('...'),
       ),
 
-    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1,$.macro)),
+  indirected_glvn: ($) =>
+      seq(
+          '@',
+          field('base', choice(
+              $.lvn,
+              $.gvn,
+              $.ssvn,
+              $.relative_dot_parameter,   // for ..#myparam
+              $.class_parameter_ref,      //  ##class(...).#Param
+          )),
+          '@',
+          $.subscripts,
+      ),
+
+    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1,$.macro), $.indirected_glvn),
     gvn: ($) =>
       prec.right(
         seq(
@@ -347,9 +386,10 @@ module.exports = grammar({
             choice(
               token.immediate('||'),
               seq(token.immediate('|'), $.expression, '|'),
+              seq(token.immediate('['), $.expression, ']'),
             ),
           ),
-          token.immediate(/[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+          optional(token.immediate(/[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/)),
           optional($.subscripts),
         )
       ),
@@ -430,6 +470,7 @@ module.exports = grammar({
             $.extrinsic_function,
             $._parenthetical_expression,
             $.json_object_literal,
+            $.class_ref,
           ),
           repeat1($._oref_chain_segment),
           optional(
@@ -464,7 +505,11 @@ module.exports = grammar({
         optional($.subscripts),
       ),
     oref_parameter: ($) =>
-      $.parameter_name,
+        $.parameter_name,
+
+
+
+
 
     instance_variable: ($) =>
       prec.right(
@@ -507,22 +552,27 @@ module.exports = grammar({
         token.immediate('..'),
         $.oref_parameter,
       ),
+      namespace_token: ($) => token(/\$NAMESPACE/i),
+      estack_token: ($) => token(/\$ES(TACK)?/i),
+      etrap_token: ($) => token(/\$ET(RAP)?/i),
+      roles_token: ($) => token(/\$ROLES/i),
 
-    system_defined_variable: (_) =>
+
+      system_defined_variable: ($) =>
       choice(
         /\$D(EVICE)?/i, // $DEVICE
-        /\$EC(ODE)?/i, // $ECODE
-        /\$ES(TACK)?/i, // $ESTACK
-        /\$ET(RAP)?/i, // $ETRAP
+          /\$EC(ODE)?/i, // $ECODE
+        $.estack_token, // $ESTACK
+        $.etrap_token, // $ETRAP
         /\$HALT/i, // $HALT
         /\$H(OROLOG)?/i, // $HOROLOG
         /\$I(O)?/i, // $IO
         /\$J(OB)?/i, // $JOB
         /\$K(EY)?/i, // $KEY
-        /\$NAMESPACE/i, // $NAMESPACE
+       $.namespace_token, // $NAMESPACE
         /\$P(RINCIPAL)?/i, // $P[RINCIPAL] conflicts with $P[IECE]
         /\$Q(UIT)?/i, // $QUIT
-        /\$ROLES/i, // $ROLES
+        $.roles_token, // $ROLES
         /\$ST(ACK)?/i, // $STACK conflits with $STACK()
         /\$S(TORAGE)?/i, // $S[TORAGE] conflicts with $S[ELECT]
         /\$SY(STEM)?/i, // $SYSTEM
@@ -567,8 +617,43 @@ module.exports = grammar({
         $.dollar_case,
         $.dollar_select,
         $.dollar_classmethod,
+        $.dollar_text,
+        $.dollar_view,
         $.dollar_function,    // Fallback case
       ),
+    dollar_view: ($) => 
+      seq(
+        /\$V(IEW)?/i,
+        token.immediate('('),
+        $.expression, //offset
+        optional(
+          seq(
+            ',',
+            $.expression,
+            optional(
+              seq(
+                ',',
+                $.expression
+              )
+            )
+          )
+        ),
+        token.immediate(')')
+      ),
+
+    dollar_text: ($) =>
+      seq(
+        // $T or $TEXT, followed by '(' with no space
+        token(
+          seq(
+            field('function_name', /\$T(EXT)?/i),
+            token.immediate('('),
+          ),
+        ),
+        field('arg', $.line_ref),
+        ')',
+    ),
+
     dollar_function: ($) =>
       seq(
         token(
@@ -663,7 +748,6 @@ module.exports = grammar({
                 choice(/\$LISTDATA/i, /\$LD/i),
                 choice(/\$LISTFROMSTRING/i, /\$LFS/i),
                 choice(/\$LISTTOSTRING/i, /\$LTS/i),
-                /\$V(IEW)?/i,
                 /\$ZNAME/i,
                 choice(/\$ZTIMEH/i, /\$ZTH/i),
                 /\$ZZENKAKU/i,
@@ -899,9 +983,9 @@ module.exports = grammar({
       ')',
     ),
     json_literal: ($) => choice(
+      $.json_object_literal,
       $.json_string_literal,
       $.json_number_literal,
-      $.json_object_literal,
       $.json_array_literal,
       $.json_boolean_literal,
       $.json_null_literal,

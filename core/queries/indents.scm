@@ -34,15 +34,15 @@
 
 (command_open
  (keyword_open)
- (open_parameter) @indent)
+ (open_argument) @indent)
 
 (command_close
  (keyword_close)
- (close_parameter) @indent)
+ (close_argument) @indent)
 
 (command_use
  (keyword_use)
- (use_parameter) @indent)
+ (use_argument) @indent)
 
 ; ----- Block-style commands -----
 (command_while "{" @indent.begin "}" @indent.end)
@@ -59,5 +59,4 @@
 (command_if  (expression) @indent)
 (command_if  (statement)  @indent)
 
-; Old-style ELSE:
-(command_else (statement) @indent)
+

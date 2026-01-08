@@ -25,8 +25,10 @@ ClassMethod GetSDA(Output pXml, p as %String) {
       keyword: (keyword_extends)
       (identifier))
     (class_keywords
-      (kw_ProcedureBlock
-        name: (keyword_name)))
+      (class_keyword
+        (class_keyword_procedure_block
+          (keyword_not)
+          (identifier))))
     class_body: (class_body
       (class_statement
         (parameter
@@ -47,9 +49,10 @@ ClassMethod GetSDA(Output pXml, p as %String) {
                 (identifier))
               (argument
                 (identifier)
-                keyword: (keyword_as)
-                (typename
-                  (identifier))))
+                (argument_type
+                  keyword: (keyword_as)
+                  (typename
+                    (identifier)))))
             body: (core_method_body_content
               (statement
                 (command_set

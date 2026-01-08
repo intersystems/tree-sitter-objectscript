@@ -1,0 +1,400 @@
+===
+Valid ZZWRITE statements
+===
+ ZZWRITE x,y
+ ZZWRITE +007,"","+007"
+ ZZWRITE:x>3 x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (numeric_literal)))
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (string_literal)))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+Invalid ZZWRITE (Argumentless)
+:error
+===
+ ZZWRITE
+---
+
+
+
+===
+Invalid ZZWRITE (Argumentless, postconditional)
+:error
+===
+ ZZWRITE:x>3
+---
+
+
+
+===
+zzwrite_single_numeric_literal
+===
+ ZZWRITE 123
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+zzwrite_single_string_literal
+===
+ ZZWRITE "ABC"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+zzwrite_single_local_variable
+===
+ ZZWRITE x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzwrite_multiple_local_variables
+===
+ ZZWRITE x,y,z
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
+
+===
+zzwrite_mixed_literals_and_variables
+===
+ ZZWRITE x,"ABC",42
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+===
+zzwrite_expression_with_operator
+===
+ ZZWRITE x+1
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+===
+zzwrite_function_call_expression
+===
+ ZZWRITE $EXTRACT("hello",1,3)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (system_defined_function
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
+
+===
+zzwrite_global_variable_with_subscripts
+===
+ ZZWRITE ^G(1,2)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+===
+zzwrite_global_variable_no_subscripts
+===
+ ZZWRITE ^G
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn)))))))
+
+===
+zzwrite_extended_global_reference_pipe_syntax
+===
+ ZZWRITE ^|"OTHERNS"|Patient(1)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+===
+zzwrite_extended_global_reference_bracket_syntax
+===
+ ZZWRITE ^["OTHERNS"]Patient(1)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (expression
+                (expr_atom
+                  (string_literal)))
+              (subscripts
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+===
+zzwrite_process_private_global
+===
+ ZZWRITE ^||Temp("session","key")
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
+
+===
+zzwrite_special_variable
+===
+ ZZWRITE $JOB
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (system_defined_variable)))))))
+
+===
+zzwrite_dynamic_object_literal
+===
+ ZZWRITE {"fruit":"apples","count":24}
+ ZZWRITE {"doub":($DOUBLE(1.234))}
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_literal
+                (json_string_literal))
+              (json_string_literal)
+              (json_literal
+                (json_number_literal)))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_object_literal
+              (json_string_literal)
+              (json_objectscript_expr
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))))))
+
+===
+zzwrite_dynamic_array_literal
+===
+ ZZWRITE [1,2,3]
+  ZZWRITE ["apples","oranges"]
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_literal
+                (json_number_literal))
+              (json_literal
+                (json_number_literal))
+              (json_literal
+                (json_number_literal)))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_literal
+                (json_string_literal))
+              (json_literal
+                (json_string_literal)))))))))
+
+===
+invalid - extra comma
+:error
+===
+ ZZWRITE x,,
+---
+
+
