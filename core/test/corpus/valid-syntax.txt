@@ -1,0 +1,510 @@
+============
+Valid Syntax
+============
+ SET expr = 22
+ SET expr = "hello"
+ SET expr = x
+ SET expr = +x
+ SET expr = x + 22
+ SET expr = array(1)
+ SET expr = ^data("x",1)
+ SET expr = $Length(x)
+ SET expr = person.Name
+ SET expr = obj.Add(1,2)
+ SET expr = ##class(MyApp.MyClass).Method()
+ SET expr = $$MyFunc^MyRoutine(1)
+ SET a=1  SET b=2
+ zzdump test
+ QUIT x+y
+ QUIT x + y
+ QUIT:x<0
+ QUIT:x<0 x+y
+ QUIT:x<0 x + y
+ SET a = 1
+ SET b=2
+ SET c=3,d=4
+ SET e= 5   ,  f =6
+ SET g
+      =            7
+ WRITE a,b,c,d,e,f,g
+maximum
+Max
+MAX
+%control
+  WRITE $PIECE("Fred&Ginger"/* WRITE "world" */,"&",2),!
+  WRITE "hello",/* WRITE "world" */" sailor",!
+  SET x="Fred"/* WRITE "world" */WRITE x,!
+  WRITE "hello"/* WRITE "world" */// WRITE " sailor"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (unary_expression
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (oref_chain_expr
+                (lvn
+                  (objectscript_identifier))
+                (oref_property
+                  (property_name
+                    (identifier_segment_immediate)))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (oref_chain_expr
+                (lvn
+                  (objectscript_identifier))
+                (oref_method
+                  (method_name
+                    (identifier_segment_immediate))
+                  (method_args
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (class_method_call
+                (class_ref
+                  preproc_keyword: (keyword_pound_pound_class)
+                  (class_name
+                    (dotted_identifier_strict_token_immediate)))
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args)))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (extrinsic_function
+                label: (label_ref)
+                routine: (routine_ref
+                  (dotted_identifier_relaxed_token))
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_zz
+        (keyword_zz)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              operator: (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (tag))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (block_comment)
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (block_comment)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (string_literal))))))
+    (block_comment)
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal)))))))
+  (block_comment)
+  (line_comment_1))

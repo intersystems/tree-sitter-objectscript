@@ -7,22 +7,54 @@
 )
 
 ;; Keywords, one of type language = "python", none of type codemode
+; External method body injection based on [ Language = ... ]
 (method_definition
-	keywords:
-    (_
-    	(kw_External_Language rhs: _ @injection.language)
-    )
-    body: (_) @injection.content
-    (#set! injection.include-children "true")
+  keywords: (external_method_keywords
+    (method_keyword_language
+      (rhs) @lang))
+  body: (external_method_body_content) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @lang "(?i)^python$")
+  (#set! injection.language "python"))
+
+(method_definition
+  keywords: (external_method_keywords
+    (method_keyword_language
+      (rhs) @lang))
+  body: (external_method_body_content) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @lang "(?i)^tsql$")
+  (#set! injection.language "tsql"))
+
+(method_definition
+  keywords: (external_method_keywords
+    (method_keyword_language
+      (rhs) @lang))
+  body: (external_method_body_content) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @lang "(?i)^javascript$")
+  (#set! injection.language "ispl"))
+
+
+
+;; External trigger with python body
+(
+  (trigger
+    (trigger_keywords
+      (method_keyword_language) @lang)
+    (external_method_body_content) @injection.content)
+  (#match? @lang "python")
+  (#set! injection.language "python")
 )
 
-(trigger
-	keywords:
-    (_
-    	(kw_External_Language rhs: _ @injection.language)
-    )
-    body: (_) @injection.content
-    (#set! injection.include-children "true")
+;; External trigger with TSQL body
+(
+  (trigger
+    (trigger_keywords
+      (method_keyword_language) @lang)
+    (external_method_body_content) @injection.content)
+  (#match? @lang "tsql")
+  (#set! injection.language "tsql")
 )
 
 ; A query must be of type %SQLQuery to have an SQL body, otherwise the body
@@ -39,63 +71,62 @@
 ; no MimeType is given and default to XML, otherwise we extract the language
 ; from the mimetype.
 
-(xdata
-    keywords:
-    (_
-        (kw_MimeType rhs: _ @_mimetype (#eq? @_mimetype "\"text/markdown\""))
-    )
-    body: (xdata_body_content_any) @injection.content
-    (#set! injection.language "markdown")
-    (#set! injection.include-children "true")
-)
+; ----------------------------
+; XDATA injections (MimeType)
+; ----------------------------
 
+; text/markdown
 (xdata
-    keywords:
-    (_
-        (kw_MimeType rhs: _ @_mimetype (#eq? @_mimetype "\"text/xml\""))
-    )
-    ; NOTE: Since MimeType is given, we match xdata_body_content_any not xml
-    body: (xdata_body_content_any) @injection.content
-    (#set! injection.language "xml")
-    (#set! injection.include-children "true")
-)
+  keywords: (xdata_keywords
+    (xdata_keyword_mimetype (rhs) @mt))
+  body: (xdata_body_content_any) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @mt "^\"text/markdown\"$")
+  (#set! injection.language "markdown"))
 
+; text/xml
 (xdata
-    keywords:
-    (_
-        (kw_MimeType rhs: _ @_mimetype (#eq? @_mimetype "\"text/html\""))
-    )
-    body: (xdata_body_content_any) @injection.content
-    (#set! injection.language "html")
-    (#set! injection.include-children "true")
-)
+  keywords: (xdata_keywords
+    (xdata_keyword_mimetype (rhs) @mt))
+  body: (xdata_body_content_any) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @mt "^\"text/xml\"$")
+  (#set! injection.language "xml"))
 
+; text/html
 (xdata
-    keywords:
-    (_
-        (kw_MimeType rhs: _ @_mimetype (#eq? @_mimetype "\"application/json\""))
-    )
-    body: (xdata_body_content_any) @injection.content
-    (#set! injection.language "json")
-    (#set! injection.include-children "true")
-)
+  keywords: (xdata_keywords
+    (xdata_keyword_mimetype (rhs) @mt))
+  body: (xdata_body_content_any) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @mt "^\"text/html\"$")
+  (#set! injection.language "html"))
 
+; application/json
 (xdata
-    keywords:
-    (_
-        (kw_MimeType rhs: _ @_mimetype (#eq? @_mimetype "\"text/css\""))
-    )
-    body: (xdata_body_content_any) @injection.content
-    (#set! injection.language "css")
-    (#set! injection.include-children "true")
-)
+  keywords: (xdata_keywords
+    (xdata_keyword_mimetype (rhs) @mt))
+  body: (xdata_body_content_any) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @mt "^\"application/json\"$")
+  (#set! injection.language "json"))
 
-; Match an unspecified XDATA -- defaults to XML
+; text/css
 (xdata
-    body: (xdata_body_content_xml) @injection.content
-    (#set! injection.language "xml")
-    (#set! injection.include-children "true")
-)
+  keywords: (xdata_keywords
+    (xdata_keyword_mimetype (rhs) @mt))
+  body: (xdata_body_content_any) @injection.content
+  (#set! injection.include-children "true")
+  (#match? @mt "^\"text/css\"$")
+  (#set! injection.language "css"))
+
+; -----------------------------------------
+; XDATA default (no MimeType): XML fallback
+; -----------------------------------------
+(xdata
+  body: (xdata_body_content_xml) @injection.content
+  (#set! injection.include-children "true")
+  (#set! injection.language "xml"))
 
 
 ; NOTE: This should work in tree-sitter, but #strip! seems to not be available
@@ -106,7 +137,7 @@
 ; (xdata
 ;     keywords:
 ;     (_
-;         (kw_MimeType rhs: (_) @injection.language
+;         (xdata_keyword_mimetype rhs: (_) @injection.language
 ;          (#match? @injection.language "^\"[A-Za-z0-9.+-]+/[^\"/]+\"$")
 ;         )
 ;     )

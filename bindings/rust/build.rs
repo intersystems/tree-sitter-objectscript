@@ -1,7 +1,7 @@
 use std::path::Path;
 
 fn main() {
-    let root_dir = std::path::Path::new(".");
+    let root_dir = Path::new(".");
     let obj_udl_dir = root_dir.join("udl").join("src");
     let obj_core_dir = root_dir.join("core").join("src");
     let obj_expr_dir = root_dir.join("expr").join("src");

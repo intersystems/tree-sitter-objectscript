@@ -1,0 +1,2475 @@
+========================================
+Valid — simplest Method, no args
+========================================
+Class MyApp.Test {
+  Method DoSomething()
+  {
+    Quit
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit))))))))))
+
+===================================================
+Valid — Method with arguments and return type
+===================================================
+Class MyApp.Test {
+  Method ComputeArea(a As %Double, b As %Double) As %Double
+  {
+    Quit a*b
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+======================================================
+Valid — Method with no return type and arguments
+======================================================
+Class MyApp.Test {
+  Method LogMessage(msg As %String)
+  {
+    Write msg,!
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (core_method_body_content
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (write_argument
+                    (write_device_control
+                      (write_device_fflf))))))))))))
+
+===========================================================
+Valid — Method with method keywords (CodeMode, Final)
+===========================================================
+Class MyApp.Test {
+  Method Utility(arg1 As %String = "default") As %Status
+  [ CodeMode = objectgenerator, Final ]
+  {
+    Quit $$$OK
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))
+                (default_argument_value
+                  (string_literal))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (parameter_keyword_final
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))))))))
+
+========================================================
+Valid — Method referenced as class member only
+========================================================
+Class MyApp.Test {
+  Method Main()
+  {
+    Do ..Helper()
+    Quit
+  }
+
+  Method Helper()
+  {
+    Write "Hello",!
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_do
+                  (keyword_do)
+                  (do_parameter
+                    (instance_method_call
+                      (relative_dot_method
+                        (oref_method
+                          (method_name
+                            (identifier_segment_immediate))
+                          (method_args)))))))
+              (statement
+                (command_quit
+                  (keyword_quit)))))))
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (core_method_body_content
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (write_argument
+                    (write_device_control
+                      (write_device_fflf))))))))))))
+
+================================================
+Valid — Method used as SQL stored procedure
+================================================
+Class MyApp.Test {
+  Method GetNow() As %String
+  [ SqlProc ]
+  {
+    Quit $ZDATETIME($HOROLOG,3)
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_sql_proc
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (expression
+                          (expr_atom
+                            (system_defined_variable)))
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))))))))
+
+========================================================
+Valid — Method with ByRef and Output arguments
+========================================================
+Class MyApp.Test {
+  Method Process(ByRef p1 As %String, Output status As %Status) As %Boolean
+  {
+    Set p1 = p1_" processed"
+    Set status = $$$OK
+    Quit 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (keyword_byref)
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (keyword_output)
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (core_method_body_content
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (string_literal))))))))
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_constant)))))))
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+======================================
+Invalid — missing parentheses on body
+:error
+======================================
+Class MyApp.Test {
+  Method BadMethod
+  {
+    Quit
+  }
+}
+---
+
+
+
+==============================================
+Invalid — missing method body braces
+:error
+==============================================
+Class MyApp.Test {
+  Method BadMethod()
+    Quit
+}
+---
+
+
+
+============================================================
+Invalid — Method with malformed argument declaration
+:error
+============================================================
+Class MyApp.Test {
+  Method BadArgs(a %String, b As %Integer)
+  {
+    Quit
+  }
+}
+---
+
+
+
+=========================================================
+Invalid — Method return type missing `As` keyword
+:error
+=========================================================
+Class MyApp.Test {
+  Method BadReturnType(a As %String) %Integer
+  {
+    Quit 1
+  }
+}
+---
+
+
+
+======================================================
+Invalid — Method keywords without enclosing `[]`
+:error
+======================================================
+Class MyApp.Test {
+  Method BadKeywords() As %Status
+  SqlProc
+  {
+    Quit $$$OK
+  }
+}
+---
+
+
+
+=========================================================
+Invalid — Method with extra garbage after closing }
+:error
+=========================================================
+Class MyApp.Test {
+  Method ExtraStuff() As %String
+  {
+    Quit "ok"
+  } junk
+}
+---
+
+
+
+===
+soapaction - custom URI (quoted string)
+===
+Class dc.test.SoapAction.URI
+{
+Method Add(a As %Numeric, b As %Numeric) As %Numeric
+[
+  WebMethod,
+  SoapAction="http://www.myapp.org/Calc/Add"
+]
+{
+  Quit a+b
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+soapaction - empty value
+===
+Class dc.test.SoapAction.Empty
+{
+Method Ping() As %String
+[
+  WebMethod,
+  SoapAction=""
+]
+{
+  Quit "ok"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+soapaction - default sentinel string
+===
+Class dc.test.SoapAction.DefaultSentinel
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapAction="[ default ]"
+]
+{
+  Quit "ok"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+soapaction - unquoted identifier value (as shown in docs example)
+===
+Class dc.test.SoapAction.Ident
+{
+Method Add(a As %Numeric, b As %Numeric) As %Numeric
+[
+  SoapAction=MySoapAction,
+  WebMethod
+]
+{
+  Quit a+b
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+soapaction - duplicate SoapAction values with SoapRequestMessage disambiguation
+===
+Class dc.test.SoapAction.DuplicateWithRequestMessage
+{
+Method A() As %String
+[
+  WebMethod,
+  SoapAction="http://example.com/Act",
+  SoapRequestMessage=ReqA
+]
+{
+  Quit "A"
+}
+
+Method B() As %String
+[
+  WebMethod,
+  SoapAction="http://example.com/Act",
+  SoapRequestMessage=ReqB
+]
+{
+  Quit "B"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))))
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+soapaction - alongside other soap keywords
+===
+Class dc.test.SoapAction.Mixed
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapBindingStyle=document,
+  SoapBodyUse=literal,
+  SoapNameSpace="urn:demo",
+  SoapMessageName=RespMsg,
+  SoapAction="urn:demo:action:M"
+]
+{
+  Quit "ok"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_binding_style
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_body_use
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_namespace
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+invalid soapaction - missing '='
+:error
+===
+Class dc.test.SoapAction.Bad1
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapAction "urn:demo:action"
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapaction - missing value after '='
+:error
+===
+Class dc.test.SoapAction.Bad2
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapAction=
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapaction - unquoted [ default ] (should be a single value)
+:error
+===
+Class dc.test.SoapAction.Bad3
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapAction=[ default ]
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapaction - numeric literal value
+:error
+===
+Class dc.test.SoapAction.Bad4
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapAction=123
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+soapmessagename - basic usage (document style default)
+===
+Class dc.test.SoapMessageName.Basic
+{
+Method Add(a As %Numeric, b As %Numeric) As %Numeric
+[
+  WebMethod,
+  SoapMessageName=MyResponse
+]
+{
+  Quit a+b
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+soapmessagename - example-style name
+===
+Class dc.test.SoapMessageName.Example
+{
+Method Add(a As %Numeric, b As %Numeric) As %Numeric
+[
+  SoapMessageName=MyResponseMessage,
+  WebMethod
+]
+{
+  Quit a+b
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+soapmessagename - valid XML-ish identifier characters (underscore/dot/hyphen)
+===
+Class dc.test.SoapMessageName.XmlIdentChars
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName=My_Response.v1-0
+]
+{
+  Quit "ok"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+Requires
+===
+Class test {
+Method name() As returnclass [ Requires="%DB_USER:R" ] 
+{    //implementation 
+} 
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_requires
+                  (identifier)
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+soapmessagename - with other SOAP keywords
+===
+Class dc.test.SoapMessageName.Mixed
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapBindingStyle=document,
+  SoapBodyUse=literal,
+  SoapAction="urn:demo:act:M",
+  SoapMessageName=ResponsePart
+]
+{
+  Quit "ok"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_binding_style
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_body_use
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+soapmessagename - two methods with different response names
+===
+Class dc.test.SoapMessageName.Two
+{
+Method A() As %String
+[
+  WebMethod,
+  SoapMessageName=AResponsePart
+]
+{
+  Quit "A"
+}
+
+Method B() As %String
+[
+  WebMethod,
+  SoapMessageName=BResponsePart
+]
+{
+  Quit "B"
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))))
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_message_name
+                  (identifier)
+                  (rhs))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+===
+invalid soapmessagename - missing '='
+:error
+===
+Class dc.test.SoapMessageName.Bad1
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName MyResponse
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapmessagename - missing value after '='
+:error
+===
+Class dc.test.SoapMessageName.Bad2
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName=
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapmessagename - starts with a digit (not a valid XML identifier)
+:error
+===
+Class dc.test.SoapMessageName.Bad3
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName=1Response
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapmessagename - contains whitespace
+:error
+===
+Class dc.test.SoapMessageName.Bad4
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName=My Response
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+invalid soapmessagename - quoted string instead of identifier
+:error
+===
+Class dc.test.SoapMessageName.Bad5
+{
+Method M() As %String
+[
+  WebMethod,
+  SoapMessageName="MyResponse"
+]
+{
+  Quit "x"
+}
+}
+---
+
+
+
+===
+SoapRequestMessage basic identifier
+===
+Class Test.SoapRequestMessage1 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="MyAct", SoapRequestMessage=MyReqMessage ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_web_method
+                  (identifier)))
+              (method_keyword
+                (method_keyword_soap_action
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+SoapRequestMessage allows underscore start
+===
+Class Test.SoapRequestMessage2 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+SoapRequestMessage allows digits after first char
+===
+Class Test.SoapRequestMessage3 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123 ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+SoapRequestMessage allows dot and hyphen
+===
+Class Test.SoapRequestMessage4 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req-Message_01 ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+SoapRequestMessage keyword is case-insensitive
+===
+Class Test.SoapRequestMessage5 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+SoapRequestMessage with spaces around equals
+===
+Class Test.SoapRequestMessage6 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyReq ]
+{
+    Quit a+b
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (argument_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_soap_request_message
+                  (xml_identifier))))
+            (core_method_body_content
+              (statement
+                (command_quit
+                  (keyword_quit)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+===
+invalid SoapRequestMessage - string literal (your grammar expects xml_identifier)
+:error
+===
+Class Test.SoapRequestMessageBad1 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage="MyReqMessage" ]
+{
+    Quit a+b
+}
+
+}
+---
+
+
+
+===
+invalid SoapRequestMessage - starts with a digit
+:error
+===
+Class Test.SoapRequestMessageBad2 Extends %RegisteredObject
+{
+
+Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=1Bad ]
+{
+    Quit a+b
+}
+
+}
+---
+
+
+
+===
+method_keyword_placeafter_single_name
+===
+Class MyApp.Test {
+  ClassMethod DoThing()
+  [ PlaceAfter = Init ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs))))))))))
+
+===
+method_keyword_placeafter_paren_list
+===
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = (Init, Validate, Execute) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)
+                    (identifier)))))))))))
+
+===
+method_keyword_placeafter_case_insensitive
+===
+Class MyApp.Test {
+  Method DoThing()
+  [ placeafter = Init ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs))))))))))
+
+===
+method_keyword_placeafter_with_dots_in_names
+===
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = (MyApp.Init, MyApp.Validate2) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)))))))))))
+
+===
+method_keyword_placeafter_spacing_variants
+===
+Class MyApp.Test {
+  Method DoThing()
+  [PlaceAfter=(Init,Validate,Execute)]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)
+                    (identifier)))))))))))
+
+===
+method_keyword_placeafter_among_other_keywords
+===
+Class MyApp.Test {
+  Method DoThing()
+  [ Final, PlaceAfter = (Init, Validate), NotInheritable ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (method_keywords
+              (method_keyword
+                (parameter_keyword_final
+                  (identifier)))
+              (method_keyword
+                (method_keyword_place_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier))))
+              (method_keyword
+                (method_keyword_not_inheritable
+                  (identifier))))))))))
+
+===
+invalid_method_keyword_placeafter_missing_equals
+:error
+===
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter (Init, Validate) ]
+  {
+  }
+}
+---
+
+===
+invalid_method_keyword_placeafter_empty_list
+:error
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = () ]
+  {
+  }
+}
+---
+
+===
+invalid_method_keyword_placeafter_trailing_comma
+:error
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = (Init, Validate,) ]
+  {
+  }
+}
+---
+
+===
+invalid_method_keyword_placeafter_missing_close_paren
+:error
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = (Init, Validate ]
+  {
+  }
+}
+---
+
+===
+invalid_method_keyword_placeafter_non_identifier_value_number
+:error
+Class MyApp.Test {
+  Method DoThing()
+  [ PlaceAfter = 123 ]
+  {
+  }
+}
+---
+
+
+
+===
+valid - GenerateAfter single method name
+===
+Class Demo.GenerateAfter1 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = Bar ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs))))))))))
+
+===
+valid - GenerateAfter list in parentheses
+===
+Class Demo.GenerateAfter2 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (Bar,Baz) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)))))))))))
+
+===
+valid - GenerateAfter list with more than two entries
+===
+Class Demo.GenerateAfter3 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (A,B,C,D) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)
+                    (identifier)
+                    (identifier)))))))))))
+
+===
+valid - GenerateAfter appears first among keywords
+===
+Class Demo.GenerateAfter4 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ GenerateAfter = (Build,Compile), CodeMode = ObjectGenerator ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier))))
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs))))))))))
+
+===
+valid - GenerateAfter with other common method keywords around it
+===
+Class Demo.GenerateAfter5 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ PublicList = (X,Y), CodeMode = ObjectGenerator, GenerateAfter = GenInit ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_public_list
+                  (identifier)
+                  (rhs)
+                  (rhs)
+                  (rhs
+                    (objectscript_identifier))
+                  (rhs)))
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs))))))))))
+
+===
+valid - GenerateAfter with dotted method-like identifiers if your $.identifier allows it
+===
+Class Demo.GenerateAfter6 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (Utils.GenA,Utils.GenB) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)))))))))))
+
+===
+valid - GenerateAfter with mixed single and list used in separate methods
+===
+Class Demo.GenerateAfter7 Extends %RegisteredObject
+{
+  Method A() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = B ]
+  {
+  }
+
+  Method C() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (A,B) ]
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)))))))
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (identifier
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (method_keywords
+              (method_keyword
+                (method_keyword_codemode
+                  (identifier)
+                  (rhs)))
+              (method_keyword
+                (method_keyword_generate_after
+                  (identifier)
+                  (rhs)
+                  (rhs
+                    (identifier)))))))))))
+
+===
+invalid - GenerateAfter missing '='
+:error
+===
+Class Demo.BadGenerateAfter1 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter (Bar,Baz) ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter empty parentheses
+:error
+===
+Class Demo.BadGenerateAfter2 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = () ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter trailing comma inside parentheses
+:error
+===
+Class Demo.BadGenerateAfter3 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (Bar,) ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter leading comma inside parentheses
+:error
+===
+Class Demo.BadGenerateAfter4 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (,Bar) ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter value is a string literal (expects method name(s))
+:error
+===
+Class Demo.BadGenerateAfter5 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = "Bar" ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter value is numeric
+:error
+===
+Class Demo.BadGenerateAfter6 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = 123 ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter list uses semicolons instead of commas
+:error
+===
+Class Demo.BadGenerateAfter7 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = (Bar;Baz) ]
+  {
+  }
+}
+---
+
+
+
+===
+invalid - GenerateAfter has no value at all
+:error
+===
+Class Demo.BadGenerateAfter8 Extends %RegisteredObject
+{
+  Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = ]
+  {
+  }
+}
+---
+
+

@@ -1,0 +1,848 @@
+====================
+ZBreak Invalid Clear
+:error
+====================
+ ZBREAK /CLEAR:ON
+---
+
+
+
+===================
+ZBreak Invalid Step
+:error
+===================
+ ZBREAK /STEP:ON
+---
+
+
+
+===================
+ZBreak Invalid Step
+:error
+===================
+ ZBREAK /STEP:OFF
+---
+
+
+
+========================
+ZBreak Invalid ErrorTrap
+:error
+========================
+ ZBREAK /Errortrap
+---
+
+
+
+========================
+ZBreak Invalid ErrorTrap
+:error
+========================
+ ZBREAK /Errortrap:device
+---
+
+
+
+===================
+ZBreak Invalid Step
+:error
+===================
+ ZBREAK /STEP:dfjkalsdf
+---
+
+
+
+===================
+ZBreak Invalid Step
+:error
+===================
+ ZBREAK /STEP
+---
+
+
+
+===================
+ZBreak Invalid NoStep
+:error
+===================
+ ZBREAK /NOSTEP
+---
+
+
+
+=====================
+ZBreak Invalid NOStep
+:error
+=====================
+ ZBREAK /NOSTEP:OFF
+---
+
+
+
+=====================
+ZBreak Invalid NOStep
+:error
+=====================
+ ZBREAK /NOSTEP:dfjkalsdf
+---
+
+
+
+=====================
+ZBreak Invalid device
+:error
+=====================
+   ZBREAK /T:ON:%agfjldksjfds1249454092385/sdlkfajsdf /sdfa
+   / 
+   set x = 2
+---
+
+
+
+=====================
+ZBreak Invalid device
+:error
+=====================
+   zb /t:on:1231254dsf
+---
+
+
+
+=====================
+ZBreak Invalid debug
+:error
+=====================
+   ZBREAK /d:%agfjldksjfds1249454092385/sdlkfajsdf /sdfa
+   / 
+   set x = 2
+---
+
+
+
+===================
+ZBreak valid device
+===================
+   ZBREAK /T:ON:%agfjldksjfds1249454092385/sdlkfajsdf /sdfa
+   /asdfksadf
+   set x = 2
+   ZBREAK /t:ON: %
+   zb /t:on:1231254
+   zb /t:on:sadfkj2341351
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_on)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_on)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_on)
+          (device
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_on)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+===================
+ZBreak valid debug
+===================
+   ZBREAK /d:%agfjldksjfds1249454092385/sdlkfajsdf /sdfa
+   /asdfksadf
+   set x = 2
+   ZBREAK /d: %
+   zb /d:1231254
+   zb /d:sadfkj2341351
+   zb /debug
+   zb /d
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug)
+          (device
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug)
+          (device
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_debug))))))
+
+==========================
+ZBREAK valid Trace Command
+==========================
+ zb /T 
+ zb /t:ON
+ zb /t:OFF
+ zb /t:ALL
+ zb /trace
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_on))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_off))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace)
+          (keyword_all))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_trace))))))
+
+======================
+ZBREAK valid ErrorTrap
+======================
+ zb /ErrorTrap:ON
+ zb /ErrorTrap:OFF
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_errortrap)
+          (keyword_on))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_errortrap)
+          (keyword_off))))))
+
+======================
+ZBREAK valid Interrupt
+======================
+ zb /i
+ zb /interrupt
+ zb /i:n
+ zb /i:normal
+ zb /i:break
+ zb /i:b
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt)
+          (keyword_normal))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt)
+          (keyword_normal))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt)
+          (keyword_break))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_interrupt)
+          (keyword_break))))))
+
+============================
+ZBreak Valid Step and NoStep
+============================
+ ZBREAK /STEP:METHOD:DESTRUCT
+ ZBREAK /STEP:METHOD
+ ZBREAK /STEP:EXT
+ ZBREAK /NOSTEP:EXT:DESTRUCT
+ ZBREAK /NOSTEP:destruct
+ ZBREAK /NOSTEP:method
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_step)
+          (keyword_stepmethod)
+          (keyword_destruct))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_step)
+          (keyword_stepmethod))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_step)
+          (keyword_ext))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_nostep)
+          (keyword_ext)
+          (keyword_destruct))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_nostep)
+          (keyword_destruct))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_nostep)
+          (keyword_stepmethod))))))
+
+============================
+ZBreak Valid Clear
+============================
+ ZBREAK /CLEAR
+ ZBREAK /C
+ ZBREAK /clear
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_clear))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_clear))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_command)
+          (keyword_clear))))))
+
+=========================
+ZBreak Valid Argumentless
+=========================
+ zbreak // testing comment
+ zbreak /* comment */
+ zbreak
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)))
+    (line_comment_1)
+    (statement
+      (command_zbreak
+        (keyword_zbreak)))
+    (block_comment)
+    (statement
+      (command_zbreak
+        (keyword_zbreak)))))
+
+====================================
+ZBREAK Valid location:::Execute_code
+====================================
+  ZBREAK *var:::"(""(arg) WRITE """"now var="""",arg,!"",$GET(var,""<UNDEFINED>""))"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (zbreak_execute_command
+              (string_literal))))))))
+
+======================
+ZBREAK Valid location
+======================
+  ZBREAK *x
+  ZBREAK $
+  ZBREAK -*x
+  ZBREAK +*x
+  ZBREAK --*x
+  ZBREAK -
+  ZBREAK +
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location)))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments)))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments)))))
+
+======================
+ZBREAK Valid Action
+======================
+  ZBREAK *x:"B"
+  ZBREAK *x:"L+"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)))))))
+
+================================
+ZBREAK Valid location::condition
+================================
+  ZBREAK *x::"x=2"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+======================================
+ZBREAK Valid location:action:condition
+======================================
+  ZBREAK *x:"L+":"x=2"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+=============================================
+ZBREAK Valid location::condition:execute_code
+=============================================
+  ZBREAK *x::"x=2":"w ""hi"""
+  ZBREAK *var::"x=2":"(""(arg) WRITE """"now var="""",arg,!"",$GET(var,""<UNDEFINED>""))"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))
+            (zbreak_execute_command
+              (string_literal))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))
+            (zbreak_execute_command
+              (string_literal))))))))
+
+===================================================
+ZBREAK Valid location:action:condition:execute_code
+===================================================
+  ZBREAK *x:"L+":"x=2":"w ""hi"""
+  ZBREAK *x:"L+":"x=2":"(""(arg) WRITE """"now var="""",arg,!"",$GET(var,""<UNDEFINED>""))"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))
+            (zbreak_execute_command
+              (string_literal))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)
+            (zbreak_condition
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))
+            (zbreak_execute_command
+              (string_literal))))))))
+
+==========================================
+ZBREAK Valid location:action::execute_code
+==========================================
+  ZBREAK *x:"B"::"w ""hi"""
+  ZBREAK *x:"B"::"(""(arg) WRITE """"now var="""",arg,!"",$GET(var,""<UNDEFINED>""))"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)
+            (zbreak_execute_command
+              (string_literal))))))
+    (statement
+      (command_zbreak
+        (keyword_zbreak)
+        (zbreak_arguments
+          (zbreak_arg
+            (zbreak_location
+              (objectscript_identifier))
+            (string_literal)
+            (zbreak_execute_command
+              (string_literal))))))))
+
+=======================
+ZBREAK Invalid --
+:error
+=======================
+  ZBREAK --
+---
+
+
+
+========================
+ZBREAK Invalid condition
+:error
+========================
+  ZBREAK *x::x=2
+---
+
+========================
+ZBREAK Invalid 
+:error
+========================
+  ZBREAK *x:
+---
+
+========================
+ZBREAK Invalid 
+:error
+========================
+  ZBREAK *x::
+---
+
+========================
+ZBREAK Invalid 
+:error
+========================
+  ZBREAK *x:::
+---

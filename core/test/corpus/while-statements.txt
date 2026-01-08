@@ -1,0 +1,396 @@
+================
+While Statements
+================
+ WHILE x<10 {
+   WRITE !," Looping",x
+   SET x=x+1
+ }
+
+ SET mylist=$LISTBUILD("a","b","c","d","e")
+ SET ptr=0,sampcnt=1,sampmax=4
+ WHILE 1=$LISTNEXT(mylist,ptr,value),sampcnt<sampmax {
+   WRITE value," is item ",sampcnt,!
+   SET sampcnt=sampcnt+1
+ }
+
+ WHILE x < 10
+   {
+      WRITE !,"Looping",x
+      QUIT:x=5
+      SET x=x+1
+   }
+
+ SET x=1,y=1
+ WHILE x<6 {
+   WRITE "outer loop ",!
+   WHILE y<100 {
+     WRITE "inner loop "
+     WRITE " y=",y,!
+     QUIT:y=7
+     SET y=y+2
+   }
+   WRITE "back to outer loop x=",x,!!
+   SET x=x+1
+ }
+  WRITE "Done"
+---
+
+(source_file
+  (statements
+    (statement
+      (command_while
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_while
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (numeric_literal))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_while
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))
+        (statement
+          (command_quit
+            command_name: (keyword_quit)
+            (post_conditional
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))
+        (set_argument
+          lhs: (glvn
+            (lvn
+              (objectscript_identifier)))
+          rhs: (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_while
+        command_name: (keyword_while)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            operator: (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (command_while
+            command_name: (keyword_while)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                operator: (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))))
+            (statement
+              (command_quit
+                command_name: (keyword_quit)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      operator: (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))
+            (statement
+              (command_set
+                command_name: (keyword_set)
+                (set_argument
+                  lhs: (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  rhs: (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      operator: (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (write_argument
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (write_argument
+              (write_device_control
+                (write_device_fflf)))))
+        (statement
+          (command_set
+            command_name: (keyword_set)
+            (set_argument
+              lhs: (glvn
+                (lvn
+                  (objectscript_identifier)))
+              rhs: (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  operator: (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))

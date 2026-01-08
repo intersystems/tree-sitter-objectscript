@@ -1,0 +1,129 @@
+========================
+Break Invalid Statements
+:error
+========================
+ BREAK 2
+ BREAK 3
+---
+
+=================================
+Break Statements Extend Arguments 
+=================================
+ BREAK "S"
+ BREAK "S+"
+ BREAK "S-"
+ BREAK "L"	
+ BREAK "L+"
+ BREAK "L-"
+ BREAK "C"
+ BREAK "C-"
+ BREAK "OFF"
+---
+(source_file
+  (statements
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument
+          extend: (string_literal))))))
+
+===========
+Break Flags
+===========
+ BREAK 0
+ BREAK 1
+ BREAK 4
+ BREAK 5
+---
+(source_file
+  (statements
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument)))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument)))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument)))
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (break_argument)))))
+
+===========================
+Break With PostConditionals
+===========================
+ BREAK:$DATA(debug)
+ ZBREAK:$DATA(debug)
+---
+(source_file
+  (statements
+    (statement
+      (command_break
+        command_name: (keyword_break)
+        (post_conditional
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+      (statement
+      (command_zbreak
+        command_name: (keyword_zbreak)
+        (post_conditional
+          (expression
+            (expr_atom
+              (system_defined_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))
+                      
+                      ))
+
