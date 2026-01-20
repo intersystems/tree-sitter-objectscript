@@ -5589,8 +5589,12 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "SYMBOL",
-                "name": "keyword_write"
+                "type": "FIELD",
+                "name": "command_name",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "keyword_write"
+                }
               },
               {
                 "type": "CHOICE",
@@ -5788,8 +5792,12 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "SYMBOL",
-                "name": "keyword_do"
+                "type": "FIELD",
+                "name": "command_name",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "keyword_do"
+                }
               },
               {
                 "type": "REPEAT1",
@@ -10131,17 +10139,21 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "h"
-                },
-                {
-                  "type": "STRING",
-                  "value": "H"
-                }
-              ]
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "h"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "H"
+                  }
+                ]
+              }
             },
             {
               "type": "CHOICE",
@@ -10174,17 +10186,21 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "h"
-                },
-                {
-                  "type": "STRING",
-                  "value": "H"
-                }
-              ]
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "h"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "H"
+                  }
+                ]
+              }
             },
             {
               "type": "CHOICE",
@@ -10237,8 +10253,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_halt"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_halt"
+              }
             },
             {
               "type": "CHOICE",
@@ -10271,8 +10291,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_hang"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_hang"
+              }
             },
             {
               "type": "CHOICE",
@@ -11998,8 +12022,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_zwrite"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_zwrite"
+              }
             },
             {
               "type": "CHOICE",
@@ -12064,8 +12092,12 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_zz"
+          "type": "FIELD",
+          "name": "command_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_zz"
+          }
         },
         {
           "type": "CHOICE",
@@ -12131,8 +12163,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_embedded_html"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_embedded_html"
+              }
             },
             {
               "type": "IMMEDIATE_TOKEN",
@@ -12155,8 +12191,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_embedded_html"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_embedded_html"
+              }
             },
             {
               "type": "SYMBOL",
@@ -12194,8 +12234,12 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_embedded_xml"
+          "type": "FIELD",
+          "name": "command_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_embedded_xml"
+          }
         },
         {
           "type": "IMMEDIATE_TOKEN",
@@ -12239,8 +12283,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_embedded_sql_amp"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_embedded_sql_amp"
+              }
             },
             {
               "type": "SYMBOL",
@@ -12274,8 +12322,12 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_embedded_sql_amp"
+              "type": "FIELD",
+              "name": "command_name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "keyword_embedded_sql_amp"
+              }
             },
             {
               "type": "IMMEDIATE_TOKEN",
@@ -12303,8 +12355,12 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "keyword_embedded_sql_hash"
+          "type": "FIELD",
+          "name": "command_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "keyword_embedded_sql_hash"
+          }
         },
         {
           "type": "IMMEDIATE_TOKEN",
@@ -12343,16 +12399,28 @@
               "type": "CHOICE",
               "members": [
                 {
-                  "type": "STRING",
-                  "value": "&js"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&js"
+                  }
                 },
                 {
-                  "type": "STRING",
-                  "value": "&jscript"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&jscript"
+                  }
                 },
                 {
-                  "type": "STRING",
-                  "value": "&javascript"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&javascript"
+                  }
                 }
               ]
             },
@@ -12388,16 +12456,28 @@
               "type": "CHOICE",
               "members": [
                 {
-                  "type": "STRING",
-                  "value": "&js"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&js"
+                  }
                 },
                 {
-                  "type": "STRING",
-                  "value": "&jscript"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&jscript"
+                  }
                 },
                 {
-                  "type": "STRING",
-                  "value": "&javascript"
+                  "type": "FIELD",
+                  "name": "command_name",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&javascript"
+                  }
                 }
               ]
             },
