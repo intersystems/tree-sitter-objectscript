@@ -427,7 +427,7 @@
     "fields": {
       "command_name": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "keyword_do",
@@ -446,10 +446,6 @@
         },
         {
           "type": "dotted_statement",
-          "named": true
-        },
-        {
-          "type": "keyword_do",
           "named": true
         },
         {
@@ -583,6 +579,28 @@
     "type": "command_halt_or_hang",
     "named": true,
     "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "H",
+            "named": false
+          },
+          {
+            "type": "h",
+            "named": false
+          },
+          {
+            "type": "keyword_halt",
+            "named": true
+          },
+          {
+            "type": "keyword_hang",
+            "named": true
+          }
+        ]
+      },
       "hang_argument": {
         "multiple": true,
         "required": false,
@@ -604,14 +622,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_halt",
-          "named": true
-        },
-        {
-          "type": "keyword_hang",
           "named": true
         },
         {
@@ -1326,7 +1336,7 @@
     "fields": {
       "command_name": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "keyword_write",
@@ -1339,10 +1349,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "keyword_write",
-          "named": true
-        },
         {
           "type": "post_conditional",
           "named": true
@@ -1540,7 +1546,7 @@
     "fields": {
       "command_name": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "keyword_zwrite",
@@ -1558,10 +1564,6 @@
           "named": true
         },
         {
-          "type": "keyword_zwrite",
-          "named": true
-        },
-        {
           "type": "post_conditional",
           "named": true
         }
@@ -1571,17 +1573,24 @@
   {
     "type": "command_zz",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_zz",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_zz",
           "named": true
         },
         {
@@ -1825,7 +1834,18 @@
   {
     "type": "embedded_html",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_embedded_html",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -1841,10 +1861,6 @@
         {
           "type": "html_marker_reversed",
           "named": true
-        },
-        {
-          "type": "keyword_embedded_html",
-          "named": true
         }
       ]
     }
@@ -1852,7 +1868,26 @@
   {
     "type": "embedded_js",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "&javascript",
+            "named": false
+          },
+          {
+            "type": "&js",
+            "named": false
+          },
+          {
+            "type": "&jscript",
+            "named": false
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -1898,7 +1933,18 @@
   {
     "type": "embedded_sql_amp",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_embedded_sql_amp",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -1912,10 +1958,6 @@
           "named": true
         },
         {
-          "type": "keyword_embedded_sql_amp",
-          "named": true
-        },
-        {
           "type": "paren_fenced_text",
           "named": true
         }
@@ -1925,15 +1967,22 @@
   {
     "type": "embedded_sql_hash",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_embedded_sql_hash",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "keyword_embedded_sql_hash",
-          "named": true
-        },
         {
           "type": "paren_fenced_text",
           "named": true
@@ -1944,17 +1993,24 @@
   {
     "type": "embedded_xml",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "keyword_embedded_xml",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "angled_bracket_fenced_text",
-          "named": true
-        },
-        {
-          "type": "keyword_embedded_xml",
           "named": true
         }
       ]

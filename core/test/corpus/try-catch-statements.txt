@@ -96,7 +96,7 @@ try catch tests
                                 (objectscript_identifier)))))))))))
             (statement
               (command_write
-                (keyword_write)
+                command_name: (keyword_write)
                 (write_argument
                   (expression
                     (expr_atom
@@ -117,7 +117,7 @@ try catch tests
               command_name: (keyword_else)
               (statement
                 (command_write
-                  (keyword_write)
+                  command_name: (keyword_write)
                   (write_argument
                     (expression
                       (expr_atom
@@ -135,7 +135,7 @@ try catch tests
               (objectscript_identifier)))
           (statement
             (command_write
-              (keyword_write)
+              command_name: (keyword_write)
               (write_argument
                 (expression
                   (expr_atom
@@ -145,26 +145,7 @@ try catch tests
                   (write_device_fflf)))))
           (statement
             (command_write
-              (keyword_write)
-              (write_argument
-                (expression
-                  (expr_atom
-                    (string_literal))))
-              (write_argument
-                (expression
-                  (expr_atom
-                    (oref_chain_expr
-                      (lvn
-                        (objectscript_identifier))
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))))
-              (write_argument
-                (write_device_control
-                  (write_device_fflf)))))
-          (statement
-            (command_write
-              (keyword_write)
+              command_name: (keyword_write)
               (write_argument
                 (expression
                   (expr_atom
@@ -183,7 +164,26 @@ try catch tests
                   (write_device_fflf)))))
           (statement
             (command_write
-              (keyword_write)
+              command_name: (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (write_argument
+                (expression
+                  (expr_atom
+                    (oref_chain_expr
+                      (lvn
+                        (objectscript_identifier))
+                      (oref_property
+                        (property_name
+                          (identifier_segment_immediate)))))))
+              (write_argument
+                (write_device_control
+                  (write_device_fflf)))))
+          (statement
+            (command_write
+              command_name: (keyword_write)
               (write_argument
                 (expression
                   (expr_atom
