@@ -11,6 +11,3 @@
 
 (class_body
  (class_statement) @indent)
-
-
-(_) @indent
