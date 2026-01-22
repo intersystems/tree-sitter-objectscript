@@ -85,14 +85,8 @@ include_str!("../../udl/queries/injections.scm"),
 /// The injections query for ObjectScript Core (routines).
 pub const OBJECTSCRIPT_CORE_INJECTIONS_QUERY: &str = "../../core/queries/injections.scm";
 
-/// The indents query for ObjectScript.
-pub const OBJECTSCRIPT_INDENTS_QUERY: &str = concat!(
-include_str!("../../core/queries/indents.scm"), "\n",
-include_str!("../../udl/queries/indents.scm"),
-);
-
-/// The indents query for ObjectScript Core (routines).
-pub const OBJECTSCRIPT_CORE_INDENTS_QUERY: &str = "../../core/queries/indents.scm";
+/// The indents query for ObjectScript and ObjectScript Core (routines).
+pub const OBJECTSCRIPT_INDENTS_QUERY: &str = "../../core/queries/indents.scm";
 
 #[cfg(test)]
 mod tests {
