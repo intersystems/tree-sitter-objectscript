@@ -568,23 +568,25 @@ Trap
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (class_method_call
-                      (class_ref
-                        preproc_keyword: (keyword_pound_pound_class)
-                        (class_name
-                          (dotted_identifier_strict_token_immediate)))
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (system_defined_variable)))))))))
+                (dollar_method
+                  (expression
+                    (expr_atom
+                      (class_method_call
+                        (class_ref
+                          preproc_keyword: (keyword_pound_pound_class)
+                          (class_name
+                            (dotted_identifier_strict_token_immediate)))
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_variable)))))))))))
     (statement
       (command_throw
         command_name: (keyword_throw)
