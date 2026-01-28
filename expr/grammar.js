@@ -41,8 +41,6 @@ module.exports = grammar({
     $.dollar_piece,
     $.dollar_case,
     $.dollar_select,
-    $.dollar_classmethod,
-    $.dollar_method,
     $.dollar_func_pos,
   ],
   rules: {
@@ -288,9 +286,9 @@ module.exports = grammar({
           optional($.routine_ref)
       ),
       seq(
-        field('label', $.indirection),      
+        field('label', $.indirection),
         token.immediate('^'),
-        field('routine', $.indirection),    
+        field('routine', $.indirection),
       ),
     ),
     label_ref: (_) =>
@@ -617,11 +615,12 @@ module.exports = grammar({
         $.dollar_case,
         $.dollar_select,
         $.dollar_classmethod,
+        $.dollar_method,
         $.dollar_text,
         $.dollar_view,
         $.dollar_function,    // Fallback case
       ),
-    dollar_view: ($) => 
+    dollar_view: ($) =>
       seq(
         /\$V(IEW)?/i,
         token.immediate('('),
@@ -761,7 +760,6 @@ module.exports = grammar({
                 /\$ZB(OOLEAN)?/i,
                 choice(/\$LISTUPDATE/i, /\$LU/i),
                 /\$LOCATE/i,
-                /\$METHOD/i,
                 /\$NUM(BER)?/i,
                 /\$PREPROCESS/i,
                 /\$O(RDER)?/i,
