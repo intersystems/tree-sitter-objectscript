@@ -906,9 +906,9 @@ module.exports = grammar({
         token(
           seq(field('function_name', /\$(ZOBJ)?CLASSMETHOD/i), token.immediate('(')),
         ),
-        optional($.expression),
+          optional(alias($.expression, $.class_name)),
         ',',
-        $.expression,
+          alias($.expression, $.method_name),
         repeat(seq(',', $.method_arg)),
         ')',
       ),
@@ -917,9 +917,9 @@ module.exports = grammar({
         token(
           seq(field('function_name', /\$(ZOBJ)?METHOD/i), token.immediate('(')),
         ),
-        optional($.expression),
+        optional(alias($.expression, $.class_name)),
         ',',
-        $.expression,
+        alias($.expression, $.method_name),
         repeat(seq(',', $.method_arg)),
         ')',
       ),
