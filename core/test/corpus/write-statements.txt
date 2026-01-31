@@ -156,7 +156,7 @@ WRITE WITH INPUTS
             command_name: (keyword_goto)
             (goto_argument
               (line_ref
-                label: (label_ref)))))))))
+                label: (objectscript_identifier)))))))))
 
 =======================
 WRITE OBJECT PROPERTIES
@@ -181,8 +181,7 @@ WRITE OBJECT PROPERTIES
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
-                  (class_name
-                    (dotted_identifier_strict_token_immediate)))
+                  (class_name))
                 (method_name
                   (identifier_segment_immediate))
                 (method_args)))))))
@@ -210,8 +209,7 @@ WRITE OBJECT PROPERTIES
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
-                  (class_name
-                    (dotted_identifier_strict_token_immediate)))
+                  (class_name))
                 (method_name
                   (identifier_segment_immediate))
                 (method_args)))))))
@@ -251,9 +249,8 @@ WRITE: CASCADING DOT SYNTAX
               (oref_chain_expr
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
-                  (class_name
-                    (dotted_identifier_strict_token_immediate))
-                  (lvn
+                  (class_name)
+                  (class_instance_name
                     (objectscript_identifier)))
                 (oref_property
                   (property_name
@@ -273,9 +270,8 @@ WRITE: CASCADING DOT SYNTAX
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
-                  (class_name
-                    (dotted_identifier_strict_token_immediate))
-                  (lvn
+                  (class_name)
+                  (class_instance_name
                     (objectscript_identifier)))
                 (method_name
                   (identifier_segment_immediate))

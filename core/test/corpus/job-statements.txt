@@ -35,7 +35,7 @@ JOB statements
         (job_argument
           (routine_tag_call
             (line_ref
-              label: (label_ref)
+              label: (objectscript_identifier)
               routine: (routine_ref
                 (dotted_identifier_relaxed_token)))))))
     (statement
@@ -81,7 +81,7 @@ JOB statements
         (job_argument
           (routine_tag_call
             (line_ref
-              label: (label_ref)))
+              label: (objectscript_identifier)))
           (expression
             (expr_atom
               (string_literal)))
@@ -94,7 +94,7 @@ JOB statements
         (job_argument
           (routine_tag_call
             (line_ref
-              label: (label_ref)
+              label: (objectscript_identifier)
               routine: (routine_ref
                 (dotted_identifier_relaxed_token)))
             (method_args
@@ -120,8 +120,7 @@ JOB statements
           (class_method_call
             (class_ref
               preproc_keyword: (keyword_pound_pound_class)
-              (class_name
-                (dotted_identifier_strict_token_immediate)))
+              (class_name))
             (method_name
               (identifier_segment_immediate))
             (method_args))
@@ -140,10 +139,10 @@ JOB statements
         command_name: (keyword_job)
         (job_argument
           (dollar_classmethod
-            (expression
+            (class_name
               (expr_atom
                 (string_literal)))
-            (expression
+            (method_name
               (expr_atom
                 (string_literal))))
           (expression
@@ -194,7 +193,7 @@ JOB statements
         (job_argument
           (routine_tag_call
             (line_ref
-              label: (label_ref)))
+              label: (objectscript_identifier)))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -212,7 +211,7 @@ JOB statements
         (job_argument
           (routine_tag_call
             (line_ref
-              label: (label_ref)))
+              label: (objectscript_identifier)))
           (expression
             (expr_atom
               (numeric_literal))))))))

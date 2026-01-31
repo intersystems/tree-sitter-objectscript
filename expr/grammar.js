@@ -212,13 +212,16 @@ module.exports = grammar({
       seq(
         field('preproc_keyword', $.keyword_pound_pound_class),
         token.immediate('('),
-        $.class_name,
+        choice(
+            alias(token.immediate(/"(?:[^"]+|"")*"/), $.class_name),
+            alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/), $.class_name),
+        ),
         token.immediate(')'),
         optional(
           // Class cast syntax
           choice(
-            $._parenthetical_expression,
-            $.lvn,
+            alias($._parenthetical_expression, $.class_instance_name),
+              alias($.lvn, $.class_instance_name)
           ),
         ),
       ),
@@ -229,11 +232,11 @@ module.exports = grammar({
         // quoted class name (unchanged)
         seq(
           token.immediate('"'),
-          repeat(choice(/[^"]+/, token.immediate('""'))),
+          repeat1(choice(/[^"]+/, token.immediate('""'))),
           '"'
         ),
         // unquoted: each segment starts with letter or %
-        $.dotted_identifier_strict_token_immediate
+        token.immediate(/[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/)
       ),
     superclass_method_call: ($) =>
       seq(
