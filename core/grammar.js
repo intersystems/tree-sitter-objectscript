@@ -118,7 +118,6 @@ module.exports = grammar(objectscript_expr, {
     previous.concat([
       [$.use_parameters, $._parenthetical_expression],
       [$.open_parameters, $._parenthetical_expression],
-      [ $.label_ref, $.objectscript_identifier ],
       [$.xecute_argument, $._parenthetical_expression],
     ]),
 
