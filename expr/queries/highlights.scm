@@ -44,8 +44,10 @@
     (class_ref (class_name) @type.definition)
     (method_name) @function.method.call
 )
-(oref_method (method_name) @function.method.call)
 
+(relative_dot_method
+  (method_name) @function.method.call
+  )
 (_ preproc_keyword: (_) @keyword.directive)
 (_ modifier: (_) @keyword.directive)
 

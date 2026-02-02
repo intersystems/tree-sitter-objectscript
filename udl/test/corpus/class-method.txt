@@ -211,10 +211,7 @@ Class MyApp.Test {
                   (do_parameter
                     (instance_method_call
                       (relative_dot_method
-                        (oref_method
-                          (method_name
-                            (identifier_segment_immediate))
-                          (method_args)))))))
+                        (method_name))))))
               (statement
                 (command_quit
                   (keyword_quit)))))))
@@ -677,11 +674,8 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                         (class_method_call
                           (class_ref
                             (keyword_pound_pound_class)
-                            (class_name
-                              (dotted_identifier_strict_token_immediate)))
-                          (method_name
-                            (identifier_segment_immediate))
-                          (method_args)))))))
+                            (class_name))
+                          (method_name)))))))
               (statement
                 (command_quit
                   (keyword_quit)
@@ -737,15 +731,12 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                         (class_method_call
                           (class_ref
                             (keyword_pound_pound_class)
-                            (class_name
-                              (dotted_identifier_strict_token_immediate)))
-                          (method_name
-                            (identifier_segment_immediate))
-                          (method_args
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (numeric_literal))))))))))))))))))
+                            (class_name))
+                          (method_name)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))))))))))
 
 ====
 Valid ClassMethod
@@ -889,29 +880,24 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
                     (instance_method_call
                       (lvn
                         (objectscript_identifier))
-                      (oref_method
-                        (method_name
-                          (identifier_segment_immediate))
-                        (method_args
-                          (method_arg
+                      (method_name)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))
+                          (expr_tail
+                            (binary_operator)
                             (expression
                               (expr_atom
-                                (string_literal))
-                              (expr_tail
-                                (binary_operator)
-                                (expression
-                                  (expr_atom
-                                    (oref_chain_expr
-                                      (lvn
-                                        (objectscript_identifier))
-                                      (oref_property
-                                        (property_name
-                                          (identifier_segment_immediate)))))))
-                              (expr_tail
-                                (binary_operator)
-                                (expression
-                                  (expr_atom
-                                    (string_literal))))))))))))
+                                (oref_chain_expr
+                                  (lvn
+                                    (objectscript_identifier))
+                                  (name)))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))))))))
               (statement
                 (command_do
                   (keyword_do)
@@ -919,14 +905,11 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
                     (instance_method_call
                       (lvn
                         (objectscript_identifier))
-                      (oref_method
-                        (method_name
-                          (identifier_segment_immediate))
-                        (method_args
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (string_literal))))))))))
+                      (method_name)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))))))
               (statement
                 (command_quit
                   (keyword_quit)
@@ -964,7 +947,7 @@ Class test {
                 (rhs)))
             (routine_tag_call
               (line_ref
-                (label_ref)
+                (objectscript_identifier)
                 (routine_ref
                   (dotted_identifier_relaxed_token))))))))))
 

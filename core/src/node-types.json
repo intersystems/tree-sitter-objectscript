@@ -30,40 +30,6 @@
     }
   },
   {
-    "type": "_member_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier_segment_immediate",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_oref_chain_segment",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "oref_method",
-          "named": true
-        },
-        {
-          "type": "oref_property",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "_pattern_operator",
     "named": true,
     "fields": {
@@ -175,6 +141,29 @@
     }
   },
   {
+    "type": "class_instance_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "class_method_call",
     "named": true,
     "fields": {},
@@ -187,7 +176,7 @@
           "named": true
         },
         {
-          "type": "method_args",
+          "type": "method_arg",
           "named": true
         },
         {
@@ -202,11 +191,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "dotted_identifier_strict_token_immediate",
+          "type": "expr_atom",
+          "named": true
+        },
+        {
+          "type": "expr_tail",
           "named": true
         }
       ]
@@ -251,15 +244,11 @@
       "required": true,
       "types": [
         {
+          "type": "class_instance_name",
+          "named": true
+        },
+        {
           "type": "class_name",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "lvn",
           "named": true
         }
       ]
@@ -1659,15 +1648,19 @@
       "required": true,
       "types": [
         {
+          "type": "dollar_classmethod",
+          "named": true
+        },
+        {
+          "type": "dollar_method",
+          "named": true
+        },
+        {
           "type": "dollarsf",
           "named": true
         },
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "method_arg",
           "named": true
         }
       ]
@@ -1683,6 +1676,52 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollar_classmethod",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_name",
+          "named": true
+        },
+        {
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollar_method",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "class_name",
+          "named": true
+        },
+        {
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
           "named": true
         }
       ]
@@ -1754,11 +1793,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "dotted_identifier_strict_token_immediate",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "dotted_statement",
@@ -2199,7 +2233,7 @@
         "required": false,
         "types": [
           {
-            "type": "label_ref",
+            "type": "objectscript_identifier",
             "named": true
           }
         ]
@@ -2497,11 +2531,15 @@
           "named": true
         },
         {
-          "type": "oref_method",
+          "type": "method_arg",
           "named": true
         },
         {
-          "type": "oref_property",
+          "type": "method_name",
+          "named": true
+        },
+        {
+          "type": "name",
           "named": true
         },
         {
@@ -2547,11 +2585,11 @@
           "named": true
         },
         {
-          "type": "expression",
+          "type": "dollar_classmethod",
           "named": true
         },
         {
-          "type": "method_arg",
+          "type": "expression",
           "named": true
         },
         {
@@ -2733,11 +2771,6 @@
     }
   },
   {
-    "type": "label_ref",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "line_comment_1",
     "named": true,
     "extra": true,
@@ -2774,7 +2807,7 @@
             "named": true
           },
           {
-            "type": "label_ref",
+            "type": "objectscript_identifier",
             "named": true
           }
         ]
@@ -2980,11 +3013,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "identifier_segment_immediate",
+          "type": "expr_atom",
+          "named": true
+        },
+        {
+          "type": "expr_tail",
           "named": true
         }
       ]
@@ -3153,10 +3190,6 @@
       "required": true,
       "types": [
         {
-          "type": "_oref_chain_segment",
-          "named": true
-        },
-        {
           "type": "class_method_call",
           "named": true
         },
@@ -3189,15 +3222,15 @@
           "named": true
         },
         {
-          "type": "oref_method",
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "name",
           "named": true
         },
         {
           "type": "oref_parameter",
-          "named": true
-        },
-        {
-          "type": "oref_property",
           "named": true
         },
         {
@@ -3216,25 +3249,6 @@
     }
   },
   {
-    "type": "oref_method",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "method_args",
-          "named": true
-        },
-        {
-          "type": "method_name",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "oref_parameter",
     "named": true,
     "fields": {},
@@ -3244,25 +3258,6 @@
       "types": [
         {
           "type": "parameter_name",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "oref_property",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "property_name",
-          "named": true
-        },
-        {
-          "type": "subscripts",
           "named": true
         }
       ]
@@ -3285,11 +3280,11 @@
           "named": true
         },
         {
-          "type": "oref_method",
+          "type": "method_arg",
           "named": true
         },
         {
-          "type": "oref_property",
+          "type": "name",
           "named": true
         },
         {
@@ -3327,11 +3322,7 @@
       "required": false,
       "types": [
         {
-          "type": "_member_name",
-          "named": true
-        },
-        {
-          "type": "identifier_segment_immediate",
+          "type": "parameter_name",
           "named": true
         }
       ]
@@ -3792,21 +3783,6 @@
     }
   },
   {
-    "type": "property_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier_segment_immediate",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "read_argument",
     "named": true,
     "fields": {
@@ -3931,11 +3907,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "oref_method",
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
           "named": true
         }
       ]
@@ -3965,7 +3945,7 @@
       "required": true,
       "types": [
         {
-          "type": "oref_property",
+          "type": "property_name",
           "named": true
         }
       ]
@@ -4538,6 +4518,14 @@
           "named": true
         },
         {
+          "type": "dollar_classmethod",
+          "named": true
+        },
+        {
+          "type": "dollar_method",
+          "named": true
+        },
+        {
           "type": "dollar_text",
           "named": true
         },
@@ -4547,10 +4535,6 @@
         },
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "method_arg",
           "named": true
         }
       ]
@@ -4781,7 +4765,7 @@
     "named": true,
     "fields": {
       "block": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
@@ -5134,10 +5118,6 @@
   },
   {
     "type": "\"",
-    "named": false
-  },
-  {
-    "type": "\"\"",
     "named": false
   },
   {
@@ -5809,6 +5789,10 @@
     "named": true
   },
   {
+    "type": "name",
+    "named": true
+  },
+  {
     "type": "namespace_token",
     "named": true
   },
@@ -5874,6 +5858,10 @@
   },
   {
     "type": "pound_define_variable_name",
+    "named": true
+  },
+  {
+    "type": "property_name",
     "named": true
   },
   {

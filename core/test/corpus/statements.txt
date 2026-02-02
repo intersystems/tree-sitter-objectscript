@@ -136,11 +136,8 @@ Trap
                   (class_method_call
                     (class_ref
                       preproc_keyword: (keyword_pound_pound_class)
-                      (class_name
-                        (dotted_identifier_strict_token_immediate)))
-                    (method_name
-                      (identifier_segment_immediate))
-                    (method_args)))))))
+                      (class_name))
+                    (method_name)))))))
         (set_argument
           lhs: (glvn
             (lvn
@@ -163,11 +160,8 @@ Trap
                   (class_method_call
                     (class_ref
                       preproc_keyword: (keyword_pound_pound_class)
-                      (class_name
-                        (dotted_identifier_strict_token_immediate)))
-                    (method_name
-                      (identifier_segment_immediate))
-                    (method_args)))))))
+                      (class_name))
+                    (method_name)))))))
         (set_argument
           lhs: (glvn
             (lvn
@@ -249,14 +243,11 @@ Trap
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (oref_method
-                  (method_name
-                    (identifier_segment_immediate))
-                  (method_args
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (string_literal)))))))))
+                (name)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))
           (statement
             (command_set
               command_name: (keyword_set)
@@ -292,9 +283,7 @@ Trap
                       (oref_chain_expr
                         (lvn
                           (objectscript_identifier))
-                        (oref_method
-                          (method_name)
-                          (method_args)))))))
+                        (name))))))
               (statement
                 (command_set
                   command_name: (keyword_set)
@@ -339,19 +328,17 @@ Trap
                             (oref_chain_expr
                               (lvn
                                 (objectscript_identifier))
-                              (oref_method
-                                (method_name)
-                                (method_args
-                                  (method_arg
+                              (name)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expr_tail
+                                    operator: (binary_operator)
                                     (expression
                                       (expr_atom
-                                        (lvn
-                                          (objectscript_identifier)))
-                                      (expr_tail
-                                        operator: (binary_operator)
-                                        (expression
-                                          (expr_atom
-                                            (numeric_literal))))))))))))))))
+                                        (numeric_literal))))))))))))))
               (statement
                 (command_set
                   command_name: (keyword_set)
@@ -420,7 +407,7 @@ Trap
               command_name: (keyword_goto)
               (goto_argument
                 (line_ref
-                  label: (label_ref))))))))
+                  label: (objectscript_identifier))))))))
     (statement
       (command_if
         command_name: (keyword_if)
@@ -568,23 +555,22 @@ Trap
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (class_method_call
-                      (class_ref
-                        preproc_keyword: (keyword_pound_pound_class)
-                        (class_name
-                          (dotted_identifier_strict_token_immediate)))
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (system_defined_variable)))))))))
+                (dollar_method
+                  (class_name
+                    (expr_atom
+                      (class_method_call
+                        (class_ref
+                          preproc_keyword: (keyword_pound_pound_class)
+                          (class_name))
+                        (method_name))))
+                  (method_name
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_variable)))))))))))
     (statement
       (command_throw
         command_name: (keyword_throw)
