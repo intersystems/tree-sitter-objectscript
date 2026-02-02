@@ -52,9 +52,7 @@ try catch tests
                     (class_ref
                       preproc_keyword: (keyword_pound_pound_class)
                       (class_name))
-                    (method_name
-                      (identifier_segment_immediate))
-                    (method_args)))))))
+                    (method_name)))))))
         try_block: (statement
           (command_set
             command_name: (keyword_set)
@@ -67,15 +65,12 @@ try catch tests
                   (oref_chain_expr
                     (lvn
                       (objectscript_identifier))
-                    (oref_method
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))))
+                    (name)
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))
         try_block: (statement
           (command_if
             command_name: (keyword_if)
@@ -155,9 +150,7 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))))
+                      (name)))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -174,9 +167,7 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))))
+                      (name)))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -196,9 +187,7 @@ try catch tests
                           (oref_chain_expr
                             (lvn
                               (objectscript_identifier))
-                            (oref_property
-                              (property_name
-                                (identifier_segment_immediate))))))
+                            (name))))
                       (expression
                         (expr_atom
                           (numeric_literal)))))))

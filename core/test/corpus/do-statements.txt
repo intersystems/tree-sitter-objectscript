@@ -18,10 +18,7 @@ Do Statement No Param Passing
           (instance_method_call
             (lvn
               (objectscript_identifier))
-            (oref_method
-              (method_name
-                (identifier_segment_immediate))
-              (method_args))))))
+            (method_name)))))
     (statement
       (command_do
         command_name: (keyword_do)
@@ -436,37 +433,27 @@ Do Statement Object Method
           (instance_method_call
             (lvn
               (objectscript_identifier))
-            (oref_method
-              (method_name
-                (identifier_segment_immediate))
-              (method_args))))))
+            (method_name)))))
     (statement
       (command_do
         command_name: (keyword_do)
         (do_parameter
           (instance_method_call
             (relative_dot_method
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args)))))))
+              (method_name))))))
     (statement
       (command_do
         command_name: (keyword_do)
         (do_parameter
           (instance_method_call
             (instance_variable
-              (property_name
-                (identifier_segment_immediate))
+              (property_name)
               (subscripts
                 (expression
                   (expr_atom
                     (lvn
                       (objectscript_identifier))))))
-            (oref_method
-              (method_name
-                (identifier_segment_immediate))
-              (method_args))))))
+            (method_name)))))
     (statement
       (command_do
         command_name: (keyword_do)
@@ -475,9 +462,7 @@ Do Statement Object Method
             (class_ref
               preproc_keyword: (keyword_pound_pound_class)
               (class_name))
-            (method_name
-              (identifier_segment_immediate))
-            (method_args)))))))
+            (method_name)))))))
 
 =============================
 Do Statement with Indirection

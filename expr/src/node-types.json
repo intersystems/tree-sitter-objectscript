@@ -20,6 +20,29 @@
     }
   },
   {
+    "type": "class_instance_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "subscripts",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "class_method_call",
     "named": true,
     "fields": {},
@@ -32,7 +55,7 @@
           "named": true
         },
         {
-          "type": "method_args",
+          "type": "method_arg",
           "named": true
         },
         {
@@ -47,11 +70,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "dotted_identifier_strict_token_immediate",
+          "type": "expr_atom",
+          "named": true
+        },
+        {
+          "type": "expr_tail",
           "named": true
         }
       ]
@@ -96,15 +123,11 @@
       "required": true,
       "types": [
         {
+          "type": "class_instance_name",
+          "named": true
+        },
+        {
           "type": "class_name",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "lvn",
           "named": true
         }
       ]
@@ -134,11 +157,15 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "class_name",
           "named": true
         },
         {
           "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
           "named": true
         }
       ]
@@ -153,11 +180,15 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "class_name",
           "named": true
         },
         {
           "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
           "named": true
         }
       ]
@@ -409,7 +440,7 @@
         "required": false,
         "types": [
           {
-            "type": "label_ref",
+            "type": "objectscript_identifier",
             "named": true
           }
         ]
@@ -499,6 +530,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "identifier_segment_immediate",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "indirected_glvn",
@@ -703,11 +739,6 @@
     }
   },
   {
-    "type": "label_ref",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "line_ref",
     "named": true,
     "fields": {
@@ -720,7 +751,7 @@
             "named": true
           },
           {
-            "type": "label_ref",
+            "type": "objectscript_identifier",
             "named": true
           }
         ]
@@ -866,11 +897,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "identifier_segment_immediate",
+          "type": "expr_atom",
+          "named": true
+        },
+        {
+          "type": "expr_tail",
           "named": true
         }
       ]
@@ -922,15 +957,15 @@
           "named": true
         },
         {
-          "type": "oref_method",
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "name",
           "named": true
         },
         {
           "type": "oref_parameter",
-          "named": true
-        },
-        {
-          "type": "oref_property",
           "named": true
         },
         {
@@ -943,25 +978,6 @@
         },
         {
           "type": "system_defined_function",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "oref_method",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "method_args",
-          "named": true
-        },
-        {
-          "type": "method_name",
           "named": true
         }
       ]
@@ -983,25 +999,6 @@
     }
   },
   {
-    "type": "oref_property",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "property_name",
-          "named": true
-        },
-        {
-          "type": "subscripts",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "parameter_name",
     "named": true,
     "fields": {},
@@ -1010,22 +1007,7 @@
       "required": false,
       "types": [
         {
-          "type": "identifier_segment_immediate",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "property_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier_segment_immediate",
+          "type": "parameter_name",
           "named": true
         }
       ]
@@ -1036,11 +1018,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "oref_method",
+          "type": "method_arg",
+          "named": true
+        },
+        {
+          "type": "method_name",
           "named": true
         }
       ]
@@ -1070,7 +1056,7 @@
       "required": true,
       "types": [
         {
-          "type": "oref_property",
+          "type": "property_name",
           "named": true
         }
       ]
@@ -1387,10 +1373,6 @@
     "named": false
   },
   {
-    "type": "\"\"",
-    "named": false
-  },
-  {
     "type": "#",
     "named": false
   },
@@ -1559,10 +1541,6 @@
     "named": true
   },
   {
-    "type": "dotted_identifier_strict_token_immediate",
-    "named": true
-  },
-  {
     "type": "estack_token",
     "named": true
   },
@@ -1573,10 +1551,6 @@
   {
     "type": "false",
     "named": false
-  },
-  {
-    "type": "identifier_segment_immediate",
-    "named": true
   },
   {
     "type": "json_null_literal",
@@ -1599,6 +1573,10 @@
     "named": true
   },
   {
+    "type": "name",
+    "named": true
+  },
+  {
     "type": "namespace_token",
     "named": true
   },
@@ -1608,6 +1586,10 @@
   },
   {
     "type": "pattern_expression",
+    "named": true
+  },
+  {
+    "type": "property_name",
     "named": true
   },
   {
