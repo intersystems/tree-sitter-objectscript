@@ -22,14 +22,14 @@ const { IDENT_SEG, DOTTED_ID_STRICT, DOTTED_ID_RELAXED } = require('../common/id
 module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
-    [$.oref_method, $.oref_property],
+    // [$.oref_method, $.oref_property],
     [$.method_arg, $.subscripts],
     [$.oref_chain_expr, $.expr_atom],
     [$.line_ref, $.lvn],
-    [$.class_method_call, $.oref_method],
 
   ],
   conflicts: ($) => [
+      [$.class_method_call, $.oref_chain_expr],
   ],
   inline: ($) => [
     // NOTE: It's not clear why these need to be inline, but they disappear from the ast
@@ -203,8 +203,19 @@ module.exports = grammar({
               alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),  // quoted: "Foo" or "Foo""Bar"
               alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name)  // unquoted identifier
           ),
-        // alias($._member_name, $.method_name),
-        $.method_args,
+          token.immediate('('),
+          optional(
+              seq(
+                  optional($.method_arg,),
+                  repeat(
+                      seq(
+                          ',',
+                          optional($.method_arg),
+                      ),
+                  ),
+              ),
+          ),
+          ')',
       ),
     class_parameter_ref: ($) =>
       seq(
@@ -475,7 +486,27 @@ module.exports = grammar({
             $.json_object_literal,
             $.class_ref,
           ),
-          repeat1($._oref_chain_segment),
+          repeat1(seq(
+              token.immediate('.'),
+              choice(
+                  alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
+                  alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
+              ),
+              optional(
+                  seq(
+                      token.immediate('('),
+                      optional(
+                          seq(
+                              optional($.method_arg,),
+                              repeat(
+                                  seq(
+                                      ',',
+                                      optional($.method_arg),
+                                  ),
+                              ),
+                          ),
+                      ),
+                      ')')))),
           optional(
             seq(
               token.immediate('.'),
@@ -488,39 +519,27 @@ module.exports = grammar({
     _oref_chain_segment: ($) =>
       seq(
         token.immediate('.'),
-        choice(
-          $.oref_property,
-          $.oref_method,
-        ),
-      ),
-
-    oref_method: ($) =>
-      seq(
-        choice(
-          alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),
-          alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name),
-        ),
-        // alias($._member_name, $.method_name),
-        $.method_args,
-      ),
-    oref_property: ($) =>
-      // NOTE: Since a multidimensional property is indistinguishable from a method
-      //       call (unless it's byref or has variadic args) we'll almost never match
-      //       the subscripts clause.
-      seq(
-        choice(
-          alias(token.immediate(/"(?:[^"]+|"")*"/), $.property_name),
-          alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.property_name),
-        ),
-        // alias($._member_name, $.property_name),
-        optional($.subscripts),
-      ),
+          choice(
+              alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
+              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
+          ),
+          optional(
+              seq(
+          token.immediate('('),
+          optional(
+              seq(
+                  optional($.method_arg,),
+                  repeat(
+                      seq(
+                          ',',
+                          optional($.method_arg),
+                      ),
+                  ),
+              ),
+          ),
+          ')'))),
     oref_parameter: ($) =>
         $.parameter_name,
-
-
-
-
 
     instance_variable: ($) =>
       prec.right(
@@ -530,15 +549,9 @@ module.exports = grammar({
           alias(token.immediate(/"(?:[^"]+|"")*"/), $.property_name),
           alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.property_name),
         ),
-          // alias($._member_name, $.property_name),
           optional($.subscripts),
         )
       ),
-    // _member_name: ($) =>
-    //     choice(
-    //       alias(token.immediate(/"(?:[^"]+|"")*"/), $.property_name),
-    //       alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.property_name),
-    //     ),
     parameter_name: ($) =>
       seq(
         token.immediate('#'),
@@ -546,7 +559,6 @@ module.exports = grammar({
           alias(token.immediate(/"(?:[^"]+|"")*"/), $.parameter_name),
           alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.parameter_name),
         ),
-        // $._member_name,
       ),
     subscripts: ($) =>
       seq(
@@ -557,18 +569,40 @@ module.exports = grammar({
       ),
 
     relative_dot_method: ($) =>
+     prec(1,
+
       seq(
-        token.immediate('..'),
-        $.oref_method,
-      ),
+        '..',
+          choice(
+              alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),
+              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name),
+          ),
+          token.immediate('('),
+          optional(
+              seq(
+                  optional($.method_arg,),
+                  repeat(
+                      seq(
+                          ',',
+                          optional($.method_arg),
+                      ),
+                  ),
+              ),
+          ),
+          ')',
+      )),
     relative_dot_property: ($) =>
-      seq(
-        token.immediate('..'),
-        $.oref_property,
-      ),
+      prec(0,seq(
+        '..',
+          choice(
+              alias(token.immediate(/"(?:[^"]+|"")*"/), $.property_name),
+              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.property_name),
+          ),
+        // $.oref_property,
+      )),
     relative_dot_parameter: ($) =>
       seq(
-        token.immediate('..'),
+        '..',
         $.oref_parameter,
       ),
       namespace_token: ($) => /\$NAMESPACE/i,

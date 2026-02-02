@@ -6,6 +6,7 @@ Kill Statements
  KILL (d,e)
  KILL ^||a,^||c,(d,e)
 ---
+
 (source_file
   (statements
     (statement
@@ -81,6 +82,7 @@ Kill Statements Array Node
  KILL (array1,array2)
  KILL array1(2,4),array2(3,2),array3(1,7)
 ---
+
 (source_file
   (statements
     (statement
@@ -140,6 +142,7 @@ Kill Using an Object Method
 ===========================
  KILL myarray.%Get(index).md(subscript)
 ---
+
 (source_file
   (statements
     (statement
@@ -150,30 +153,25 @@ Kill Using an Object Method
             (oref_set_target
               (lvn
                 (objectscript_identifier))
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))))
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+              (name)
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (name)
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ==========================
 Kill With PostConditionals
 ==========================
  KILL:name'?3U3N ^fruitbasket
 ---
+
 (source_file
   (statements
     (statement
@@ -191,12 +189,14 @@ Kill With PostConditionals
           (kill_target
             (glvn
               (gvn))))))))
+
 =====
 Zkill
 =====
  ZKILL a(1)
  ZKILL:name'?3U3N a(1)
 ---
+
 (source_file
   (statements
     (statement
