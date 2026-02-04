@@ -1,0 +1,68 @@
+===========================
+$ZC argumentless is $ZCHILD
+===========================
+ $ZC
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_zchild_or_zcyc
+          (built_in_function_name))))))
+
+=======
+$ZCHILD
+=======
+ $ZCHILD
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_zchild_or_zcyc
+          (built_in_function_name))))))
+
+===========================
+$ZC with arguments is $ZCYC
+===========================
+ $ZC("hi")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_zchild_or_zcyc
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (string_literal))))))))
+
+===========================
+$ZCHILD on a string
+:error
+===========================
+ $ZCHILD("hi")
+---
+
+
+
+===========================
+$ZCYC empty arg
+:error
+===========================
+ $ZCYC()
+---
+
+
+
+===========================
+$ZCYC no arg
+:error
+===========================
+ $ZCYC
+---
+
+

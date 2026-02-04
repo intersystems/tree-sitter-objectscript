@@ -22,7 +22,6 @@ const { IDENT_SEG, DOTTED_ID_STRICT, DOTTED_ID_RELAXED } = require('../common/id
 module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
-    // [$.oref_method, $.oref_property],
     [$.method_arg, $.subscripts],
     [$.oref_chain_expr, $.expr_atom],
     [$.line_ref, $.lvn],
@@ -30,19 +29,11 @@ module.exports = grammar({
   ],
   conflicts: ($) => [
       [$.class_method_call, $.oref_chain_expr],
+      [$.glvn, $.expr_atom],
   ],
-  inline: ($) => [
-    // NOTE: It's not clear why these need to be inline, but they disappear from the ast
-    //       when inline, maybe that's by design or for reducing the number of states
-    $.dollar_function,
-    $.dollar_list,
-    $.dollar_listget,
-    $.dollar_extract,
-    $.dollar_piece,
-    $.dollar_case,
-    $.dollar_select,
-    $.dollar_func_pos,
-  ],
+  // inline: ($) => [
+  // note: having inline does reduce states because it eliminates rules as grammar symbol
+  // ],
   rules: {
     source_file: ($) => $.expression, // expr grammar is for expressions only
     expression: ($) =>
@@ -73,9 +64,8 @@ module.exports = grammar({
         $.sql_field_reference,
 
         // Builtin functions
-        $.system_defined_variable,
+        $.built_in_function_name,
         $.system_defined_function,
-        $.dollarsf,
 
         // User defined functions
         $.extrinsic_function,
@@ -155,8 +145,8 @@ module.exports = grammar({
       seq(
         field('operator', choice('?',"'?")),
         field('right', choice(
-          alias($.indirection, $.unary_expression), // ? @var
-          $.pattern_expression                      // ?<pattern>
+          alias($.indirection, $.unary_expression), 
+          $.pattern_expression                     
         )),
       ),
     indirection: ($) => seq(field('operator', '@'), $.expression),
@@ -328,22 +318,6 @@ module.exports = grammar({
           ),
           $.dotted_identifier_relaxed_token),
 
-    dollarsf: ($) =>
-      seq(
-        field('function_name', $.dollar_system_keyword),
-        repeat1(
-          seq(
-            '.',
-            field(
-              'classname_piece',
-              $.identifier_segment_immediate,
-            ),
-          ),
-        ),
-        $.method_args,
-      ),
-    dollar_system_keyword: (_) => /\$SYSTEM/i,
-
     method_args: ($) =>
       seq(
         token.immediate('('),
@@ -479,7 +453,6 @@ module.exports = grammar({
             $.relative_dot_property,
             $.relative_dot_method,
             $.system_defined_function,
-            $.dollarsf,
             $.class_method_call,
             $.extrinsic_function,
             $._parenthetical_expression,
@@ -516,28 +489,28 @@ module.exports = grammar({
         ),
       ),
 
-    _oref_chain_segment: ($) =>
-      seq(
-        token.immediate('.'),
-          choice(
-              alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
-              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
-          ),
-          optional(
-              seq(
-          token.immediate('('),
-          optional(
-              seq(
-                  optional($.method_arg,),
-                  repeat(
-                      seq(
-                          ',',
-                          optional($.method_arg),
-                      ),
-                  ),
-              ),
-          ),
-          ')'))),
+    // _oref_chain_segment: ($) =>
+      // seq(
+      //   token.immediate('.'),
+      //     choice(
+      //         alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
+      //         alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
+      //     ),
+      //     optional(
+      //         seq(
+      //     token.immediate('('),
+      //     optional(
+      //         seq(
+      //             optional($.method_arg,),
+      //             repeat(
+      //                 seq(
+      //                     ',',
+      //                     optional($.method_arg),
+      //                 ),
+      //             ),
+      //         ),
+      //     ),
+      //     ')'))),
     oref_parameter: ($) =>
         $.parameter_name,
 
@@ -610,25 +583,325 @@ module.exports = grammar({
       etrap_token: ($) => /\$ET(RAP)?/i,
       roles_token: ($) => /\$ROLES/i,
 
+      built_in_function_device_or_data: ($) => 
+        choice(
+          prec(-1, 
+            alias(choice(
+               /\$D/i,
+               /\$DEVICE/i
+            ), $.built_in_function_name),
+          ),
+          seq(
+            alias(choice(
+               /\$D/i,
+               /\$DATA/i
+            ), $.built_in_function_name),
+            token.immediate('('),
+            // variable
+            alias(choice(
+              $.glvn,
+              $.oref_chain_expr
+            ), $.function_argument),
+            // target
+            optional(
+              seq(',', 
+                alias(choice(
+                  $.glvn,
+                  $.oref_chain_expr
+                ), $.function_argument)
+              )
+            ),
+            ')'
+          )
+        ),
 
-      system_defined_variable: ($) =>
-      choice(
-        /\$D(EVICE)?/i, // $DEVICE
+      built_in_function_system: ($) => 
+        choice(
+          prec(-1, 
+            alias(choice(
+               /\$SY/i,
+               /\$SYSTEM/i
+            ), $.built_in_function_name),
+          ),
+          seq(
+            alias(/\$SYSTEM/i, $.built_in_function_name),
+            '.',
+            alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.function_argument),
+            '.',
+            alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.function_argument),
+            token.immediate('('),
+            optional(
+              seq(
+                optional($.method_arg),
+                repeat(
+                  seq(
+                    ',',
+                    optional($.method_arg),
+                  ),
+                ),
+              ),
+            ),
+            ')',
+          ),
+        ),
+        
+      built_in_functions_piece_or_principal: ($) => 
+        choice(
+          seq(
+            choice(
+               /\$P/i,
+               /\$PIECE/i,
+            ),
+            token.immediate('('),
+            // the string 
+            alias($.expression, $.function_argument),
+            ',',
+            // delimiter
+            alias($.expression, $.function_argument),
+            optional(
+              seq(',',
+                // from
+                alias($.dollar_func_pos, $.function_argument),
+                optional(
+                  seq(
+                    ',',
+                    // to
+                    alias($.dollar_func_pos, $.function_argument),
+                  ),
+                ),
+              ),
+            ),
+            ')',
+          ),
+          prec(-1,choice(
+            /\$P/i,
+            /\$PRINCIPAL/i,
+          )
+          )),
+
+      built_in_functions_quit_or_query: ($) => 
+        choice(
+          prec(-1, alias(choice(
+            /\$QUIT/i, // $QUIT
+            /\$Q/i,
+          ), $.built_in_function_name)),
+          seq(
+            alias(choice(
+              /\$QUERY/i,
+              /\$Q/i,
+            ), $.built_in_function_name),
+            token.immediate('('),
+            // reference
+            alias($.expression, $.function_argument),
+            optional(
+              seq(',', alias(choice('1','-1'), $.function_argument),
+              optional(
+              seq(',', alias($.objectscript_identifier, $.function_argument))
+              )),
+            ),
+            ')'
+          )
+        ),
+
+      built_in_functions_storage_or_select: ($) => 
+        choice(
+          prec(-1,
+            alias(choice(
+              /\$STORAGE/i, // $STORAGE
+              /\$S/i, // $STORAGE
+            ), $.built_in_function_name)
+          ),
+          seq(
+            alias(choice(
+              /\$SELECT?/i,
+              /\$S/i,
+            ), $.built_in_function_name),
+            token.immediate('('),
+            repeat_with_commas(seq(alias($.dollar_arg_pair, $.function_argument))),
+            ')',
+          ),
+        ),
+
+      built_in_function_stack: ($) => 
+        choice(
+          prec(-1,
+            alias(choice(
+              /\$ST/i, // $STACK no arguments
+              /\$STACK/i, // $STACK no arguments
+            ), $.built_in_function_name)
+          ),
+          seq(
+            alias(choice(
+              /\$ST/i, // $STACK with arguments
+              /\$STACK/i, // $STACK with arguments
+            ), $.built_in_function_name),
+            token.immediate('('),
+            alias($.expression, $.function_argument),
+            optional(
+              seq(',',
+                alias($.expression, $.function_argument),
+              )
+            ),
+            ')',
+          )
+        ),
+
+      built_in_function_sequence: ($) => 
+        seq(
+          alias(/\$SEQ(UENCE)?/i, $.built_in_function_name),
+          token.immediate('('),
+              alias(
+                // gvar
+                choice(
+                  $.glvn,
+                  $.oref_chain_expr,
+                  // null string
+                  '""'
+                ), 
+                $.function_argument
+              ),
+              // number
+              optional(
+                seq(
+                  ',',
+                  alias($.expression, $.function_argument),
+                )
+              ),
+              ')'
+        ),
+
+      built_in_function_justify_or_job: ($) =>
+        choice(
+          prec(-1,
+              alias(choice(
+                /\$J/i, 
+                /\$JOB/i, 
+              ), $.built_in_function_name)
+          ),
+          seq(
+            alias(
+              choice(
+                /\$J/i, 
+                /\$JUSTIFY/i, 
+              ), 
+              $.built_in_function_name),
+            token.immediate('('),
+            //expression
+            alias($.expression, $.function_argument),
+            ',',
+            // width
+            alias($.expression, $.function_argument),
+            // decimal
+            optional(
+              seq(
+                ',',
+                alias($.expression, $.function_argument),
+              )
+            ),
+            ')'
+          )
+        ),
+
+      built_in_function_zchild_or_zcyc: ($) => 
+        choice(
+          prec(-1,
+              alias(choice(
+                /\$ZC/i, 
+                /\$ZCHILD/i, 
+              ), $.built_in_function_name)
+            ),
+            seq(
+              alias(
+                choice(
+                  /\$ZCYC/i, 
+                  /\$ZC/i, 
+                ), 
+                  $.built_in_function_name
+              ),
+              token.immediate('('),
+              alias($.expression, $.function_argument),
+              ')'
+            )
+        ),
+
+      built_in_function_increment_or_io: ($) => 
+          choice(
+            prec(-1,
+              alias(choice(
+                /\$I/i, 
+                /\$IO/i, 
+              ), $.built_in_function_name)
+            ),
+            seq(
+              alias(
+                choice(
+                  /\$I/i, 
+                  /\$INCREMENT/i, 
+                ), 
+                  $.built_in_function_name
+              ),
+              token.immediate('('),
+              alias(
+                // variable
+                choice(
+                  $.glvn,
+                  $.oref_chain_expr,
+                  // null string
+                  '""'
+                ), 
+                $.function_argument
+              ),
+              // number
+              optional(
+                seq(
+                  ',',
+                  alias($.expression, $.function_argument),
+                )
+              ),
+              ')'
+            )
+          ),
+
+      // ZBOOLEAN: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fzboolean
+      // ZB: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_vzb
+      built_in_function_zboolean_or_zb: ($) => 
+        choice(
+            prec(-1,
+              alias(
+                /\$ZB/i, 
+                $.built_in_function_name)
+            ),
+            seq(
+              alias(
+                choice(
+                  /\$ZB/i, 
+                  /\$ZBOOLEAN/i,
+                ),
+                $.built_in_function_name
+              ),
+              token.immediate('('),
+              // arg1
+              alias($.expression, $.function_argument),
+              // arg2
+              ',',
+              alias($.expression, $.function_argument),
+              // arg3
+              ',',
+              alias($.expression, $.function_argument),
+              ')'
+            )
+          ),
+
+      built_in_function_name: ($) =>
+      prec(-1, choice(
           /\$EC(ODE)?/i, // $ECODE
         $.estack_token, // $ESTACK
         $.etrap_token, // $ETRAP
         /\$HALT/i, // $HALT
         /\$H(OROLOG)?/i, // $HOROLOG
-        /\$I(O)?/i, // $IO
-        /\$J(OB)?/i, // $JOB
         /\$K(EY)?/i, // $KEY
        $.namespace_token, // $NAMESPACE
-        /\$P(RINCIPAL)?/i, // $P[RINCIPAL] conflicts with $P[IECE]
-        /\$Q(UIT)?/i, // $QUIT
         $.roles_token, // $ROLES
-        /\$ST(ACK)?/i, // $STACK conflits with $STACK()
-        /\$S(TORAGE)?/i, // $S[TORAGE] conflicts with $S[ELECT]
-        /\$SY(STEM)?/i, // $SYSTEM
         /\$T(EST)?/i, // $TEST
         /\$THIS/i, // $THIS
         /\$THROWOBJ/i, // $THROWOBJ
@@ -637,12 +910,9 @@ module.exports = grammar({
         /\$X/i, // $X
         /\$Y/i, // $Y
         /\$ZA/i, // $ZA
-        /\$ZB/i, // $ZB
-        /\$ZC(HILD)?/i, // $ZCHILD
         /\$ZEOF/i, // $ZEOF
         /\$ZEOS/i, // $ZEOS
         /\$ZE(RROR)?/i, // $ZERROR
-        /\$ZH(OROLOG)?/i, // $ZHOROLOG
         /\$ZI(O)?/i, // $ZIO
         /\$ZJ(OB)?/i, // $ZJOB
         /\$ZM(ODE)?/i, // $ZMODE
@@ -656,38 +926,54 @@ module.exports = grammar({
         /\$ZS(TORAGE)?/i, // $ZSTORAGE
         choice(/\$ZTIMESTAMP/i, /\$ZTS/i), // $ZTIMESTAMP
         choice(/\$ZTIMEZONE/i, /\$ZTZ/i), // $ZTIMEZONE
-        /\$ZT(RAP)?/i, // $ZTRAP
         /\$ZV(ERSION)?/i, // $ZVERSION
-      ),
+      )),
     system_defined_function: ($) =>
       choice(
-        // NOTE: Make sure you add any new rules here to the inline key at top of the file
-        //       and put specific rules before generic dollar_function to avoid conflicts
-        $.dollar_piece,
+        $.built_in_functions_piece_or_principal,
+        $.built_in_functions_quit_or_query,
         $.dollar_extract,
         $.dollar_list,
         $.dollar_listget,
+        $.dollar_listdata,
         $.dollar_case,
-        $.dollar_select,
+        $.dollar_get,
+        $.built_in_functions_storage_or_select,
+        $.built_in_function_device_or_data,
+        $.built_in_function_stack,
+        $.built_in_function_system,
+        $.built_in_function_increment_or_io,
+        $.built_in_function_justify_or_job,
+        $.built_in_function_sequence,
         $.dollar_classmethod,
         $.dollar_method,
         $.dollar_text,
         $.dollar_view,
+        $.dollar_length,
+        $.built_in_function_zboolean_or_zb,
+        $.built_in_function_zchild_or_zcyc,
+        $.built_in_function_zhex_or_zhorolog,
+        $.built_in_function_ztime_or_ztrap,
+        $.built_in_functions_with_optional_args,
+        $.dollar_listlength,
+        $.dollar_listupdate,
+        $.dollar_listvalid,
+        $.dollar_listsame,
         $.dollar_function,    // Fallback case
       ),
     dollar_view: ($) =>
       seq(
         /\$V(IEW)?/i,
         token.immediate('('),
-        $.expression, //offset
+        alias($.expression, $.function_argument), //offset
         optional(
           seq(
             ',',
-            $.expression,
+            alias($.expression ,$.function_argument),
             optional(
               seq(
                 ',',
-                $.expression
+                alias($.expression, $.function_argument),
               )
             )
           )
@@ -697,27 +983,251 @@ module.exports = grammar({
 
     dollar_text: ($) =>
       seq(
-        // $T or $TEXT, followed by '(' with no space
-        token(
-          seq(
-            field('function_name', /\$T(EXT)?/i),
-            token.immediate('('),
-          ),
-        ),
-        field('arg', $.line_ref),
+        alias(/\$T(EXT)?/i, $.built_in_function_name),
+        token.immediate('('),
+        alias($.line_ref, $.function_argument),
         ')',
     ),
 
+    dollar_get: ($) => 
+        seq(
+          alias(/\$G(ET)?/i, $.built_in_function_name),
+          token.immediate('('),
+            // variable
+            alias(choice(
+              $.glvn,
+              $.oref_chain_expr
+            ), $.function_argument),
+            // target
+            optional(
+              seq(',', 
+                alias(
+                  $.expression, 
+                  $.function_argument
+                )
+              )
+            ),
+            ')'
+        ),
+
+    dollar_listdata: ($) => 
+      seq(
+        alias(choice(/\$LISTDATA/i, /\$LD/i), $.built_in_function_name),
+        token.immediate('('),
+        // list 
+        alias($.expression, $.function_argument),
+        // position
+        optional(
+          seq(',', 
+            alias($.expression, $.function_argument),
+            optional(
+              seq(
+                ',',
+                alias(choice(
+                  $.glvn,
+                  $.oref_chain_expr
+                ), $.function_argument)
+              )
+            )
+          )
+        ),
+        ')'
+      ),
+    
+    dollar_length: ($) => 
+      seq(
+        alias(/\$L(ENGTH)?/i, $.built_in_function_name),
+        token.immediate('('),
+        // target string
+          alias($.expression, $.function_argument),
+          // delimiter
+          optional(
+            seq(',', alias($.expression, $.function_argument))
+          ),
+          ')'
+      ),
+
+    // zhex: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fzhex
+    // zhorolog: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_vzhorolog
+    built_in_function_zhex_or_zhorolog:($) => 
+      choice(
+        prec(-1,
+              alias(choice(
+                /\$ZH/i, 
+                /\$ZHOROLOG/i, 
+              ), $.built_in_function_name)
+        ),
+        seq(
+          alias(
+            choice(
+                /\$ZH/i, 
+                /\$ZHEX/i, 
+              ), $.built_in_function_name
+          ),
+          token.immediate('('),
+          // num
+          alias($.expression, $.function_argument),
+          ')'
+        )
+      ),
+
+    // ztime: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fztime
+    // ztrap: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_vztrap
+    built_in_function_ztime_or_ztrap: ($) => 
+      choice(
+        prec(-1,
+              alias(choice(
+                /\$ZT/i, 
+                /\$ZTRAP/i, 
+              ), $.built_in_function_name)
+        ),
+        seq(
+          alias(
+            choice(
+                /\$ZT/i, 
+                /\$ZTIME/i, 
+              ), $.built_in_function_name
+          ),
+          token.immediate('('),
+          //htime
+          alias($.expression, $.function_argument),
+          repeat(
+              seq(
+                ',',
+                optional(alias($.expression, $.function_argument)),
+              ),
+            ),
+          ')',
+        )
+      ),
+
+    // listvalid: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_flistvalid
+    dollar_listvalid: ($) => 
+      seq(
+        alias(choice(/\$LISTVALID/i, /\$LV/i), $.built_in_function_name),
+        token.immediate('('),
+        alias($.expression, $.function_argument),
+        ')'
+      ),
+    
+
+    // listupdate: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_flistupdate
+    dollar_listupdate: ($) => 
+      seq(
+        alias(choice(/\$LISTUPDATE/i, /\$LU/i), $.built_in_function_name),
+        token.immediate('('),
+        // expression that evaluates to list
+        alias($.expression, $.function_argument),
+        ',',
+        // position
+        alias($.expression, $.function_argument),
+        repeat(
+          seq(
+            ',',
+            alias(
+              choice(
+                $.expression,
+                $.dollar_arg_pair
+              ),
+              $.function_argument
+            )
+          )
+        ),
+        ')',
+      ),
+    
+
+    // listlength: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_flistlength
+    dollar_listlength: ($) => 
+      seq(
+        alias(choice(/\$LISTLENGTH/i, /\$LL/i), $.built_in_function_name),
+        token.immediate('('),
+        // list
+        alias($.expression, $.function_argument),
+        ')',
+      ),
+
+    // listtostring: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_flisttostring
+    // dollar_liststring: ($) =>  
+    //   seq(
+    //     alias(choice(
+    //       /\$LISTTOSTRING/i, /\$LTS/i,
+    //       /\$LISTFROMSTRING/i, /\$LFS/i
+
+    //     ), $.built_in_function_name),
+    //     token.immediate('('),
+    //     // list
+    //     alias($.expression, $.function_argument),
+    //     optional(
+    //       seq(
+    //         ',',
+    //         // delimiter
+    //         optional(alias($.expression, $.function_argument))
+    //       )
+    //     ),
+    //     optional(
+    //       seq(
+    //         ',',
+    //         // flag
+    //         optional(alias($.expression, $.function_argument))
+    //       )
+    //     ),
+    //     ')',
+    //   ),
+
+      
+
+
+    // listsame: https://docs.intersystems.com/healthconnectlatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_FLISTSAME
+    dollar_listsame: ($) => 
+      seq(
+        alias(choice(/\$LISTSAME/i, /\$LS/i), $.built_in_function_name),
+        token.immediate('('),
+        alias($.expression, $.function_argument),
+        ',',
+        alias($.expression, $.function_argument),
+        ')'
+      ),
+
+    // fnumber: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_ffnumber
+    // zdate: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fzdate
+    // zdatetimeh: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fzdatetimeh
+    // ztimeh: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_fztimeh
+    built_in_functions_with_optional_args: ($) => 
+      seq(
+        alias(
+          choice(
+          /\$ZDATETIMEH/i, /\$ZDTH/i,
+          /\$ZDATEH/i, /\$ZDH/i,
+          /\$ZDATETIME/i, /\$ZDT/i,
+          /\$ZDATE/i, /\$ZD/i,
+          /\$ZTIMEH/i, /\$ZTH/i,
+          /\$NUM(BER)?/i, /\$FN(UMBER)?/i,
+          /\$LISTBUILD/i, /\$LB/i,
+          /\$LISTTOSTRING/i, /\$LTS/i,
+          /\$LISTFROMSTRING/i, /\$LFS/i,
+      
+        ), $.built_in_function_name),
+        token.immediate('('),
+        optional(
+          seq(
+            optional(alias($.expression, $.function_argument)),
+            repeat(
+              seq(
+                ',',
+                optional(alias($.expression, $.function_argument)),
+              ),
+            ),
+          ),
+        ),
+        ')',
+      ),
+
     dollar_function: ($) =>
       seq(
-        token(
-          seq(
-            field(
-              'function_name',
+            alias(
               choice(
                 /\$BIT/i,
-                /\$D(ATA)?/i,
-                choice(/\$LISTSAME/i, /\$LS/i),
                 /\$MATCH/i,
                 /\$NORMALIZE/i,
                 /\$QS(UBSCRIPT)?/i,
@@ -735,10 +1245,7 @@ module.exports = grammar({
                 /\$BITLOGIC/i,
                 /\$DECIMAL/i,
                 /\$FACTOR/i,
-                /\$G(ET)?/i,
-                /\$L(ENGTH)?/i,
                 /\$NA(ME)?/i,
-                /\$ST(ACK)?/i,
                 /\$WA(SCII)?/i,
                 /\$ZDA(SCII)?/i,
                 /\$ZLA(SCII)?/i,
@@ -752,8 +1259,6 @@ module.exports = grammar({
                 /\$DOUBLE/i,
                 /\$ISOBJECT/i,
                 /\$ISVECTOR/i,
-                choice(/\$LISTLENGTH/i, /\$LL/i),
-                choice(/\$LISTVALID/i, /\$LV/i),
                 /\$QL(ENGTH)?/i,
                 /\$RE(VERSE)?/i,
                 /\$T(EXT)?/i,
@@ -768,10 +1273,8 @@ module.exports = grammar({
                 /\$ZCOS/i,
                 /\$ZCOT/i,
                 /\$ZCSC/i,
-                /\$ZC(YC)?/i,
                 /\$ZDC(HAR)?/i,
                 /\$ZEXP/i,
-                /\$ZH(EX)?/i,
                 /\$ZISWIDE/i,
                 /\$ZLC(HAR)?/i,
                 /\$ZLN/i,
@@ -782,7 +1285,6 @@ module.exports = grammar({
                 /\$ZSIN/i,
                 /\$ZSQR/i,
                 /\$ZTAN/i,
-                /\$ZVERSION/i,
                 /\$ZWC(HAR)?/i,
                 /\$ZWPACK/i,
                 /\$ZWBPACK/i,
@@ -790,51 +1292,31 @@ module.exports = grammar({
                 /\$ZWBUNPACK/i,
                 /\$F(IND)?/i,
                 /\$IN(UMBER)?/i,
-                /\$J(USTIFY)?/i,
                 /\$NC(ONVERT)?/i,
                 /\$VE(CTOR)?/i,
                 choice(/\$VECTORDEFINED/i, /\$VD/i),
                 choice(/\$VECTOROP/i, /\$VOP/i),
                 /\$TR(ANSLATE)?/i,
                 /\$ZCRC/i,
-                /\$ZPOSITION/i,
-                /\$FN(UMBER)?/i,
-                choice(/\$LISTDATA/i, /\$LD/i),
-                choice(/\$LISTFROMSTRING/i, /\$LFS/i),
-                choice(/\$LISTTOSTRING/i, /\$LTS/i),
-                /\$ZNAME/i,
-                choice(/\$ZTIMEH/i, /\$ZTH/i),
                 /\$ZZENKAKU/i,
-                /\$I(NCREMENT)?/i,
                 /\$ISVALIDDOUBLE/i,
                 /\$ISVALIDNUM/i,
-                /\$ZT(IME)?/i,
-                choice(/\$LISTBUILD/i, /\$LB/i),
                 /\$LISTNEXT/i,
                 choice(/\$LISTFIND/i, /\$LF/i),
-                /\$ZB(OOLEAN)?/i,
-                choice(/\$LISTUPDATE/i, /\$LU/i),
                 /\$LOCATE/i,
-                /\$NUM(BER)?/i,
                 /\$PREPROCESS/i,
                 /\$O(RDER)?/i,
                 /\$PARAMETER/i,
                 /\$PREFETCHOFF/i,
                 /\$PREFETCHON/i,
                 /\$PROPERTY/i,
-                /\$Q(UERY)?/i,
                 /\$R(ANDOM)?/i,
-                /\$SEQ(UENCE)?/i,
                 /\$REPLACE/i,
                 /\$SC(ONVERT)?/i,
                 choice(/\$ZCONVERT/i, /\$ZCVT/i),
                 /\$ZSTRIP/i,
                 /\$SORTBEGIN/i,
                 /\$SORTEND/i,
-                /\$ZD(ATE)?/i,
-                choice(/\$ZDATEH/i, /\$ZDH/i),
-                choice(/\$ZDATETIME/i, /\$ZDT/i),
-                choice(/\$ZDATETIMEH/i, /\$ZDTH/i),
                 /\$ZBITFIND/i,
                 /\$ZBITGET/i,
                 /\$ZBITLEN/i,
@@ -847,93 +1329,57 @@ module.exports = grammar({
                 /\$ZOBJPROPERTY/i,
                 /\$ZV(ERSION)?/i, // $ZVERSION
               ),
+              $.built_in_function_name
             ),
             token.immediate('('),
-          ),
-        ),
-        optional(repeat_with_commas($.expression)),
-        ')',
-      ),
-    dollar_select: ($) =>
-      seq(
-        token(seq(field('name', /\$S(ELECT)?/i), token.immediate('('))),
-        repeat_with_commas(seq(field('case', $.dollar_arg_pair))),
+        optional(repeat_with_commas(alias($.expression, $.function_argument))),
         ')',
       ),
     dollar_case: ($) =>
       seq(
         token(seq(field('name', /\$CASE/i), token.immediate('('))),
-        field('target', $.expression),
+        alias($.expression, $.function_argument),
         choice(
           seq(
             repeat1(
               seq(
                 ',',
-                field('case', $.dollar_arg_pair)
+                alias($.dollar_arg_pair, $.function_argument)
               ),
             ),
             optional(
               seq(
                 ',',
-                field('default',
-                  seq(
-                    ':',
-                    $.expression,
-                  ),
-                ),
+                ':',
+                alias($.expression, $.function_argument)
               ),
             ),
           ),
           seq(
-            ',',
-            field('default',
-              seq(
-                ':',
-                $.expression,
-              ),
-            ),
-          ),
-        ),
-        ')',
-      ),
-
-    dollar_piece: ($) =>
-      seq(
-        // NOTE: `$P(` must be one token to avoid ambiguity with $P[RINCIPAL]
-        token(seq(field('function_name', /\$P(IECE)?/i), token.immediate('('))),
-        $.expression,
-        ',',
-        $.expression,
-        optional(
-          seq(',',
-            $.dollar_func_pos,
-            optional(
-              seq(
-                ',',
-                $.dollar_func_pos
-              ),
-            ),
+              ',',
+              ':',
+              alias($.expression, $.function_argument)
           ),
         ),
         ')',
       ),
     dollar_extract: ($) =>
       seq(
-        token(seq(field('function_name', choice(/\$E(XTRACT)?/i, /\$WE(XTRACT)?/i)), token.immediate('('))),
-        $.expression,
+        alias(choice(/\$E(XTRACT)?/i, /\$WE(XTRACT)?/i), $.built_in_function_name), token.immediate('('),
+        alias($.expression, $.function_argument),
         optional(
-          seq(',', $.dollar_func_pos, optional(seq(',', $.dollar_func_pos))),
+          seq(',', alias($.dollar_func_pos, $.function_argument), optional(seq(',', alias($.dollar_func_pos, $.function_argument)))),
         ),
         ')',
       ),
     dollar_list: ($) =>
       seq(
-        token(seq(field('function_name', /\$LI(ST)?/i), token.immediate('('))),
-        $.expression,
+        alias(/\$LI(ST)?/i, $.built_in_function_name), token.immediate('('),
+        alias($.expression, $.function_argument),
         optional(
           seq(
             ',',
-            repeat_with_commas(choice($.dollar_func_pos, $.dollar_arg_pair)),
+            repeat_with_commas(alias(choice($.dollar_func_pos, $.dollar_arg_pair), $.function_argument)),
           ),
         ),
         ')',
@@ -942,25 +1388,24 @@ module.exports = grammar({
       seq(
         token(
           seq(
-            field('function_name', choice(/\$LISTGET/i, /\$LG/i)),
+            alias(choice(/\$LISTGET/i, /\$LG/i), $.built_in_function_name),
             token.immediate('('),
           ),
         ),
-        $.expression,
+        alias($.expression, $.function_argument),
         optional(
           seq(
             ',',
-            optional($.dollar_func_pos),
-            optional(seq(',', $.expression)),
+            optional(alias($.dollar_func_pos, $.function_argument)),
+            optional(seq(',', alias($.expression, $.function_argument))),
           ),
         ),
         ')',
       ),
     dollar_classmethod: ($) =>
       seq(
-        token(
-          seq(field('function_name', /\$(ZOBJ)?CLASSMETHOD/i), token.immediate('(')),
-        ),
+          alias(/\$(ZOBJ)?CLASSMETHOD/i, $.built_in_function_name), 
+          token.immediate('('),
           optional(alias($.expression, $.class_name)),
         ',',
           alias($.expression, $.method_name),
@@ -969,16 +1414,15 @@ module.exports = grammar({
       ),
     dollar_method: ($) =>
       seq(
-        token(
-          seq(field('function_name', /\$(ZOBJ)?METHOD/i), token.immediate('(')),
-        ),
+        alias(/\$(ZOBJ)?METHOD/i, $.built_in_function_name),
+        token.immediate('('),
         optional(alias($.expression, $.class_name)),
         ',',
         alias($.expression, $.method_name),
         repeat(seq(',', $.method_arg)),
         ')',
       ),
-    dollar_arg_pair: ($) => seq($.expression, ':', $.expression),
+    dollar_arg_pair: ($) => seq(alias($.expression, $.lhs_pair), ':', alias($.expression, $.rhs_pair)),
     dollar_func_pos: ($) => choice(
       prec(1,
         seq(

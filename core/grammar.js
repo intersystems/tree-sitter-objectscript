@@ -269,8 +269,8 @@ module.exports = grammar(objectscript_expr, {
         token.immediate('('),
         optional(
           seq(
-            field('macro_arg', $.macro_arg),
-            repeat(seq(',', field('macro_arg', $.macro_arg))),
+            $.macro_arg,
+            repeat(seq(',', $.macro_arg)),
           ),
         ),
         token.immediate(')'),
@@ -288,7 +288,7 @@ module.exports = grammar(objectscript_expr, {
     pound_def1arg_variable_arg: ($) =>
       prec(15, seq(
         token.immediate('('),
-        optional(field('macro_arg', $.macro_arg)),
+        optional($.macro_arg),
         token.immediate(')'),
       )),
     keyword_pound_def1arg: (_) => /\#def1arg/i,
@@ -407,22 +407,72 @@ module.exports = grammar(objectscript_expr, {
         $.indirection,
       ),
 
-    oref_set_target: ($) =>
-      choice(
-        $.relative_dot_property,
-        seq(
+    oref_set_target: ($) => 
+      seq(
           choice(
             $.lvn,
             $.instance_variable,
             $.relative_dot_property,
-            $.relative_dot_method,
+            $.relative_dot_method
           ),
-          repeat1($._oref_chain_segment),
-          // // Whatever we have here must end in a property
-          // token.immediate('.'),
-          // $.oref_property,
+          repeat(
+            seq(
+              token.immediate('.'),
+              choice(
+                  alias(token.immediate(/"(?:[^"]+|"")*"/), $.oref_segment_name),
+                  alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.oref_segment_name),
+              ),
+          optional(
+              seq(
+          token.immediate('('),
+          seq(
+              optional($.method_arg),
+              repeat(
+                  seq(
+                      ',',
+                      optional($.method_arg),
+                  ),
+              ),
+          ),
+          ')')))),
         ),
-      ),
+
+    // oref_set_target: ($) =>
+    //   choice(
+    //     $.relative_dot_property,
+    //     seq(
+    //       choice(
+    //         $.lvn,
+    //         $.instance_variable,
+    //         $.relative_dot_property,
+    //         $.relative_dot_method,
+    //       ),
+    //       repeat1(seq(
+    //     token.immediate('.'),
+    //       choice(
+    //           alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
+    //           alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
+    //       ),
+    //       optional(
+    //           seq(
+    //       token.immediate('('),
+    //       optional(
+    //           seq(
+    //               optional($.method_arg,),
+    //               repeat(
+    //                   seq(
+    //                       ',',
+    //                       optional($.method_arg),
+    //                   ),
+    //               ),
+    //           ),
+    //       ),
+    //       ')')))),
+    //       // // Whatever we have here must end in a property
+    //       // token.immediate('.'),
+    //       // $.oref_property,
+    //     ),
+    //   ),
 
     command_write: ($) =>
       prec.right(
@@ -497,7 +547,27 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_method,
             $._parenthetical_expression,
           ),
-          repeat($._oref_chain_segment),
+          repeat(seq(
+        token.immediate('.'),
+          choice(
+              alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),
+              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name),
+          ),
+          optional(
+              seq(
+          token.immediate('('),
+          optional(
+              seq(
+                  optional($.method_arg),
+                  repeat(
+                      seq(
+                          ',',
+                          optional($.method_arg),
+                      ),
+                  ),
+              ),
+          ),
+          ')')))),
           // Whatever we have here must end in a method
           token.immediate('.'),
           choice(
@@ -534,11 +604,11 @@ module.exports = grammar(objectscript_expr, {
         $.dollarsf,
         // Generic $ functions
         seq(
-          field('function_name', choice(
+          alias(choice(
             /\$I(NCREMENT)?/i,
             /\$ZF/i,
             /\$ZU(TIL)?/i
-          )),
+          ), $.built_in_function_name),
           token.immediate('('),
           repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
           ')',

@@ -3,15 +3,13 @@
 ; Commands
 ; e.g. 'set', 'do', 'D'
 ; -----------------------------------------
-(_ command_name: (_) @keyword)
+command_name: (_) @keyword
+macro_name: (_) @keyword.macro
+macro_arg: (_) @constant.macro
+mnemonic: (_) @constant.macro
 
-(_ macro_name: (_) @keyword.macro)
-(_ macro_arg: (_) @constant.macro)
-(_ mnemonic: (_) @constant.macro)
+; (_ parameter: _ @variable.parameter)
 
-(_ parameter: _ @variable.parameter)
-
-; Functions that can be on the LHS of a SET
 (doable_dollar_functions) @function.builtin
 
 ; non-extrinsic routine call
@@ -19,11 +17,6 @@
 
 ; method call
 (instance_method_call) @function.method.call
-
-;; Technically elseif and else_block are not statements,
-;; so we need ot query them explicitly
-;(elseif_block command_name: (_) @keyword)
-;(else_block command_name: (_) @keyword)
 
 "{" @punctuation.bracket
 "}" @punctuation.bracket
@@ -35,7 +28,7 @@
   (line_comment_2)
   (line_comment_3)
   (block_comment)
-] @comment
+] @comment 
 
 (embedded_html
   (keyword_embedded_html) @keyword.directive

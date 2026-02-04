@@ -1,0 +1,452 @@
+==================================
+$JOB as system variable
+==================================
+ $JOB
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name))))))
+
+==================================
+$J without parentheses is $JOB
+==================================
+ $J
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name))))))
+
+==================================
+$JOB case insensitive
+==================================
+ $job
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name))))))
+
+==================================
+$JOB in expression
+==================================
+ $JOB=12345
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name))))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))
+
+==================================
+$JOB concatenation
+==================================
+ "Process: "_$JOB
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (string_literal))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (built_in_function_justify_or_job
+              (built_in_function_name))))))))
+
+==================================
+$JUSTIFY shorthand
+==================================
+ $J("Hello",10)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (string_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY no width
+:error
+==================================
+ $J("Hello")
+---
+
+==================================
+$JUSTIFY right align string
+==================================
+ $JUSTIFY("Hello",10)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (string_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY right align number
+==================================
+ $JUSTIFY(123,8)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY with decimal places
+==================================
+ $JUSTIFY(price,10,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY empty args
+:error
+==================================
+ $JUSTIFY()
+---
+
+==================================
+$JUSTIFY shorthand empty args
+:error
+==================================
+ $J()
+---
+
+==================================
+$JUSTIFY no args
+:error
+==================================
+ $JUSTIFY
+---
+
+==================================
+$JUSTIFY format currency
+==================================
+ $JUSTIFY(99.5,10,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY with zero decimal places
+==================================
+ $JUSTIFY(3.14159,6,0)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$J shorthand with parentheses is $JUSTIFY
+==================================
+ $J(x,5)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$J shorthand with decimal
+==================================
+ $J(amount,12,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY case insensitive
+==================================
+ $justify(x,10)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY with variable width
+==================================
+ $JUSTIFY(text,width)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$JUSTIFY with expression as value
+==================================
+ $JUSTIFY(a+b,10)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY with nested function
+==================================
+ $JUSTIFY($GET(x),8,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (system_defined_function
+                (dollar_get
+                  (built_in_function_name)
+                  (function_argument
+                    (lvn
+                      (objectscript_identifier)))))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY in concatenation
+==================================
+ "Total: "_$JUSTIFY(total,10,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (string_literal))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (built_in_function_justify_or_job
+              (built_in_function_name)
+              (function_argument
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))
+              (function_argument
+                (expr_atom
+                  (numeric_literal)))
+              (function_argument
+                (expr_atom
+                  (numeric_literal))))))))))
+
+==================================
+$JUSTIFY with global variable value
+==================================
+ $JUSTIFY(^price(id),12,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$JUSTIFY for column alignment
+==================================
+ $JUSTIFY(col1,15)_$JUSTIFY(col2,15)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_function_justify_or_job
+          (built_in_function_name)
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (built_in_function_justify_or_job
+              (built_in_function_name)
+              (function_argument
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))
+              (function_argument
+                (expr_atom
+                  (numeric_literal))))))))))
