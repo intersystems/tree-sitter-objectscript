@@ -22,25 +22,26 @@ For Loop var = expr
           (for_parameter_arg
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 operator: (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal)))))))
+                (expr_atom
+                  (string_literal))))))
         (statement
           (command_write
             command_name: (keyword_write)
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (subscripts
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -61,9 +62,10 @@ For Loop var=start:increment:end
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -71,16 +73,20 @@ For Loop var=start:increment:end
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_for
         command_name: (keyword_for)
@@ -97,13 +103,13 @@ For Loop var=start:increment:end
                 (numeric_literal)))
             limit: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 operator: (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (expr_atom
+                  (numeric_literal))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -111,14 +117,19 @@ For Loop var=start:increment:end
               (expression
                 (expr_atom
                   (system_defined_function
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                    (built_in_list_functions_with_optional_args
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))))
+                      (function_argument
+                        (expression
+                          (expr_atom
+                            (glvn
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
 
 ============================
 For Loop var=start:increment
@@ -155,19 +166,21 @@ For Loop var=start:increment
               (expression
                 (expr_atom
                   (system_defined_function
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)
-                          (subscripts
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))
+                    (dollar_function
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)
+                              (subscripts
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                  (expr_atom
+                    (numeric_literal)))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -178,12 +191,13 @@ For Loop var=start:increment
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (subscripts
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -216,8 +230,9 @@ For Loop with Multiple forparameters
           (for_parameter_arg
             initial: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))
             increment: (expression
               (expr_atom
                 (numeric_literal)))
@@ -227,8 +242,9 @@ For Loop with Multiple forparameters
           (for_parameter_arg
             initial: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))
             increment: (expression
               (expr_atom
                 (numeric_literal)))
@@ -241,8 +257,9 @@ For Loop with Multiple forparameters
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -266,23 +283,26 @@ For Loop with New
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -296,16 +316,19 @@ For Loop with New
           (for_parameter_arg
             initial: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))
             increment: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))
             limit: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -319,8 +342,9 @@ For Loop with New
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))
         (statement
           (command_new
             command_name: (keyword_new)
@@ -379,13 +403,13 @@ For Loop Argumentless
             (post_conditional
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
+                  (expr_atom
+                    (string_literal)))))))
         (statement
           (command_do
             command_name: (keyword_do)
@@ -397,8 +421,9 @@ For Loop Argumentless
                   (method_arg
                     (expression
                       (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ===============================
 Old Style For Loop Argumentless
@@ -427,13 +452,13 @@ Old Style For Loop Argumentless
             (post_conditional
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))
+                  (expr_atom
+                    (string_literal)))))
             (statement
               (command_do
                 command_name: (keyword_do)
@@ -445,8 +470,9 @@ Old Style For Loop Argumentless
                       (method_arg
                         (expression
                           (expr_atom
-                            (lvn
-                              (objectscript_identifier))))))))))))))))
+                            (glvn
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
 
 ==========================================
 Old Style For Loop var=start:increment:end
@@ -461,16 +487,20 @@ Old Style For Loop var=start:increment:end
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_for
         command_name: (keyword_for)
@@ -487,13 +517,13 @@ Old Style For Loop var=start:increment:end
                 (numeric_literal)))
             limit: (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 operator: (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (expr_atom
+                  (numeric_literal))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -501,14 +531,19 @@ Old Style For Loop var=start:increment:end
               (expression
                 (expr_atom
                   (system_defined_function
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                    (built_in_list_functions_with_optional_args
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))))
+                      (function_argument
+                        (expression
+                          (expr_atom
+                            (glvn
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
 
 ======================================
 Old Style For Loop var=start:increment
@@ -524,9 +559,10 @@ Old Style For Loop var=start:increment
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -555,17 +591,19 @@ Old Style For Loop var=start:increment
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
+              (expr_atom
+                (glvn
                   (lvn
                     (objectscript_identifier)))))))))))
 
@@ -583,9 +621,10 @@ Old Style For Loop var=expr
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -599,21 +638,22 @@ Old Style For Loop var=expr
           (for_parameter_arg
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))
         (statement
           (command_write
             command_name: (keyword_write)
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                  (expr_atom
+                    (numeric_literal)))))))
         (statement
           (command_quit
             command_name: (keyword_quit)))))))

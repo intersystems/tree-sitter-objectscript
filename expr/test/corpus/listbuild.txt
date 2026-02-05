@@ -258,16 +258,19 @@ $LISTBUILD(name,age,city)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTBUILD with expressions
@@ -284,31 +287,31 @@ $LISTBUILD(x+1,y*2,z-3)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (expr_atom
+                (numeric_literal))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (expr_atom
+                (numeric_literal))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $LISTBUILD case insensitive lowercase
@@ -426,11 +429,13 @@ $LISTBUILD($PIECE(str,",",1),$LENGTH(str))
                 (built_in_functions_piece_or_principal
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (function_argument
-                    (expr_atom
-                      (string_literal)))
+                    (expression
+                      (expr_atom
+                        (string_literal))))
                   (function_argument
                     (expression
                       (expr_atom
@@ -438,12 +443,13 @@ $LISTBUILD($PIECE(str,",",1),$LENGTH(str))
           (function_argument
             (expr_atom
               (system_defined_function
-                (dollar_length
+                (dollar_function
                   (built_in_function_name)
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ==================================
 $LISTBUILD with concatenated string
@@ -460,23 +466,24 @@ $LISTBUILD(firstName_" "_lastName,age)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))
+              (expr_atom
+                (string_literal)))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
+              (expr_atom
+                (glvn
                   (lvn
                     (objectscript_identifier))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTBUILD with subscripted variable
@@ -493,28 +500,31 @@ $LISTBUILD(arr(1),arr(2),arr(3))
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ==================================
 $LISTBUILD with global variable
@@ -531,18 +541,20 @@ $LISTBUILD(^data(1),^data(2))
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ==================================
 $LISTBUILD with empty string element
@@ -588,17 +600,16 @@ $LISTBUILD("a","b")_$LISTBUILD("c","d")
               (string_literal))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (built_in_functions_with_optional_args
-              (built_in_function_name)
-              (function_argument
-                (expr_atom
-                  (string_literal)))
-              (function_argument
-                (expr_atom
-                  (string_literal))))))))))
+      (expr_atom
+        (system_defined_function
+          (built_in_functions_with_optional_args
+            (built_in_function_name)
+            (function_argument
+              (expr_atom
+                (string_literal)))
+            (function_argument
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $LISTBUILD with special characters in strings
@@ -655,13 +666,13 @@ $LISTBUILD(obj.Name,obj.Age)
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name))))
+                (property_name))))
           (function_argument
             (expr_atom
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)))))))))
+                (property_name)))))))))
 
 ==================================
 $LISTBUILD with class method call
@@ -682,14 +693,16 @@ $LISTBUILD(##class(Sample.Person).GetName(),##class(Sample.Person).GetAge())
                 (class_ref
                   (keyword_pound_pound_class)
                   (class_name))
-                (method_name))))
+                (method_name)
+                (method_args))))
           (function_argument
             (expr_atom
               (class_method_call
                 (class_ref
                   (keyword_pound_pound_class)
                   (class_name))
-                (method_name)))))))))
+                (method_name)
+                (method_args)))))))))
 
 ==================================
 $LISTBUILD with macro

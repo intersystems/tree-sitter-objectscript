@@ -599,7 +599,7 @@ module.exports = {
     property_keyword_server_only: ($) => seq(alias(/ServerOnly/i,$.identifier),'=', alias(/[0-1]/,$.rhs)),
     property_keyword_sql_column_number: ($) => seq(alias(/SqlColumnNumber/i,$.identifier),'=', alias($.numeric_literal,$.rhs)),
     property_keyword_sql_computed: ($) => seq(optional($.keyword_not),alias(/SqlComputed/i,$.identifier)),
-    property_keyword_sql_compute_on_change: ($) => seq(alias(/SqlComputeOnChange/i,$.identifier), '=', choice(seq('(',repeat_with_commas(alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs)),')'),alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs))),
+    property_keyword_sql_compute_on_change: ($) => seq(alias(/SqlComputeOnChange/i,$.identifier), '=', choice(seq('(',repeat_with_commas(alias(choice($.objectscript_identifier,$.oref_chain_expr,'%%UPDATE','%%INSERT'),$.rhs)),')'),alias(choice($.objectscript_identifier,$.oref_chain_expr,'%%UPDATE','%%INSERT'),$.rhs))),
     property_keyword_sql_field_name: ($) => seq(alias(/SqlFieldName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
     property_keyword_sql_list_delim: ($) => seq(alias(/SqlListDelimiter/i,$.identifier),'=',alias($.string_literal,$.rhs)),
     property_keyword_sql_list_type: ($) => 
@@ -700,7 +700,7 @@ module.exports = {
       seq(
         alias(/inverse/i, $.identifier),
         '=',
-        alias(choice($.objectscript_identifier,$.oref_set_target), $.rhs)
+        alias(choice($.objectscript_identifier,$.oref_chain_expr), $.rhs)
       ),
     relationship_keyword_on_delete: ($) => 
       seq(

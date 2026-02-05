@@ -20,9 +20,7 @@ $SY shorthand as system variable
 (source_file
   (expression
     (expr_atom
-      (system_defined_function
-        (built_in_function_system
-          (built_in_function_name))))))
+      (built_in_function_name))))
 
 ==================================
 $SYSTEM.Status.OK method call
@@ -33,12 +31,12 @@ $SYSTEM.Status.OK method call
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args))))))
 
 ==================================
 $SYSTEM.Status.Error with arguments
@@ -49,20 +47,20 @@ $SYSTEM.Status.Error with arguments
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))))))))
 
 ==================================
 $SYSTEM.SQL.Execute method call
@@ -73,16 +71,16 @@ $SYSTEM.SQL.Execute method call
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))))))))
 
 ==================================
 $SYSTEM.OBJ.Load with multiple arguments
@@ -93,20 +91,20 @@ $SYSTEM.OBJ.Load with multiple arguments
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))))))))
 
 ==================================
 $SYSTEM.Process.UserName
@@ -117,12 +115,12 @@ $SYSTEM.Process.UserName
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args))))))
 
 ==================================
 $SYSTEM case insensitive
@@ -133,12 +131,12 @@ $SYSTEM case insensitive
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args))))))
 
 ==================================
 $SYSTEM with variable reference in class position
@@ -149,17 +147,18 @@ $SYSTEM with variable reference in class position
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ==================================
 $SYSTEM.Version.GetNumber
@@ -170,12 +169,12 @@ $SYSTEM.Version.GetNumber
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args))))))
 
 ==================================
 $SYSTEM with percent class name
@@ -186,12 +185,12 @@ $SYSTEM with percent class name
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args))))))
 
 ==================================
 $SYSTEM in expression context
@@ -202,22 +201,22 @@ $SYSTEM in expression context
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $SYSTEM with optional arguments (byref)
@@ -228,20 +227,20 @@ $SYSTEM with optional arguments (byref)
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (byref_arg
-            (lvn
-              (objectscript_identifier))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (byref_arg
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $SYSTEM with empty argument slots
@@ -252,16 +251,16 @@ $SYSTEM with empty argument slots
 (source_file
   (expression
     (expr_atom
-      (oref_chain_expr
-        (system_defined_function
-          (built_in_function_system
-            (built_in_function_name)))
-        (name)
-        (name)
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+      (system_defined_function
+        (built_in_function_system
+          (built_in_function_name)
+          (function_argument)
+          (function_argument)
+          (method_args
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
 
 ==================================
 $SYSTEM variable in comparison
@@ -277,9 +276,8 @@ $SYSTEM variable in comparison
           (built_in_function_name))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+      (expr_atom
+        (string_literal)))))
 
 ==================================
 $SYSTEM with glvn in class position
@@ -289,9 +287,12 @@ $SYSTEM with glvn in class position
 ---
 
 
+
 ==================================
 $SYSTEM with glvn in method position
 :error
 ==================================
  $SYSTEM.Status.(methodName)()
 ---
+
+

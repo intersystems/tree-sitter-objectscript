@@ -20,13 +20,13 @@ Valid Quit Statements
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))
+              (expr_atom
+                (numeric_literal)))))))
     (statement
       (command_quit
         (keyword_quit)))
@@ -35,18 +35,19 @@ Valid Quit Statements
         (keyword_quit)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier)))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))))
     (statement
@@ -61,13 +62,13 @@ Valid Quit Statements
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (expression
           (expr_atom
             (string_literal)))))
@@ -79,20 +80,21 @@ Valid Quit Statements
             (oref_chain_expr
               (lvn
                 (objectscript_identifier))
-              (name))))))
+              (method_name)
+              (method_args))))))
     (statement
       (command_quit
         (keyword_quit)
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))
+              (expr_atom
+                (string_literal)))))
         (statement
           (command_do
             (keyword_do)
@@ -111,7 +113,8 @@ Valid Quit Statements
             (oref_chain_expr
               (lvn
                 (objectscript_identifier))
-              (name))))))))
+              (method_name)
+              (method_args))))))))
 
 ===
 Special Var $QUIT
@@ -140,7 +143,9 @@ Special Var $QUIT
               (write_argument
                 (expression
                   (expr_atom
-                    (system_defined_variable)))))))
+                    (system_defined_function
+                      (built_in_functions_quit_or_query
+                        (built_in_function_name)))))))))
         (dotted_statement
           (statement
             (command_quit

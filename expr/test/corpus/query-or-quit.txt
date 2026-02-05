@@ -12,10 +12,12 @@ $QUERY with indirection
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
@@ -35,10 +37,12 @@ $QUERY with direction and target
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
@@ -69,10 +73,12 @@ $QUERY shorthand with target and no direction
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
@@ -94,10 +100,12 @@ $QUERY shorthand
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
@@ -139,17 +147,18 @@ QUERY with global
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 =================
 QUIT

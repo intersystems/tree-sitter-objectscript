@@ -49,8 +49,9 @@ LOCK STATEMENTS
                       (numeric_literal)))
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_lock
         command_name: (keyword_lock)
@@ -111,6 +112,7 @@ LOCK STATEMENTS Timeout
  LOCK +^x(1):0,+^a(1):0,+^z(1)
  LOCK +(^x(1),^a(1),^z(1)):0
 ---
+
 (source_file
   (statements
     (statement
@@ -298,6 +300,7 @@ LOCK STATEMENTS 3
  LOCK ^student(^index)
  LOCK  /* release all locks */
 ---
+
 (source_file
   (statements
     (statement
@@ -353,8 +356,9 @@ LOCK STATEMENTS 3
                       (numeric_literal)))
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))
             argument: (locktype)))))
     (statement
       (command_lock
@@ -497,7 +501,8 @@ LOCK STATEMENTS 3
                 (subscripts
                   (expression
                     (expr_atom
-                      (gvn))))))))))
+                      (glvn
+                        (gvn)))))))))))
     (statement
       (command_lock
         command_name: (keyword_lock)))))

@@ -13,12 +13,14 @@ Valid ZZWRITE statements
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_zz
         (keyword_zz)
@@ -37,17 +39,18 @@ Valid ZZWRITE statements
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 Invalid ZZWRITE (Argumentless)
@@ -110,8 +113,9 @@ zzwrite_single_local_variable
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzwrite_multiple_local_variables
@@ -126,16 +130,19 @@ zzwrite_multiple_local_variables
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzwrite_mixed_literals_and_variables
@@ -150,8 +157,9 @@ zzwrite_mixed_literals_and_variables
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
             (string_literal)))
@@ -172,13 +180,13 @@ zzwrite_expression_with_operator
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+            (expr_atom
+              (numeric_literal))))))))
 
 ===
 zzwrite_function_call_expression
@@ -194,15 +202,19 @@ zzwrite_function_call_expression
         (expression
           (expr_atom
             (system_defined_function
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+              (built_in_list_functions_with_optional_args
+                (built_in_function_name)
+                (function_argument
+                  (expr_atom
+                    (string_literal)))
+                (function_argument
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (function_argument
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzwrite_global_variable_with_subscripts
@@ -217,14 +229,15 @@ zzwrite_global_variable_with_subscripts
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (subscripts
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+            (glvn
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzwrite_global_variable_no_subscripts
@@ -239,7 +252,8 @@ zzwrite_global_variable_no_subscripts
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn)))))))
+            (glvn
+              (gvn))))))))
 
 ===
 zzwrite_extended_global_reference_pipe_syntax
@@ -254,14 +268,15 @@ zzwrite_extended_global_reference_pipe_syntax
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (subscripts
+            (glvn
+              (gvn
                 (expression
                   (expr_atom
-                    (numeric_literal)))))))))))
+                    (string_literal)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzwrite_extended_global_reference_bracket_syntax
@@ -276,14 +291,15 @@ zzwrite_extended_global_reference_bracket_syntax
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (subscripts
+            (glvn
+              (gvn
                 (expression
                   (expr_atom
-                    (numeric_literal)))))))))))
+                    (string_literal)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzwrite_process_private_global
@@ -298,14 +314,15 @@ zzwrite_process_private_global
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (subscripts
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+            (glvn
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
 
 ===
 zzwrite_special_variable
@@ -320,7 +337,9 @@ zzwrite_special_variable
         (keyword_zz)
         (expression
           (expr_atom
-            (system_defined_variable)))))))
+            (system_defined_function
+              (built_in_function_justify_or_job
+                (built_in_function_name)))))))))
 
 ===
 zzwrite_dynamic_object_literal
@@ -354,9 +373,11 @@ zzwrite_dynamic_object_literal
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))))))))
+                      (dollar_function
+                        (built_in_function_name)
+                        (function_argument
+                          (expr_atom
+                            (numeric_literal)))))))))))))))
 
 ===
 zzwrite_dynamic_array_literal

@@ -11,6 +11,7 @@ READ STATEMENTS
   "Family name:",fname
   READ "Type 1 for numbers or 2 for names:",p,#!!!!
 ---
+
 (source_file
   (statements
     (statement
@@ -113,6 +114,7 @@ READ STATEMENT WITH INDIRECTION
 ===============================
  READ !,@MESS(dtype),val(x)
 ---
+
 (source_file
   (statements
     (statement
@@ -123,13 +125,15 @@ READ STATEMENT WITH INDIRECTION
           (indirection
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)
-                  (subscripts
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)
+                    (subscripts
+                      (expression
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier))))))))))))
         (read_argument
           variable: (glvn
             (lvn
@@ -137,5 +141,6 @@ READ STATEMENT WITH INDIRECTION
               (subscripts
                 (expression
                   (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))))))))))

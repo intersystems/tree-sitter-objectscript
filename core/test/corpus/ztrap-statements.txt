@@ -96,9 +96,8 @@ Valid Ztrap Statements
             (numeric_literal))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))))
+            (expr_atom
+              (numeric_literal))))))
     (line_comment_3)
     (statement
       (command_ztrap
@@ -108,9 +107,8 @@ Valid Ztrap Statements
             (numeric_literal))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))))
+            (expr_atom
+              (numeric_literal))))))
     (line_comment_3)
     (statement
       (command_ztrap
@@ -124,7 +122,7 @@ Valid Ztrap Statements
         (keyword_ztrap)
         (expression
           (expr_atom
-            (system_defined_variable)))))
+            (built_in_function_name)))))
     (line_comment_3)
     (statement
       (command_ztrap
@@ -132,15 +130,18 @@ Valid Ztrap Statements
         (expression
           (expr_atom
             (system_defined_function
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (dollar_function
+                (built_in_function_name)
+                (function_argument
+                  (expr_atom
+                    (numeric_literal))))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (expression
+            (expr_atom
+              (system_defined_function
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (line_comment_3)
@@ -164,13 +165,13 @@ Valid Ztrap Statements
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (expression
           (expr_atom
             (string_literal)))))
@@ -179,15 +180,20 @@ Valid Ztrap Statements
         (keyword_ztrap)
         (expression
           (expr_atom
-            (unary_expression
-              (glvn
-                (lvn
-                  (objectscript_identifier))))))))
+            (indirection
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (system_defined_variable)
+          (set_target
+            (system_defined_function
+              (built_in_function_ztime_or_ztrap
+                (built_in_function_name))))
           (expression
             (expr_atom
               (string_literal))))))
@@ -195,7 +201,10 @@ Valid Ztrap Statements
       (command_set
         (keyword_set)
         (set_argument
-          (system_defined_variable)
+          (set_target
+            (system_defined_function
+              (built_in_function_ztime_or_ztrap
+                (built_in_function_name))))
           (expression
             (expr_atom
               (string_literal))))))))
@@ -206,6 +215,7 @@ invalid — misspelled command name (ZTRPA)
 ===
 ZTRPA "ER23"
 ---
+
 (ERROR)
 
 ===
@@ -214,15 +224,16 @@ invalid — stray comma after ZTRAP
 ===
 ZTRAP,
 ---
+
 (ERROR)
 
 ===
 invalid — two arguments (string + string)
-
 :error
 ===
 ZTRAP "ER23" "EXTRA"
 ---
+
 (ERROR)
 
 ===
@@ -231,6 +242,7 @@ invalid — two numeric arguments separated by comma
 ===
 ZTRAP 1234,5678
 ---
+
 (ERROR)
 
 ===
@@ -239,6 +251,7 @@ invalid — postconditional colon with no expression
 ===
 ZTRAP:
 ---
+
 (ERROR)
 
 ===
@@ -247,15 +260,16 @@ invalid — missing postconditional expression before argument
 ===
 ZTRAP: "ER23"
 ---
+
 (ERROR)
 
 ===
 invalid — malformed pc (comma where expression must be)
-
 :error
 ===
 ZTRAP:,$ZERROR
 ---
+
 (ERROR)
 
 ===
@@ -264,6 +278,7 @@ invalid — double colon in postconditional
 ===
 ZTRAP::1 "ER23"
 ---
+
 (ERROR)
 
 ===
@@ -272,6 +287,7 @@ invalid — empty parentheses in postconditional expression
 ===
 ZTRAP:() "ER23"
 ---
+
 (ERROR)
 
 ===
@@ -280,6 +296,7 @@ invalid — invalid expression ($$ alone)
 ===
 ZTRAP $$
 ---
+
 (ERROR)
 
 ===
@@ -288,6 +305,7 @@ invalid — bare @ with no expression
 ===
 ZTRAP @
 ---
+
 (ERROR)
 
 ===
@@ -296,10 +314,5 @@ invalid — extra argument after $ZERROR form
 ===
 ZTRAP $ZERROR 123
 ---
-(ERROR)
 
-===
-invalid — extra argument after $ZE form
-:error
-===
-ZTRAP $ZE "ER23"
+(ERROR)

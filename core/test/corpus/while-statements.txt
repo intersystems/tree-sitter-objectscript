@@ -42,13 +42,13 @@ While Statements
         command_name: (keyword_while)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -62,70 +62,78 @@ While Statements
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                  (expr_atom
+                    (numeric_literal)))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (built_in_functions_with_optional_args
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -137,29 +145,34 @@ While Statements
             (numeric_literal))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (expression
+            (expr_atom
+              (system_defined_function
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))
         (statement
@@ -168,8 +181,9 @@ While Statements
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (expression
                 (expr_atom
@@ -177,8 +191,9 @@ While Statements
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))
@@ -186,30 +201,31 @@ While Statements
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                  (expr_atom
+                    (numeric_literal)))))))))
     (statement
       (command_while
         command_name: (keyword_while)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -223,51 +239,55 @@ While Statements
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))
         (statement
           (command_quit
             command_name: (keyword_quit)
             (post_conditional
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                  (expr_atom
+                    (numeric_literal)))))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                  (expr_atom
+                    (numeric_literal)))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -276,13 +296,13 @@ While Statements
         command_name: (keyword_while)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -298,13 +318,13 @@ While Statements
             command_name: (keyword_while)
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 operator: (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))
+                (expr_atom
+                  (numeric_literal))))
             (statement
               (command_write
                 command_name: (keyword_write)
@@ -322,8 +342,9 @@ While Statements
                 (write_argument
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))
                 (write_argument
                   (write_device_control
                     (write_device_fflf)))))
@@ -333,29 +354,30 @@ While Statements
                 (post_conditional
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))
                     (expr_tail
                       operator: (binary_operator)
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))
+                      (expr_atom
+                        (numeric_literal)))))))
             (statement
               (command_set
                 command_name: (keyword_set)
                 (set_argument
-                  lhs: (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  lhs: (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   rhs: (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))
                     (expr_tail
                       operator: (binary_operator)
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))))
+                      (expr_atom
+                        (numeric_literal)))))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -366,8 +388,9 @@ While Statements
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))
@@ -375,18 +398,19 @@ While Statements
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                  (expr_atom
+                    (numeric_literal)))))))))
     (statement
       (command_write
         command_name: (keyword_write)

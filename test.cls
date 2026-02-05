@@ -1,5 +1,7 @@
 Class User.testing {
     Method testing() {
-        w $ZTIMEH(time,,1)
-    }
+        SET jobj.""="This is the ""null"" property value"
+        set ..x = 3
+  }
+    
 }

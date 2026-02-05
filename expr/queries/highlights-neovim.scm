@@ -7,7 +7,6 @@ command_name: (_) @keyword
 (built_in_function_name) @function.builtin
 (function_argument) @parameter
 (string_literal) @string
-(numeric_literal) @number
 
 ; I think I am going to separate commands vs expressions for keywords
 

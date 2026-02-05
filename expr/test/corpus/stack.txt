@@ -181,8 +181,9 @@ $STACK with glvn as second argument
               (numeric_literal)))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $STACK with global variable as second argument
@@ -201,7 +202,8 @@ $STACK with global variable as second argument
               (numeric_literal)))
           (function_argument
             (expr_atom
-              (gvn))))))))
+              (glvn
+                (gvn)))))))))
 
 ==================================
 $ST shorthand with arguments
@@ -252,9 +254,8 @@ $STACK in expression
           (built_in_function_name))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $STACK with subscripted glvn
@@ -273,12 +274,13 @@ $STACK with subscripted glvn
               (numeric_literal)))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ==================================
 Nested $STACK calls
@@ -299,9 +301,8 @@ Nested $STACK calls
                   (built_in_function_name))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (expr_atom
+                (numeric_literal))))
           (function_argument
             (expr_atom
               (string_literal))))))))

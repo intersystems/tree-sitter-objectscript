@@ -30,7 +30,7 @@ Valid Znspace commands
         (write_argument
           (expression
             (expr_atom
-              (system_defined_variable
+              (built_in_function_name
                 (namespace_token)))))))
     (statement
       (command_zn
@@ -43,20 +43,23 @@ Valid Znspace commands
         (keyword_zn)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_zn
         (keyword_zn)
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (system_defined_function
-                    (expression
-                      (expr_atom
-                        (gvn)))))))))
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (built_in_function_device_or_data
+                        (built_in_function_name)
+                        (function_argument
+                          (gvn))))))))))
         (expression
           (expr_atom
             (string_literal)))))
@@ -65,7 +68,8 @@ Valid Znspace commands
         (keyword_zn)
         (expression
           (expr_atom
-            (gvn)))))))
+            (glvn
+              (gvn))))))))
 
 ===
 Invalid ZNSPACE command (Argumentless)
@@ -92,24 +96,27 @@ Valid $ZNSPACE
         (write_argument
           (expression
             (expr_atom
-              (system_defined_variable))))))
+              (built_in_function_name))))))
     (statement
       (command_write
         (keyword_write)
         (write_argument
           (expression
             (expr_atom
-              (dollarsf
-                (dollar_system_keyword)
-                (identifier_segment_immediate)
-                (identifier_segment_immediate)
-                (method_args)))))))
+              (system_defined_function
+                (built_in_function_system
+                  (built_in_function_name)
+                  (function_argument)
+                  (function_argument)
+                  (method_args))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (system_defined_variable)
+          (set_target
+            (built_in_function_name))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))

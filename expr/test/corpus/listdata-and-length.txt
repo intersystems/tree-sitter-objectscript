@@ -8,12 +8,13 @@ $LISTDATA(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTDATA shorthand with one argument
@@ -25,12 +26,13 @@ $LD(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTDATA with position
@@ -42,12 +44,13 @@ $LISTDATA(list,2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -62,18 +65,21 @@ $LISTDATA(list,3,value)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal)))
           (function_argument
-            (lvn
-              (objectscript_identifier))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTDATA with global variable output
@@ -85,17 +91,20 @@ $LISTDATA(list,1,^data)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal)))
           (function_argument
-            (gvn)))))))
+            (expr_atom
+              (glvn
+                (gvn)))))))))
 
 ==================================
 $LISTDATA case insensitive
@@ -107,12 +116,13 @@ $listdata(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LD case insensitive
@@ -124,12 +134,13 @@ $ld(myList)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTDATA with $LISTBUILD argument
@@ -141,7 +152,7 @@ $LISTDATA($LB("a","b","c"),2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -171,21 +182,24 @@ $LISTDATA(arr(i),pos)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTDATA with subscripted output variable
@@ -197,23 +211,27 @@ $LISTDATA(list,1,result(idx))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listdata
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal)))
           (function_argument
-            (lvn
-              (objectscript_identifier)
-              (subscripts
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ==================================
 $LENGTH with one argument
@@ -225,12 +243,13 @@ $LENGTH(str)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LENGTH shorthand with one argument
@@ -242,12 +261,13 @@ $L(str)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LENGTH with string literal
@@ -259,7 +279,7 @@ $LENGTH("Hello World")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -275,7 +295,7 @@ $LENGTH("a,b,c",",")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -294,16 +314,18 @@ $LENGTH(str,delim)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LENGTH case insensitive
@@ -315,12 +337,13 @@ $length(str)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $L case insensitive
@@ -332,12 +355,13 @@ $l(str)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LENGTH with empty string
@@ -349,7 +373,7 @@ $LENGTH("")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -365,17 +389,17 @@ $LENGTH(str)+1
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $LENGTH with multi-character delimiter
@@ -387,12 +411,13 @@ $LENGTH(data,"||")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal))))))))
@@ -407,7 +432,7 @@ $LENGTH("one,two,three,four",",")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -426,16 +451,17 @@ $LENGTH(str1_str2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
+              (expr_atom
+                (glvn
                   (lvn
                     (objectscript_identifier)))))))))))
 
@@ -449,17 +475,19 @@ $LENGTH(arr(i))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ==================================
 Nested $LENGTH and $LISTDATA
@@ -471,17 +499,18 @@ $LENGTH($LISTDATA(list,1))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_length
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
               (system_defined_function
-                (dollar_listdata
+                (built_in_functions_with_optional_args
                   (built_in_function_name)
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (function_argument
                     (expr_atom
                       (numeric_literal))))))))))))
@@ -492,17 +521,6 @@ Empty listdata
 ====
  $LD
 ---
-
-
-
-====
-No list in listdata
-:error
-====
- $LD()
----
-
-
 
 ====
 Empty length

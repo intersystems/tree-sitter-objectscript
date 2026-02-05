@@ -205,8 +205,9 @@ $ZHEX(num)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $ZHEX with large decimal
@@ -308,13 +309,13 @@ $ZHEX(x+1)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with function result
@@ -356,9 +357,8 @@ $ZHEX(255)+1
               (numeric_literal))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $ZHEX nested conversion
@@ -397,12 +397,13 @@ $ZHEX(arr(1))
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ==================================
 $ZHEX with global variable
@@ -419,7 +420,8 @@ $ZHEX(^hexValue)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (gvn))))))))
+              (glvn
+                (gvn)))))))))
 
 ==================================
 $ZHOROLOG in expression
@@ -436,9 +438,8 @@ $ZHOROLOG_",000000"
           (built_in_function_name))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+      (expr_atom
+        (string_literal)))))
 
 ==================================
 $ZH special variable in concatenation
@@ -453,11 +454,10 @@ $ZH special variable in concatenation
       (string_literal))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (built_in_function_zhex_or_zhorolog
-              (built_in_function_name))))))))
+      (expr_atom
+        (system_defined_function
+          (built_in_function_zhex_or_zhorolog
+            (built_in_function_name)))))))
 
 ==================================
 $ZHEX mixed case function name
@@ -542,7 +542,7 @@ $ZHEX(obj.Value)
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)))))))))
+                (property_name)))))))))
 
 ==================================
 $ZHEX comparison
@@ -559,13 +559,13 @@ $ZHEX(value)="FF"
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+      (expr_atom
+        (string_literal)))))
 
 ==================================
 $ZHEX in $ZBOOLEAN

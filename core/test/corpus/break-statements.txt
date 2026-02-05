@@ -6,8 +6,10 @@ Break Invalid Statements
  BREAK 3
 ---
 
+
+
 =================================
-Break Statements Extend Arguments 
+Break Statements Extend Arguments
 =================================
  BREAK "S"
  BREAK "S+"
@@ -19,6 +21,7 @@ Break Statements Extend Arguments
  BREAK "C-"
  BREAK "OFF"
 ---
+
 (source_file
   (statements
     (statement
@@ -75,6 +78,7 @@ Break Flags
  BREAK 4
  BREAK 5
 ---
+
 (source_file
   (statements
     (statement
@@ -100,6 +104,7 @@ Break With PostConditionals
  BREAK:$DATA(debug)
  ZBREAK:$DATA(debug)
 ---
+
 (source_file
   (statements
     (statement
@@ -109,21 +114,20 @@ Break With PostConditionals
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
+                (built_in_function_device_or_data
+                  (built_in_function_name)
+                  (function_argument
                     (lvn
                       (objectscript_identifier))))))))))
-      (statement
+    (statement
       (command_zbreak
         command_name: (keyword_zbreak)
         (post_conditional
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
+                (built_in_function_device_or_data
+                  (built_in_function_name)
+                  (function_argument
                     (lvn
-                      (objectscript_identifier))))))))))
-                      
-                      ))
-
+                      (objectscript_identifier))))))))))))

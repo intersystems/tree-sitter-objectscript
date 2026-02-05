@@ -57,14 +57,16 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (expression
               (expr_atom
-                (expression
-                  (expr_atom
-                    (string_literal))))))
+                (parenthetical_expression
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -98,33 +100,37 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 (binary_operator)
-                (expression
-                  (expr_atom
+                (expr_atom
+                  (glvn
                     (lvn
                       (objectscript_identifier))))))
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 (binary_operator)
-                (expression
-                  (expr_atom
+                (expr_atom
+                  (glvn
                     (lvn
                       (objectscript_identifier)))))))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_open
         (keyword_open)
@@ -132,37 +138,42 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 (binary_operator)
-                (expression
-                  (expr_atom
+                (expr_atom
+                  (glvn
                     (lvn
                       (objectscript_identifier))))))
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expr_tail
                 (binary_operator)
-                (expression
-                  (expr_atom
+                (expr_atom
+                  (glvn
                     (lvn
                       (objectscript_identifier)))))))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_open
         (keyword_open)
@@ -170,12 +181,14 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_open
         (keyword_open)
@@ -183,16 +196,18 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (expression
               (expr_atom
                 (string_literal))))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_open
         (keyword_open)
@@ -200,15 +215,17 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (expression
             (expr_atom
               (numeric_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_open
         (keyword_open)
@@ -216,8 +233,9 @@ OPEN VALID STATEMENTS
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 =====================
 OPEN INVALID :
@@ -283,15 +301,18 @@ OPEN Valid Statements
             (expression
               (expr_atom
                 (system_defined_function
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))
+                  (dollar_function
+                    (built_in_function_name)
+                    (function_argument
+                      (expr_atom
+                        (numeric_literal))))))
               (expr_tail
                 (binary_operator)
-                (expression
-                  (expr_atom
-                    (system_defined_function
-                      (expression
+                (expr_atom
+                  (system_defined_function
+                    (dollar_function
+                      (built_in_function_name)
+                      (function_argument
                         (expr_atom
                           (numeric_literal))))))))))))
     (statement
@@ -355,8 +376,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -366,8 +388,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -377,8 +400,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -388,8 +412,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_write))))))
@@ -400,8 +425,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -411,8 +437,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -422,8 +449,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -433,8 +461,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -444,8 +473,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_fixed))))))
@@ -456,8 +486,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_fixed))))))
@@ -468,8 +499,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -479,8 +511,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_translate_equals)
@@ -497,8 +530,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_translate_equals)
@@ -515,8 +549,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_xytable_equals)
@@ -528,8 +563,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_xytable_equals)
@@ -541,8 +577,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -552,8 +589,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (expression
@@ -566,8 +604,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (expression
@@ -580,8 +619,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (expression
@@ -594,8 +634,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords)))))
     (statement
@@ -605,8 +646,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (expression
@@ -619,8 +661,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_params)
@@ -632,8 +675,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_params)
@@ -645,8 +689,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_record_size)
@@ -658,8 +703,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_write))))))
@@ -670,8 +716,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_create))))))
@@ -682,8 +729,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_create))))))
@@ -694,8 +742,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_terminator)
@@ -707,8 +756,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_terminator)
@@ -720,8 +770,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_delete))))))
@@ -732,8 +783,9 @@ OPEN Valid Keywords
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_delete_equals)
@@ -756,8 +808,9 @@ Open Valid Whitespace for Keyword Parameters
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters
             (open_keywords
               (open_keyword_delete_equals)
@@ -781,8 +834,9 @@ Open Valid Parameters
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters))))
     (statement
       (command_open
@@ -791,8 +845,9 @@ Open Valid Parameters
           (device
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))))
           (open_parameters))))))
 
 ==============================

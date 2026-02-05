@@ -13,12 +13,14 @@ Valid ZZDUMP statements
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_zz
         (keyword_zz)
@@ -37,17 +39,18 @@ Valid ZZDUMP statements
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 Invalid ZZDUMP (Argumentless)
@@ -80,8 +83,9 @@ zzdump_single_local_variable
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzdump_multiple_local_variables
@@ -96,16 +100,19 @@ zzdump_multiple_local_variables
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzdump_numeric_literal
@@ -150,8 +157,9 @@ zzdump_mixed_expressions
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
             (string_literal)))
@@ -173,18 +181,19 @@ zzdump_with_postconditional_simple
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (numeric_literal))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (numeric_literal))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
                       (numeric_literal))))))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzdump_with_postconditional_complex
@@ -200,36 +209,39 @@ zzdump_with_postconditional_complex
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
-                      (numeric_literal))))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+                      (numeric_literal)))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))
-                        (expr_tail
-                          (binary_operator)
-                          (expression
+                      (parenthetical_expression
+                        (expression
+                          (expr_atom
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expr_tail
+                            (binary_operator)
                             (expr_atom
                               (numeric_literal))))))))))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzdump_global_variable
@@ -244,14 +256,15 @@ zzdump_global_variable
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (subscripts
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+            (glvn
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzdump_global_variable_no_subscripts
@@ -266,7 +279,8 @@ zzdump_global_variable_no_subscripts
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn)))))))
+            (glvn
+              (gvn))))))))
 
 ===
 zzdump_extended_ref_global
@@ -281,14 +295,15 @@ zzdump_extended_ref_global
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (subscripts
+            (glvn
+              (gvn
                 (expression
                   (expr_atom
-                    (numeric_literal)))))))))))
+                    (string_literal)))
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
 
 ===
 zzdump_special_variable
@@ -303,7 +318,9 @@ zzdump_special_variable
         (keyword_zz)
         (expression
           (expr_atom
-            (system_defined_variable)))))))
+            (system_defined_function
+              (built_in_function_justify_or_job
+                (built_in_function_name)))))))))
 
 ===
 zzdump_process_private_global
@@ -318,14 +335,15 @@ zzdump_process_private_global
         (keyword_zz)
         (expression
           (expr_atom
-            (gvn
-              (subscripts
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+            (glvn
+              (gvn
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
 
 ===
 zzdump_multiple_lines_in_routine
@@ -350,8 +368,9 @@ zzdump_multiple_lines_in_routine
             (string_literal)))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ===
 zzdump_mixed_with_other_commands
@@ -367,16 +386,18 @@ zzdump_mixed_with_other_commands
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (string_literal))))
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (string_literal))))))
@@ -385,12 +406,14 @@ zzdump_mixed_with_other_commands
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_write
         (keyword_write)
@@ -412,12 +435,14 @@ zzdump_spacing_variations
         (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
             (string_literal)))))))
@@ -436,13 +461,14 @@ zzdump_postconditional_without_space
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
                       (numeric_literal))))))))
         (expression
@@ -463,27 +489,31 @@ zzdump_postconditional_with_commas
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
                       (numeric_literal))))))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ====
 ZZDUMP objects
@@ -528,6 +558,8 @@ ZZDUMP objects
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))))))))
+                      (dollar_function
+                        (built_in_function_name)
+                        (function_argument
+                          (expr_atom
+                            (numeric_literal)))))))))))))))

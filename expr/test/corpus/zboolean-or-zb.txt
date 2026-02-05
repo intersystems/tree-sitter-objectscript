@@ -133,16 +133,19 @@ $ZBOOLEAN(x,y,op)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $ZBOOLEAN AND operation (op=1)
@@ -274,26 +277,27 @@ $ZBOOLEAN(x+1,y*2,opCode)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (expr_atom
+                (numeric_literal))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+              (expr_atom
+                (numeric_literal))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $ZBOOLEAN with function calls as arguments
@@ -376,33 +380,36 @@ $ZBOOLEAN(a,b,1)+$ZBOOLEAN(c,d,7)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (built_in_function_zboolean_or_zb
-              (built_in_function_name)
-              (function_argument
-                (expr_atom
+      (expr_atom
+        (system_defined_function
+          (built_in_function_zboolean_or_zb
+            (built_in_function_name)
+            (function_argument
+              (expr_atom
+                (glvn
                   (lvn
-                    (objectscript_identifier))))
-              (function_argument
-                (expr_atom
+                    (objectscript_identifier)))))
+            (function_argument
+              (expr_atom
+                (glvn
                   (lvn
-                    (objectscript_identifier))))
-              (function_argument
-                (expr_atom
-                  (numeric_literal))))))))))
+                    (objectscript_identifier)))))
+            (function_argument
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZBOOLEAN nested
@@ -424,19 +431,22 @@ $ZBOOLEAN($ZBOOLEAN(x,y,1),z,7)
                   (built_in_function_name)
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (function_argument
                     (expr_atom
                       (numeric_literal)))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -456,28 +466,31 @@ $ZBOOLEAN(arr(1),arr(2),arr(3))
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ==================================
 $ZBOOLEAN with global variables
@@ -494,18 +507,20 @@ $ZBOOLEAN(^data(1),^data(2),1)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -525,12 +540,14 @@ $ZBOOLEAN(x,y,0)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -550,12 +567,14 @@ $ZBOOLEAN(x,y,15)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -598,9 +617,8 @@ $ZB_" bytes"
           (built_in_function_name))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+      (expr_atom
+        (string_literal)))))
 
 ==================================
 $ZBOOLEAN result assignment
@@ -617,12 +635,14 @@ $ZBOOLEAN(mask,value,1)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -645,13 +665,13 @@ $ZBOOLEAN(obj.Flags,obj.Mask,1)
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name))))
+                (property_name))))
           (function_argument
             (expr_atom
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name))))
+                (property_name))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -695,12 +715,13 @@ $ZBOOLEAN($LENGTH(str),255,1)
           (function_argument
             (expr_atom
               (system_defined_function
-                (dollar_length
+                (dollar_function
                   (built_in_function_name)
                   (function_argument
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))))))
           (function_argument
             (expr_atom
               (numeric_literal)))
@@ -723,20 +744,21 @@ $ZBOOLEAN(flags,mask,1)>0
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $ZBOOLEAN NOR operation (op=8)
@@ -753,12 +775,14 @@ $ZBOOLEAN(a,b,8)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -778,12 +802,14 @@ $ZBOOLEAN(a,b,14)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))

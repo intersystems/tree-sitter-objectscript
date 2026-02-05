@@ -18,9 +18,10 @@ If Statements 0
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -28,9 +29,10 @@ If Statements 0
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))))
@@ -44,9 +46,10 @@ If Statements 0
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -63,9 +66,10 @@ If Statements 0
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))))
@@ -91,65 +95,71 @@ If Statements 1
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
+            (expr_atom
+              (string_literal))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (system_defined_function
-                    (expression
-                      (expr_atom
-                        (macro
-                          (macro_constant))))
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))
+                    (dollar_function
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (glvn
+                            (macro
+                              (macro_constant)))))
+                      (function_argument
+                        (expr_atom
+                          (string_literal))))))))))
         elseif_block: (elseif_block
           command_name: (keyword_elseif)
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+              (expr_atom
+                (string_literal))))
           (line_comment_1)
           (statement
             (command_if
               command_name: (keyword_if)
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal)))))
+                  (expr_atom
+                    (string_literal))))
               (statement
                 (command_set
                   command_name: (keyword_set)
                   (set_argument
-                    lhs: (glvn
-                      (gvn
-                        (subscripts
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))
+                    lhs: (set_target
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (expression
+                              (expr_atom
+                                (glvn
+                                  (lvn
+                                    (objectscript_identifier)))))))))
                     rhs: (expression
                       (expr_atom
                         (string_literal))))))
@@ -191,20 +201,21 @@ If Statements 2
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))))
@@ -216,9 +227,10 @@ If Statements 2
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))))
@@ -229,9 +241,10 @@ If Statements 2
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))))
@@ -243,9 +256,10 @@ If Statements 2
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))))
@@ -254,21 +268,22 @@ If Statements 2
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (line_comment_3)
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -278,9 +293,10 @@ If Statements 2
             (command_set
               command_name: (keyword_set)
               (set_argument
-                lhs: (glvn
-                  (lvn
-                    (objectscript_identifier)))
+                lhs: (set_target
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 rhs: (expression
                   (expr_atom
                     (numeric_literal))))))
@@ -311,34 +327,38 @@ If Statements 3
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))
-              (expr_tail
-                operator: (binary_operator)
-                (expression
+            (parenthetical_expression
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (built_in_list_functions_with_optional_args
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))))
+                      (function_argument
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))
+                (expr_tail
+                  operator: (binary_operator)
                   (expr_atom
                     (string_literal))))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (parenthetical_expression
                 (expression
                   (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expr_tail
                     operator: (binary_operator)
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))
+                    (expr_atom
+                      (numeric_literal))))))))
         (statement
           (command_continue
             command_name: (keyword_continue)))))
@@ -351,30 +371,32 @@ If Statements 3
               (property_name)))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
+            (expr_atom
+              (string_literal))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (macro
-                    (macro_function
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (macro
-                                (macro_constant)))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (string_literal))))))))))))
+                  (glvn
+                    (macro
+                      (macro_function
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (glvn
+                                  (macro
+                                    (macro_constant))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal)))))))))))))
         (statement
           (command_quit
             command_name: (keyword_quit)))))
@@ -383,29 +405,30 @@ If Statements 3
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
+            (expr_atom
+              (string_literal))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
+            (expr_atom
+              (string_literal))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -417,13 +440,13 @@ If Statements 3
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))))))
+            (expr_atom
+              (string_literal))))))))
 
 ===========================
 Else statements old version
@@ -547,9 +570,10 @@ If Block to Old Else Valid
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -618,14 +642,17 @@ If Expression Indirection
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
-            right: (unary_expression
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+            (pattern_operator
+              right: (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))))))
         (statement
           (command_write
             command_name: (keyword_write)
@@ -659,8 +686,9 @@ If with Expression, Block on newline
         command_name: (keyword_if)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))
 
 ====
 Valid If
@@ -681,13 +709,11 @@ Valid If
           (expr_atom
             (relative_dot_parameter
               (oref_parameter
-                (parameter_name
-                  (parameter_name)))))
+                (parameter_name))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal)))))
+            (expr_atom
+              (numeric_literal))))
         (line_comment_1)
         (else_block
           (keyword_else)

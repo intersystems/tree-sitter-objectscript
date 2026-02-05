@@ -27,9 +27,11 @@ WRITE WITH INPUTS
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (numeric_literal))))))))))
     (statement
       (command_write
         command_name: (keyword_write)
@@ -46,9 +48,10 @@ WRITE WITH INPUTS
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -56,9 +59,10 @@ WRITE WITH INPUTS
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -72,8 +76,9 @@ WRITE WITH INPUTS
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))
@@ -84,8 +89,9 @@ WRITE WITH INPUTS
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_read
         command_name: (keyword_read)
@@ -115,8 +121,9 @@ WRITE WITH INPUTS
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
@@ -124,8 +131,9 @@ WRITE WITH INPUTS
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_read
         command_name: (keyword_read)
@@ -147,8 +155,8 @@ WRITE WITH INPUTS
             (string_literal))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))
         (statement
@@ -173,16 +181,18 @@ WRITE OBJECT PROPERTIES
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
                   (class_name))
-                (method_name)))))))
+                (method_name)
+                (method_args)))))))
     (statement
       (command_write
         command_name: (keyword_write)
@@ -192,21 +202,23 @@ WRITE OBJECT PROPERTIES
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)))))))
+                (property_name)))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
                   (class_name))
-                (method_name)))))))
+                (method_name)
+                (method_args)))))))
     (statement
       (command_write
         command_name: (keyword_write)
@@ -216,11 +228,12 @@ WRITE OBJECT PROPERTIES
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+                (method_name)
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (string_literal)))))))))))))
 
 ===========================
 WRITE: CASCADING DOT SYNTAX
@@ -243,9 +256,9 @@ WRITE: CASCADING DOT SYNTAX
                   (class_name)
                   (class_instance_name
                     (objectscript_identifier)))
-                (name)
-                (name)
-                (name)))))))
+                (property_name)
+                (property_name)
+                (property_name)))))))
     (statement
       (command_write
         command_name: (keyword_write)
@@ -259,11 +272,13 @@ WRITE: CASCADING DOT SYNTAX
                   (class_instance_name
                     (objectscript_identifier)))
                 (method_name)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ====================
 WRITE WITH $X AND $Y
@@ -289,9 +304,8 @@ WRITE WITH $X AND $Y
               (string_literal))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (system_defined_variable))))))
+              (expr_atom
+                (built_in_function_name)))))
         (write_argument
           (expression
             (expr_atom
@@ -302,32 +316,30 @@ WRITE WITH $X AND $Y
         (write_argument
           (expression
             (expr_atom
-              (system_defined_variable))))
+              (built_in_function_name))))
         (write_argument
           (expression
             (expr_atom
               (string_literal))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (system_defined_variable))))))))
+              (expr_atom
+                (built_in_function_name)))))))
     (statement
       (command_write
         command_name: (keyword_write)
         (write_argument
           (expression
             (expr_atom
-              (system_defined_variable))))
+              (built_in_function_name))))
         (write_argument
           (expression
             (expr_atom
               (string_literal))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (system_defined_variable))))))))
+              (expr_atom
+                (built_in_function_name)))))))
     (statement
       (command_write
         command_name: (keyword_write)
@@ -387,13 +399,15 @@ MULTIPLE DEVICE CONTROL CHARS
             (write_device_tab
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 =============================
 MULTIPLE DEVICE CONTROL CHARS
@@ -409,8 +423,9 @@ MULTIPLE DEVICE CONTROL CHARS
         (write_argument
           (expression
             (expr_atom
-              (macro
-                (macro_constant)))))))))
+              (glvn
+                (macro
+                  (macro_constant))))))))))
 
 ===========================
 WRITE WITH ESCAPE SEQUENCES
@@ -467,15 +482,18 @@ Write with Indirections
         (write_argument
           (expression
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -485,19 +503,23 @@ Write with Indirections
         (write_argument
           (expression
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -507,23 +529,28 @@ Write with Indirections
         (write_argument
           (expression
             (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+              (indirection
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (subscripts
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
                   (expression
                     (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===========================
 ZWRITE WITH INDIRECTION
@@ -538,10 +565,12 @@ ZWRITE WITH INDIRECTION
         (keyword_zwrite)
         (expression
           (expr_atom
-            (unary_expression
-              (glvn
-                (lvn
-                  (objectscript_identifier))))))))))
+            (indirection
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ======================
 Valid Write Statements
@@ -579,12 +608,13 @@ Valid Write Statements
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
+              (expr_atom
+                (glvn
                   (lvn
                     (objectscript_identifier)))))))))
     (statement
@@ -596,9 +626,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))))
+              (expr_atom
+                (string_literal)))))))
     (statement
       (command_write
         (keyword_write)
@@ -608,9 +637,8 @@ Valid Write Statements
               (numeric_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))
+              (expr_atom
+                (numeric_literal)))))))
     (statement
       (command_write
         (keyword_write)
@@ -620,9 +648,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))
+              (expr_atom
+                (string_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -636,9 +663,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))
+              (expr_atom
+                (string_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -652,9 +678,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -668,9 +693,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -684,9 +708,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -700,9 +723,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -716,9 +738,8 @@ Valid Write Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -729,10 +750,12 @@ Valid Write Statements
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
-              (pattern_expression))))))
+              (pattern_operator
+                (pattern_expression)))))))
     (statement
       (command_write
         (keyword_write)
@@ -740,9 +763,11 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -757,12 +782,14 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (built_in_function_justify_or_job
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (numeric_literal))))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))
@@ -777,12 +804,14 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -790,19 +819,22 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (string_literal))))))
@@ -813,23 +845,27 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (string_literal))))))
@@ -839,8 +875,9 @@ Valid Write Statements
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -851,16 +888,19 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -871,19 +911,22 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (numeric_literal))))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -893,8 +936,9 @@ Valid Write Statements
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -905,32 +949,41 @@ Valid Write Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))))))
+                (built_in_list_functions_with_optional_args
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))
         (write_argument
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (built_in_list_functions_with_optional_args
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))
         (write_argument
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                (built_in_list_functions_with_optional_args
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
+                  (function_argument
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ===
 Write objects
@@ -978,6 +1031,8 @@ Write objects
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))))))))
+                        (dollar_function
+                          (built_in_function_name)
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal))))))))))))))))

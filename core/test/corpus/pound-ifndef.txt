@@ -23,15 +23,17 @@ Valid Ifndef Statements
       (pound_ifndef
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -42,13 +44,15 @@ Valid Ifndef Statements
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
-                      (macro
-                        (macro_constant)))))))))
+                      (glvn
+                        (macro
+                          (macro_constant))))))))))
         (keyword_pound_endif)))
     (statement
       (command_write
@@ -60,8 +64,9 @@ Valid Ifndef Statements
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
@@ -69,4 +74,3 @@ Valid Ifndef Statements
         (write_argument
           (write_device_control
             (write_device_fflf)))))))
-

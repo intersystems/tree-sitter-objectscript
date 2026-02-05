@@ -145,13 +145,14 @@ SQL Cursor
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -164,13 +165,14 @@ SQL Cursor
         (keyword_while)
         (expression
           (expr_atom
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
+            (parenthetical_expression
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
+                (expr_tail
+                  (binary_operator)
                   (expr_atom
                     (numeric_literal)))))))
         (statement
@@ -179,8 +181,9 @@ SQL Cursor
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (expression
                 (expr_atom
@@ -188,8 +191,9 @@ SQL Cursor
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))
@@ -315,13 +319,14 @@ Valid ## syntax
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
+              (parenthetical_expression
+                (expression
+                  (expr_atom
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expr_tail
+                    (binary_operator)
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -334,13 +339,14 @@ Valid ## syntax
         (keyword_while)
         (expression
           (expr_atom
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
+            (parenthetical_expression
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
+                (expr_tail
+                  (binary_operator)
                   (expr_atom
                     (numeric_literal)))))))
         (statement
@@ -349,8 +355,9 @@ Valid ## syntax
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (expression
                 (expr_atom
@@ -358,8 +365,9 @@ Valid ## syntax
             (write_argument
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))

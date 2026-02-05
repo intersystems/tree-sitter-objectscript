@@ -116,10 +116,10 @@ module.exports = grammar(objectscript_expr, {
   ],
   conflicts: ($, previous) =>
     previous.concat([
-      [$.use_parameters, $._parenthetical_expression],
-      [$.open_parameters, $._parenthetical_expression],
-      [$.xecute_argument, $._parenthetical_expression],
-        [$.class_method_call_post_cond,$.oref_chain_expr_post_cond],
+      [$.use_parameters, $.parenthetical_expression],
+      [$.open_parameters, $.parenthetical_expression],
+      [$.xecute_argument, $.parenthetical_expression],
+      [$.class_method_call_post_cond,$.oref_chain_expr_post_cond],
     ]),
 
   // These are what I can think of
@@ -147,7 +147,7 @@ module.exports = grammar(objectscript_expr, {
     [$.class_method_call_post_cond,$.oref_chain_expr_post_cond],
     ...previous,
   ],
-  inline: ($, previous) => [$.set_target, ...previous],
+  // inline: ($, previous) => [$.set_target, ...previous],
 
   rules: {
     source_file: ($) => $.statements,
@@ -227,20 +227,20 @@ module.exports = grammar(objectscript_expr, {
     pound_dim: ($) =>
       seq(
         field('preproc_keyword', $.keyword_dim),
-        repeat_with_commas(alias($.objectscript_identifier, $.lvn)),
+        repeat_with_commas($.objectscript_identifier),
         optional(
           seq(
             field('preproc_keyword', /As/i),
             choice(
               $.objectscript_identifier,
-              $.oref_set_target,
+              $.oref_chain_expr,
             ),
             optional(
               seq(
                 /Of/i,
                 choice(
                   $.objectscript_identifier,
-                  $.oref_set_target
+                  $.oref_chain_expr
                 )
               )
             ),
@@ -385,94 +385,33 @@ module.exports = grammar(objectscript_expr, {
       ),
     keyword_set: (_) => /[sS]([eE][tT])?/,
     set_argument: ($) =>
-        choice(
-            seq(
-                field('lhs', choice($.set_target, $.set_target_list)),
-                field('operator', '='),
-                optional($._xecute_arg_invalid),
-                field('rhs', $.expression),
-            ),
-            $.indirection,
-        ),
-
-    set_target_list: ($) => seq('(', repeat_with_commas($.set_target), ')'),
-    set_target: ($) =>
-      choice(
-        $.glvn,
-        $.instance_variable,
-        $.oref_set_target,
-        $.system_defined_function,  // For things like, set $LB(a, b) = 3
-        $.system_defined_variable,
-        $.sql_field_reference,
-        $.indirection,
-      ),
-
-    oref_set_target: ($) => 
-      seq(
-          choice(
-            $.lvn,
-            $.instance_variable,
-            $.relative_dot_property,
-            $.relative_dot_method
-          ),
-          repeat(
-            seq(
-              token.immediate('.'),
+    choice(
+        seq(
+            field('lhs', 
               choice(
-                  alias(token.immediate(/"(?:[^"]+|"")*"/), $.oref_segment_name),
-                  alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.oref_segment_name),
-              ),
-          optional(
-              seq(
-          token.immediate('('),
-          seq(
-              optional($.method_arg),
-              repeat(
-                  seq(
-                      ',',
-                      optional($.method_arg),
-                  ),
-              ),
-          ),
-          ')')))),
+                $.set_target,
+                seq(
+                  '(',
+                  field('lhs', repeat_with_commas($.set_target)),
+                  ')'
+                )
+              )
+            ),
+            field('operator', '='),
+            field('rhs', $.expression),
         ),
+        $.indirection,
+    ),
 
-    // oref_set_target: ($) =>
-    //   choice(
-    //     $.relative_dot_property,
-    //     seq(
-    //       choice(
-    //         $.lvn,
-    //         $.instance_variable,
-    //         $.relative_dot_property,
-    //         $.relative_dot_method,
-    //       ),
-    //       repeat1(seq(
-    //     token.immediate('.'),
-    //       choice(
-    //           alias(token.immediate(/"(?:[^"]+|"")*"/), $.name),
-    //           alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.name),
-    //       ),
-    //       optional(
-    //           seq(
-    //       token.immediate('('),
-    //       optional(
-    //           seq(
-    //               optional($.method_arg,),
-    //               repeat(
-    //                   seq(
-    //                       ',',
-    //                       optional($.method_arg),
-    //                   ),
-    //               ),
-    //           ),
-    //       ),
-    //       ')')))),
-    //       // // Whatever we have here must end in a property
-    //       // token.immediate('.'),
-    //       // $.oref_property,
-    //     ),
-    //   ),
+    set_target: ($) => prec(1, choice(
+        $.glvn,                    // local, global, ssvn
+        $.oref_chain_expr,         // obj.prop, obj.method().prop
+        $.system_defined_function,
+        $.built_in_function_name,
+        $.indirection,             // @varname
+        $.relative_dot_property,   // ..Property
+        $.instance_variable,       // i%propname
+    )),
 
     command_write: ($) =>
       prec.right(
@@ -529,7 +468,8 @@ module.exports = grammar(objectscript_expr, {
                 $.routine_tag_call,
                 $.class_method_call,
                 $.instance_method_call,
-                $.doable_dollar_functions,
+                seq(optional($._xecute_arg_invalid), $.system_defined_function),
+                // $.doable_dollar_functions,
                 $.superclass_method_call,
             ),
             optional($.post_conditional)
@@ -543,31 +483,35 @@ module.exports = grammar(objectscript_expr, {
           choice(
             $.lvn,
             $.instance_variable,
-            $.relative_dot_property,
             $.relative_dot_method,
-            $._parenthetical_expression,
+            $.parenthetical_expression,
           ),
-          repeat(seq(
-        token.immediate('.'),
-          choice(
-              alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),
-              alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name),
-          ),
-          optional(
-              seq(
-          token.immediate('('),
-          optional(
-              seq(
-                  optional($.method_arg),
-                  repeat(
-                      seq(
-                          ',',
-                          optional($.method_arg),
+          repeat(
+            seq(
+              token.immediate('.'),
+              choice(
+                  alias(token.immediate(/"(?:[^"]+|"")*"/), $.method_name),
+                  alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.method_name),
+              ),
+              optional(
+                seq(
+                  token.immediate('('),
+                  optional(
+                    seq(
+                      optional($.method_arg),
+                      repeat(
+                          seq(
+                              ',',
+                              optional($.method_arg),
+                          ),
+                      ),
                       ),
                   ),
-              ),
-          ),
-          ')')))),
+              ')'
+            )
+            )
+        )
+        ),
           // Whatever we have here must end in a method
           token.immediate('.'),
           choice(
@@ -596,24 +540,24 @@ module.exports = grammar(objectscript_expr, {
         optional($.method_args),
       ),
 
-    doable_dollar_functions: ($) =>
-      choice(
-        // These are more specialized
-        $.dollar_classmethod,
-        $.dollar_method,
-        $.dollarsf,
-        // Generic $ functions
-        seq(
-          alias(choice(
-            /\$I(NCREMENT)?/i,
-            /\$ZF/i,
-            /\$ZU(TIL)?/i
-          ), $.built_in_function_name),
-          token.immediate('('),
-          repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
-          ')',
-        ),
-      ),
+    // doable_dollar_functions: ($) =>
+    //   choice(
+    //     // These are more specialized
+    //     $.dollar_classmethod,
+    //     $.dollar_method,
+    //     $.dollarsf,
+    //     // Generic $ functions
+    //     seq(
+    //       alias(choice(
+    //         /\$I(NCREMENT)?/i,
+    //         /\$ZF/i,
+    //         /\$ZU(TIL)?/i
+    //       ), $.built_in_function_name),
+    //       token.immediate('('),
+    //       repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
+    //       ')',
+    //     ),
+    //   ),
 
 
     command_for: ($) =>
@@ -725,16 +669,17 @@ module.exports = grammar(objectscript_expr, {
     keyword_kill: (_) => /[kK]([iI][lL][lL])?/,
     kill_argument: ($) =>
         choice(
-            $.kill_target,
-            seq('(', repeat_with_commas($.kill_target), ')'),
+            seq(optional($._xecute_arg_invalid), alias($.kill_target, $.variable)),
+            seq('(', repeat_with_commas(seq(optional($._xecute_arg_invalid), alias($.kill_target, $.variable))), ')'),
         ),
 
     kill_target: ($) =>
-        choice(
+        prec(1,choice(
             $.glvn,
+            $.indirection,
             $.instance_variable,
-            $.oref_set_target,
-        ),
+            $.oref_chain_expr,
+        )),
 
     command_lock: ($) =>
       choice(
@@ -1037,7 +982,11 @@ module.exports = grammar(objectscript_expr, {
         ),
         ')'
         ),
-        choice($.open_keywords,seq(optional($._xecute_arg_invalid),$.expression),$.use_keywords),
+        choice(
+          $.open_keywords,
+          seq(optional($._xecute_arg_invalid),$.expression),
+          $.use_keywords
+        ),
       ),
 
 
@@ -1303,9 +1252,9 @@ module.exports = grammar(objectscript_expr, {
     keyword_merge: (_) => /[mM]([eE][rR][gG][eE])?/,
     // Technically ^$GLOBAL() can be the source
     merge_argument: ($) => seq(
-      field('lhs', $.glvn),
+      field('lhs', choice($.glvn, $.indirection)),
       field('operator', '='),
-      field('rhs', $.glvn),
+      field('rhs', choice($.glvn, $.indirection)),
     ),
 
     command_return: ($) =>
@@ -1670,7 +1619,7 @@ module.exports = grammar(objectscript_expr, {
       build_command_rule_argumentful(
         $,
         $.keyword_zkill,
-        repeat_with_commas($.glvn),
+        repeat_with_commas(choice($.glvn, $.indirection)),
       ),
     keyword_zkill: (_) => /ZK(ILL)?/i,
 

@@ -13,9 +13,10 @@ Set Statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -23,36 +24,39 @@ Set Statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (set_target_list
+          lhs: (set_target
             (glvn
               (lvn
-                (objectscript_identifier)))
+                (objectscript_identifier))))
+          lhs: (set_target
             (glvn
               (lvn
                 (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
-                case: (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      operator: (binary_operator)
-                      (expression
+                (built_in_functions_storage_or_select
+                  (built_in_function_name)
+                  (function_argument
+                    (lhs_pair
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expr_tail
+                        operator: (binary_operator)
                         (expr_atom
-                          (string_literal)))))
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                case: (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+                          (string_literal))))
+                    (rhs_pair
+                      (expr_atom
+                        (string_literal))))
+                  (function_argument
+                    (lhs_pair
+                      (expr_atom
+                        (numeric_literal)))
+                    (rhs_pair
+                      (expr_atom
+                        (string_literal)))))))))))))
 
 ============================================
 Set Statement Oref MultiDimensional Property
@@ -66,21 +70,26 @@ Set Statement Oref MultiDimensional Property
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (oref_set_target
-            (lvn
-              (objectscript_identifier))
-            (name)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (name)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+          lhs: (set_target
+            (oref_chain_expr
+              (lvn
+                (objectscript_identifier))
+              (method_name)
+              (method_args
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))))
+              (method_name)
+              (method_args
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))))
@@ -102,11 +111,13 @@ Set with Indirection
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (indirection
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+          lhs: (set_target
+            (indirection
+              (expression
+                (expr_atom
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -117,44 +128,51 @@ Set with Indirection
           (indirection
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
                 (dollar_text
-                  arg: (line_ref
+                  (built_in_function_name)
+                  (function_argument
                     (indirection
                       (expression
                         (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))
+                          (glvn
+                            (lvn
+                              (objectscript_identifier))))))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (indirected_glvn
-              base: (relative_dot_parameter
-                (oref_parameter
-                  (parameter_name
-                    (parameter_name))))
+          lhs: (set_target
+            (indirection
+              (expression
+                (expr_atom
+                  (relative_dot_parameter
+                    (oref_parameter
+                      (parameter_name)))))
               (subscripts
                 (expression
                   (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))
                 (expression
                   (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))))
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -162,42 +180,52 @@ Set with Indirection
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
                 (dollar_text
-                  arg: (line_ref
+                  (built_in_function_name)
+                  (function_argument
                     label: (indirection
                       (expression
                         (expr_atom
                           (system_defined_function
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))
-                            (expression
-                              (expr_atom
-                                (string_literal)))
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))
+                            (built_in_functions_piece_or_principal
+                              (function_argument
+                                (expr_atom
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (function_argument
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (function_argument
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))
                     routine: (indirection
                       (expression
                         (expr_atom
                           (system_defined_function
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))
-                            (expression
-                              (expr_atom
-                                (string_literal)))
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))))))))))
+                            (built_in_functions_piece_or_principal
+                              (function_argument
+                                (expr_atom
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (function_argument
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (function_argument
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))))))))))))
 
 ====================
 Set With Indexing
@@ -212,13 +240,14 @@ Set With Indexing
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)
-              (subscripts
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -226,13 +255,14 @@ Set With Indexing
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)
-              (subscripts
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))))
           rhs: (expression
             (expr_atom
               (string_literal))))))))
@@ -256,9 +286,10 @@ Set With Indirection2
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -266,9 +297,10 @@ Set With Indirection2
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -279,58 +311,68 @@ Set With Indirection2
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (system_defined_function
-                    (expression
-                      (expr_atom
-                        (unary_expression
-                          (glvn
-                            (lvn
-                              (objectscript_identifier)))
-                          (subscripts
+                    (dollar_function
+                      (built_in_function_name)
+                      (function_argument
+                        (expr_atom
+                          (indirection
                             (expression
                               (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))))))))))))
+                                (glvn
+                                  (lvn
+                                    (objectscript_identifier)))))
+                            (subscripts
+                              (expression
+                                (expr_atom
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier))))))))))))))))
         (statement
           (command_quit
             command_name: (keyword_quit)
             (post_conditional
               (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
+                  (expr_atom
+                    (string_literal)))))))
         (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expr_tail
                   operator: (binary_operator)
-                  (expression
-                    (expr_atom
-                      (unary_expression
-                        (glvn
-                          (lvn
-                            (objectscript_identifier)))
-                        (subscripts
-                          (expression
-                            (expr_atom
+                  (expr_atom
+                    (indirection
+                      (expression
+                        (expr_atom
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))))
+                      (subscripts
+                        (expression
+                          (expr_atom
+                            (glvn
                               (lvn
                                 (objectscript_identifier)))))))))))))))
     (statement
@@ -338,5 +380,6 @@ Set With Indirection2
         command_name: (keyword_zwrite)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))))

@@ -33,9 +33,10 @@ try catch tests
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (string_literal))))))
@@ -43,51 +44,59 @@ try catch tests
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (class_method_call
                     (class_ref
                       preproc_keyword: (keyword_pound_pound_class)
                       (class_name))
-                    (method_name)))))))
+                    (method_name)
+                    (method_args)))))))
         try_block: (statement
           (command_set
             command_name: (keyword_set)
             (set_argument
-              lhs: (glvn
-                (lvn
-                  (objectscript_identifier)))
+              lhs: (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               rhs: (expression
                 (expr_atom
                   (oref_chain_expr
                     (lvn
                       (objectscript_identifier))
-                    (name)
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))
+                    (method_name)
+                    (method_args
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (glvn
+                              (lvn
+                                (objectscript_identifier)))))))))))))
         try_block: (statement
           (command_if
             command_name: (keyword_if)
             (expression
               (expr_atom
-                (expression
-                  (expr_atom
-                    (dollarsf
-                      function_name: (dollar_system_keyword)
-                      classname_piece: (identifier_segment_immediate)
-                      classname_piece: (identifier_segment_immediate)
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))
+                (parenthetical_expression
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (built_in_function_system
+                          (built_in_function_name)
+                          (function_argument)
+                          (function_argument)
+                          (method_args
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier))))))))))))))
             (statement
               (command_write
                 command_name: (keyword_write)
@@ -105,8 +114,9 @@ try catch tests
                     (method_arg
                       (expression
                         (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))
+                          (glvn
+                            (lvn
+                              (objectscript_identifier))))))))))
             else_block: (else_block
               command_name: (keyword_else)
               (statement
@@ -150,7 +160,7 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (name)))))
+                      (property_name)))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -167,7 +177,7 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (name)))))
+                      (property_name)))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -182,15 +192,18 @@ try catch tests
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (expression
-                        (expr_atom
-                          (oref_chain_expr
-                            (lvn
-                              (objectscript_identifier))
-                            (name))))
-                      (expression
-                        (expr_atom
-                          (numeric_literal)))))))
+                      (built_in_list_functions_with_optional_args
+                        (built_in_function_name)
+                        (function_argument
+                          (expr_atom
+                            (oref_chain_expr
+                              (lvn
+                                (objectscript_identifier))
+                              (property_name))))
+                        (function_argument
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))

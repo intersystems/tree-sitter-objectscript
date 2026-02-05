@@ -31,11 +31,11 @@ Valid #if Statements
       (command_kill
         (keyword_kill)
         (kill_argument
-          (kill_target
+          (variable
             (glvn
               (gvn))))
         (kill_argument
-          (kill_target
+          (variable
             (glvn
               (gvn))))))
     (statement
@@ -49,19 +49,20 @@ Valid #if Statements
         (keyword_pound_if)
         (expression
           (expr_atom
-            (macro
-              (macro_constant)))
+            (glvn
+              (macro
+                (macro_constant))))
           (expr_tail
             (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
+            (expr_atom
+              (string_literal))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (gvn))
+              (set_target
+                (glvn
+                  (gvn)))
               (expression
                 (expr_atom
                   (string_literal))))))
@@ -69,8 +70,9 @@ Valid #if Statements
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (gvn))
+              (set_target
+                (glvn
+                  (gvn)))
               (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -78,19 +80,20 @@ Valid #if Statements
           (keyword_pound_elseif)
           (expression
             (expr_atom
-              (macro
-                (macro_constant)))
+              (glvn
+                (macro
+                  (macro_constant))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+              (expr_atom
+                (string_literal))))
           (statement
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (string_literal))))))
@@ -98,8 +101,9 @@ Valid #if Statements
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (numeric_literal)))))))
@@ -107,19 +111,20 @@ Valid #if Statements
           (keyword_pound_elseif)
           (expression
             (expr_atom
-              (macro
-                (macro_constant)))
+              (glvn
+                (macro
+                  (macro_constant))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+              (expr_atom
+                (string_literal))))
           (statement
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (string_literal))))))
@@ -127,8 +132,9 @@ Valid #if Statements
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (numeric_literal)))))))
@@ -136,19 +142,20 @@ Valid #if Statements
           (keyword_pound_elseif)
           (expression
             (expr_atom
-              (macro
-                (macro_constant)))
+              (glvn
+                (macro
+                  (macro_constant))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+              (expr_atom
+                (string_literal))))
           (statement
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (string_literal))))))
@@ -156,8 +163,9 @@ Valid #if Statements
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (numeric_literal)))))))
@@ -165,19 +173,20 @@ Valid #if Statements
           (keyword_pound_elseif)
           (expression
             (expr_atom
-              (macro
-                (macro_constant)))
+              (glvn
+                (macro
+                  (macro_constant))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+              (expr_atom
+                (string_literal))))
           (statement
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (string_literal))))))
@@ -185,8 +194,9 @@ Valid #if Statements
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (gvn))
+                (set_target
+                  (glvn
+                    (gvn)))
                 (expression
                   (expr_atom
                     (numeric_literal)))))))
@@ -197,8 +207,9 @@ Valid #if Statements
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (gvn))
+                  (set_target
+                    (glvn
+                      (gvn)))
                   (expression
                     (expr_atom
                       (string_literal))))))
@@ -206,8 +217,9 @@ Valid #if Statements
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (gvn))
+                  (set_target
+                    (glvn
+                      (gvn)))
                   (expression
                     (expr_atom
                       (numeric_literal))))))))
@@ -218,7 +230,8 @@ Valid #if Statements
         (write_argument
           (expression
             (expr_atom
-              (gvn))))
+              (glvn
+                (gvn)))))
         (write_argument
           (expression
             (expr_atom
@@ -226,13 +239,16 @@ Valid #if Statements
         (write_argument
           (expression
             (expr_atom
-              (gvn))))))))
+              (glvn
+                (gvn)))))))))
 
 ====
 Invalid If (no #endif, #else, or #elseif)
 :error
-===
+====
 #if $$$ColorDay="Monday"
  SET ^MyColor = "Red"
  SET ^MyNumber = 1
 ---
+
+

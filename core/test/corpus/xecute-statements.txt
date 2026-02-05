@@ -43,9 +43,8 @@ Valid Xecute Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))))
+              (expr_atom
+                (string_literal)))))))
     (statement
       (command_xecute
         (keyword_xecute)
@@ -66,9 +65,8 @@ Valid Xecute Statements
               (string_literal))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))))
+              (expr_atom
+                (string_literal)))))
         (xecute_argument
           (expression
             (expr_atom
@@ -82,8 +80,9 @@ Valid Xecute Statements
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (byref_arg
             (lvn
               (objectscript_identifier))))))
@@ -96,8 +95,9 @@ Valid Xecute Statements
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (byref_arg
             (lvn
               (objectscript_identifier))))))
@@ -110,8 +110,9 @@ Valid Xecute Statements
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (byref_arg
             (lvn
               (objectscript_identifier))))))
@@ -124,26 +125,30 @@ Valid Xecute Statements
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (post_conditional
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))
         (xecute_argument
           (expression
             (expr_atom
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (post_conditional
             (expression
               (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))))
     (statement
       (command_xecute
         (keyword_xecute)
@@ -153,8 +158,9 @@ Valid Xecute Statements
               (string_literal)))
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (byref_arg
             (lvn
               (objectscript_identifier))))))
@@ -185,7 +191,7 @@ Valid Xecute Statements
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)))))))
+                (property_name)))))))
     (statement
       (command_xecute
         (keyword_xecute)
@@ -227,21 +233,25 @@ Valid Xecute Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))))
+                  (function_argument
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (command_xecute
         (keyword_xecute)
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (xecute_argument
           (expression
             (expr_atom

@@ -8,12 +8,13 @@ $LISTTOSTRING(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LTS shorthand with one argument
@@ -25,12 +26,13 @@ $LTS(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTTOSTRING with delimiter
@@ -42,12 +44,13 @@ $LISTTOSTRING(list,",")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal))))))))
@@ -62,20 +65,23 @@ $LISTTOSTRING(list,delim,flag)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTTOSTRING case insensitive
@@ -87,12 +93,13 @@ $listtostring(myList)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTTOSTRING with $LISTBUILD
@@ -104,7 +111,7 @@ $LISTTOSTRING($LB("a","b","c"),"/")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -134,33 +141,16 @@ $LISTTOSTRING(list,,1)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_liststring
+        (built_in_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
-
-====
-$LISTTOSTRING no arguments
-:error
-====
-$LISTTOSTRING()
----
-
-
-
-====
-$LTS no arguments
-:error
-====
-$LTS()
----
-
-
 
 ==================================
 $LISTLENGTH with one argument
@@ -172,12 +162,13 @@ $LISTLENGTH(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LL shorthand with one argument
@@ -189,12 +180,13 @@ $LL(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTLENGTH case insensitive
@@ -206,12 +198,13 @@ $listlength(myList)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTLENGTH with $LISTBUILD
@@ -223,7 +216,7 @@ $LISTLENGTH($LB(1,2,3))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -250,12 +243,13 @@ $LISTLENGTH(strVar)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTLENGTH in expression
@@ -267,35 +261,17 @@ $LL(list)+1
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listlength
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
-
-====
-$LISTLENGTH no arguments
-:error
-====
-$LISTLENGTH()
----
-
-
-
-====
-$LL no arguments
-:error
-====
-$LL()
----
-
-
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $LISTUPDATE with two arguments
@@ -307,15 +283,17 @@ $LISTUPDATE(list,1)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal))))))))
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $LU shorthand
@@ -327,15 +305,17 @@ $LU(list,2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal))))))))
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $LISTUPDATE with value
@@ -347,18 +327,21 @@ $LISTUPDATE(list,1,"newvalue")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal))))
           (function_argument
-            (expr_atom
-              (string_literal))))))))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $LISTUPDATE with multiple position-value pairs
@@ -370,24 +353,29 @@ $LISTUPDATE(list,1,"first",3,"third")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal))))
           (function_argument
-            (expr_atom
-              (string_literal)))
+            (expression
+              (expr_atom
+                (string_literal))))
           (function_argument
-            (expr_atom
-              (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal))))
           (function_argument
-            (expr_atom
-              (string_literal))))))))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $LISTUPDATE case insensitive
@@ -399,19 +387,23 @@ $listupdate(myList,2,val)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal))))
           (function_argument
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+            (expression
+              (expr_atom
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ==================================
 $LISTUPDATE with nested list
@@ -423,41 +415,26 @@ $LISTUPDATE(list,2,$LB("nested"))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listupdate
+        (built_in_list_functions_with_optional_args
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
-            (expr_atom
-              (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal))))
           (function_argument
-            (expr_atom
-              (system_defined_function
-                (built_in_functions_with_optional_args
-                  (built_in_function_name)
-                  (function_argument
-                    (expr_atom
-                      (string_literal))))))))))))
-
-====
-$LISTUPDATE no arguments
-:error
-====
-$LISTUPDATE()
----
-
-
-
-====
-$LISTUPDATE only list argument
-:error
-====
-$LISTUPDATE(list)
----
-
-
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (built_in_functions_with_optional_args
+                    (built_in_function_name)
+                    (function_argument
+                      (expr_atom
+                        (string_literal)))))))))))))
 
 ==================================
 $LISTVALID with one argument
@@ -469,12 +446,13 @@ $LISTVALID(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LV shorthand
@@ -486,12 +464,13 @@ $LV(list)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTVALID case insensitive
@@ -503,12 +482,13 @@ $listvalid(data)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTVALID with $LISTBUILD
@@ -520,7 +500,7 @@ $LISTVALID($LB(1,2,3))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -547,7 +527,7 @@ $LISTVALID("test")
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -563,35 +543,17 @@ $LISTVALID(x)=1
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listvalid
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
-
-====
-$LISTVALID no arguments
-:error
-====
-$LISTVALID()
----
-
-
-
-====
-$LV no arguments
-:error
-====
-$LV()
----
-
-
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $FNUMBER with one argument
@@ -607,8 +569,9 @@ $FNUMBER(num)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $FN shorthand
@@ -624,8 +587,9 @@ $FN(num)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $FNUMBER with format
@@ -660,8 +624,9 @@ $FNUMBER(num,".",2)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal)))
@@ -683,8 +648,9 @@ $fnumber(value,"P",2)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal)))
@@ -728,8 +694,9 @@ $FNUMBER(num,,4)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -766,16 +733,18 @@ $LISTSAME(list1,list2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listsame
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LS shorthand
@@ -787,16 +756,18 @@ $LS(list1,list2)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listsame
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTSAME case insensitive
@@ -808,16 +779,18 @@ $listsame(a,b)
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listsame
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTSAME with $LISTBUILD
@@ -829,7 +802,7 @@ $LISTSAME($LB(1,2),$LB(1,2))
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listsame
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
@@ -864,39 +837,22 @@ $LISTSAME(x,y)=1
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_listsame
+        (dollar_function
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
-
-====
-$LISTSAME no arguments
-:error
-====
-$LISTSAME()
----
-
-
-
-====
-$LISTSAME only one argument
-:error
-====
-$LISTSAME(list1)
----
-
-
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $NUMBER with one argument
@@ -912,8 +868,9 @@ $NUMBER(num)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $NUM shorthand
@@ -929,8 +886,9 @@ $NUM(num)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $NUMBER with format
@@ -968,8 +926,9 @@ $NUMBER(val,".",0,100)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal)))
@@ -994,8 +953,9 @@ $number(value)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $NUMBER with string input
@@ -1030,8 +990,9 @@ $NUMBER(x,,1,10)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal)))
@@ -1053,8 +1014,9 @@ $NUMBER(num,"",-100,100)
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (string_literal)))
@@ -1079,11 +1041,10 @@ $NUMBER(x)+1
           (built_in_function_name)
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
-
+      (expr_atom
+        (numeric_literal)))))

@@ -51,9 +51,8 @@ $IO in expression
           (built_in_function_name))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+      (expr_atom
+        (string_literal)))))
 
 ==================================
 $INCREMENT with local variable
@@ -68,8 +67,10 @@ $INCREMENT with local variable
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $I with parentheses is $INCREMENT
@@ -84,8 +85,10 @@ $I with parentheses is $INCREMENT
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $INCREMENT with increment value
@@ -100,8 +103,10 @@ $INCREMENT with increment value
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -119,8 +124,10 @@ $INCREMENT with negative increment
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -138,8 +145,10 @@ $INCREMENT with decimal increment
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -157,7 +166,9 @@ $INCREMENT with global variable
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (gvn)))))))
+            (expr_atom
+              (glvn
+                (gvn)))))))))
 
 ==================================
 $INCREMENT with subscripted global
@@ -172,15 +183,18 @@ $INCREMENT with subscripted global
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (gvn
-              (subscripts
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+            (expr_atom
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))
+                    (expression
+                      (expr_atom
+                        (string_literal)))))))))))))
 
 ==================================
 $INCREMENT with subscripted local
@@ -195,13 +209,16 @@ $INCREMENT with subscripted local
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)
-              (subscripts
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ==================================
 $INCREMENT with object property
@@ -216,9 +233,11 @@ $INCREMENT with object property
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier))
-            (name)))))))
+            (expr_atom
+              (oref_chain_expr
+                (lvn
+                  (objectscript_identifier))
+                (property_name)))))))))
 
 ==================================
 $INCREMENT with variable increment value
@@ -233,12 +252,15 @@ $INCREMENT with variable increment value
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $INCREMENT case insensitive
@@ -253,8 +275,10 @@ $INCREMENT case insensitive
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier))))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $INCREMENT with null string (reset)
@@ -268,7 +292,9 @@ $INCREMENT with null string (reset)
       (system_defined_function
         (built_in_function_increment_or_io
           (built_in_function_name)
-          (function_argument))))))
+          (function_argument
+            (expr_atom
+              (string_literal))))))))
 
 ==================================
 $INCREMENT in expression
@@ -283,13 +309,14 @@ $INCREMENT in expression
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier))))))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+      (expr_atom
+        (numeric_literal)))))
 
 ==================================
 $I shorthand with increment
@@ -304,8 +331,10 @@ $I shorthand with increment
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
               (numeric_literal))))))))
@@ -323,14 +352,16 @@ $INCREMENT with expression as increment
         (built_in_function_increment_or_io
           (built_in_function_name)
           (function_argument
-            (lvn
-              (objectscript_identifier)))
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))
           (function_argument
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+              (expr_atom
+                (numeric_literal)))))))))

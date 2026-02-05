@@ -43,9 +43,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -53,9 +54,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -63,144 +65,163 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (unary_expression
                 (expression
                   (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))
+                    (glvn
+                      (lvn
+                        (objectscript_identifier)))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))
+              (expr_atom
+                (numeric_literal)))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
-          rhs: (expression
-            (expr_atom
+          lhs: (set_target
+            (glvn
               (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
-    (statement
-      (command_set
-        command_name: (keyword_set)
-        (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
-              (gvn
-                (subscripts
-                  (expression
-                    (expr_atom
-                      (string_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          rhs: (expression
+            (expr_atom
+              (glvn
+                (gvn
+                  (subscripts
+                    (expression
+                      (expr_atom
+                        (string_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))
+    (statement
+      (command_set
+        command_name: (keyword_set)
+        (set_argument
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))
+                (dollar_function
+                  (built_in_function_name)
+                  (function_argument
+                    (expr_atom
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)))))))
+                (property_name)))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (name)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                (method_name)
+                (method_args
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (class_method_call
                 (class_ref
                   preproc_keyword: (keyword_pound_pound_class)
                   (class_name))
-                (method_name)))))))
+                (method_name)
+                (method_args)))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (extrinsic_function
@@ -216,9 +237,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -226,9 +248,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -237,19 +260,21 @@ MAX
         command_name: (keyword_zz)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier))))))
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_quit
         command_name: (keyword_quit)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))))
     (statement
@@ -257,48 +282,13 @@ MAX
         command_name: (keyword_quit)
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))
-    (statement
-      (command_quit
-        command_name: (keyword_quit)
-        (post_conditional
-          (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))
-    (statement
-      (command_quit
-        command_name: (keyword_quit)
-        (post_conditional
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            operator: (binary_operator)
-            (expression
-              (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))))
     (statement
@@ -307,30 +297,69 @@ MAX
         (post_conditional
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expr_tail
               operator: (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (expr_atom
+                (numeric_literal)))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expr_tail
+              operator: (binary_operator)
+              (expr_atom
+                (numeric_literal)))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)))
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expr_tail
             operator: (binary_operator)
-            (expression
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
+    (statement
+      (command_quit
+        command_name: (keyword_quit)
+        (post_conditional
+          (expression
+            (expr_atom
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expr_tail
+              operator: (binary_operator)
               (expr_atom
+                (numeric_literal)))))
+        (expression
+          (expr_atom
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (expr_tail
+            operator: (binary_operator)
+            (expr_atom
+              (glvn
                 (lvn
                   (objectscript_identifier))))))))
     (statement
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -338,9 +367,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -348,16 +378,18 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -365,16 +397,18 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -382,9 +416,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (numeric_literal))))))
@@ -394,38 +429,45 @@ MAX
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))))
     (statement
       (tag))
     (statement
@@ -441,16 +483,19 @@ MAX
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (block_comment)
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+                (built_in_functions_piece_or_principal
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (block_comment)
+                  (function_argument
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (function_argument
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
@@ -473,9 +518,10 @@ MAX
       (command_set
         command_name: (keyword_set)
         (set_argument
-          lhs: (glvn
-            (lvn
-              (objectscript_identifier)))
+          lhs: (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           rhs: (expression
             (expr_atom
               (string_literal))))))
@@ -486,8 +532,9 @@ MAX
         (write_argument
           (expression
             (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+              (glvn
+                (lvn
+                  (objectscript_identifier))))))
         (write_argument
           (write_device_control
             (write_device_fflf)))))
