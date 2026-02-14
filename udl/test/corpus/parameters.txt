@@ -30,25 +30,25 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
   (include_code
     (keyword_include)
     (include_clause
-      (identifier)))
+      (class_name)))
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (default_argument_value
             (string_literal))))
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -57,7 +57,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -66,7 +66,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -75,12 +75,11 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (identifier)
                 (rhs))))))
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -89,13 +88,12 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (identifier)
                 (rhs))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -107,18 +105,18 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
         (classmethod
           (keyword_classmethod)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -147,72 +145,66 @@ Class hi {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
-              (parameter_keyword_abstract
-                (identifier))))
+              (parameter_keyword_abstract)))
           (default_argument_value
             (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_constraint
-                (identifier)
                 (rhs)))
             (parameter_keyword
               (parameter_keyword_flags
-                (identifier)
                 (rhs))))
           (default_argument_value
             (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
-              (parameter_keyword_deprecated
-                (identifier))))
+              (parameter_keyword_deprecated)))
           (default_argument_value
             (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
-              (parameter_keyword_final
-                (identifier))))
+              (parameter_keyword_final)))
           (default_argument_value
             (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
-              (parameter_keyword_internal
-                (identifier))))
+              (parameter_keyword_internal)))
           (default_argument_value
             (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))
@@ -221,7 +213,7 @@ Class hi {
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))
@@ -250,70 +242,75 @@ Class hi {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (classmethod
           (keyword_classmethod)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
-            (core_method_body_content
-              (statement
-                (command_write
-                  (keyword_write)
-                  (write_argument
-                    (expression
-                      (expr_atom
-                        (class_parameter_ref
-                          (class_ref
-                            (keyword_pound_pound_class)
-                            (class_name
-                              (dotted_identifier_strict_token_immediate)))
-                          (parameter_name
-                            (identifier_segment_immediate))))))))
-              (statement
-                (command_set
-                  (keyword_set)
-                  (set_argument
-                    (oref_set_target
-                      (lvn
-                        (objectscript_identifier))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (class_parameter_ref
+                        (class_ref
+                          (keyword_pound_pound_class)
+                          (bracket)
+                          (class_name)
+                          (bracket))
+                        (parameter_name
+                          (member_name
+                            (identifier_segment_immediate)))))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (oref_set_target
+                    (lvn
+                      (objectscript_identifier))
+                    (oref_chain_segment
                       (oref_property
                         (property_name
-                          (identifier_segment_immediate))))
-                    (expression
-                      (expr_atom
-                        (relative_dot_parameter
-                          (oref_parameter
-                            (parameter_name
-                              (identifier_segment_immediate)))))))))
-              (statement
-                (command_if
-                  (keyword_if)
+                          (identifier_segment_immediate)))))
                   (expression
                     (expr_atom
                       (relative_dot_parameter
                         (oref_parameter
                           (parameter_name
-                            (identifier_segment_immediate)))))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (numeric_literal)))))
-                  (line_comment_1)
-                  (else_block
-                    (keyword_else)
-                    (line_comment_1))))
-              (statement
-                (command_write
-                  (keyword_write)
-                  (write_argument
+                            (member_name
+                              (identifier_segment_immediate))))))))))
+            (statement
+              (command_if
+                (keyword_if)
+                (expression
+                  (expr_atom
+                    (relative_dot_parameter
+                      (oref_parameter
+                        (parameter_name
+                          (member_name
+                            (identifier_segment_immediate))))))
+                  (expr_tail
+                    (binary_operator)
                     (expression
                       (expr_atom
-                        (system_defined_function
+                        (numeric_literal)))))
+                (line_comment_1)
+                (else_block
+                  (keyword_else)
+                  (line_comment_1))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
                           (expression
                             (expr_atom
                               (lvn
@@ -422,17 +419,16 @@ Class hi {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_flags
-                (identifier)
                 (rhs)))))))))
 
 ========================
@@ -446,17 +442,16 @@ Class hi {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_flags
-                (identifier)
                 (rhs)))))))))
 
 ========================
@@ -480,82 +475,82 @@ Class hi {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as))))
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (parameter_type
             (keyword_as)))))))

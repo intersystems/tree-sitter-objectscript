@@ -10,7 +10,7 @@
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -25,7 +25,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)))))
+        (objectscript_identifier)))))
 
 ========================
 #define Macro2 "Wilma"
@@ -39,7 +39,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -55,7 +55,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -71,7 +71,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -87,7 +87,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -103,7 +103,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -119,7 +119,7 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -135,220 +135,240 @@ Valid Define No Macro Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro8 DO ##class(%Library.PopulateUtils).Name()
-========================
-#define Macro8 DO ##class(%Library.PopulateUtils).Name()
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro9 READ !,"Name: ",name  WRITE !,"Nice to meet you, ",name,!
-========================
-#define Macro9 READ !,"Name: ",name  WRITE !,"Nice to meet you, ",name,!
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro1A(%x) 22+%x
-========================
-#define Macro1A(%x) 22+%x
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro2A(%x) "Wilma" _ ": %x"
-========================
-#define Macro2A(%x) "Wilma" _ ": %x"
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro3A(%x) (x+y)*%x
-========================
-#define Macro3A(%x) (x+y)*%x
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro4A(%x) $Length(x) + $Length(%x)
-========================
-#define Macro4A(%x) $Length(x) + $Length(%x)
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro5A(%x) film.Title _ ": " _ film.%x
-========================
-#define Macro5A(%x) film.Title _ ": " _ film.%x
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro6A(%x) +$h - %x
-========================
-#define Macro6A(%x) +$h - %x
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro8A(%x) DO ##class(%Library.PopulateUtils).Name(%x)
-========================
-#define Macro8A(%x) DO ##class(%Library.PopulateUtils).Name(%x)
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro9A(%x) READ !,"Name: ",name  WRITE !,"%x ",name,!
-========================
-#define Macro9A(%x) READ !,"Name: ",name  WRITE !,"%x ",name,!
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
-          (macro_arg))
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro7 SET x =
-========================
-#define Macro7 SET x =
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (macro_value
-          (macro_value_line))))))
-
-========================
-#define Macro9B(%x,%y) READ !,"Name: ",name  WRITE !,"%x %y",name,!
-========================
-#define Macro9B(%x,%y) READ !,"Name: ",name  WRITE !,"%x %y",name,!
-
----
-
-(source_file
-  (statements
-    (statement
-      (pound_define
-        (keyword_pound_define)
-        (pound_define_variable_name)
-        (pound_define_variable_args
+          (bracket)
           (macro_arg)
-          (macro_arg))
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro8 DO ##class(%Library.PopulateUtils).Name()
+========================
+#define Macro8 DO ##class(%Library.PopulateUtils).Name()
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro9 READ !,"Name: ",name  WRITE !,"Nice to meet you, ",name,!
+========================
+#define Macro9 READ !,"Name: ",name  WRITE !,"Nice to meet you, ",name,!
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro1A(%x) 22+%x
+========================
+#define Macro1A(%x) 22+%x
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro2A(%x) "Wilma" _ ": %x"
+========================
+#define Macro2A(%x) "Wilma" _ ": %x"
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro3A(%x) (x+y)*%x
+========================
+#define Macro3A(%x) (x+y)*%x
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro4A(%x) $Length(x) + $Length(%x)
+========================
+#define Macro4A(%x) $Length(x) + $Length(%x)
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro5A(%x) film.Title _ ": " _ film.%x
+========================
+#define Macro5A(%x) film.Title _ ": " _ film.%x
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro6A(%x) +$h - %x
+========================
+#define Macro6A(%x) +$h - %x
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro8A(%x) DO ##class(%Library.PopulateUtils).Name(%x)
+========================
+#define Macro8A(%x) DO ##class(%Library.PopulateUtils).Name(%x)
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro9A(%x) READ !,"Name: ",name  WRITE !,"%x ",name,!
+========================
+#define Macro9A(%x) READ !,"Name: ",name  WRITE !,"%x ",name,!
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (bracket))
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro7 SET x =
+========================
+#define Macro7 SET x =
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (macro_value
+          (macro_value_line))))))
+
+========================
+#define Macro9B(%x,%y) READ !,"Name: ",name  WRITE !,"%x %y",name,!
+========================
+#define Macro9B(%x,%y) READ !,"Name: ",name  WRITE !,"%x %y",name,!
+
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (objectscript_identifier)
+        (pound_define_variable_args
+          (bracket)
+          (macro_arg)
+          (macro_arg)
+          (bracket))
         (macro_value
           (macro_value_line))))))
 
@@ -377,11 +397,13 @@ Valid Macro Arg with ##continue
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (pound_define_variable_args
+          (bracket)
           (macro_arg)
           (macro_arg)
-          (macro_arg))
+          (macro_arg)
+          (bracket))
         (macro_value
           (macro_value_line_with_continue)
           (macro_value_line_with_continue)
@@ -401,7 +423,7 @@ Valid Macro Arg with ##; comment
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)
+        (objectscript_identifier)
         (macro_value
           (macro_value_line))))))
 
@@ -416,4 +438,4 @@ Macros Without Values
     (statement
       (pound_define
         (keyword_pound_define)
-        (pound_define_variable_name)))))
+        (objectscript_identifier)))))

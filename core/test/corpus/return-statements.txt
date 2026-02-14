@@ -44,10 +44,13 @@ Return Valid Statements
             (oref_chain_expr
               (lvn
                 (objectscript_identifier))
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args)))))))
+              (oref_chain_segment
+                (oref_method
+                  (method_name
+                    (identifier_segment_immediate))
+                  (method_args
+                    (bracket)
+                    (bracket)))))))))
     (statement
       (command_return
         (keyword_return)
@@ -76,26 +79,31 @@ Return Valid Statements
         (expression
           (expr_atom
             (extrinsic_function
-              (label_ref)
+              (objectscript_identifier)
               (method_args
+                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
                       (lvn
-                        (objectscript_identifier)))))))))))
+                        (objectscript_identifier)))))
+                (bracket)))))))
     (statement
       (command_return
         (keyword_return)
         (expression
           (expr_atom
-            (expression
-              (expr_atom
-                (numeric_literal))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (numeric_literal))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))
+              (bracket))))))
     (statement
       (command_return
         (keyword_return)

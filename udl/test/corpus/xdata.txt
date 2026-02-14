@@ -45,36 +45,37 @@ XData DEFAULT
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword_mimetype
-              (identifier)
-              (rhs)))
-          (xdata_body_content_any)))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content))))
       (documatic_line)
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword_mimetype
-              (identifier)
-              (rhs)))
-          (xdata_body_content_any)))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content))))
       (documatic_line)
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 XML namespace
@@ -89,19 +90,19 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword
-              (xdata_keyword_xmlnamespace
-                (identifier)
-                (rhs))))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_xmlnamespace
+                  (rhs))))
+            (external_method_body_content)))))))
 
 ===
 SchemaSpec
@@ -116,19 +117,19 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword
-              (xdata_keyword_schemaspec
-                (identifier)
-                (rhs))))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_schemaspec
+                  (rhs))))
+            (external_method_body_content)))))))
 
 ===
 Valid xdata
@@ -154,29 +155,29 @@ Class Demo.CoffeeMakerRESTServer Extends %CSP.REST
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))
           (default_argument_value
             (numeric_literal))))
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword
-              (xdata_keyword_xmlnamespace
-                (identifier)
-                (rhs))))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_xmlnamespace
+                  (rhs))))
+            (external_method_body_content)))))))
 
 ===
 class: xdata minimal (no keywords, empty payload)
@@ -194,17 +195,18 @@ XData EmptyBlock
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 class: xdata with description comment
@@ -224,18 +226,19 @@ XData WithDescription
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (documatic_line)
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 class: xdata with XML payload (well-formed, single root, no declaration)
@@ -257,17 +260,18 @@ XData XmlPayload
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 class: xdata with MimeType keyword (json)
@@ -289,21 +293,21 @@ XData JsonPayload [ MimeType = application/json ]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword_mimetype
-              (identifier)
-              (rhs)))
-          (xdata_body_content_any))))))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
 
 ===
 class: xdata with multiple keywords (Internal + MimeType)
@@ -322,24 +326,23 @@ XData InternalJson [ Internal, MimeType = application/json ]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword
-              (parameter_keyword_internal
-                (identifier)))
-            (xdata_keyword_mimetype
-              (identifier)
-              (rhs)))
-          (xdata_body_content_any))))))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword
+                (parameter_keyword_internal))
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
 
 ===
 class: xdata with keyword list omitted (no brackets allowed)
@@ -358,17 +361,18 @@ some arbitrary text payload
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 class: xdata name as class member name with percent
@@ -387,17 +391,18 @@ XData %MyXData99
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_body_content_xml))))))
+          (xdata_xml
+            (external_method_body_content)))))))
 
 ===
 class: xdata payload containing braces/brackets as plain text
@@ -416,21 +421,21 @@ This is not ObjectScript code: { a: [1,2,3] }
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (xdata
           (keyword_xdata)
-          (identifier
+          (xdata_name
             (identifier))
-          (xdata_keywords
-            (xdata_keyword_mimetype
-              (identifier)
-              (rhs)))
-          (xdata_body_content_any))))))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
 
 ===
 invalid class: keyword list missing comma
@@ -462,3 +467,5 @@ XData MissingClose
 
 }
 ---
+
+

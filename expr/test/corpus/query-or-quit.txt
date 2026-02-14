@@ -1,0 +1,167 @@
+=======================
+$QUERY with indirection
+=======================
+  $QUERY(@ary@(""))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (bracket))))))))))
+
+=======================
+$QUERY with direction and target
+=======================
+  $QUERY(@ary@(""), 1, x)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (bracket)))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+===================================
+$QUERY shorthand with target and no direction
+===================================
+  $Q(@ary@(""), 1, x)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (bracket)))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+================
+$QUERY shorthand
+================
+  $Q(@ary@(""))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (unary_expression
+                (glvn
+                  (lvn
+                    (objectscript_identifier)))
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (bracket))))))))))
+
+===================================
+$Q with target and no direction
+:error
+===================================
+  $(@ary@(""), x)
+---
+
+
+
+===================================
+$Q for quit
+===================================
+  $Q
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+=================
+QUERY with global
+=================
+ $QUERY(^client(4,1,2))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (gvn
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (bracket))))))))))
+
+=================
+QUIT
+=================
+ $QUIT
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))

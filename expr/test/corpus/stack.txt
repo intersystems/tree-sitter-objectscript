@@ -1,0 +1,287 @@
+==================================
+$STACK without arguments (returns current level)
+==================================
+ $STACK
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$ST shorthand without arguments
+==================================
+ $ST
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$STACK with level 0
+==================================
+ $STACK(0)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$STACK with level -1 (error level)
+==================================
+ $STACK(-1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$STACK with positive level
+==================================
+ $STACK(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$STACK with larger level number
+==================================
+ $STACK(42)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$STACK with PLACE keyword
+==================================
+ $STACK(0,"PLACE")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$STACK with MCODE keyword
+==================================
+ $STACK(1,"MCODE")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$STACK with ECODE keyword
+==================================
+ $STACK(-1,"ECODE")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$STACK with lowercase keyword
+==================================
+ $STACK(0,"place")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$STACK with glvn as second argument
+==================================
+ $STACK(0,myVar)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$STACK with global variable as second argument
+==================================
+ $STACK(1,^data)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (gvn))))))))
+
+==================================
+$ST shorthand with arguments
+==================================
+ $ST(0,"PLACE")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$STACK case insensitive
+==================================
+ $stack(0)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$STACK in expression
+==================================
+ $STACK>0
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))
+
+==================================
+$STACK with subscripted glvn
+==================================
+ $STACK(0,arr(1))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (bracket))))))))))
+
+==================================
+Nested $STACK calls
+==================================
+ $STACK($STACK-1,"PLACE")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (system_defined_variable))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal)))))
+          (expression
+            (expr_atom
+              (string_literal))))))))

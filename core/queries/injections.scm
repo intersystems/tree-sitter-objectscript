@@ -1,11 +1,6 @@
-; SQL and HTML Injections
-
 (embedded_html
  (angled_bracket_fenced_text) @injection.content
  (#set! injection.language "html")
- ;; TODO: Investigate if we can use html as the fallback grammar
- ;; We REALLY need to make it easy for users to bundle all of these
- ;; grammars
 )
 
 (embedded_sql
@@ -15,10 +10,13 @@
  (#set! injection.language "sql")
 )
 
-(embedded_js
- (angled_bracket_fenced_text) @injection.content
- (#set! injection.language "javascript")
-)
+ (embedded_js
+  [
+    (angled_bracket_fenced_text)
+    (embedded_js_special_case)
+  ] @injection.content
+  (#set! injection.language "javascript"))
+
 
 (embedded_xml
  (angled_bracket_fenced_text) @injection.content

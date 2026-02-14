@@ -85,9 +85,7 @@ static char* debug_enum(TSLexer *lexer, const bool *valid_symbols) {
 #endif
 
 static inline void advance(TSLexer *lexer) {
-  // printf("ADVANCING '%c'\n", lexer->lookahead);
   lexer->advance(lexer, false);
-  // printf("AT: '%c'\n", lexer->lookahead);
 }
 static inline bool is_validHTML_MARKER_char(int32_t c) {
   if (iswspace(c)) return false;
@@ -196,7 +194,6 @@ static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
 }
 
 
-/// This is the interesting function. The rest is infrastructure
 static bool
 ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
                                TSLexer *lexer, const bool *valid_symbols)
@@ -214,8 +211,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   // The sentinel should never be valid in a good parse, so this ensures
   // we are not in error recovery mode
   if (valid_symbols[SENTINEL]) {
-    //  printf("ERROR AT: '%c'. COL: %d\n", lexer->lookahead,
-    //         lexer->get_column(lexer));
     return false;
   }
 
@@ -473,10 +468,8 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
         }
         
         if (count == 1 && !is_block && lexer->lookahead=='/' && valid_symbols[ZBREAK_COMMAND]) {
-            // CHANGES HERE
             lexer->mark_end(lexer);
             lexer->advance(lexer, false);
-            // c, d, t, e, i, s, n
             if (lexer->lookahead == 'c' || 
                     lexer->lookahead == 'C' || 
                     lexer->lookahead == 'd' || 
@@ -554,7 +547,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
                     else {
                       if(valid_symbols[_TERMINATION]) {
                           lexer->result_symbol = _TERMINATION;
-                          scanner->terminated_newline = true; // I THINK THIS SHOULD BE TRUE
+                          scanner->terminated_newline = true;
                           return true;
                       }
                     }
@@ -663,7 +656,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     return false;
   } else if (valid_symbols[TAG] &&
                lexer->get_column(lexer) == 0 &&
-               (iswalnum(lexer->lookahead) || lexer->lookahead == '%')) { //
+               (iswalnum(lexer->lookahead) || lexer->lookahead == '%')) {
     if (iswalnum(lexer->lookahead) || lexer->lookahead == '%') {
       do {
         advance(lexer);
@@ -672,11 +665,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
       scanner->terminated_newline = false;
       return true;
     } else {
-      // The ObjectScript_Core_Scanner_TokenType NEWLINE is the literal '\n',
-      // This means that if we return false,
-      // It's ok because TS will fall back to lexing '\n' properly
-      // See bottom of this page for more info:
-      // https://tree-sitter.github.io/tree-sitter/creating-parsers
       return false;
     }
   } else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {
@@ -799,7 +787,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
 
     while (iswspace(lexer->lookahead)) {
       if (lexer->lookahead == '\n') saw_nl = true;
-      lexer->advance(lexer,false);         // <-- advance(false): add char to this token
+      lexer->advance(lexer,false);
       consumed = true;
     }
 

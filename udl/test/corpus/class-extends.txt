@@ -9,11 +9,13 @@ Class User.MySubclass Extends (%Library.Persistent, %Library.Populate)
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier)
-      (identifier))
+      (bracket)
+      (class_name)
+      (class_name)
+      (bracket))
     (class_body)))
 
 ===
@@ -29,15 +31,15 @@ Property Department As %String;
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -46,7 +48,7 @@ Property Department As %String;
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -76,21 +78,20 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
   (documatic_line)
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_keywords
       (class_keyword
         (class_keyword_sql_table_name
-          (identifier)
           (rhs))))
     (class_body
       (documatic_line)
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -100,13 +101,12 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_unique
-                (identifier))))))
+              (index_keyword_unique)))))
       (documatic_line)
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -114,13 +114,12 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
               (identifier)))
           (property_keywords
             (property_keyword
-              (property_keyword_required
-                (identifier))))))
+              (property_keyword_required)))))
       (documatic_line)
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -131,8 +130,7 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
                 (string_literal))))
           (property_keywords
             (property_keyword
-              (property_keyword_required
-                (identifier)))))))))
+              (property_keyword_required))))))))
 
 ===
 Parent and Child Tables
@@ -148,15 +146,15 @@ Class Sample.Invoice Extends %Persistent
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -167,12 +165,11 @@ Class Sample.Invoice Extends %Persistent
                 (numeric_literal))))
           (property_keywords
             (property_keyword
-              (property_keyword_required
-                (identifier))))))
+              (property_keyword_required)))))
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -181,7 +178,7 @@ Class Sample.Invoice Extends %Persistent
       (class_statement
         (relationship
           (keyword_relationship)
-          (identifier
+          (relationship_name
             (identifier))
           (keyword_as)
           (typename
@@ -189,9 +186,7 @@ Class Sample.Invoice Extends %Persistent
           (relationship_keywords
             (relationship_keyword
               (relationship_keyword_cardinality
-                (identifier)
                 (rhs)))
             (relationship_keyword
               (relationship_keyword_inverse
-                (identifier)
                 (rhs)))))))))

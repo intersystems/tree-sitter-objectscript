@@ -9,12 +9,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -24,8 +24,7 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_unique
-                (identifier)))))))))
+              (index_keyword_unique))))))))
 
 ===
 Valid Index: PrimaryKey
@@ -38,12 +37,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -53,8 +52,7 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_primary_key
-                (identifier)))))))))
+              (index_keyword_primary_key))))))))
 
 ===
 Valid Index: IdKey
@@ -67,12 +65,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -82,8 +80,7 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_idkey
-                (identifier)))))))))
+              (index_keyword_idkey))))))))
 
 ===
 Valid Index: IdKey + PrimaryKey
@@ -96,12 +93,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -111,11 +108,9 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_idkey
-                (identifier)))
+              (index_keyword_idkey))
             (index_keyword
-              (index_keyword_primary_key
-                (identifier)))))))))
+              (index_keyword_primary_key))))))))
 
 ===
 Valid Index: Data = Name
@@ -128,12 +123,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -144,7 +139,6 @@ Class test {
           (index_keywords
             (index_keyword
               (index_keyword_data
-                (identifier)
                 (rhs
                   (identifier))))))))))
 
@@ -159,12 +153,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -175,7 +169,6 @@ Class test {
           (index_keywords
             (index_keyword
               (index_keyword_type
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -189,12 +182,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -208,11 +201,9 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_idkey
-                (identifier)))
+              (index_keyword_idkey))
             (index_keyword
-              (index_keyword_unique
-                (identifier)))))))))
+              (index_keyword_unique))))))))
 
 ===
 Valid Index: Type = key + Unique (BATKey)
@@ -225,12 +216,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -241,11 +232,9 @@ Class test {
           (index_keywords
             (index_keyword
               (index_keyword_type
-                (identifier)
                 (rhs)))
             (index_keyword
-              (index_keyword_unique
-                (identifier))))))
+              (index_keyword_unique)))))
       (block_comment))))
 
 ===
@@ -259,12 +248,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -282,8 +271,7 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_unique
-                (identifier))))))
+              (index_keyword_unique)))))
       (block_comment))))
 
 ===
@@ -297,19 +285,17 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (extent_index_keywords
-            (index_keyword_extent
-              (identifier))
+            (index_keyword_extent)
             (index_keyword
               (index_keyword_type
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -323,12 +309,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -336,12 +322,16 @@ Class test {
               (index_property
                 (identifier
                   (identifier))
-                (index_property_type)))
+                (bracket)
+                (index_property_type)
+                (bracket)))
             (index_item
               (index_property
                 (identifier
                   (identifier))
-                (index_property_type)))))))))
+                (bracket)
+                (index_property_type)
+                (bracket)))))))))
 
 ===
 Valid Index: On clause with As + SQLUPPER/EXACT w/ args
@@ -354,12 +344,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -389,12 +379,12 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -457,13 +447,13 @@ Class User.Employee
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (documatic_line)
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -473,18 +463,14 @@ Class User.Employee
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (parameter_keyword_abstract
-                (identifier)))
+              (parameter_keyword_abstract))
             (index_keyword
               (index_coshardwith
-                (identifier)
                 (rhs)))
             (index_keyword
-              (index_keyword_shardkey
-                (identifier)))
+              (index_keyword_shardkey))
             (index_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -499,12 +485,12 @@ Class Pkg.Test
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -518,11 +504,9 @@ Class Pkg.Test
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_unique
-                (identifier)))
+              (index_keyword_unique))
             (index_keyword
               (index_coshardwith
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -537,12 +521,12 @@ Class Pkg.Test
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -553,15 +537,12 @@ Class Pkg.Test
           (index_keywords
             (index_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs)))
             (index_keyword
               (index_coshardwith
-                (identifier)
                 (rhs)))
             (index_keyword
-              (index_keyword_shardkey
-                (identifier)))))))))
+              (index_keyword_shardkey))))))))
 
 ===
 Index: quoted index name + CoshardWith
@@ -575,12 +556,12 @@ Class Pkg.Test
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier)
+          (index_name)
           (keyword_on)
           (index_properties
             (index_item
@@ -590,7 +571,6 @@ Class Pkg.Test
           (index_keywords
             (index_keyword
               (index_coshardwith
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -605,12 +585,12 @@ Class Pkg.Test
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (index
           (keyword_index)
-          (identifier
+          (index_name
             (identifier))
           (keyword_on)
           (index_properties
@@ -621,7 +601,6 @@ Class Pkg.Test
           (index_keywords
             (index_keyword
               (index_coshardwith
-                (identifier)
                 (rhs)))))))))
 
 ===

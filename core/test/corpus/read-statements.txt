@@ -11,114 +11,140 @@ READ STATEMENTS
   "Family name:",fname
   READ "Type 1 for numbers or 2 for names:",p,#!!!!
 ---
+
 (source_file
   (statements
     (statement
       (command_read
-        command_name: (keyword_read)
-        (read_argument)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
-        (read_argument)
+          (read_fchar)
+          (read_fchar)
+          (read_fchar))
         (read_argument
-          prompt: (_read_prompt))
+          (string_literal))
         (read_argument
-          variable: (glvn
-            (lvn
-              (objectscript_identifier))))
-        (read_argument)
+          (read_fchar))
         (read_argument
-          prompt: (_read_prompt))))
+          (string_literal))
+        (read_argument
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
+        (read_argument
+          (read_fchar))
+        (read_argument
+          (string_literal))))
     (statement
       (command_read
-        command_name: (keyword_read)
-        (read_argument)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
+          (read_fchar))
         (read_argument
-          variable: (glvn
-            (lvn
-              (objectscript_identifier))))))
+          (string_literal))
+        (read_argument
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_read
-        command_name: (keyword_read)
-        (read_argument)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
+          (read_fchar))
         (read_argument
-          single_character: (glvn
-            (lvn
-              (objectscript_identifier))))))
+          (string_literal))
+        (read_argument
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_read
-        command_name: (keyword_read)
-        (read_argument)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
+          (read_fchar))
         (read_argument
-          fixed: (glvn
-            (lvn
-              (objectscript_identifier)))
-          fixed: (expression
-            (expr_atom
-              (numeric_literal))))))
+          (string_literal))
+        (read_argument
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
     (statement
       (command_read
-        command_name: (keyword_read)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
+          (string_literal))
         (read_argument
-          fixed: (glvn
-            (lvn
-              (objectscript_identifier)))
-          fixed: (expression
-            (expr_atom
-              (numeric_literal)))
-          timeout: (expression
-            (expr_atom
-              (numeric_literal))))
-        (read_argument)
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))))
         (read_argument
-          prompt: (_read_prompt))
+          (read_fchar))
         (read_argument
-          fixed: (glvn
-            (lvn
-              (objectscript_identifier)))
-          fixed: (expression
-            (expr_atom
-              (numeric_literal)))
-          timeout: (expression
-            (expr_atom
-              (numeric_literal))))
-        (read_argument)
+          (string_literal))
         (read_argument
-          prompt: (_read_prompt))
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))))
         (read_argument
-          variable: (glvn
-            (lvn
-              (objectscript_identifier))))))
+          (read_fchar))
+        (read_argument
+          (string_literal))
+        (read_argument
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_read
-        command_name: (keyword_read)
+        (keyword_read)
         (read_argument
-          prompt: (_read_prompt))
+          (string_literal))
         (read_argument
-          variable: (glvn
-            (lvn
-              (objectscript_identifier))))
-        (read_argument)))))
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)))))
+        (read_argument
+          (read_fchar)
+          (read_fchar)
+          (read_fchar)
+          (read_fchar)
+          (read_fchar))))))
 
 ===============================
 READ STATEMENT WITH INDIRECTION
 ===============================
  READ !,@MESS(dtype),val(x)
 ---
+
 (source_file
   (statements
     (statement
       (command_read
-        command_name: (keyword_read)
-        (read_argument)
+        (keyword_read)
+        (read_argument
+          (read_fchar))
         (read_argument
           (indirection
             (expression
@@ -126,16 +152,21 @@ READ STATEMENT WITH INDIRECTION
                 (lvn
                   (objectscript_identifier)
                   (subscripts
+                    (bracket)
                     (expression
                       (expr_atom
                         (lvn
-                          (objectscript_identifier))))))))))
+                          (objectscript_identifier))))
+                    (bracket)))))))
         (read_argument
-          variable: (glvn
-            (lvn
-              (objectscript_identifier)
-              (subscripts
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+          (read_variable
+            (glvn
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket))))))))))

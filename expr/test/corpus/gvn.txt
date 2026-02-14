@@ -1,0 +1,263 @@
+==================================
+Basic global variable
+==================================
+ ^patient
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn))))
+
+==================================
+Global variable beginning with %
+==================================
+ ^%session
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn))))
+
+==================================
+Global variable with digits
+==================================
+ ^A1B2
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn))))
+
+==================================
+Global variable with period
+==================================
+ ^Patient.Index
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn))))
+
+==================================
+Global variable with subscripts
+==================================
+ ^patient("name",1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Extended reference with |namespace|
+==================================
+ ^|"SAMPLES"|patient(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Extended reference with [namespace]
+==================================
+ ^["SAMPLES"]patient(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Extended reference with namespace,volset in pipes
+==================================
+ ^|"SAMPLES","IRISLIB"|patient(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Extended reference with namespace,volset in brackets
+==================================
+ ^["SAMPLES","IRISLIB"]patient(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global with || prefix
+==================================
+ ^||flintstones(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global with ^|"^"| prefix
+==================================
+ ^|"^"|flintstones(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global with ^["^"] prefix
+==================================
+ ^["^"]flintstones(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global with ^|"^","^^"| prefix
+==================================
+ ^|"^","^^"|flintstones(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global with ^["^","^^"] prefix
+==================================
+ ^["^","^^"]flintstones(1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (string_literal)
+        (string_literal)
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (bracket))))))
+
+==================================
+Process-private global beginning with %
+==================================
+ ^||%zmyvar("x")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (gvn
+        (subscripts
+          (bracket)
+          (expression
+            (expr_atom
+              (string_literal)))
+          (bracket))))))
+
+==================================
+Global variable starting with digit
+:error
+==================================
+ ^1bad
+---
+
+
+
+==================================
+Process-private global starting with digit
+:error
+==================================
+ ^||1bad
+---
+
+

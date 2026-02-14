@@ -17,10 +17,12 @@ proc1() [a, b]
       (procedure
         (tag_with_params
           (tag)
-          (parameter_list))
+          (parameter_list
+            (bracket)
+            (bracket)))
         (procedure_pub_vars
-          (objectscript_identifier)
-          (objectscript_identifier))
+          (attribute)
+          (attribute))
         (statement
           (command_write
             (keyword_write)
@@ -133,10 +135,12 @@ MyProc(x,y) PUBLIC { }
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (keyword_public)))))
 
 ========================
@@ -154,20 +158,24 @@ MyProc2(x,y) { }
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (keyword_private)))
     (statement
       (procedure
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))))))
+              (objectscript_identifier))
+            (bracket)))))))
 
 ================
 Valid Procedures
@@ -184,19 +192,21 @@ MyProc(x,y)[x] {
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (procedure_pub_vars
-          (objectscript_identifier))
+          (attribute))
         (statement
           (command_do
             (keyword_do)
             (do_parameter
               (routine_tag_call
                 (line_ref
-                  (label_ref)
+                  (objectscript_identifier)
                   (routine_ref
                     (dotted_identifier_relaxed_token)))))))))))
 
@@ -225,10 +235,12 @@ Label1 // Label1 that is part of Rou1 and neither procedure
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (statement
           (tag))
         (line_comment_1)))
@@ -237,12 +249,14 @@ Label1 // Label1 that is part of Rou1 and neither procedure
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (statement
           (tag))
         (line_comment_1)))
@@ -271,17 +285,19 @@ Label1 ; The DO calls this label
         (tag_with_params
           (tag)
           (parameter_list
+            (bracket)
             (tag_parameter
               (objectscript_identifier))
             (tag_parameter
-              (objectscript_identifier))))
+              (objectscript_identifier))
+            (bracket)))
         (statement
           (command_do
             (keyword_do)
             (do_parameter
               (routine_tag_call
                 (line_ref
-                  (label_ref)
+                  (objectscript_identifier)
                   (routine_ref
                     (dotted_identifier_relaxed_token)))))))
         (statement

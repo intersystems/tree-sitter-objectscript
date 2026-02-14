@@ -1,0 +1,336 @@
+==================================
+$SELECT with single condition
+==================================
+ $SELECT(x=1:"one")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+==================================
+$SELECT with multiple conditions
+==================================
+ $SELECT(x=1:"one",x=2:"two",1:"default")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+==================================
+$SELECT with variable values
+==================================
+ $SELECT(cond:val1,1:val2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+==================================
+$SELECT shorthand with conditions
+==================================
+ $S(a:1,b:2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$SELECT case insensitive
+==================================
+ $select(1:"yes")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+==================================
+$SELECT with nested functions
+==================================
+ $SELECT($DATA(x):$GET(x),1:"none")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+==================================
+$SELECT with complex conditions
+==================================
+ $SELECT(x>0&(y>0):"positive",1:"other")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (parenthetical_expression
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))
+                      (bracket))))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+==================================
+$STORAGE as system variable
+==================================
+ $STORAGE
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$S without parentheses is $STORAGE
+==================================
+ $S
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$S with parentheses is $SELECT
+==================================
+ $S(1:x)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+==================================
+$STORAGE case insensitive
+==================================
+ $storage
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$STORAGE in expression
+==================================
+ $STORAGE>1000
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))
+
+==================================
+$SELECT with string concatenation result
+==================================
+ $SELECT(type="A":"Type "_type,1:"Unknown")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_select
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal)))))
+            (expression
+              (expr_atom
+                (string_literal))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))
+          (dollar_arg_pair
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))))))))

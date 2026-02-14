@@ -543,8 +543,7 @@ ZBREAK Valid location:::Execute_code
           (zbreak_arg
             (zbreak_location
               (objectscript_identifier))
-            (zbreak_execute_command
-              (string_literal))))))))
+            (string_literal)))))))
 
 ======================
 ZBREAK Valid location
@@ -708,8 +707,7 @@ ZBREAK Valid location::condition:execute_code
                   (expression
                     (expr_atom
                       (numeric_literal))))))
-            (zbreak_execute_command
-              (string_literal))))))
+            (string_literal)))))
     (statement
       (command_zbreak
         (keyword_zbreak)
@@ -727,8 +725,7 @@ ZBREAK Valid location::condition:execute_code
                   (expression
                     (expr_atom
                       (numeric_literal))))))
-            (zbreak_execute_command
-              (string_literal))))))))
+            (string_literal)))))))
 
 ===================================================
 ZBREAK Valid location:action:condition:execute_code
@@ -757,8 +754,7 @@ ZBREAK Valid location:action:condition:execute_code
                   (expression
                     (expr_atom
                       (numeric_literal))))))
-            (zbreak_execute_command
-              (string_literal))))))
+            (string_literal)))))
     (statement
       (command_zbreak
         (keyword_zbreak)
@@ -777,8 +773,7 @@ ZBREAK Valid location:action:condition:execute_code
                   (expression
                     (expr_atom
                       (numeric_literal))))))
-            (zbreak_execute_command
-              (string_literal))))))))
+            (string_literal)))))))
 
 ==========================================
 ZBREAK Valid location:action::execute_code
@@ -797,8 +792,7 @@ ZBREAK Valid location:action::execute_code
             (zbreak_location
               (objectscript_identifier))
             (string_literal)
-            (zbreak_execute_command
-              (string_literal))))))
+            (string_literal)))))
     (statement
       (command_zbreak
         (keyword_zbreak)
@@ -807,8 +801,7 @@ ZBREAK Valid location:action::execute_code
             (zbreak_location
               (objectscript_identifier))
             (string_literal)
-            (zbreak_execute_command
-              (string_literal))))))))
+            (string_literal)))))))
 
 =======================
 ZBREAK Invalid --
@@ -826,23 +819,31 @@ ZBREAK Invalid condition
   ZBREAK *x::x=2
 ---
 
+
+
 ========================
-ZBREAK Invalid 
+ZBREAK Invalid
 :error
 ========================
   ZBREAK *x:
 ---
 
+
+
 ========================
-ZBREAK Invalid 
+ZBREAK Invalid
 :error
 ========================
   ZBREAK *x::
 ---
 
+
+
 ========================
-ZBREAK Invalid 
+ZBREAK Invalid
 :error
 ========================
   ZBREAK *x:::
 ---
+
+

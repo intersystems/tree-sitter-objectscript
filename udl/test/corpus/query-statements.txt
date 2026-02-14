@@ -17,23 +17,23 @@ Query ByName(name As %String = "")
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
               (identifier)
-              (argument_type
+              (return_type
                 (keyword_as)
                 (typename
                   (identifier)))
               (default_argument_value
                 (string_literal))))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
@@ -49,11 +49,9 @@ Query ByName(name As %String = "")
           (query_keywords
             (query_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs)))
             (query_keyword
-              (method_keyword_sql_proc
-                (identifier))))
+              (method_keyword_sql_proc)))
           (query_body
             (query_body_content)))))))
 
@@ -74,23 +72,23 @@ SELECT ID,Name,Title FROM Employee
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
               (identifier)
-              (argument_type
+              (return_type
                 (keyword_as)
                 (typename
                   (identifier)))
               (default_argument_value
                 (string_literal))))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
@@ -102,11 +100,9 @@ SELECT ID,Name,Title FROM Employee
                 (numeric_literal))))
           (query_keywords
             (query_keyword
-              (method_keyword_sql_proc
-                (identifier)))
+              (method_keyword_sql_proc))
             (query_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs))))
           (query_body
             (query_body_content)))))))
@@ -126,31 +122,30 @@ Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
               (identifier)
-              (argument_type
+              (return_type
                 (keyword_as)
                 (typename
                   (identifier)
                   (typename_param
                     (identifier)
                     (numeric_literal))))))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
           (query_keywords
             (query_keyword
-              (method_keyword_sql_proc
-                (identifier))))
+              (method_keyword_sql_proc)))
           (query_body
             (query_body_content)))))))
 
@@ -167,15 +162,15 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments)
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -197,17 +192,17 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
               (identifier)))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -228,12 +223,12 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
@@ -242,7 +237,7 @@ Class Test {
               (identifier))
             (argument
               (identifier)))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -263,14 +258,14 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier)
+          (query_name)
           (arguments)
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -291,22 +286,21 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments)
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
           (query_keywords
             (query_keyword
               (property_keyword_client_name
-                (identifier)
                 (rhs))))
           (query_body
             (query_body_content)))))))
@@ -325,30 +319,28 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments
             (argument
               (identifier))
             (argument
               (identifier)))
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
           (query_keywords
             (query_keyword
               (property_keyword_client_name
-                (identifier)
                 (rhs)))
             (query_keyword
-              (parameter_keyword_final
-                (identifier))))
+              (parameter_keyword_final)))
           (query_body
             (query_body_content)))))))
 
@@ -366,15 +358,15 @@ Class Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (query
           (keyword_query)
-          (identifier
+          (query_name
             (identifier))
           (arguments)
-          (query_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))

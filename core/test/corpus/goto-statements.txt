@@ -28,7 +28,7 @@ Goto Valid Statements
         (keyword_goto)
         (goto_argument
           (line_ref
-            (label_ref))
+            (objectscript_identifier))
           (post_conditional
             (expression
               (expr_atom
@@ -41,35 +41,41 @@ Goto Valid Statements
                     (numeric_literal)))))))
         (goto_argument
           (line_ref
-            (label_ref))
+            (objectscript_identifier))
           (post_conditional
             (expression
               (expr_atom
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))))
+                (parenthetical_expression
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal)))))
+                  (bracket)))
               (expr_tail
                 (binary_operator)
                 (expression
                   (expr_atom
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))))
+                    (parenthetical_expression
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))
+                      (bracket))))))))
         (goto_argument
           (line_ref
-            (label_ref))
+            (objectscript_identifier))
           (post_conditional
             (expression
               (expr_atom
@@ -85,7 +91,7 @@ Goto Valid Statements
         (keyword_goto)
         (goto_argument
           (line_ref
-            (label_ref)
+            (objectscript_identifier)
             (label_offset
               (expression
                 (expr_atom
@@ -95,4 +101,4 @@ Goto Valid Statements
         (keyword_goto)
         (goto_argument
           (line_ref
-            (label_ref)))))))
+            (objectscript_identifier)))))))

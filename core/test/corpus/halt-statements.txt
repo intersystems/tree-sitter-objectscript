@@ -12,35 +12,42 @@ Valid Halt Statements
       (command_halt_or_hang
         (keyword_halt)))
     (statement
-      (command_halt_or_hang))
+      (command_halt_or_hang
+        (keyword_halt_or_hang)))
     (statement
       (command_halt_or_hang
         (keyword_halt)
         (post_conditional
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))
+              (parenthetical_expression
+                (bracket)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (bracket)))
             (expr_tail
               (binary_operator)
               (expression
                 (expr_atom
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (string_literal))))))))))))))
+                  (parenthetical_expression
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (string_literal)))))
+                    (bracket)))))))))))
 
 ============================
 Invalid Halt (has arguments)
@@ -49,9 +56,13 @@ Invalid Halt (has arguments)
  halt 2
 ---
 
+
+
 ================================================
 Invalid Halt With PostConditional (has arguments)
 :error
 ================================================
  halt:x>2 2
 ---
+
+
