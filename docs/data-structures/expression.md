@@ -2,261 +2,161 @@
 
 ## Overview
 
-The `expression` rule defines the AST structure for ObjectScript expressions—the fundamental building blocks for values, computations, and object interactions. It serves as the root of the `expr` grammar.
+The `expression` rule is the root construct for all ObjectScript expressions. It represents any value-producing construct in the language, from simple literals to complex chained method calls.
 
 ## Definition
 
-**Location:** `expr/grammar.js:32-40`
+**Location**: `expr/grammar.js:36-42`
 
 ```javascript
 expression: ($) =>
-  prec.left(
-    seq(
-      $.expr_atom,
-      repeat($.expr_tail),
+    prec.left(
+        seq(
+            $.expr_atom,
+            repeat($.expr_tail),
+        ),
     ),
-  ),
 ```
 
-## AST Node Structure
+## Structure
+
+### AST Shape
 
 ```
-expression
-├── expr_atom (first operand)
-│   └── (one of many atom types)
-└── expr_tail* (operators and subsequent operands)
-    ├── operator: binary_operator
-    └── expression (right operand)
+(expression
+  (expr_atom ...)          ; Required: one atomic expression
+  (expr_tail ...)*         ; Optional: zero or more binary operations
+)
 ```
 
-## Expression Atoms
+### Components
 
-The `expr_atom` rule defines all possible expression starting points:
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `expr_atom` | node | Yes | The leading atomic expression |
+| `expr_tail` | node[] | No | Zero or more binary operator + expression pairs |
 
-**Location:** `expr/grammar.js:42-78`
+### expr_atom Choices
+
+The `expr_atom` rule is a `choice()` of:
+
+- `json_object_literal` — `{"key": value}`
+- `parenthetical_expression` — `(expression)`
+- `unary_expression` — `+expr`, `-expr`, `'expr`, `@var`
+- `macro` — `$$$MacroName`, `$$$MacroFunc(args)`
+- `string_literal` — `"text"`
+- `numeric_literal` — `123`, `3.14`, `1E10`
+- `json_array_literal` — `[1, 2, 3]`
+- `lvn` — local variable `x`, `arr(1,2)`
+- `gvn` — global variable `^name`, `^|ns|name(sub)`
+- `ssvn` — structured system variable `^$LOCK`, `^$JOB`
+- `instance_variable` — `i%prop`, `r%prop`, `m%prop`
+- `sql_field_reference` — `{field}`, `{field*O}`
+- `system_defined_variable` — `$HOROLOG`, `$JOB`, `$NAMESPACE`
+- `system_defined_function` — `$PIECE()`, `$LIST()`, `$GET()`
+- `extrinsic_function` — `$$label^routine(args)`
+- `relative_dot_property` — `..PropertyName`
+- `relative_dot_method` — `..MethodName(args)`
+- `relative_dot_parameter` — `..#ParamName`
+- `oref_chain_expr` — `oref.prop.method().#Param`
+- `class_method_call` — `##class(Pkg.Class).Method(args)`
+- `class_parameter_ref` — `##class(Pkg.Class).#Param`
+- `superclass_method_call` — `##super(args)`
+
+**Evidence**: `expr/grammar.js:44-75`
+
+### expr_tail Structure
 
 ```javascript
-expr_atom: ($) =>
-  choice(
-    // Literals
-    $.string_literal,
-    $.numeric_literal,
-    $.json_object_literal,
-    $.json_array_literal,
-
-    // Variables
-    $.lvn,                    // Local variable
-    $.gvn,                    // Global variable
-    $.ssvn,                   // Structured system variable
-    $.instance_variable,      // i%prop, r%prop, m%prop
-    $.sql_field_reference,    // {fieldname}
-
-    // Built-in functions
-    $.system_defined_variable,  // $HOROLOG, $JOB, etc.
-    $.system_defined_function,  // $LENGTH(), $PIECE(), etc.
-    $.dollarsf,                 // $SYSTEM.class.method()
-
-    // User-defined functions
-    $.extrinsic_function,       // $$label^routine()
-
-    // Object references
-    $.relative_dot_property,    // ..PropertyName
-    $.relative_dot_method,      // ..MethodName()
-    $.relative_dot_parameter,   // ..#ParamName
-    $.oref_chain_expr,          // oref.prop.method()
-
-    // Class references
-    $.class_method_call,        // ##class(Cls).Method()
-    $.class_parameter_ref,      // ##class(Cls).#Param
-    $.superclass_method_call,   // ##super()
-
-    // Special
-    $.unary_expression,         // +x, -x, 'x, @indirect
-    $._parenthetical_expression, // (expr)
-    $.macro,                    // $$$MacroName
-  ),
-```
-
-## Binary Operators
-
-**Location:** `expr/grammar.js:91-125`
-
-| Category | Operators | Description |
-|----------|-----------|-------------|
-| Arithmetic | `**`, `*`, `/`, `\\`, `#`, `+`, `-` | Math operations |
-| Comparison | `=`, `'=`, `<`, `<=`, `'>`, `>`, `>=`, `'<` | Value comparison |
-| Logical | `!`, `\|\|`, `'!`, `&`, `&&`, `'&`, `'` | Boolean logic |
-| String | `_`, `]`, `']`, `[`, `'[`, `]]`, `']]` | String operations |
-| Pattern | `?`, `'?` | Pattern matching |
-
-**Note:** All ObjectScript operators have the same precedence (left-associative).
-
-## Unary Expressions
-
-**Location:** `expr/grammar.js:82-98`
-
-```javascript
-unary_expression: ($) =>
-  choice(
-    seq(field('operator', $._unary_operator), $.expression),
-    seq(field('operator', '@'), $.glvn, optional(
-      seq(token.immediate('@'), $.subscripts)),
+expr_tail: ($) =>
+    prec.left(
+        1,
+        choice(
+            seq(
+                $.binary_operator,
+                $.expression,
+            ),
+            $.pattern_operator,
+        ),
     ),
-  ),
-_unary_operator: (_) => choice('+', '-', "'"),
 ```
 
-| Operator | Meaning |
-|----------|---------|
-| `+` | Numeric positive |
-| `-` | Numeric negation |
-| `'` | Logical NOT |
-| `@` | Indirection |
-
-## Key Sub-Structures
-
-### Local Variable (`lvn`)
-
-**Location:** `expr/grammar.js:260`
-
-```javascript
-lvn: ($) => prec.right(seq($.objectscript_identifier, optional($.subscripts))),
-```
-
-**Examples:** `x`, `arr(1)`, `data("key",2)`
-
-### Global Variable (`gvn`)
-
-**Location:** `expr/grammar.js:250-260`
-
-```javascript
-gvn: ($) => prec.right(seq(
-  '^',
-  optional(/* namespace */),
-  optional(token.immediate(/* name */)),
-  optional($.subscripts),
-)),
-```
-
-**Examples:** `^Data`, `^|"NS"|Global(1)`, `^["%SYS"]Config`
-
-### Object Reference Chain (`oref_chain_expr`)
-
-**Location:** `expr/grammar.js:295-320`
-
-```javascript
-oref_chain_expr: ($) =>
-  prec.right(2, seq(
-    choice($.lvn, $.instance_variable, /* ... */),
-    repeat1($._oref_chain_segment),
-    optional(seq(token.immediate('.'), $.oref_parameter)),
-  )),
-```
-
-**Examples:** `obj.Prop`, `obj.Method()`, `obj.A.B().C`
-
-### System Functions (`system_defined_function`)
-
-**Location:** `expr/grammar.js:410-550`
-
-Includes specialized rules for:
-- `dollar_piece` — `$PIECE(str,delim,from,to)`
-- `dollar_extract` — `$EXTRACT(str,from,to)`
-- `dollar_list` — `$LIST(list,pos)`
-- `dollar_case` — `$CASE(val, match:result, ...)`
-- `dollar_select` — `$SELECT(cond:val, ...)`
-- `dollar_function` — Generic `$FUNC(args...)`
-
-## Ownership
-
-- **Parent:** Various statement rules in `core` grammar, method bodies in `udl`
-- **Created by:** Parser during expression parsing
-- **Consumed by:** Evaluators, type checkers, code generators
+**Evidence**: `expr/grammar.js:77-89`
 
 ## Lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> Parsed: Source text parsed
-    Parsed --> TypeChecked: Semantic analysis
-    Parsed --> Highlighted: Syntax highlighting
-    TypeChecked --> Evaluated: Runtime execution
-    Highlighted --> [*]
-    Evaluated --> [*]
-```
+| Phase | Description |
+|-------|-------------|
+| Parse | tree-sitter matches source text against `expression` rule |
+| AST Creation | `expression` node created with children |
+| Query | Highlight queries traverse expression for captures |
+| Injection | Not applicable (expressions don't trigger injection) |
 
 ## Invariants
 
-1. `expression` always has at least one `expr_atom`
-2. Binary operators require both left and right operands
-3. Subscripts require at least one expression
-4. Method args may have empty positions (passed by reference detection)
+1. An `expression` always contains exactly one `expr_atom`
+2. Binary operators are left-associative (all have equal precedence)
+3. Pattern operators (`?`, `'?`) can only appear in `expr_tail`
+4. Expressions are recursive: `expr_tail` contains another `expression`
 
-## Precedence Rules
+## Usage Patterns
 
-**Location:** `expr/grammar.js:22-28`
+### In Statements
 
-```javascript
-precedences: ($) => [
-  [$.oref_method, $.oref_property],
-  [$.method_arg, $.subscripts],
-  [$.oref_chain_expr, $.expr_atom],
-  [$.label_ref, $.lvn],
-  [$.class_method_call, $.oref_method],
-],
+```objectscript
+SET x = expression
+WRITE expression
+IF expression { }
 ```
 
-These resolve ambiguities:
-- `obj.name()` → method call, not property with subscripts
-- `$$label^routine` → extrinsic function, not variable
+### As Arguments
 
-## Query Patterns
-
-### Highlight Literals
-```scheme
-(numeric_literal) @number
-(string_literal) @string
+```objectscript
+$PIECE(expression, expression, expression)
+##class(Pkg.Class).Method(expression, expression)
 ```
 
-### Highlight Functions
-```scheme
-(system_defined_function
-  (dollar_piece) @function.builtin)
-(system_defined_function
-  (dollar_function
-    builtin_function: _ @function.builtin))
+### In Subscripts
+
+```objectscript
+arr(expression, expression)
+^global(expression)
 ```
 
-### Highlight Variables
-```scheme
-(lvn (objectscript_identifier) @variable)
-(gvn) @variable.global
-```
+## Constraints
 
-**Location:** `expr/queries/highlights.scm`
+- No side effects at parse time (side effects occur at runtime)
+- No type information (ObjectScript is dynamically typed)
+- Whitespace between tokens is allowed (handled by tree-sitter)
+
+## Update Paths
+
+| Operation | Location | Notes |
+|-----------|----------|-------|
+| Add new expr_atom | `expr/grammar.js:44-75` | Add to `choice()` in `expr_atom` |
+| Add new operator | `expr/grammar.js:99-130` | Add to `binary_operator` rule |
+| Modify precedence | `expr/grammar.js:23-28` | Update `precedences` array |
 
 ## Related Structures
 
-- `statement` — Contains expressions in commands
-- `method_args` — Expression list for function calls
-- `subscripts` — Expression list for array access
-- `glvn` — Union of `gvn`, `lvn`, `ssvn`, `macro`
+- `statement` (core) — Contains expressions as arguments
+- `method_arg` (expr) — Expression used as method argument
+- `set_argument` (core) — Expression on RHS of SET command
 
 ## Assumptions
 
-1. All binary operators have equal precedence (per ObjectScript spec)
-2. Indirection (`@`) can appear in most expression contexts
-3. JSON literals are valid ObjectScript expressions
+- All ObjectScript binary operators have equal precedence
+- Unary operators bind tighter than binary operators
+- Pattern expressions are not nested
 
 ## Open Questions
 
-1. Should pattern expressions (`?1N2A`) be first-class expression atoms?
-2. How should expression type inference work for language servers?
+- Should `expression` capture the full text range for error reporting?
+- How to handle malformed expressions gracefully for editor tolerance?
 
 ## Evidence
 
-- `expr/grammar.js:32-78` — Expression and atom definitions
-- `expr/grammar.js:91-125` — Binary operator list
-- `expr/grammar.js:250-320` — Variable and object reference rules
-- `expr/queries/highlights.scm` — Highlight patterns
-- `expr/test/corpus/` — Expression test cases
+- `expr/grammar.js:36-42` — `expression` rule definition
+- `expr/grammar.js:44-75` — `expr_atom` choices
+- `expr/grammar.js:77-89` — `expr_tail` definition
+- `expr/grammar.js:99-130` — `binary_operator` definition

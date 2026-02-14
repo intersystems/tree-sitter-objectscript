@@ -2,246 +2,271 @@
 
 ## Overview
 
-The `method_definition` rule defines the AST structure for ObjectScript method declarations within UDL class files. It captures method name, arguments, return type, and body with support for four distinct body variants.
+The `method_definition` rule represents the structure of an ObjectScript method (instance or class method) in UDL format. It includes the method name, arguments, return type, keywords, and body.
 
 ## Definition
 
-**Location:** `udl/grammar.js:275-290`
+**Location**: `udl/grammar.js:173-179`
 
 ```javascript
 method_definition: ($) =>
   seq(
-    field('name', alias($.quote_permitting_identifier, $.identifier)),
-    field('arguments', $.arguments),
-    optional(field('return_type', $.return_type)),
+    alias($.quote_permitting_identifier, $.method_name),
+    $.arguments,
+    optional($.return_type),
     choice($._core_method, $._expression_method, $._external_method, $._call_method),
   ),
 ```
 
-## AST Node Structure
+## Structure
+
+### AST Shape
 
 ```
-method_definition
-├── name: identifier
-├── arguments: arguments
-│   └── argument* (with optional types and defaults)
-├── return_type?: return_type
-│   ├── keyword_as
-│   └── typename
-└── body: (one of)
-    ├── _core_method
-    │   ├── keywords?: method_keywords
-    │   └── body: core_method_body_content
-    ├── _expression_method
-    │   ├── keywords: expression_method_keywords
-    │   └── body: expression_method_body_content
-    ├── _external_method
-    │   ├── keywords: external_method_keywords
-    │   └── body: external_method_body_content
-    └── _call_method
-        ├── keywords: call_method_keywords
-        └── routine_tag_call
+(method_definition
+  (method_name)                       ; Method identifier
+  (arguments                          ; (arg1, arg2, ...)
+    (argument)*)?
+  (return_type                        ; As ReturnType
+    (typename))?
+  ; One of:
+  (method_keywords)?                  ; [ Keywords ] { ObjectScript body }
+  ; OR
+  (expression_method_keywords)?       ; [ CodeMode = expression ] { expr }
+  ; OR
+  (external_method_keywords)?         ; [ Language = python ] { external body }
+  ; OR
+  (call_method_keywords)?             ; [ CodeMode = call ] { tag^routine }
+)
 ```
 
-## Fields
+### Components
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `name` | `identifier` | Yes | Method name (may be quoted) |
-| `arguments` | `arguments` | Yes | Parameter list in parentheses |
-| `return_type` | `return_type` | No | Return type with `As` keyword |
-| `keywords` | `*_method_keywords` | Varies | Method modifiers in brackets |
-| `body` | `*_body_content` | Yes | Method implementation |
+| `method_name` | `quote_permitting_identifier` | Yes | Method name (may be quoted) |
+| `arguments` | node | Yes | Parenthesized argument list |
+| `return_type` | node | No | `As TypeName` clause |
+| Body variant | node | Yes | One of four body types |
 
-## Body Variants
+### Body Variants
 
-### 1. Core Method (`_core_method`)
+#### 1. Core Method (`_core_method`)
 
-Standard ObjectScript method with statements.
-
-**Location:** `udl/grammar.js:295-302`
+Standard ObjectScript body:
 
 ```javascript
 _core_method: ($) =>
   seq(
-    optional(field('keywords', $.method_keywords)),
+    optional($.method_keywords),
     '{',
-    field('body', alias(repeat($.statement), $.core_method_body_content)),
+    repeat($.statement),
     '}',
   ),
 ```
 
-**Example:**
-```objectscript
-Method Calculate(x As %Integer) As %Integer
-{
-    Set result = x * 2
-    Return result
-}
-```
+**Evidence**: `udl/grammar.js:187-193`
 
-### 2. Expression Method (`_expression_method`)
+#### 2. Expression Method (`_expression_method`)
 
-Single expression return with `[ CodeMode = expression ]`.
-
-**Location:** `udl/grammar.js:304-316`
+Single expression body (CodeMode = expression):
 
 ```javascript
 _expression_method: ($) =>
   seq(
-    field('keywords', $.expression_method_keywords),
+    $.expression_method_keywords,
     '{', 
-    field('body', alias($.expression, $.expression_method_body_content)),
+    alias($.expression, $.expression_method_body_content),
     '}',
   ),
 ```
 
-**Example:**
-```objectscript
-Method Double(x As %Integer) As %Integer [ CodeMode = expression ]
-{
-    x * 2
-}
-```
+**Evidence**: `udl/grammar.js:195-202`
 
-### 3. External Method (`_external_method`)
+#### 3. External Method (`_external_method`)
 
-External language body with `[ Language = python|javascript|tsql ]`.
-
-**Location:** `udl/grammar.js:318-326`
+External language body (Language = python/tsql/ispl):
 
 ```javascript
 _external_method: ($) =>
   seq(
-    field('keywords', $.external_method_keywords),
+    $.external_method_keywords,
     '{',
-    field('body', $.external_method_body_content),
+    $.external_method_body_content,
     '}',
   ),
 ```
 
-**Example:**
-```objectscript
-Method PyCalculate(x As %Integer) As %Integer [ Language = python ]
-{
-    return x * 2
-}
-```
+**Evidence**: `udl/grammar.js:204-211`
 
-### 4. Call Method (`_call_method`)
+#### 4. Call Method (`_call_method`)
 
-Routine delegation with `[ CodeMode = call ]`.
-
-**Location:** `udl/grammar.js:286-293`
+Routine call body (CodeMode = call):
 
 ```javascript
 _call_method: ($) =>
   seq(
-    field('keywords', $.call_method_keywords),
+    $.call_method_keywords,
     '{', 
     $.routine_tag_call,
     '}',
   ),
 ```
 
-**Example:**
-```objectscript
-Method Legacy() [ CodeMode = call ]
-{
-    LegacyTag^LegacyRoutine
-}
-```
-
-## Method Keywords
-
-Keywords appear in brackets `[ ... ]` and control method behavior:
-
-| Keyword | Values | Effect |
-|---------|--------|--------|
-| `Abstract` | flag | No implementation required |
-| `Final` | flag | Cannot be overridden |
-| `Private` | flag | Class-internal only |
-| `CodeMode` | `expression`, `call`, `objectgenerator`, `generator` | Body interpretation |
-| `Language` | `objectscript`, `python`, `javascript`, `tsql` | Body language |
-| `SqlProc` | flag | Expose as SQL procedure |
-| `WebMethod` | flag | Expose as web method |
-| `ZenMethod` | flag | Expose as Zen method |
-
-**Location:** `udl/keywords.js`
-
-## Ownership
-
-- **Parent:** `method` or `classmethod` rule
-- **Created by:** UDL parser during class parsing
-- **Consumed by:** Language servers, syntax highlighters, injection queries
+**Evidence**: `udl/grammar.js:181-186`
 
 ## Lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> Parsed: Parser encounters Method/ClassMethod
-    Parsed --> Highlighted: Highlight queries applied
-    Parsed --> Injected: Injection queries matched (external body)
-    Highlighted --> [*]
-    Injected --> SubParsed: External grammar parses body
-    SubParsed --> [*]
+| Phase | Description |
+|-------|-------------|
+| Parse | UDL grammar matches method structure |
+| AST Creation | `method_definition` with appropriate body variant |
+| Query | Highlight queries capture method name as `@function` |
+| Injection | External bodies trigger language injection (Python, TSQL, ISPL) |
+
+## Arguments Structure
+
+```javascript
+arguments: ($) =>
+  seq(
+    token.immediate('('), 
+    optional(seq($.argument, repeat(seq(',', $.argument)))), 
+    ')'
+  ),
+
+argument: ($) =>
+  seq(
+    optional(choice(field('keyword', $.keyword_byref), field('keyword', $.keyword_output))),
+    $.identifier,
+    optional($.return_type),
+    optional(seq('=', $.default_argument_value)),
+  ),
 ```
+
+**Evidence**: `udl/grammar.js:217-230`
+
+### Argument Components
+
+| Component | Required | Description |
+|-----------|----------|-------------|
+| `ByRef`/`Output` | No | Pass-by-reference modifier |
+| Identifier | Yes | Argument name |
+| Return type | No | `As TypeName` |
+| Default value | No | `= value` |
 
 ## Invariants
 
-1. `arguments` is always present (may be empty `()`)
-2. Exactly one body variant is matched
-3. `external_method_body_content` is opaque text (not parsed as ObjectScript)
-4. Keywords determine which body variant is valid
+1. Method name is always present
+2. Arguments list is always present (may be empty `()`)
+3. Exactly one body variant is used
+4. Keywords in brackets precede body `{ }`
+5. Body is always enclosed in `{ }`
+
+## Usage Patterns
+
+### Instance Method
+
+```objectscript
+Method GetName() As %String {
+  Return ..Name
+}
+```
+
+### Class Method
+
+```objectscript
+ClassMethod Create(name As %String) As MyClass {
+  SET obj = ..%New()
+  SET obj.Name = name
+  Return obj
+}
+```
+
+### Method with Keywords
+
+```objectscript
+Method Calculate() As %Integer [ Private, Final ] {
+  // ...
+}
+```
+
+### Expression Method
+
+```objectscript
+Method IsValid() As %Boolean [ CodeMode = expression ] {
+  ..Name '= ""
+}
+```
+
+### Python Method
+
+```objectscript
+Method ProcessData(data As %String) [ Language = python ] {
+import json
+result = json.loads(data)
+return result
+}
+```
+
+### Call Method
+
+```objectscript
+Method DoWork() [ CodeMode = call ] {
+Work^MyRoutine
+}
+```
+
+## Constraints
+
+- Method names can be quoted for special characters: `Method "My Method"()`
+- External methods require corresponding Language keyword
+- Expression methods must have exactly one expression
 
 ## Update Paths
 
-Method definitions are read-only AST nodes. Updates occur via:
-
-1. **Source edit** → Full or incremental re-parse
-2. **Injection** → Body re-parsed with external grammar
-
-## Query Patterns
-
-### Highlight Query (method name)
-```scheme
-(method_definition
-  name: (identifier) @function.method)
-```
-
-### Injection Query (Python body)
-```scheme
-(method_definition
-  keywords: (external_method_keywords
-    (method_keyword_language (rhs) @lang))
-  body: (external_method_body_content) @injection.content
-  (#match? @lang "(?i)^python$")
-  (#set! injection.language "python"))
-```
-
-**Location:** `udl/queries/injections.scm:8-15`
+| Operation | Location | Notes |
+|-----------|----------|-------|
+| Add method keyword | `udl/keywords.js` | Add to `method_keywords` rule |
+| Add body variant | `udl/grammar.js:173-179` | Add to `choice()` |
+| Modify argument syntax | `udl/grammar.js:217-230` | Update `argument` rule |
 
 ## Related Structures
 
-- `method` / `classmethod` — Parent rules that include keyword
-- `arguments` — Parameter list structure
-- `return_type` — Type annotation structure
-- `method_keywords` / `external_method_keywords` — Keyword collections
+- `method` (udl) — Wrapper with `Method` keyword
+- `classmethod` (udl) — Wrapper with `ClassMethod` keyword
+- `statement` (core) — Statements within core method body
+- `expression` (expr) — Expression in expression method body
+
+## Injection Queries
+
+External methods trigger language injection:
+
+```scheme
+(method_definition
+  (external_method_keywords
+    (method_keyword_language
+      (rhs) @lang))
+  (external_method_body_content) @injection.content
+  (#match? @lang "^[Pp][Yy][Tt][Hh][Oo][Nn]$")
+  (#set! injection.language "python"))
+```
+
+**Evidence**: `udl/queries/injections.scm:1-15`
 
 ## Assumptions
 
-1. Method body always enclosed in `{ }`
-2. Keywords always enclosed in `[ ]`
-3. Quote-permitting identifiers handle `"special%names"`
+- Method bodies are syntactically complete
+- External language content is passed verbatim to injected parser
+- Default argument values can be complex expressions
 
 ## Open Questions
 
-1. Should `generator` and `objectgenerator` code modes have dedicated body types?
-2. How should malformed keyword combinations be handled?
+- Should generator methods have a distinct body variant?
+- How to handle syntax errors within method bodies?
 
 ## Evidence
 
-- `udl/grammar.js:275-340` — Method definition and body variants
+- `udl/grammar.js:173-211` — Method definition and body variants
+- `udl/grammar.js:217-230` — Arguments structure
 - `udl/keywords.js` — Method keyword definitions
-- `udl/queries/injections.scm:8-50` — Injection patterns for external methods
-- `udl/test/corpus/class-method.txt` — Test cases
+- `udl/queries/injections.scm:1-35` — Method body injections

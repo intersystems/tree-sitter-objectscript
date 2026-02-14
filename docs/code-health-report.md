@@ -1,34 +1,32 @@
-# Code Health Report: tree-sitter-objectscript
-
-**Date:** Generated from current codebase analysis  
-**Scope:** Grammar files, scanner, keywords, utilities  
-**Lines of Code:** ~5,300 lines across core grammar files
-
----
+# Code Health Report - tree-sitter-objectscript
 
 ## Executive Summary
 
-| Category | Count | Severity |
-|----------|-------|----------|
-| Missing Features | 8 | Medium |
-| Code Complexity | 4 | Low |
-| Consistency Issues | 3 | Low |
-| Documentation Gaps | 5 | Low |
-| Potential Bugs | 2 | Medium |
-
-**Overall Health:** Good ✅  
-The codebase is well-structured with clear separation of concerns. Main areas for improvement are completing unimplemented features and reducing some grammar conflicts.
+| Metric | Status | Details |
+|--------|--------|---------|
+| **Overall Health** | ✅ Good | Well-structured, maintainable codebase |
+| **Technical Debt** | 🟡 Low-Medium | Some unimplemented features, minor style issues |
+| **Test Coverage** | ✅ Good | 94 corpus test files across 3 grammars |
+| **Documentation** | ✅ Good | Comprehensive README, inline comments |
+| **Code Quality** | ✅ Good | Consistent patterns, type annotations |
 
 ---
 
-## Findings
+## Findings by Severity
 
-### ❌ Missing Features (Documented)
+### 🔴 Critical Issues
 
-#### MF-1: Unimplemented Preprocessor Directives
-**Severity:** Medium  
-**Location:** `core/grammar.js:357-360`
+*None identified.*
 
+---
+
+### 🟠 High Priority
+
+#### H1: Unimplemented Preprocessor Directives
+
+**Location**: `core/grammar.js:420-423`
+
+**Evidence**:
 ```javascript
 // TODO: Unimplemented preprocessor directives (lower priority):
 // #noshow, #show, #sqlcompile (audit/mode/path/select), #undef,
@@ -36,298 +34,277 @@ The codebase is well-structured with clear separation of concerns. Main areas fo
 // ##quote, ##quoteExp, ##sql, ##stripq, ##unique
 ```
 
-**Impact:** Users with legacy code using these directives will see parse errors.
+**Impact**: Files using these directives may not parse correctly. Users relying on `##expression` or `##function` macros will see parse errors.
 
-**Recommendation:** Implement in priority order based on usage frequency. Consider `#undef` and `##expression` as higher priority.
+**Suggested Fix**: Implement rules for frequently-used directives, prioritizing `##expression`, `##function`, and `#undef`.
 
----
-
-### ⚠️ Code Complexity
-
-#### CC-1: Large Scanner File
-**Severity:** Low  
-**Location:** `common/scanner.h` (839 lines)
-
-**Evidence:** Single file handles 25+ token types with complex state management.
-
-**Impact:** Difficult to maintain and debug. High cognitive load for contributors.
-
-**Recommendation:** Consider splitting into logical sections:
-- Whitespace handling
-- Marker/fence parsing
-- Comment handling
-- State management
+**Validation**: Add corpus tests for each new directive.
 
 ---
 
-#### CC-2: Grammar Conflicts
-**Severity:** Low  
-**Location:** `core/grammar.js:117-123`, `udl/grammar.js:31-45`
+### 🟡 Medium Priority
 
-**Evidence:**
+#### M1: Duplicated `repeat_with_commas` Utility
+
+**Location**: 
+- `expr/grammar.js:14-17`
+- `core/grammar.js:17-20` (imported from utils)
+- `udl/grammar.js:19-22`
+- `udl/keywords.js:14-17`
+
+**Evidence**:
 ```javascript
-// core/grammar.js
-conflicts: ($, previous) =>
-  previous.concat([
-    [$.use_parameters, $._parenthetical_expression],
-    [$.open_parameters, $._parenthetical_expression],
-    [$.label_ref, $.objectscript_identifier],
-    [$.xecute_argument, $._parenthetical_expression],
-  ]),
-
-// udl/grammar.js
-conflicts: ($, previous) =>
-  previous.concat([
-    [$.method_keywords, $.expression_method_keywords, $.external_method_keywords, $.call_method_keywords],
-    [$.xdata_keywords, $.xdata_keywords_any],
-    [$.trigger_keywords, $.external_trigger_keywords],
-  ]),
-```
-
-**Impact:** GLR parsing required for ambiguous constructs. Potential performance impact on large files.
-
-**Recommendation:** Review if conflicts can be resolved with precedence rules or grammar restructuring.
-
----
-
-#### CC-3: Precedence Complexity
-**Severity:** Low  
-**Location:** `expr/grammar.js:22-28`
-
-**Evidence:** 32 uses of `prec`, `prec.left`, `prec.right` across grammar files.
-
-**Impact:** Precedence rules are implicit knowledge. May cause unexpected parse behavior.
-
-**Recommendation:** Document precedence rationale inline. Consider explicit precedence table in docs.
-
----
-
-#### CC-4: Keyword File Size
-**Severity:** Low  
-**Location:** `udl/keywords.js` (949 lines)
-
-**Evidence:** Single file with all UDL keywords, many with similar patterns.
-
-**Impact:** Difficult to find specific keyword rules. Repetitive code patterns.
-
-**Recommendation:** Consider generating keyword rules from a data structure or splitting by member type.
-
----
-
-### 🔄 Consistency Issues
-
-#### CI-1: Mixed Comment Styles
-**Severity:** Low  
-**Location:** Various grammar files
-
-**Evidence:**
-```javascript
-// Some comments use //
-/* Others use block comments */
-/// Some use triple-slash (JSDoc-style)
-```
-
-**Impact:** Minor readability impact. No functional issue.
-
-**Recommendation:** Standardize on `//` for inline, `/* */` for blocks, JSDoc for documentation.
-
----
-
-#### CI-2: Inconsistent Keyword Casing
-**Severity:** Low  
-**Location:** `core/grammar.js`, `udl/grammar.js`
-
-**Evidence:**
-```javascript
-keyword_set: (_) => /[sS]([eE][tT])?/,    // Manual case alternation
-keyword_open: (_) => /O(pen)?/i,          // Using /i flag
-keyword_halt: (_) => /Halt/i,             // Using /i flag
-```
-
-**Impact:** Inconsistent patterns. Manual alternation is error-prone.
-
-**Recommendation:** Standardize on `/i` flag for all case-insensitive keywords.
-
----
-
-#### CI-3: Field Naming Inconsistency
-**Severity:** Low  
-**Location:** Various grammar files
-
-**Evidence:**
-```javascript
-field('command_name', ...)     // Some use command_name
-field('builtin_keyword', ...)  // Others use builtin_keyword
-field('keyword', ...)          // Others use just keyword
-```
-
-**Impact:** Query patterns must handle multiple field names for similar concepts.
-
-**Recommendation:** Standardize field names across grammar. Consider `keyword` for all keywords.
-
----
-
-### 📝 Documentation Gaps
-
-#### DG-1: Scanner State Machine Undocumented
-**Severity:** Low  
-**Location:** `common/scanner.h`
-
-**Evidence:** Complex state transitions without documentation.
-
-**Recommendation:** Add state diagram or transition table in comments.
-
----
-
-#### DG-2: Precedence Rationale Missing
-**Severity:** Low  
-**Location:** `expr/grammar.js:22-28`
-
-**Evidence:** Precedence rules without explanation of why they exist.
-
-**Recommendation:** Add inline comments explaining each precedence rule.
-
----
-
-#### DG-3: Conflict Rationale Missing
-**Severity:** Low  
-**Location:** `core/grammar.js:117-123`
-
-**Evidence:** Conflicts declared without explanation of ambiguity.
-
-**Recommendation:** Document what constructs cause each conflict.
-
----
-
-#### DG-4: External Scanner API Undocumented
-**Severity:** Low  
-**Location:** `common/scanner.h`
-
-**Evidence:** Tree-sitter external scanner functions without documentation.
-
-**Recommendation:** Add JSDoc-style comments for scanner API functions.
-
----
-
-#### DG-5: Test Coverage Documentation Missing
-**Severity:** Low  
-**Location:** `*/test/corpus/`
-
-**Evidence:** Test files exist but no coverage report or gap analysis.
-
-**Recommendation:** Add test coverage tracking. Document untested constructs.
-
----
-
-### 🐛 Potential Bugs
-
-#### PB-1: Scanner State Serialization
-**Severity:** Medium  
-**Location:** `common/scanner.h:38-47`
-
-**Evidence:** Scanner state includes multiple buffers that must be serialized/deserialized for incremental parsing.
-
-```c
-struct ObjectScript_Core_Scanner {
-  int32_t marker_buffer[MARKER_BUFFER_MAX_LEN];
-  int marker_buffer_len;
-  bool terminated_newline;
-  int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
-  // ...
+// In expr/grammar.js
+const repeat_with_commas = function (rule) {
+    return seq(rule, repeat(seq(',', rule)));
 };
+
+// Same function defined in 4 locations
 ```
 
-**Risk:** If serialization is incomplete, incremental parsing may produce incorrect results.
+**Impact**: Maintenance burden; changes must be made in multiple places.
 
-**Recommendation:** Verify serialization covers all state. Add test for incremental parse after marker.
+**Suggested Fix**: Move to `common/utils.js` and import in all grammars.
+
+**Validation**: Verify all grammars still generate correctly after refactoring.
 
 ---
 
-#### PB-2: Marker Buffer Overflow
-**Severity:** Medium  
-**Location:** `common/scanner.h:37`
+#### M2: Large File Size - `core/grammar.js`
 
-**Evidence:**
-```c
-#define MARKER_BUFFER_MAX_LEN 30
+**Location**: `core/grammar.js` (1,728 lines)
+
+**Evidence**: File contains 50+ command definitions, each with complex argument handling.
+
+**Impact**: Difficult to navigate; higher cognitive load for contributors.
+
+**Suggested Fix**: Consider splitting into:
+- `core/commands-data.js` (SET, KILL, MERGE, NEW)
+- `core/commands-control.js` (IF, FOR, WHILE, DO)
+- `core/commands-io.js` (READ, WRITE, OPEN, CLOSE, USE)
+- `core/commands-misc.js` (remaining commands)
+
+**Validation**: Ensure grammar generation still works after restructuring.
+
+---
+
+#### M3: Large File Size - `udl/keywords.js`
+
+**Location**: `udl/keywords.js` (948 lines)
+
+**Evidence**: All keyword definitions in single file.
+
+**Impact**: Difficult to maintain; hard to find specific keyword rules.
+
+**Suggested Fix**: Split by member type:
+- `keywords/class-keywords.js`
+- `keywords/method-keywords.js`
+- `keywords/property-keywords.js`
+- `keywords/index-keywords.js`
+
+**Validation**: Ensure all keyword rules still resolve correctly.
+
+---
+
+#### M4: ESLint Disabled Rules
+
+**Location**: Multiple files
+
+**Evidence**:
+```javascript
+// Found in: expr/grammar.js, core/grammar.js, udl/grammar.js, udl/keywords.js, common/grammar.js
+/* eslint-disable indent */
+/* eslint-disable camelcase */
 ```
 
-Markers longer than 30 characters will cause issues:
-```c
-if (scanner->html_marker_buffer_len == MARKER_BUFFER_MAX_LEN) {
-  return false; // too long
-}
+**Impact**: Inconsistent code style; potential for style drift.
+
+**Suggested Fix**: Configure ESLint to allow tree-sitter DSL patterns instead of disabling rules entirely. Create `.eslintrc` with grammar-specific overrides.
+
+**Validation**: Run `npm run lint` after configuration.
+
+---
+
+#### M5: Hardcoded Exclusion List in `utils.js`
+
+**Location**: `core/utils.js:53-56`
+
+**Evidence**:
+```javascript
+const EXCLUDED_RULE_1 = 'method_args';
+const EXCLUDED_RULE_2 = 'subscripts';
+const EXCLUDED_RULE_3 = '_parenthetical_expression';
+const EXCLUDED_RULE_4 = 'system_defined_function';
 ```
 
-**Risk:** Users with long custom markers (e.g., `&sqlVERYLONGMARKERNAME(...)`) will fail silently.
+**Impact**: Magic constants; purpose not immediately clear to contributors.
 
-**Recommendation:** Either increase buffer size or provide clear error. Consider dynamic allocation.
+**Suggested Fix**: Document why these rules are excluded (infinite recursion prevention) and consider passing as configuration.
+
+**Validation**: Add JSDoc comment explaining the exclusion reasons.
+
+---
+
+### 🟢 Low Priority
+
+#### L1: Inconsistent Comment Style
+
+**Location**: Various files
+
+**Evidence**:
+- Some comments use `//` style
+- Some use `/* */` blocks
+- Reference links inconsistently formatted
+
+**Impact**: Minor readability issue.
+
+**Suggested Fix**: Standardize on `//` for single-line, `/** */` for JSDoc, `/* */` for blocks.
+
+---
+
+#### L2: Duplicate `open_keyword_translate` Entry
+
+**Location**: `core/grammar.js:839`
+
+**Evidence**:
+```javascript
+open_keywords: ($) =>
+    choice(
+        // ...
+        $.open_keyword_translate,
+        $.open_keyword_translate,  // <-- DUPLICATE
+        $.open_keyword_xytable,
+        // ...
+    )
+```
+
+**Impact**: No functional impact (tree-sitter deduplicates), but confusing.
+
+**Suggested Fix**: Remove duplicate entry.
+
+**Validation**: Grammar still parses correctly.
+
+---
+
+#### L3: Missing Type Annotations in Some Functions
+
+**Location**: `core/utils.js:53-56`, `common/grammar.js`
+
+**Evidence**: Some helper functions lack JSDoc type annotations.
+
+**Impact**: IDE support degraded; potential for type errors.
+
+**Suggested Fix**: Add `@param` and `@return` JSDoc annotations to all exported functions.
 
 ---
 
 ## Outdated Comments
 
-| Location | Issue | Recommendation |
-|----------|-------|----------------|
-| `common/scanner.h:17-35` | `token_names` array doesn't match enum | Update or remove |
-| `core/grammar.js:357` | TODO with old syntax | Update or implement |
+| Location | Comment | Action |
+|----------|---------|--------|
+| `core/grammar.js:420-423` | TODO for unimplemented directives | Keep - still valid |
+| `udl/keywords.js:3` | "NOTE: A file somewhat resembling this can be regenerated" | Update or remove if script no longer exists |
 
 ---
 
-## Technical Debt Summary
+## Code Duplication Analysis
 
-| Item | Effort | Impact | Priority |
-|------|--------|--------|----------|
-| Implement missing preprocessor directives | High | Medium | P2 |
-| Split scanner into modules | Medium | Low | P3 |
-| Standardize keyword casing | Low | Low | P3 |
-| Document scanner state machine | Medium | Medium | P2 |
-| Add conflict explanations | Low | Low | P3 |
-| Verify scanner serialization | Medium | High | P1 |
+| Pattern | Locations | LOC | Action |
+|---------|-----------|-----|--------|
+| `repeat_with_commas()` | 4 files | 12 | Extract to common |
+| Keyword `seq(optional($.keyword_not), /Pattern/i)` | 20+ rules | ~60 | Consider helper function |
+| `alias($.expression, $.rhs)` pattern | 50+ rules | ~150 | Document as standard pattern |
 
 ---
 
-## Recommendations
+## Test Coverage Analysis
 
-### Immediate (P0)
-- None critical
+| Grammar | Test Files | Estimated Rules Covered | Gap |
+|---------|------------|------------------------|-----|
+| expr | 22 | ~80% of expression rules | Pattern edge cases |
+| core | 54 | ~70% of command rules | I/O commands, ZBREAK variants |
+| udl | 18 | ~60% of UDL rules | Keyword combinations |
 
-### Short-term (P1)
-1. Verify scanner state serialization completeness
-2. Add incremental parsing tests for marker scenarios
+### Suggested Additional Tests
 
-### Medium-term (P2)
-1. Implement `#undef` and `##expression` preprocessor directives
-2. Document scanner state machine
-3. Increase marker buffer size or add dynamic allocation
-
-### Long-term (P3)
-1. Standardize keyword patterns to use `/i` flag
-2. Standardize field names across grammars
-3. Split scanner into logical modules
-4. Add test coverage tracking
+1. **expr**: Add tests for edge cases in `gvn` namespace syntax (`^|ns,db|var`)
+2. **core**: Add tests for OPEN/CLOSE/USE parameter combinations
+3. **udl**: Add tests for complex keyword combinations on methods/properties
 
 ---
 
-## Evidence
+## Architecture Recommendations
 
-- `core/grammar.js:357-360` — TODO comment for missing directives
-- `common/scanner.h:38-47` — Scanner state structure
-- `common/scanner.h:37` — Marker buffer limit
-- `core/grammar.js:117-123` — Conflict declarations
-- `udl/keywords.js:1-949` — Keyword definitions
-- `expr/grammar.js:22-28` — Precedence rules
+### Short-term (1-2 weeks)
+
+1. Remove duplicate `repeat_with_commas` definitions
+2. Fix duplicate `open_keyword_translate` entry
+3. Add JSDoc to undocumented functions
+
+### Medium-term (1-2 months)
+
+1. Implement high-priority preprocessor directives (`##expression`, `##function`)
+2. Consider splitting large files for maintainability
+3. Configure ESLint properly for tree-sitter DSL
+
+### Long-term (3-6 months)
+
+1. Implement CSP template grammar (HTML + ObjectScript injection)
+2. Add fuzzing/property-based tests for robustness
+3. Consider publishing `expr` as standalone package for SQL extension use
+
+---
+
+## Positive Findings
+
+### ✅ Strengths
+
+1. **Well-layered architecture**: expr → core → udl inheritance is clean and enables reuse
+2. **Comprehensive keyword handling**: UDL keywords are exhaustively defined
+3. **Good test coverage**: 94 corpus tests provide confidence in parsing accuracy
+4. **Consistent patterns**: Command builder functions reduce duplication
+5. **Type annotations**: JSDoc types improve IDE support
+6. **External scanner**: Complex tokenization handled efficiently in C
+
+### ✅ Best Practices Observed
+
+- Conventional Commits for change tracking
+- MIT license for broad compatibility
+- Multiple language bindings for ecosystem reach
+- Playground support for testing
+- Editor integration documentation
+
+---
+
+## Metrics Summary
+
+| Metric | Value | Assessment |
+|--------|-------|------------|
+| Total Grammar LOC | ~4,400 | Reasonable for language complexity |
+| Scanner LOC (C) | 827 | Acceptable |
+| Test Files | 94 | Good coverage |
+| Language Bindings | 6 | Excellent portability |
+| TODO Comments | 1 | Low debt indicator |
+| ESLint Disables | 18 | Moderate - consider cleanup |
 
 ---
 
 ## Assumptions
 
-1. Incremental parsing is a key use case requiring correct serialization
-2. Most users don't use markers longer than 30 characters
-3. Performance impact of GLR conflicts is acceptable
+- ESLint rules disabled intentionally for tree-sitter DSL compatibility
+- Unimplemented preprocessor directives are rarely used in practice
+- File sizes are acceptable given language complexity
 
 ## Open Questions
 
-1. What is the actual frequency of long markers in production code?
-2. Are all scanner state fields actually needed?
-3. Should conflicts be tracked as technical debt metrics?
+1. Are the unimplemented preprocessor directives used in real codebases?
+2. Should large files be split, or is single-file navigation preferred?
+3. Is there a script to regenerate `udl/keywords.js` as the comment suggests?
+
+## Evidence
+
+- `core/grammar.js:420-423` — TODO for unimplemented directives
+- `expr/grammar.js:14-17`, `udl/keywords.js:14-17` — Duplicated utility functions
+- `core/grammar.js:839` — Duplicate `open_keyword_translate`
+- `core/utils.js:53-56` — Hardcoded exclusion list
+- File line counts from `wc -l` command
