@@ -4,22 +4,32 @@ NEW with arguments
  NEW d,e
  NEW (a,c)
 ---
+
 (source_file
   (statements
     (statement
       (command_new
-        command_name: (keyword_new)
-        (lvn
-          (objectscript_identifier))
-        (lvn
-          (objectscript_identifier))))
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (lvn
+              (objectscript_identifier))))
+        (command_new_argument
+          (command_new_item
+            (lvn
+              (objectscript_identifier))))))
     (statement
       (command_new
-        command_name: (keyword_new)
-        (lvn
-          (objectscript_identifier))
-        (lvn
-          (objectscript_identifier))))))
+        (keyword_new)
+        (command_new_argument
+          (bracket)
+          (command_new_item
+            (lvn
+              (objectscript_identifier)))
+          (command_new_item
+            (lvn
+              (objectscript_identifier)))
+          (bracket))))))
 
 ==========================
 NEW with special variables
@@ -29,43 +39,56 @@ NEW with special variables
  NEW $ESTACK
  NEW $ROLES
 ---
+
 (source_file
   (statements
     (statement
       (command_new
-        command_name: (keyword_new)
-        (etrap_token)))
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (system_defined_variable)))))
     (statement
       (command_new
-        command_name: (keyword_new)
-        (namespace_token)))
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (system_defined_variable)))))
     (statement
       (command_new
-        command_name: (keyword_new)
-        (estack_token)))
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (system_defined_variable)))))
     (statement
       (command_new
-        command_name: (keyword_new)
-        (roles_token)))))
-
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (system_defined_variable)))))))
 
 ========================
 New with Postconditional
 ========================
  NEW:name'?3U3N (badName)
 ---
+
 (source_file
   (statements
     (statement
       (command_new
-        command_name: (keyword_new)
+        (keyword_new)
         (post_conditional
           (expression
             (expr_atom
               (lvn
                 (objectscript_identifier)))
             (expr_tail
-              (_pattern_operator
-                right: (pattern_expression)))))
-        (lvn
-          (objectscript_identifier))))))
+              (pattern_operator
+                (pattern_expression)))))
+        (command_new_argument
+          (bracket)
+          (command_new_item
+            (lvn
+              (objectscript_identifier)))
+          (bracket))))))

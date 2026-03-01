@@ -21,7 +21,7 @@ module.exports = {
       METHOD KEYWORDS
     */
     keyword_classmethod: (_) => /ClassMethod/i,
-    keyword_method: (_) => /Method/i,
+    keyword_method: (_) =>  /Method/i,
     expression_method_keywords: ($) =>
     seq(
       '[',
@@ -39,25 +39,25 @@ module.exports = {
         repeat(seq(',', $.method_keyword)),
         ']',
       ),
-    method_keyword_codemode_expression:($) => seq(alias(/CodeMode/i,$.identifier),'=', alias(/expression/i,$.rhs)),
-    method_keyword_codemode: ($) => seq(alias(/CodeMode/i,$.identifier),'=', alias(choice(/code/i,/objectgenerator/i),$.rhs)),
-    method_keyword_language_objectscript: ($) => seq(alias(/Language/i,$.identifier),'=', alias(/objectscript/i, $.rhs)),
-    method_keyword_language: ($) => seq(alias(/Language/i,$.identifier),'=', alias(choice(/python/i,/tsql/i,/ispl/i), $.rhs)),
-    method_keyword_external_proc_name: ($) => seq(alias(/ExternalProcName/i,$.identifier),'=', alias($.objectscript_identifier,$.rhs)),
-    method_keyword_force_generate: ($) => seq(optional($.keyword_not),alias(/ForceGenerate/i,$.identifier)),
-    method_keyword_not_inheritable: ($) => seq(optional($.keyword_not),alias(/NotInheritable/i,$.identifier)),
-    method_keyword_sql_proc: ($) => seq(optional($.keyword_not),alias(/SqlProc/i,$.identifier)),
-    method_keyword_web_method: ($) => seq(optional($.keyword_not),alias(/WebMethod/i,$.identifier)),
-    method_keyword_return_results_set: ($) => seq(optional($.keyword_not),alias(/ReturnResultsets/i,$.identifier)),
-    method_keyword_public_list: ($) => seq(alias(/PublicList/i,$.identifier), '=', choice(alias($.objectscript_identifier,$.rhs), seq('(',repeat_with_commas(alias($.objectscript_identifier,$.rhs)), ')'))),
-    method_keyword_procedure_block: ($) => seq(alias(/ProcedureBlock/i,$.identifier),optional(seq('=',alias(/[0-1]/,$.rhs)))),
-    method_keyword_soap_binding_style: ($) => seq(alias(/SoapBindingStyle/i,$.identifier),'=',alias(choice(/document/i,/rpc/i),$.rhs)),
-    method_keyword_soap_body_use: ($) => seq(alias(/SoapBodyUse/i,$.identifier),'=',alias(choice(/literal/i,/encoded/i),$.rhs)),
-    method_keyword_soap_namespace: ($) => seq(alias(/SoapNameSpace/i,$.identifier),'=',alias(choice($.objectscript_identifier,$.string_literal),$.rhs)),
-    method_keyword_sql_name: ($) => seq(alias(/SqlName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
+    method_keyword_codemode_expression:($) => seq(/CodeMode/i,'=', alias(/expression/i,$.rhs)),
+    method_keyword_codemode: ($) => seq(/CodeMode/i,'=', alias(choice(/code/i,/objectgenerator/i),$.rhs)),
+    method_keyword_language_objectscript: ($) => seq(/Language/i,'=', alias(/objectscript/i, $.rhs)),
+    method_keyword_language: ($) => seq(/Language/i,'=', alias(choice(/python/i,/tsql/i,/ispl/i), $.rhs)),
+    method_keyword_external_proc_name: ($) => seq(/ExternalProcName/i,'=', alias($.objectscript_identifier,$.rhs)),
+    method_keyword_force_generate: ($) => seq(optional($.keyword_not),/ForceGenerate/i),
+    method_keyword_not_inheritable: ($) => seq(optional($.keyword_not),/NotInheritable/i),
+    method_keyword_sql_proc: ($) => seq(optional($.keyword_not),/SqlProc/i),
+    method_keyword_web_method: ($) => seq(optional($.keyword_not),/WebMethod/i),
+    method_keyword_return_results_set: ($) => seq(optional($.keyword_not),/ReturnResultsets/i),
+    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice(alias($.objectscript_identifier,$.rhs), seq('(',repeat_with_commas(alias($.objectscript_identifier,$.rhs)), ')'))),
+    method_keyword_procedure_block: ($) => seq(/ProcedureBlock/i,optional(seq('=',alias(/[0-1]/,$.rhs)))),
+    method_keyword_soap_binding_style: ($) => seq(/SoapBindingStyle/i,'=',alias(choice(/document/i,/rpc/i),$.rhs)),
+    method_keyword_soap_body_use: ($) => seq(/SoapBodyUse/i,'=',alias(choice(/literal/i,/encoded/i),$.rhs)),
+    method_keyword_soap_namespace: ($) => seq(/SoapNameSpace/i,'=',alias(choice($.objectscript_identifier,$.string_literal),$.rhs)),
+    method_keyword_sql_name: ($) => seq(/SqlName/i,'=',alias($.sql_id,$.rhs)),
     method_keyword_generate_after: ($) => 
       seq(
-        alias(/GenerateAfter/i,$.identifier),
+        /GenerateAfter/i,
         '=',
           choice(
           seq(
@@ -70,7 +70,7 @@ module.exports = {
       ),
     method_keyword_place_after: ($) => 
       seq(
-        alias(/PlaceAfter/i,$.identifier),
+        /PlaceAfter/i,
         '=',
         choice(
           seq(
@@ -83,23 +83,23 @@ module.exports = {
       ),
     method_keyword_requires: ($) =>
       seq(
-        alias(/Requires/i,$.identifier),
+        /Requires/i,
         '=',
         alias($.string_literal,$.rhs),
       ),
     method_keyword_soap_message_name: ($) =>
   seq(
-    alias(/SoapMessageName/i,$.identifier),
+    /SoapMessageName/i,
     '=',
     alias($.xml_identifier,$.rhs), 
   ),
     method_keyword_soap_action: ($) =>
   seq(
-    alias(/SoapAction/i,$.identifier),
+    /SoapAction/i,
     '=',
     alias(choice($.string_literal, $.objectscript_identifier),$.rhs)
   ),
-  call_method_keyword: ($) => seq(alias(/CodeMode/i,$.identifier),'=', alias(/call/i,$.rhs),),
+  call_method_keyword: ($) => seq(/CodeMode/i,'=', alias(/call/i,$.rhs),),
   call_method_keywords: ($) =>
     seq(
         '[',
@@ -160,24 +160,24 @@ module.exports = {
 
     keyword_class: (_) => /Class/i,
     keyword_extends: (_) => /Extends/i,
-    class_keyword_sql_row_id_name: ($) => seq(alias(/SqlRowIdName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
-    class_keyword_sql_table_name: ($) => seq(alias(/SqlTableName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
-    class_keyword_ddl_allowed: ($) => seq(optional($.keyword_not),alias(/DdlAllowed/i, $.identifier)),
-    class_keyword_hidden: ($) => seq(optional($.keyword_not),alias(/Hidden/i, $.identifier)),
-    class_keyword_legacy_instance_context: ($) => seq(optional($.keyword_not),alias(/LegacyInstanceContext/i, $.identifier)),
-    class_keyword_no_extent: ($) => seq(optional($.keyword_not),alias(/NoExtent/i, $.identifier)),
-    class_keyword_inheritance: ($) => seq(alias(/Inheritance/i, $.identifier),'=',alias(choice(/left/i,/right/i),$.rhs)),
-    class_keyword_language: ($) => seq(alias(/Language/i, $.identifier),'=',alias(choice(/objectscript/i,/tsql/i),$.rhs)),
-    class_keyword_sharded: ($) => seq(alias(/Sharded/i, $.identifier),'=',alias(/1/,$.rhs)),
+    class_keyword_sql_row_id_name: ($) => seq(/SqlRowIdName/i,'=',alias($.sql_id,$.rhs)),
+    class_keyword_sql_table_name: ($) => seq(/SqlTableName/i,'=',alias($.sql_id,$.rhs)),
+    class_keyword_ddl_allowed: ($) => seq(optional($.keyword_not),/DdlAllowed/i),
+    class_keyword_hidden: ($) => seq(optional($.keyword_not),/Hidden/i),
+    class_keyword_legacy_instance_context: ($) => seq(optional($.keyword_not),/LegacyInstanceContext/i),
+    class_keyword_no_extent: ($) => seq(optional($.keyword_not),/NoExtent/i),
+    class_keyword_inheritance: ($) => seq(/Inheritance/i,'=',alias(choice(/left/i,/right/i),$.rhs)),
+    class_keyword_language: ($) => seq(/Language/i,'=',alias(choice(/objectscript/i,/tsql/i),$.rhs)),
+    class_keyword_sharded: ($) => seq(/Sharded/i,'=',alias(/1/,$.rhs)),
     class_keyword_view_query: ($) => 
       seq(
-        alias(/ViewQuery/i, $.identifier),
+        /ViewQuery/i,
         '=',
       '{',
         alias($.external_method_body_content, $.rhs),
       '}',
       ),
-    class_keyword_odbc_type: ($) => seq(alias(/OdbcType/i, $.identifier),'=',alias(
+    class_keyword_odbc_type: ($) => seq(/OdbcType/i,'=',alias(
       choice(
         /BIGINT/i,
         /BIT/i,
@@ -196,10 +196,10 @@ module.exports = {
         /LONGVARBINARY/i,
         /TIME/i
       ),$.rhs)),
-      class_keyword_owner: ($) =>seq(alias(/Owner/i, $.identifier), '=',seq('{',alias($.iris_username,$.rhs),'}')),
-      class_keyword_procedure_block: ($) => seq(optional($.keyword_not),alias(/ProcedureBlock/i,$.identifier)),
-      class_keyword_sql_row_id_private: ($) => seq(optional($.keyword_not),alias(/SqlRowIdPrivate/i,$.identifier)),
-      class_keyword_sql_category: ($) => seq(alias(/SQLCategory/i, $.identifier),'=',alias(
+      class_keyword_owner: ($) =>seq(/Owner/i, '=',seq('{',alias($.iris_username,$.rhs),'}')),
+      class_keyword_procedure_block: ($) => seq(optional($.keyword_not),/ProcedureBlock/i),
+      class_keyword_sql_row_id_private: ($) => seq(optional($.keyword_not),/SqlRowIdPrivate/i),
+      class_keyword_sql_category: ($) => seq(/SQLCategory/i,'=',alias(
       choice(
         /NAME/i,
         /FMDATE/i,
@@ -213,8 +213,8 @@ module.exports = {
         /MVDATE/i,
         /TIME/i
       ),$.rhs)),
-    class_keyword_storage_strategy: ($) => seq(alias(/StorageStrategy/i, $.identifier),'=',alias($.identifier,$.rhs)),
-    class_keyword_system: ($) => seq(alias(/System/i, $.identifier),'=',alias(/[0-4]/,$.rhs)),
+    class_keyword_storage_strategy: ($) => seq(/StorageStrategy/i,'=',alias($.identifier,$.rhs)),
+    class_keyword_system: ($) => seq(/System/i,'=',alias(/[0-4]/,$.rhs)),
     propertyclass_list: ($) =>
     choice(
       $.identifier,
@@ -228,19 +228,19 @@ module.exports = {
 
   class_keyword_propertyclass: ($) =>
     seq(
-      alias(/PropertyClass/i, $.identifier),
+      /PropertyClass/i,
       '=',
       alias($.propertyclass_list,$.rhs)
     ),
   class_keyword_embedded_class: ($) => 
     seq(
-      alias(/EmbeddedClass/i, $.identifier),
+      /EmbeddedClass/i,
       '=',
       alias($.identifier, $.rhs)
     ),
   class_keyword_classtype: ($) =>
     seq(
-      alias(/classtype/i, $.identifier),
+      /classtype/i,
       '=',
         choice(
           alias(/datatype/i, $.rhs),
@@ -256,7 +256,7 @@ module.exports = {
     ),    
   class_keyword_clientdatatype: ($) =>
   seq(
-    alias(/clientdatatype/i, $.identifier),
+    /clientdatatype/i,
     '=',
       choice(
         alias(/bigint/i, $.rhs),
@@ -283,7 +283,7 @@ module.exports = {
   ),
     class_keyword_depends_on: ($) => 
       seq(
-        alias(/DependsOn/i, $.identifier), 
+        /DependsOn/i, 
         '=', 
       choice(
         seq(
@@ -298,7 +298,7 @@ module.exports = {
     ),
     class_keyword_constraintclass_on: ($) => 
       seq(
-        alias(/ConstraintClass/i, $.identifier), 
+        /ConstraintClass/i, 
         '=', 
       choice(
         seq(
@@ -314,7 +314,7 @@ module.exports = {
 
     class_keyword_compile_after: ($) => 
       seq(
-        alias(/CompileAfter/i, $.identifier), 
+        /CompileAfter/i, 
         '=', 
       choice(
         seq(
@@ -329,14 +329,14 @@ module.exports = {
     ),
     class_keyword_generated_by: ($) => 
       seq(
-        alias(/GeneratedBy/i,$.identifier),
+        /GeneratedBy/i,
         '=',
           alias($.identifier,$.rhs)
       ),
   
     class_keyword_indexclass: ($) =>
       seq(
-        alias(/indexclass/i, $.identifier),
+        /indexclass/i,
         '=',
           choice(
             // IndexClass = Some.Package.Class
@@ -348,13 +348,13 @@ module.exports = {
       ),
     class_keyword_membersuper: ($) =>
       seq(
-        alias(/membersuper/i, $.identifier),
+        /membersuper/i,
         '=',
         field("value", alias($.identifier, $.rhs)) 
       ),
     class_keyword_projection_class: ($) =>
       seq(
-        alias(/ProjectionClass/i, $.identifier),
+        /ProjectionClass/i,
         '=',
           choice(
             alias($.identifier, $.rhs),
@@ -364,13 +364,13 @@ module.exports = {
       ),
     class_keyword_modified: ($) =>
       seq(
-        alias(/Modified/i, $.identifier),
+        /Modified/i,
         '=',
             alias($.numeric_literal, $.rhs),
       ),
     class_keyword_triggerclass: ($) =>
       seq(
-        alias(/TriggerClass/i, $.identifier),
+        /TriggerClass/i,
         '=',
         field(
           "value",
@@ -387,7 +387,7 @@ module.exports = {
       ),
     class_keyword_queryclass: ($) =>
       seq(
-        alias(/QueryClass/i, $.identifier),
+        /QueryClass/i,
         '=',
         field(
           "value",
@@ -447,8 +447,8 @@ module.exports = {
     ),
     // QUERY KEYWORDS 
     keyword_query: (_) => /Query/i,
-    query_keyword_sql_view:($) => seq(optional($.keyword_not),alias(/SqlView/i, $.identifier)),
-    query_keyword_sql_view_name: ($) => seq(alias(/SqlViewName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
+    query_keyword_sql_view:($) => seq(optional($.keyword_not),/SqlView/i),
+    query_keyword_sql_view_name: ($) => seq(/SqlViewName/i,'=',alias($.sql_id,$.rhs)),
     query_keyword: ($) =>
     choice(
       $.parameter_keyword_deprecated,
@@ -478,7 +478,7 @@ module.exports = {
 
     trigger_keyword_foreach: ($) => 
       seq(
-        alias(/Foreach/i,$.identifier),
+        /Foreach/i,
         '=',
         alias(choice(
           /row\/object/i,
@@ -488,7 +488,7 @@ module.exports = {
       ),
     trigger_keyword_event: ($) =>
       seq(
-        field('name', alias(/Event/i, $.identifier)),
+        field('name', /Event/i),
         '=',
         field('value', alias($.trigger_event_value, $.rhs)),
       ),
@@ -506,30 +506,30 @@ module.exports = {
     
     trigger_keyword_order: ($) => 
       seq(
-        field('name', alias(/Order/i, $.identifier)),
+        field('name', /Order/i),
         '=',
         field('value', alias($.numeric_literal, $.rhs)),
       ),
 
     trigger_keyword_time: ($) => 
       seq(
-        field('name', alias(/Time/i, $.identifier)),
+        field('name', /Time/i),
         '=',
         field('value', alias(choice(/AFTER/i,/BEFORE/i), $.rhs)),
       ),
     trigger_keyword_newtable: ($) => seq(
-      alias(/NewTable/i,$.identifier),
+      /NewTable/i,
       '=',
       alias($.sql_id,$.rhs)
     ),
     trigger_keyword_oldtable: ($) => seq(
-      alias(/OldTable/i,$.identifier),
+      /OldTable/i,
       '=',
       alias($.sql_id,$.rhs)
     ),
     trigger_keyword_update_column_list: ($) => 
       seq(
-        alias(/UpdateColumnList/i, $.identifier),
+        /UpdateColumnList/i,
         '=',
         field(
           "value",
@@ -544,7 +544,8 @@ module.exports = {
           )
         )
       ),
-    
+    keyword_list:(_)=> /list/i,
+    keyword_array:(_)=> /array/i,
     // TRIGGER KEYWORDS 
     keyword_trigger: (_) => /Trigger/i,
     trigger_keyword: ($) =>
@@ -584,33 +585,33 @@ module.exports = {
     /*
     PROPERTY KEYWORDS
     */
-       keyword_property: (_) => field('name',/Property/i),
-    property_keyword_aliases: ($) => seq(alias(/Aliases/i,$.identifier), '=', '{', repeat_with_commas(alias($.objectscript_identifier, $.rhs)), '}'),
-    property_keyword_calculated: ($) => seq(optional($.keyword_not),alias(/Calculated/i,$.identifier)),
-    property_keyword_client_name: ($) => seq(alias(/ClientName/i,$.identifier),'=', alias(/[^\s'`,\[\]\(\)\{\}]+/,$.rhs)),
-    property_keyword_compute_local_only: ($) => seq(alias(/ComputeLocalOnly/i,$.identifier),'=', alias(/[0-1]/,$.rhs)),
-    property_keyword_deferred: ($) => seq(optional($.keyword_not),alias(/Deferred/i,$.identifier)),
-    property_keyword_identity: ($) => seq(optional($.keyword_not),alias(/Identity/i,$.identifier)),
-    property_keyword_multidimensional: ($) => seq(optional($.keyword_not),alias(/Multidimensional/i,$.identifier)),
-    property_keyword_private: ($) => seq(optional($.keyword_not),alias(/Private/i,$.identifier)),
-    property_keyword_transient: ($) => seq(optional($.keyword_not),alias(/Transient/i,$.identifier)),
-    property_keyword_readonly: ($) => seq(optional($.keyword_not),alias(/ReadOnly/i,$.identifier)),
-    property_keyword_required: ($) => seq(optional($.keyword_not),alias(/Required/i,$.identifier)),
-    property_keyword_server_only: ($) => seq(alias(/ServerOnly/i,$.identifier),'=', alias(/[0-1]/,$.rhs)),
-    property_keyword_sql_column_number: ($) => seq(alias(/SqlColumnNumber/i,$.identifier),'=', alias($.numeric_literal,$.rhs)),
-    property_keyword_sql_computed: ($) => seq(optional($.keyword_not),alias(/SqlComputed/i,$.identifier)),
-    property_keyword_sql_compute_on_change: ($) => seq(alias(/SqlComputeOnChange/i,$.identifier), '=', choice(seq('(',repeat_with_commas(alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs)),')'),alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs))),
-    property_keyword_sql_field_name: ($) => seq(alias(/SqlFieldName/i,$.identifier),'=',alias($.sql_id,$.rhs)),
-    property_keyword_sql_list_delim: ($) => seq(alias(/SqlListDelimiter/i,$.identifier),'=',alias($.string_literal,$.rhs)),
+       keyword_property: (_) => /Property/i,
+    property_keyword_aliases: ($) => seq(/Aliases/i, '=', '{', repeat_with_commas(alias($.objectscript_identifier, $.rhs)), '}'),
+    property_keyword_calculated: ($) => seq(optional($.keyword_not),/Calculated/i),
+    property_keyword_client_name: ($) => seq(/ClientName/i,'=', alias(/[^\s'`,\[\]\(\)\{\}]+/,$.rhs)),
+    property_keyword_compute_local_only: ($) => seq(/ComputeLocalOnly/i,'=', alias(/[0-1]/,$.rhs)),
+    property_keyword_deferred: ($) => seq(optional($.keyword_not),/Deferred/i),
+    property_keyword_identity: ($) => seq(optional($.keyword_not),/Identity/i),
+    property_keyword_multidimensional: ($) => seq(optional($.keyword_not),/Multidimensional/i),
+    property_keyword_private: ($) => seq(optional($.keyword_not),/Private/i),
+    property_keyword_transient: ($) => seq(optional($.keyword_not),/Transient/i),
+    property_keyword_readonly: ($) => seq(optional($.keyword_not),/ReadOnly/i),
+    property_keyword_required: ($) => seq(optional($.keyword_not),/Required/i),
+    property_keyword_server_only: ($) => seq(/ServerOnly/i,'=', alias(/[0-1]/,$.rhs)),
+    property_keyword_sql_column_number: ($) => seq(/SqlColumnNumber/i,'=', alias($.numeric_literal,$.rhs)),
+    property_keyword_sql_computed: ($) => seq(optional($.keyword_not),/SqlComputed/i),
+    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(',repeat_with_commas(alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs)),')'),alias(choice($.objectscript_identifier,$.oref_set_target,'%%UPDATE','%%INSERT'),$.rhs))),
+    property_keyword_sql_field_name: ($) => seq(/SqlFieldName/i,'=',alias($.sql_id,$.rhs)),
+    property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i,'=',alias($.string_literal,$.rhs)),
     property_keyword_sql_list_type: ($) => 
       seq(
-        alias(/SqlListType/i,$.identifier),
+        /SqlListType/i,
         '=',
         alias(choice(/LIST/i,/DELIMITED/i,/SUBNODE/i),$.rhs)),
     sql_id: (_) => /[A-Za-z%_][A-Za-z@_#$0-9]*/,
     property_keyword_sql_compute_code: ($) => 
       seq(
-        alias(/SqlComputeCode/i,$.identifier), 
+        /SqlComputeCode/i, 
         '=', 
         alias($.rhs_sql_compute_code,$.rhs),
       ),
@@ -634,7 +635,7 @@ module.exports = {
     ),
 
     property_keyword_initial_expression: ($) => 
-      seq(alias(/InitialExpression/i,$.identifier),'=',choice(seq('{',alias($.expression,$.rhs),'}'), alias($.string_literal,$.rhs), alias($.objectscript_identifier,$.rhs))),
+      seq(/InitialExpression/i,'=',choice(seq('{',alias($.expression,$.rhs),'}'), alias($.string_literal,$.rhs), alias($.objectscript_identifier,$.rhs))),
     property_keyword: ($) => 
       choice(
         $.property_keyword_aliases,
@@ -692,19 +693,19 @@ module.exports = {
       ),
     relationship_keyword_cardinality: ($) => 
       seq(
-        alias(/Cardinality/i,$.identifier), 
+        /Cardinality/i, 
         '=', 
         alias(choice(/one/i,/many/i,/parent/i,/children/i), $.rhs),
       ),
     relationship_keyword_inverse: ($) => 
       seq(
-        alias(/inverse/i, $.identifier),
+        /inverse/i,
         '=',
         alias(choice($.objectscript_identifier,$.oref_set_target), $.rhs)
       ),
     relationship_keyword_on_delete: ($) => 
       seq(
-       alias( /OnDelete/i, $.identifier),
+       /OnDelete/i,
         '=', 
         alias(choice(/cascade/i,/noaction/i,/setdefault/i,/setnull/i), $.rhs)
       ),
@@ -713,7 +714,7 @@ module.exports = {
     FOREIGNKEY KEYWORDS
     */
 
-    foreignkey_keyword_no_check: ($) =>seq(optional($.keyword_not),alias(/NoCheck/i,$.identifier)), 
+    foreignkey_keyword_no_check: ($) =>seq(optional($.keyword_not),/NoCheck/i), 
     foreignkey_keyword: ($) =>
     choice(
       $.parameter_keyword_deprecated,
@@ -735,7 +736,7 @@ module.exports = {
     
     foreignkey_keyword_on_update: ($) => 
       seq(
-        alias(/OnUpdate/i, $.identifier),
+        /OnUpdate/i,
         '=', 
         alias(choice(/cascade/i,/noaction/i,/setdefault/i,/setnull/i), $.rhs)
       ),
@@ -746,12 +747,12 @@ module.exports = {
     PARAMETER KEYWORDS
     */
     keyword_parameter: (_) => /Parameter/i,
-    parameter_keyword_final: ($) => seq(optional($.keyword_not), alias(/Final/i, $.identifier)),
-    parameter_keyword_abstract: ($) => seq(optional($.keyword_not),alias(/Abstract/i,$.identifier)),
-    parameter_keyword_deprecated: ($) => seq(optional($.keyword_not),alias(/Deprecated/i,$.identifier)),
-    parameter_keyword_internal: ($) => seq(optional($.keyword_not),alias(/Internal/i,$.identifier)),
-    parameter_keyword_flags: ($) => seq(alias(/Flags/i,$.identifier),'=', alias(choice($.enum_flag,$.list_flag),$.rhs)),
-    parameter_keyword_constraint: ($) => seq(alias(/Constraint/i,$.identifier),'=', alias(choice($.string_literal,$.objectscript_identifier),$.rhs)),
+    parameter_keyword_final: ($) => seq(optional($.keyword_not), /Final/i),
+    parameter_keyword_abstract: ($) => seq(optional($.keyword_not),/Abstract/i),
+    parameter_keyword_deprecated: ($) => seq(optional($.keyword_not),/Deprecated/i),
+    parameter_keyword_internal: ($) => seq(optional($.keyword_not),/Internal/i),
+    parameter_keyword_flags: ($) => seq(/Flags/i,'=', alias(choice($.enum_flag,$.list_flag),$.rhs)),
+    parameter_keyword_constraint: ($) => seq(/Constraint/i,'=', alias(choice($.string_literal,$.objectscript_identifier),$.rhs)),
     enum_flag: (_) => /ENUM/i,
     list_flag: (_) => /LIST/i,
     parameter_keyword: ($) => 
@@ -790,7 +791,7 @@ module.exports = {
     */
    index_keyword_type: ($) =>
       seq(
-        alias(/type/i, $.identifier),
+        /type/i,
         '=',
         choice(
           alias(/bitmap/i, $.rhs),
@@ -804,20 +805,20 @@ module.exports = {
       ),
     index_coshardwith: ($) => 
       seq(
-        alias(/CoshardWith/i,$.identifier),
+        /CoshardWith/i,
         '=',
         alias($.identifier, $.rhs)
       )
       ,
-    index_keyword_extent: ($) => seq(optional($.keyword_not),alias(/Extent/i, $.identifier)),
-    index_keyword_idkey: ($) => seq(optional($.keyword_not),alias(/IdKey/i, $.identifier)),
-    index_keyword_primary_key: ($) => seq(optional($.keyword_not),alias(/PrimaryKey/i, $.identifier)),
-    index_keyword_unique: ($) => seq(optional($.keyword_not),alias(/Unique/i, $.identifier)),
-    index_keyword_deferred: ($) => seq(optional($.keyword_not),alias(/Deferred/i, $.identifier)),
-    index_keyword_shardkey: ($) => seq(optional($.keyword_not),alias(/ShardKey/i, $.identifier)),
+    index_keyword_extent: ($) => seq(optional($.keyword_not),/Extent/i),
+    index_keyword_idkey: ($) => seq(optional($.keyword_not),/IdKey/i),
+    index_keyword_primary_key: ($) => seq(optional($.keyword_not),/PrimaryKey/i),
+    index_keyword_unique: ($) => seq(optional($.keyword_not),/Unique/i),
+    index_keyword_deferred: ($) => seq(optional($.keyword_not),/Deferred/i),
+    index_keyword_shardkey: ($) => seq(optional($.keyword_not),/ShardKey/i),
     index_keyword_data: ($) => 
       seq(
-        alias(/Data/i, $.identifier),
+        /Data/i,
         '=',
         choice(
           alias($.quote_permitting_identifier, $.rhs),
@@ -831,7 +832,7 @@ module.exports = {
       ),
     index_keyword_condition: ($) => 
       seq(
-        alias(/Condition/i,$.identifier),
+        /Condition/i,
         '=',
         choice(alias($.string_literal, $.rhs),alias($.numeric_literal, $.rhs), seq('{', alias($.expression, $.rhs), '}')),
       ),
@@ -876,13 +877,13 @@ module.exports = {
     keyword_xdata: (_) => /XData/i,
     xdata_keyword_schemaspec: ($) => 
       seq(
-        alias(/SchemaSpec/i,$.identifier),
+        /SchemaSpec/i,
         '=',
         alias($.string_literal,$.rhs)
       ),
     xdata_keyword_xmlnamespace: ($) => 
       seq(
-        alias(/XMLNamespace/i,$.identifier),
+        /XMLNamespace/i,
         '=',
         alias($.string_literal,$.rhs)
       ),
@@ -893,7 +894,7 @@ module.exports = {
       $.xdata_keyword_xmlnamespace,
       $.parameter_keyword_deprecated,
       $.parameter_keyword_internal),
-    mime_type: ($) =>
+    mime_type: (_) =>
       token(
         /[A-Za-z0-9!#$&^_.-]+\/[A-Za-z0-9!#$&^_.-]+(?:\+[A-Za-z0-9!#$&^_.-]+)*(?:;[A-Za-z0-9!#$&^_.-]+=[A-Za-z0-9!#$&^_.-]+)*/
       ),
@@ -909,7 +910,7 @@ module.exports = {
       
     xdata_keyword_mimetype: ($) =>
       seq(
-        alias(/MimeType/i, $.identifier),
+        /MimeType/i,
         "=",
         alias(choice($.mime_type,$.string_literal),$.rhs)
       ),
@@ -933,8 +934,6 @@ module.exports = {
         ),
     
     // COMMON KEYWORDS 
-    keyword_as: (_) => /As/i,
-    keyword_of: (_) => /Of/i,
     keyword_include: (_) => /Include/i,
     keyword_not: (_) => /Not /i,
     keyword_includegenerator: (_) => /IncludeGenerator/i,

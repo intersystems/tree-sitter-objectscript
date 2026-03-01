@@ -5,7 +5,7 @@ Valid $View Statements
   ZWRITE $V(-1,-3,2)
   WRITE $VIEW(-1,$PIECE($IO,"|",4),1)
   SET x=$VIEW(i,-5)
-  SET NEXTBN=$VIEW(LINKA,0,"3O") 
+  SET NEXTBN=$VIEW(LINKA,0,"3O")
   SET x = $VIEW(0,0,1)
   SET x = $V(0,0,1)
 
@@ -48,14 +48,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -64,14 +64,14 @@ Valid $View Statements
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_view
-                (expression
+              (built_in_functions_with_optional_args
+                (function_argument
                   (expr_atom
                     (numeric_literal)))
-                (expression
+                (function_argument
                   (expr_atom
                     (numeric_literal)))
-                (expression
+                (function_argument
                   (expr_atom
                     (numeric_literal)))))))))
     (statement
@@ -81,23 +81,25 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (system_defined_function
-                        (expression
-                          (expr_atom
-                            (system_defined_variable)))
-                        (expression
-                          (expr_atom
-                            (string_literal)))
-                        (expression
-                          (expr_atom
-                            (numeric_literal))))))
-                  (expression
+                        (dollar_piece
+                          (expression
+                            (expr_atom
+                              (system_defined_variable)))
+                          (expression
+                            (expr_atom
+                              (string_literal)))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal))))))))
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -110,12 +112,12 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -128,15 +130,15 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (string_literal))))))))))
     (statement
@@ -149,14 +151,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -169,14 +171,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (line_comment_3)
@@ -190,8 +192,8 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -204,8 +206,8 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -218,8 +220,8 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -232,8 +234,8 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)))))))))))
@@ -248,11 +250,11 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -265,11 +267,11 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -282,12 +284,12 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -300,12 +302,12 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (line_comment_3)
@@ -319,14 +321,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -339,14 +341,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -359,15 +361,15 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (string_literal))))))))))
     (statement
@@ -380,14 +382,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (statement
@@ -400,14 +402,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))))
     (line_comment_3)
@@ -421,8 +423,8 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)))
@@ -431,12 +433,13 @@ Valid $View Statements
                       (expression
                         (expr_atom
                           (numeric_literal)))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (unary_expression
+                        (unary_operator)
                         (expression
                           (expr_atom
                             (lvn
@@ -451,16 +454,16 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)))))))))))
@@ -474,39 +477,45 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
                         (subscripts
+                          (bracket)
                           (expression
                             (expr_atom
                               (lvn
-                                (objectscript_identifier)))))))
+                                (objectscript_identifier))))
+                          (bracket))))
                     (expr_tail
                       (binary_operator)
                       (expression
                         (expr_atom
                           (numeric_literal)))))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
                         (subscripts
+                          (bracket)
                           (expression
                             (expr_atom
                               (lvn
-                                (objectscript_identifier))))))))
-                  (expression
+                                (objectscript_identifier))))
+                          (bracket)))))
+                  (function_argument
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
                         (subscripts
+                          (bracket)
                           (expression
                             (expr_atom
                               (lvn
-                                (objectscript_identifier)))))))))))))))
+                                (objectscript_identifier))))
+                          (bracket))))))))))))
     (line_comment_3)
     (statement
       (command_if
@@ -514,14 +523,14 @@ Valid $View Statements
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_view
-                (expression
+              (built_in_functions_with_optional_args
+                (function_argument
                   (expr_atom
                     (numeric_literal)))
-                (expression
+                (function_argument
                   (expr_atom
                     (numeric_literal)))
-                (expression
+                (function_argument
                   (expr_atom
                     (numeric_literal))))))
           (expr_tail
@@ -546,14 +555,14 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_view
-                  (expression
+                (built_in_functions_with_optional_args
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal)))
-                  (expression
+                  (function_argument
                     (expr_atom
                       (numeric_literal))))))))
         (write_argument
@@ -569,58 +578,34 @@ Valid $View Statements
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (system_defined_function
-                      (dollar_view
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                (dollar_extract
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (built_in_functions_with_optional_args
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal)))
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal)))
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal)))))))
+                  (dollar_func_pos
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
+                  (dollar_func_pos
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))))))
 
 ========================
 Invalid $View (No parens)
 :error
 ========================
  set x = $VIEW
----
-
-
-
-========================
-Invalid $View (No offset)
-:error
-========================
- set x = $VIEW()
----
-
-
-
-============================
-Invalid $View (too many args)
-:error
-============================
- SET x = $VIEW(0,0,1,2)
----
-
-
-
-==============================
-Invalid $View (trailing commas)
-:error
-==============================
- SET x = $VIEW(0,)
 ---
 
 
@@ -703,14 +688,17 @@ Valid View Statements
         (view_parameters
           (expression
             (expr_atom
-              (expression
-                (expr_atom
-                  (numeric_literal))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+              (parenthetical_expression
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))
+                (bracket)))))))
     (statement
       (command_view
         (keyword_view)
@@ -787,9 +775,13 @@ Invalid View (incomplete offset:mode:length)
  VIEW ADDR:0:-4
 ---
 
+
+
 ===
 Invalid View (commas)
 :error
 ===
  VIEW ADDR,0,-4
 ---
+
+

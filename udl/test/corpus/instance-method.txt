@@ -12,19 +12,18 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)))))))))
 
 ===================================================
 Valid — Method with arguments and return type
@@ -40,24 +39,24 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -65,20 +64,19 @@ Class MyApp.Test {
               (keyword_as)
               (typename
                 (identifier)))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ======================================================
 Valid — Method with no return type and arguments
@@ -94,33 +92,32 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
-            (core_method_body_content
-              (statement
-                (command_write
-                  (keyword_write)
-                  (write_argument
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (write_argument
-                    (write_device_control
-                      (write_device_fflf))))))))))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))))))))))
 
 ===========================================================
 Valid — Method with method keywords (CodeMode, Final)
@@ -137,18 +134,18 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))
@@ -161,19 +158,16 @@ Class MyApp.Test {
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
-                (parameter_keyword_final
-                  (identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (macro
-                        (macro_constant)))))))))))))
+                (parameter_keyword_final)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant))))))))))))
 
 ========================================================
 Valid — Method referenced as class member only
@@ -195,47 +189,47 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
-            (core_method_body_content
-              (statement
-                (command_do
-                  (keyword_do)
-                  (do_parameter
-                    (instance_method_call
-                      (relative_dot_method
-                        (oref_method
-                          (method_name
-                            (identifier_segment_immediate))
-                          (method_args)))))))
-              (statement
-                (command_quit
-                  (keyword_quit)))))))
+            (statement
+              (command_do
+                (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))))
+            (statement
+              (command_quit
+                (keyword_quit))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
-            (core_method_body_content
-              (statement
-                (command_write
-                  (keyword_write)
-                  (write_argument
-                    (expression
-                      (expr_atom
-                        (string_literal))))
-                  (write_argument
-                    (write_device_control
-                      (write_device_fflf))))))))))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))))))))))
 
 ================================================
 Valid — Method used as SQL stored procedure
@@ -252,13 +246,13 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -267,19 +261,18 @@ Class MyApp.Test {
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_sql_proc
-                  (identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (expression
+                (method_keyword_sql_proc)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (built_in_functions_with_optional_args
+                        (function_argument
                           (expr_atom
                             (system_defined_variable)))
-                        (expression
+                        (function_argument
                           (expr_atom
                             (numeric_literal)))))))))))))))
 
@@ -299,26 +292,26 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (keyword_byref)
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (keyword_output)
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -326,40 +319,39 @@ Class MyApp.Test {
               (keyword_as)
               (typename
                 (identifier)))
-            (core_method_body_content
-              (statement
-                (command_set
-                  (keyword_set)
-                  (set_argument
-                    (glvn
-                      (lvn
-                        (objectscript_identifier)))
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal))))))))
-              (statement
-                (command_set
-                  (keyword_set)
-                  (set_argument
-                    (glvn
-                      (lvn
-                        (objectscript_identifier)))
-                    (expression
-                      (expr_atom
-                        (macro
-                          (macro_constant)))))))
-              (statement
-                (command_quit
-                  (keyword_quit)
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
                   (expression
                     (expr_atom
-                      (numeric_literal))))))))))))
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_constant)))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
 
 ======================================
 Invalid — missing parentheses on body
@@ -463,24 +455,24 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -490,26 +482,23 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 soapaction - empty value
@@ -530,13 +519,13 @@ Method Ping() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -545,19 +534,16 @@ Method Ping() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 soapaction - default sentinel string
@@ -578,13 +564,13 @@ Method M() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -593,19 +579,16 @@ Method M() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 soapaction - unquoted identifier value (as shown in docs example)
@@ -626,24 +609,24 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -654,25 +637,22 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
             (method_keywords
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs)))
               (method_keyword
-                (method_keyword_web_method
-                  (identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+                (method_keyword_web_method)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 soapaction - duplicate SoapAction values with SoapRequestMessage disambiguation
@@ -704,13 +684,13 @@ Method B() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -719,27 +699,24 @@ Method B() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal)))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal))))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -748,22 +725,19 @@ Method B() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 soapaction - alongside other soap keywords
@@ -788,13 +762,13 @@ Method M() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -803,35 +777,28 @@ Method M() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_binding_style
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_body_use
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_namespace
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 invalid soapaction - missing '='
@@ -928,24 +895,24 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -955,26 +922,23 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 soapmessagename - example-style name
@@ -995,24 +959,24 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1023,25 +987,22 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
             (method_keywords
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs)))
               (method_keyword
-                (method_keyword_web_method
-                  (identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+                (method_keyword_web_method)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 soapmessagename - valid XML-ish identifier characters (underscore/dot/hyphen)
@@ -1062,13 +1023,13 @@ Method M() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -1077,19 +1038,16 @@ Method M() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 Requires
@@ -1104,13 +1062,13 @@ Method name() As returnclass [ Requires="%DB_USER:R" ]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -1120,7 +1078,6 @@ Method name() As returnclass [ Requires="%DB_USER:R" ]
             (method_keywords
               (method_keyword
                 (method_keyword_requires
-                  (identifier)
                   (rhs))))
             (line_comment_1)))))))
 
@@ -1146,13 +1103,13 @@ Method M() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -1161,31 +1118,25 @@ Method M() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_binding_style
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_body_use
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 soapmessagename - two methods with different response names
@@ -1215,13 +1166,13 @@ Method B() As %String
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -1230,24 +1181,21 @@ Method B() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal)))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal))))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -1256,19 +1204,16 @@ Method B() As %String
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_message_name
-                  (identifier)
                   (rhs))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
 
 ===
 invalid soapmessagename - missing '='
@@ -1382,27 +1327,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="My
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1412,29 +1357,26 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="My
                 (identifier)))
             (method_keywords
               (method_keyword
-                (method_keyword_web_method
-                  (identifier)))
+                (method_keyword_web_method))
               (method_keyword
                 (method_keyword_soap_action
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 SoapRequestMessage allows underscore start
@@ -1453,27 +1395,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1485,20 +1427,19 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 SoapRequestMessage allows digits after first char
@@ -1517,27 +1458,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1549,20 +1490,19 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 SoapRequestMessage allows dot and hyphen
@@ -1581,27 +1521,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1613,20 +1553,19 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 SoapRequestMessage keyword is case-insensitive
@@ -1645,27 +1584,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq 
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1677,20 +1616,19 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq 
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 SoapRequestMessage with spaces around equals
@@ -1709,27 +1647,27 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyRe
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -1741,20 +1679,19 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyRe
               (method_keyword
                 (method_keyword_soap_request_message
                   (xml_identifier))))
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ===
 invalid SoapRequestMessage - string literal (your grammar expects xml_identifier)
@@ -1804,19 +1741,18 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (classmethod
           (keyword_classmethod)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs))))))))))
 
 ===
@@ -1833,23 +1769,21 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)
-                    (identifier)))))))))))
+                  (rhs)
+                  (rhs))))))))))
 
 ===
 method_keyword_placeafter_case_insensitive
@@ -1865,19 +1799,18 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs))))))))))
 
 ===
@@ -1894,22 +1827,20 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)))))))))))
+                  (rhs))))))))))
 
 ===
 method_keyword_placeafter_spacing_variants
@@ -1925,23 +1856,21 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)
-                    (identifier)))))))))))
+                  (rhs)
+                  (rhs))))))))))
 
 ===
 method_keyword_placeafter_among_other_keywords
@@ -1957,28 +1886,24 @@ Class MyApp.Test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (method_keywords
               (method_keyword
-                (parameter_keyword_final
-                  (identifier)))
+                (parameter_keyword_final))
               (method_keyword
                 (method_keyword_place_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier))))
+                  (rhs)))
               (method_keyword
-                (method_keyword_not_inheritable
-                  (identifier))))))))))
+                (method_keyword_not_inheritable)))))))))
 
 ===
 invalid_method_keyword_placeafter_missing_equals
@@ -2052,16 +1977,16 @@ Class Demo.GenerateAfter1 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2071,11 +1996,9 @@ Class Demo.GenerateAfter1 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs))))))))))
 
 ===
@@ -2092,16 +2015,16 @@ Class Demo.GenerateAfter2 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2111,14 +2034,11 @@ Class Demo.GenerateAfter2 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)))))))))))
+                  (rhs))))))))))
 
 ===
 valid - GenerateAfter list with more than two entries
@@ -2134,16 +2054,16 @@ Class Demo.GenerateAfter3 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2153,16 +2073,13 @@ Class Demo.GenerateAfter3 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)
-                    (identifier)
-                    (identifier)))))))))))
+                  (rhs)
+                  (rhs)
+                  (rhs))))))))))
 
 ===
 valid - GenerateAfter appears first among keywords
@@ -2178,16 +2095,16 @@ Class Demo.GenerateAfter4 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2197,13 +2114,10 @@ Class Demo.GenerateAfter4 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier))))
+                  (rhs)))
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs))))))))))
 
 ===
@@ -2220,16 +2134,16 @@ Class Demo.GenerateAfter5 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2239,19 +2153,13 @@ Class Demo.GenerateAfter5 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_public_list
-                  (identifier)
                   (rhs)
-                  (rhs)
-                  (rhs
-                    (objectscript_identifier))
                   (rhs)))
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs))))))))))
 
 ===
@@ -2268,16 +2176,16 @@ Class Demo.GenerateAfter6 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2287,14 +2195,11 @@ Class Demo.GenerateAfter6 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)))))))))))
+                  (rhs))))))))))
 
 ===
 valid - GenerateAfter with mixed single and list used in separate methods
@@ -2314,16 +2219,16 @@ Class Demo.GenerateAfter7 Extends %RegisteredObject
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2333,17 +2238,15 @@ Class Demo.GenerateAfter7 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments)
             (return_type
@@ -2353,14 +2256,11 @@ Class Demo.GenerateAfter7 Extends %RegisteredObject
             (method_keywords
               (method_keyword
                 (method_keyword_codemode
-                  (identifier)
                   (rhs)))
               (method_keyword
                 (method_keyword_generate_after
-                  (identifier)
                   (rhs)
-                  (rhs
-                    (identifier)))))))))))
+                  (rhs))))))))))
 
 ===
 invalid - GenerateAfter missing '='

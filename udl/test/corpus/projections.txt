@@ -10,24 +10,23 @@ Projection JavaClient As %Projection.Java(ROOTDIR="c:\java");
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (string_literal))))))))))
+                (string_literal)))))))))
 
 ===
 Projection Class
@@ -56,27 +55,27 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (parameter
           (keyword_parameter)
-          (identifier
+          (parameter_name
             (identifier))))
       (documatic_line)
       (class_statement
         (classmethod
           (keyword_classmethod)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
@@ -88,25 +87,24 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (typename
                 (identifier)))
             (line_comment_1)
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (macro
-                        (macro_constant))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant)))))))))
       (documatic_line)
       (class_statement
         (classmethod
           (keyword_classmethod)
           (method_definition
-            (identifier
+            (method_name
               (identifier))
             (arguments
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
@@ -115,7 +113,7 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
                 (identifier))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   (keyword_as)
                   (typename
                     (identifier)))))
@@ -124,14 +122,13 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (typename
                 (identifier)))
             (line_comment_1)
-            (core_method_body_content
-              (statement
-                (command_quit
-                  (keyword_quit)
-                  (expression
-                    (expr_atom
-                      (macro
-                        (macro_constant)))))))))))))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant))))))))))))
 
 ===
 projection - minimal
@@ -145,18 +142,17 @@ Projection MyProj As %Projection.SomeProjection;
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
-                (identifier)))))))))
+            (keyword_as)
+            (typename
+              (identifier))))))))
 
 ===
 projection - with description comment
@@ -171,19 +167,18 @@ Projection CompileHook As %Projection.AbstractProjection;
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (documatic_line)
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
-                (identifier)))))))))
+            (keyword_as)
+            (typename
+              (identifier))))))))
 
 ===
 projection - with parameter list
@@ -197,24 +192,23 @@ Projection P1 As dc.proj.CustomProjection(FOO=1,BAR="baz");
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (string_literal))))))))))
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal)))))))))
 
 ===
 projection - with keyword list [ Internal ]
@@ -228,22 +222,20 @@ Projection HiddenOne As dc.proj.CustomProjection [ Internal ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
-                (identifier))))
+            (keyword_as)
+            (typename
+              (identifier)))
           (projection_keywords
             (projection_keyword
-              (parameter_keyword_internal
-                (identifier)))))))))
+              (parameter_keyword_internal))))))))
 
 ===
 projection - with keyword list [ Not Internal ]
@@ -257,23 +249,21 @@ Projection VisibleOne As dc.proj.CustomProjection [ Not Internal ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
-                (identifier))))
+            (keyword_as)
+            (typename
+              (identifier)))
           (projection_keywords
             (projection_keyword
               (parameter_keyword_internal
-                (keyword_not)
-                (identifier)))))))))
+                (keyword_not)))))))))
 
 ===
 projection - with params + keywords
@@ -287,28 +277,26 @@ Projection Combo As dc.proj.CustomProjection(ENABLED=1,MODE="fast") [ Internal ]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (string_literal)))))
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal))))
           (projection_keywords
             (projection_keyword
-              (parameter_keyword_internal
-                (identifier)))))))))
+              (parameter_keyword_internal))))))))
 
 ===
 projection - multiple projections in one class
@@ -324,51 +312,47 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
-                (identifier))))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
+                (numeric_literal))))
           (projection_keywords
             (projection_keyword
-              (parameter_keyword_internal
-                (identifier))))))
+              (parameter_keyword_internal)))))
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (string_literal))
-                (typename_param
-                  (identifier)
-                  (numeric_literal))))))))))
+                (string_literal))
+              (typename_param
+                (identifier)
+                (numeric_literal)))))))))
 
 ===
 projection - allow whitespace/newlines in params
@@ -385,28 +369,26 @@ Projection W As dc.proj.CustomProjection(
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (projection
           (keyword_projection)
-          (identifier
+          (projection_name
             (identifier))
           (projection_type
-            (property_type
-              (keyword_as)
-              (typename
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
                 (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (string_literal)))))
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal))))
           (projection_keywords
             (projection_keyword
-              (parameter_keyword_internal
-                (identifier)))))))))
+              (parameter_keyword_internal))))))))
 
 ===
 invalid projection - missing semicolon

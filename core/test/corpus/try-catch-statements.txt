@@ -25,75 +25,87 @@ try catch tests
   (statements
     (statement
       (pound_include
-        preproc_keyword: (kw_pound_include)))
+        (keyword_pound_include)
+        (class_name)))
     (statement
       (command_trycatch
-        command_name: (keyword_try)
-        try_block: (statement
+        (keyword_try)
+        (statement
           (command_set
-            command_name: (keyword_set)
+            (keyword_set)
             (set_argument
-              lhs: (glvn
+              (glvn
                 (lvn
                   (objectscript_identifier)))
-              rhs: (expression
+              (expression
                 (expr_atom
                   (string_literal))))))
-        try_block: (statement
+        (statement
           (command_set
-            command_name: (keyword_set)
+            (keyword_set)
             (set_argument
-              lhs: (glvn
+              (glvn
                 (lvn
                   (objectscript_identifier)))
-              rhs: (expression
+              (expression
                 (expr_atom
                   (class_method_call
                     (class_ref
-                      preproc_keyword: (keyword_pound_pound_class)
-                      (class_name
-                        (dotted_identifier_strict_token_immediate)))
+                      (keyword_pound_pound_class)
+                      (bracket)
+                      (class_name)
+                      (bracket))
                     (method_name
                       (identifier_segment_immediate))
-                    (method_args)))))))
-        try_block: (statement
+                    (method_args
+                      (bracket)
+                      (bracket))))))))
+        (statement
           (command_set
-            command_name: (keyword_set)
+            (keyword_set)
             (set_argument
-              lhs: (glvn
+              (glvn
                 (lvn
                   (objectscript_identifier)))
-              rhs: (expression
+              (expression
                 (expr_atom
                   (oref_chain_expr
                     (lvn
                       (objectscript_identifier))
-                    (oref_method
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))))
-        try_block: (statement
+                    (oref_chain_segment
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket))))))))))
+        (statement
           (command_if
-            command_name: (keyword_if)
+            (keyword_if)
             (expression
               (expr_atom
-                (expression
-                  (expr_atom
-                    (dollarsf
-                      function_name: (dollar_system_keyword)
-                      classname_piece: (identifier_segment_immediate)
-                      classname_piece: (identifier_segment_immediate)
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))
+                (parenthetical_expression
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollarsf
+                          (function_argument)
+                          (function_argument)
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))
+                            (bracket))))))
+                  (bracket))))
             (statement
               (command_write
                 (keyword_write)
@@ -108,13 +120,15 @@ try catch tests
               (macro
                 (macro_function
                   (method_args
+                    (bracket)
                     (method_arg
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier)))))))))
-            else_block: (else_block
-              command_name: (keyword_else)
+                            (objectscript_identifier)))))
+                    (bracket)))))
+            (else_block
+              (keyword_else)
               (statement
                 (command_write
                   (keyword_write)
@@ -127,9 +141,9 @@ try catch tests
                       (write_device_fflf)))))
               (statement
                 (command_return
-                  command_name: (keyword_return))))))
-        catch_block: (catch_block
-          command_name: (keyword_catch)
+                  (keyword_return))))))
+        (catch_block
+          (keyword_catch)
           (glvn
             (lvn
               (objectscript_identifier)))
@@ -156,9 +170,10 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))))
+                      (oref_chain_segment
+                        (oref_property
+                          (property_name
+                            (identifier_segment_immediate))))))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -175,9 +190,10 @@ try catch tests
                     (oref_chain_expr
                       (lvn
                         (objectscript_identifier))
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))))
+                      (oref_chain_segment
+                        (oref_property
+                          (property_name
+                            (identifier_segment_immediate))))))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -192,20 +208,23 @@ try catch tests
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (expression
-                        (expr_atom
-                          (oref_chain_expr
-                            (lvn
-                              (objectscript_identifier))
-                            (oref_property
-                              (property_name
-                                (identifier_segment_immediate))))))
-                      (expression
-                        (expr_atom
-                          (numeric_literal)))))))
+                      (dollar_listget
+                        (expression
+                          (expr_atom
+                            (oref_chain_expr
+                              (lvn
+                                (objectscript_identifier))
+                              (oref_chain_segment
+                                (oref_property
+                                  (property_name
+                                    (identifier_segment_immediate)))))))
+                        (dollar_func_pos
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
           (statement
             (command_return
-              command_name: (keyword_return))))))))
+              (keyword_return))))))))

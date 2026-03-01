@@ -9,15 +9,17 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -25,8 +27,7 @@ Class test {
             (identifier))
           (foreignkey_keywords
             (foreignkey_keyword
-              (foreignkey_keyword_no_check
-                (identifier)))))))))
+              (foreignkey_keyword_no_check))))))))
 
 ===
 Not NoCheck
@@ -39,15 +40,17 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -56,8 +59,7 @@ Class test {
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check
-                (keyword_not)
-                (identifier)))))))))
+                (keyword_not)))))))))
 
 ===
 OnDelete
@@ -70,15 +72,17 @@ Class test {
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_body
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -87,7 +91,6 @@ Class test {
           (foreignkey_keywords
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -103,15 +106,15 @@ ForeignKey FK1(ParentKey) References Test.ParentNoAction(KeyIndex) [ OnUpdate = 
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -120,10 +123,12 @@ ForeignKey FK1(ParentKey) References Test.ParentNoAction(KeyIndex) [ OnUpdate = 
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -132,7 +137,6 @@ ForeignKey FK1(ParentKey) References Test.ParentNoAction(KeyIndex) [ OnUpdate = 
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -148,15 +152,15 @@ ForeignKey FK1(ParentKey) References Test.ParentCascade(KeyIndex) [ OnUpdate = c
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -165,10 +169,12 @@ ForeignKey FK1(ParentKey) References Test.ParentCascade(KeyIndex) [ OnUpdate = c
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -177,7 +183,6 @@ ForeignKey FK1(ParentKey) References Test.ParentCascade(KeyIndex) [ OnUpdate = c
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -193,15 +198,15 @@ ForeignKey FK1(ParentKey) References Test.ParentSetDefault(KeyIndex) [ OnUpdate 
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -210,10 +215,12 @@ ForeignKey FK1(ParentKey) References Test.ParentSetDefault(KeyIndex) [ OnUpdate 
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -222,7 +229,6 @@ ForeignKey FK1(ParentKey) References Test.ParentSetDefault(KeyIndex) [ OnUpdate 
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -238,15 +244,15 @@ ForeignKey FK1(ParentKey) References Test.ParentSetNull(KeyIndex) [ OnUpdate = s
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -255,10 +261,12 @@ ForeignKey FK1(ParentKey) References Test.ParentSetNull(KeyIndex) [ OnUpdate = s
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -267,7 +275,6 @@ ForeignKey FK1(ParentKey) References Test.ParentSetNull(KeyIndex) [ OnUpdate = s
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -283,15 +290,15 @@ ForeignKey FK1(ParentKey) References Test.ParentCase(KeyIndex) [ oNuPdAtE = CaSc
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -300,10 +307,12 @@ ForeignKey FK1(ParentKey) References Test.ParentCase(KeyIndex) [ oNuPdAtE = CaSc
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -312,7 +321,6 @@ ForeignKey FK1(ParentKey) References Test.ParentCase(KeyIndex) [ oNuPdAtE = CaSc
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -399,15 +407,15 @@ ForeignKey FK1(ParentID) References Test.FK.Parent1 [ ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -416,10 +424,12 @@ ForeignKey FK1(ParentID) References Test.FK.Parent1 [ ];
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -438,15 +448,15 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent2(KeyIndex) [ ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -455,10 +465,12 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent2(KeyIndex) [ ];
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -480,15 +492,15 @@ ForeignKey FKAB(A, B) References Test.FK.Parent3(ABIndex) [ ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -497,7 +509,7 @@ ForeignKey FKAB(A, B) References Test.FK.Parent3(ABIndex) [ ];
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -506,12 +518,14 @@ ForeignKey FKAB(A, B) References Test.FK.Parent3(ABIndex) [ ];
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -534,15 +548,15 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent4(KeyIndex) [ ];
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -552,10 +566,12 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent4(KeyIndex) [ ];
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -576,15 +592,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentInternal(KeyIndex) [ Internal
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -593,10 +609,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentInternal(KeyIndex) [ Internal
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -604,8 +622,7 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentInternal(KeyIndex) [ Internal
             (identifier))
           (foreignkey_keywords
             (foreignkey_keyword
-              (parameter_keyword_internal
-                (identifier)))))))))
+              (parameter_keyword_internal))))))))
 
 ===
 foreign key keyword - Not Internal
@@ -620,15 +637,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotInternal(KeyIndex) [ Not I
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -637,10 +654,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotInternal(KeyIndex) [ Not I
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -649,8 +668,7 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotInternal(KeyIndex) [ Not I
           (foreignkey_keywords
             (foreignkey_keyword
               (parameter_keyword_internal
-                (keyword_not)
-                (identifier)))))))))
+                (keyword_not)))))))))
 
 ===
 foreign key keyword - NoCheck
@@ -665,15 +683,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNoCheck(KeyIndex) [ NoCheck ]
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -682,10 +700,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNoCheck(KeyIndex) [ NoCheck ]
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -693,8 +713,7 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNoCheck(KeyIndex) [ NoCheck ]
             (identifier))
           (foreignkey_keywords
             (foreignkey_keyword
-              (foreignkey_keyword_no_check
-                (identifier)))))))))
+              (foreignkey_keyword_no_check))))))))
 
 ===
 foreign key keyword - Not NoCheck
@@ -709,15 +728,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotNoCheck(KeyIndex) [ Not No
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -726,10 +745,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotNoCheck(KeyIndex) [ Not No
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -738,8 +759,7 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotNoCheck(KeyIndex) [ Not No
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check
-                (keyword_not)
-                (identifier)))))))))
+                (keyword_not)))))))))
 
 ===
 foreign key keyword - SqlName = alternate_name
@@ -754,15 +774,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentSqlName(KeyIndex) [ SqlName =
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -771,10 +791,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentSqlName(KeyIndex) [ SqlName =
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -783,7 +805,6 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentSqlName(KeyIndex) [ SqlName =
           (foreignkey_keywords
             (foreignkey_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -799,15 +820,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentOnDelete(KeyIndex) [ OnDelete
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -816,10 +837,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentOnDelete(KeyIndex) [ OnDelete
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -828,7 +851,6 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentOnDelete(KeyIndex) [ OnDelete
           (foreignkey_keywords
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (identifier)
                 (rhs)))))))))
 
 ===
@@ -845,15 +867,15 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentMany(KeyIndex)
 (source_file
   (class_definition
     (keyword_class)
-    (identifier)
+    (class_name)
     (class_extends
       (keyword_extends)
-      (identifier))
+      (class_name))
     (class_body
       (class_statement
         (property
           (keyword_property)
-          (identifier
+          (property_name
             (identifier))
           (property_type
             (keyword_as)
@@ -862,10 +884,12 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentMany(KeyIndex)
       (class_statement
         (foreignkey
           (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
           (identifier
             (identifier))
-          (identifier
-            (identifier))
+          (bracket)
           (keyword_references)
           (identifier
             (identifier))
@@ -874,21 +898,16 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentMany(KeyIndex)
           (foreignkey_keywords
             (foreignkey_keyword
               (method_keyword_sql_name
-                (identifier)
                 (rhs)))
             (foreignkey_keyword
-              (foreignkey_keyword_no_check
-                (identifier)))
+              (foreignkey_keyword_no_check))
             (foreignkey_keyword
-              (parameter_keyword_internal
-                (identifier)))
+              (parameter_keyword_internal))
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (identifier)
                 (rhs)))
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (identifier)
                 (rhs)))))))))
 
 ===

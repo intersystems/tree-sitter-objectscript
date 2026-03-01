@@ -1,0 +1,497 @@
+==================================
+$LISTDATA with one argument
+==================================
+$LISTDATA(list)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LISTDATA shorthand with one argument
+==================================
+$LD(list)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LISTDATA with position
+==================================
+$LISTDATA(list,2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$LISTDATA with position and output variable
+==================================
+$LISTDATA(list,3,value)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LISTDATA with global variable output
+==================================
+$LISTDATA(list,1,^data)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (gvn))))))))
+
+==================================
+$LISTDATA case insensitive
+==================================
+$listdata(list)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LD case insensitive
+==================================
+$ld(myList)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LISTDATA with $LISTBUILD argument
+==================================
+$LISTDATA($LB("a","b","c"),2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (system_defined_function
+                (built_in_functions_with_optional_args
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))
+                  (function_argument
+                    (expr_atom
+                      (string_literal)))))))
+          (function_argument
+            (expr_atom
+              (numeric_literal))))))))
+
+==================================
+$LISTDATA with subscripted variable
+==================================
+$LISTDATA(arr(i),pos)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket)))))
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LISTDATA with subscripted output variable
+==================================
+$LISTDATA(list,1,result(idx))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (built_in_functions_with_optional_args
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (function_argument
+            (expr_atom
+              (numeric_literal)))
+          (function_argument
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket))))))))))
+
+==================================
+$LENGTH with one argument
+==================================
+$LENGTH(str)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LENGTH shorthand with one argument
+==================================
+$L(str)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LENGTH with string literal
+==================================
+$LENGTH("Hello World")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$LENGTH with delimiter
+==================================
+$LENGTH("a,b,c",",")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$LENGTH with variable and delimiter
+==================================
+$LENGTH(str,delim)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LENGTH case insensitive
+==================================
+$length(str)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$L case insensitive
+==================================
+$l(str)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$LENGTH with empty string
+==================================
+$LENGTH("")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$LENGTH in expression
+==================================
+$LENGTH(str)+1
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))
+
+==================================
+$LENGTH with multi-character delimiter
+==================================
+$LENGTH(data,"||")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$LENGTH counting pieces in CSV
+==================================
+$LENGTH("one,two,three,four",",")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$LENGTH with concatenated string
+==================================
+$LENGTH(str1_str2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))))
+
+==================================
+$LENGTH with subscripted variable
+==================================
+$LENGTH(arr(i))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket))))))))))
+
+==================================
+Nested $LENGTH and $LISTDATA
+==================================
+$LENGTH($LISTDATA(list,1))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (expression
+            (expr_atom
+              (system_defined_function
+                (built_in_functions_with_optional_args
+                  (function_argument
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (function_argument
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+====
+Empty listdata
+:error
+====
+ $LD
+---
+
+
+
+====
+Empty length
+:error
+====
+ $LENGTH
+---
+
+
+
+====
+Empty length shorthand
+:error
+====
+ $L
+---
+
+

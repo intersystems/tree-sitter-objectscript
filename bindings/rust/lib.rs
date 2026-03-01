@@ -74,7 +74,8 @@ include_str!("../../core/queries/highlights.scm")
 );
 
 /// The syntax highlighting query for ObjectScript Expressions.
-pub const OBJECTSCRIPT_EXPR_HIGHLIGHTS_QUERY: &str = "../../expr/queries/highlights.scm";
+pub const OBJECTSCRIPT_EXPR_HIGHLIGHTS_QUERY: &str =
+    include_str!("../../expr/queries/highlights.scm");
 
 /// The injections query for ObjectScript.
 pub const OBJECTSCRIPT_INJECTIONS_QUERY: &str = concat!(
@@ -83,16 +84,13 @@ include_str!("../../udl/queries/injections.scm"),
 );
 
 /// The injections query for ObjectScript Core (routines).
-pub const OBJECTSCRIPT_CORE_INJECTIONS_QUERY: &str = "../../core/queries/injections.scm";
+pub const OBJECTSCRIPT_CORE_INJECTIONS_QUERY: &str =
+    include_str!("../../core/queries/injections.scm");
 
-/// The indents query for ObjectScript.
-pub const OBJECTSCRIPT_INDENTS_QUERY: &str = concat!(
-include_str!("../../core/queries/indents.scm"), "\n",
-include_str!("../../udl/queries/indents.scm"),
-);
+/// The indents query for ObjectScript and ObjectScript Core (routines).
+pub const OBJECTSCRIPT_INDENTS_QUERY: &str =
+    include_str!("../../core/queries/indents.scm");
 
-/// The indents query for ObjectScript Core (routines).
-pub const OBJECTSCRIPT_CORE_INDENTS_QUERY: &str = "../../core/queries/indents.scm";
 
 #[cfg(test)]
 mod tests {
@@ -118,5 +116,20 @@ mod tests {
         parser
             .set_language(&super::LANGUAGE_OBJECTSCRIPT_EXPR.into())
             .expect("Error loading Objectscript Expr parser");
+    }
+
+    #[test]
+    fn test_expr_highlights_query_is_loaded() {
+        assert!(super::OBJECTSCRIPT_EXPR_HIGHLIGHTS_QUERY.contains("@number"));
+    }
+
+    #[test]
+    fn test_core_injections_query_is_loaded() {
+        assert!(super::OBJECTSCRIPT_CORE_INJECTIONS_QUERY.contains("injection.language"));
+    }
+
+    #[test]
+    fn test_indents_query_is_loaded() {
+        assert!(super::OBJECTSCRIPT_INDENTS_QUERY.contains("indent"));
     }
 }

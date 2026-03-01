@@ -77,6 +77,7 @@ Valid Xecute Statements
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -87,11 +88,13 @@ Valid Xecute Statements
           (expression
             (expr_atom
               (lvn
-                (objectscript_identifier)))))))
+                (objectscript_identifier))))
+          (bracket))))
     (statement
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -102,11 +105,13 @@ Valid Xecute Statements
           (expression
             (expr_atom
               (lvn
-                (objectscript_identifier)))))))
+                (objectscript_identifier))))
+          (bracket))))
     (statement
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -117,11 +122,13 @@ Valid Xecute Statements
           (expression
             (expr_atom
               (lvn
-                (objectscript_identifier)))))))
+                (objectscript_identifier))))
+          (bracket))))
     (statement
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -129,12 +136,14 @@ Valid Xecute Statements
             (expr_atom
               (lvn
                 (objectscript_identifier))))
+          (bracket)
           (post_conditional
             (expression
               (expr_atom
                 (lvn
                   (objectscript_identifier))))))
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -142,6 +151,7 @@ Valid Xecute Statements
             (expr_atom
               (lvn
                 (objectscript_identifier))))
+          (bracket)
           (post_conditional
             (expression
               (expr_atom
@@ -151,6 +161,7 @@ Valid Xecute Statements
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
@@ -160,7 +171,8 @@ Valid Xecute Statements
                 (objectscript_identifier))))
           (byref_arg
             (lvn
-              (objectscript_identifier))))))
+              (objectscript_identifier)))
+          (bracket))))
     (statement
       (command_xecute
         (keyword_xecute)
@@ -188,9 +200,10 @@ Valid Xecute Statements
               (oref_chain_expr
                 (lvn
                   (objectscript_identifier))
-                (oref_property
-                  (property_name
-                    (identifier_segment_immediate)))))))))
+                (oref_chain_segment
+                  (oref_property
+                    (property_name
+                      (identifier_segment_immediate))))))))))
     (statement
       (command_xecute
         (keyword_xecute)
@@ -226,19 +239,22 @@ Valid Xecute Statements
       (command_xecute
         (keyword_xecute)
         (xecute_argument
+          (bracket)
           (expression
             (expr_atom
               (string_literal)))
           (expression
             (expr_atom
               (system_defined_function
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (string_literal)))))))))
+                (dollar_function
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))
+          (bracket))))
     (statement
       (command_xecute
         (keyword_xecute)

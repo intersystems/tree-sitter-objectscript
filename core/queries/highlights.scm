@@ -1,96 +1,37 @@
 ;; inherits: objectscript_expr
-; -------------- Objectscript Core -------------
-; Commands
-; e.g. 'set', 'do', 'D'
-; -----------------------------------------
-(_ command_name: (_) @keyword)
+(locktype) @variable
 
-(_ macro_name: (_) @keyword.macro)
-(_ macro_arg: (_) @constant.macro)
-(_ mnemonic: (_) @constant.macro)
+(macro_arg) @variable
+(macro_value) @constant.builtin
+keyword: (_) @keyword
 
-(_ parameter: _ @variable.parameter)
+(embedded_js_special_case_complete) @punctuation.special
+(embedded_sql_marker) @punctuation.special
+(embedded_sql_reverse_marker) @punctuation.special
+(html_marker) @punctuation.special
+(html_marker_reversed) @punctuation.special
 
-; Functions that can be on the LHS of a SET
-(doable_dollar_functions) @function.builtin
+(attribute) @attribute
 
-; non-extrinsic routine call
-(routine_tag_call) @function.call
+(open_keywords) @attribute
+(use_keywords) @attribute
+(close_parameter_option_value) @attribute
 
-; method call
-(instance_method_call) @function.method.call
-
-;; Technically elseif and else_block are not statements,
-;; so we need ot query them explicitly
-;(elseif_block command_name: (_) @keyword)
-;(else_block command_name: (_) @keyword)
-
-"{" @punctuation.bracket
-"}" @punctuation.bracket
-
-; Comments
-; e.g. '// fj;lkasdfj', '#; sklfjas;k', '; sklfjas','/* sdfs */'
 [
   (line_comment_1)
   (line_comment_2)
   (line_comment_3)
+  (line_comment_4)
   (block_comment)
 ] @comment
 
-(embedded_html
-  (keyword_embedded_html) @keyword.directive
-  "<" @keyword.directive
-  ">" @keyword.directive
-)
+(tag) @tag
 
-(embedded_html
-  (keyword_embedded_html) @keyword.directive
-  (html_marker) @marker
-  "<" @keyword.directive
-  ">" @keyword.directive
-  (html_marker_reversed) @marker
-)
-
-(embedded_sql_amp
-  (keyword_embedded_sql_amp) @keyword.directive
-  "(" @keyword.directive
-  ")" @keyword.directive
-) @embedded_sql
-
-(embedded_sql_amp
-  (keyword_embedded_sql_amp) @keyword.directive
-  (embedded_sql_marker) @marker
-  "(" @keyword.directive
-  ")" @keyword.directive
-  (embedded_sql_reverse_marker) @marker
-) @embedded_sql
-
-(embedded_sql_hash
-  (keyword_embedded_sql_hash) @keyword.directive
-  "(" @keyword.directive
-  ")" @keyword.directive
-) @embedded_sql
-(embedded_js
-  (html_marker) @marker
-  "<" @keyword.directive
-  (embedded_js_special_case) @js_bod
-  ">" @keyword.directive
-  (embedded_js_special_case_complete) @marker
-) @embeddedJS
-
-(embedded_js
-  "<" @keyword.directive
-  ">" @keyword.directive
-)@embeddedJS
-
-(embedded_xml
-  (keyword_embedded_xml) @keyword.directive
-  "<" @keyword.directive
-  ">" @keyword.directive
-)
-
-(tag) @label
-
-; Lock type specifications
-(locktype) @type.qualifier
-(_read_prompt) @readprompt
+[
+  "--"
+  ";"
+  "//"
+  "#;"
+  "##;"
+  "$"
+] @punctuation

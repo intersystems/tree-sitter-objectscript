@@ -16,6 +16,7 @@ Valid Dim
         (lvn)
         (lvn)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
@@ -26,22 +27,27 @@ Valid Dim
         (lvn)
         (lvn)
         (lvn)
+        (keyword_as)
         (oref_set_target
           (lvn
             (objectscript_identifier))
-          (oref_property
-            (property_name
-              (identifier_segment_immediate))))
+          (oref_chain_segment
+            (oref_property
+              (property_name
+                (identifier_segment_immediate)))))
         (expression
           (expr_atom
             (class_method_call
               (class_ref
                 (keyword_pound_pound_class)
-                (class_name
-                  (dotted_identifier_strict_token_immediate)))
+                (bracket)
+                (class_name)
+                (bracket))
               (method_name
                 (identifier_segment_immediate))
-              (method_args))))))
+              (method_args
+                (bracket)
+                (bracket)))))))
     (statement
       (pound_dim
         (keyword_dim)
@@ -53,30 +59,36 @@ Valid Dim
             (class_method_call
               (class_ref
                 (keyword_pound_pound_class)
-                (class_name
-                  (dotted_identifier_strict_token_immediate)))
+                (bracket)
+                (class_name)
+                (bracket))
               (method_name
                 (identifier_segment_immediate))
-              (method_args))))))
+              (method_args
+                (bracket)
+                (bracket)))))))
     (statement
       (pound_dim
         (keyword_dim)
         (lvn)
         (lvn)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
             (json_object_literal
-              (json_string_literal)
-              (json_literal
-                (json_string_literal)))))))
+              (json_object_literal_pair
+                (json_string_literal)
+                (json_literal
+                  (json_string_literal))))))))
     (statement
       (pound_dim
         (keyword_dim)
         (lvn)
         (lvn)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
@@ -99,6 +111,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)))))
 
 ===
@@ -114,12 +127,14 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (oref_set_target
           (lvn
             (objectscript_identifier))
-          (oref_property
-            (property_name
-              (identifier_segment_immediate))))))))
+          (oref_chain_segment
+            (oref_property
+              (property_name
+                (identifier_segment_immediate)))))))))
 
 ===
 valid
@@ -134,6 +149,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
@@ -152,6 +168,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
@@ -170,6 +187,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom
@@ -208,6 +226,7 @@ valid
         (lvn)
         (lvn)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)))))
 
 ===
@@ -223,7 +242,9 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
+        (keyword_of)
         (objectscript_identifier)))))
 
 ===
@@ -239,13 +260,16 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
+        (keyword_of)
         (oref_set_target
           (lvn
             (objectscript_identifier))
-          (oref_property
-            (property_name
-              (identifier_segment_immediate))))))))
+          (oref_chain_segment
+            (oref_property
+              (property_name
+                (identifier_segment_immediate)))))))))
 
 ===
 valid
@@ -260,20 +284,23 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
+        (keyword_of)
         (objectscript_identifier)
         (expression
           (expr_atom
             (system_defined_function
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+              (built_in_functions_with_optional_args
+                (function_argument
+                  (expr_atom
+                    (numeric_literal)))
+                (function_argument
+                  (expr_atom
+                    (numeric_literal)))
+                (function_argument
+                  (expr_atom
+                    (numeric_literal)))))))))))
 
 ===
 valid
@@ -288,18 +315,23 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
+        (keyword_of)
         (objectscript_identifier)
         (expression
           (expr_atom
             (class_method_call
               (class_ref
                 (keyword_pound_pound_class)
-                (class_name
-                  (dotted_identifier_strict_token_immediate)))
+                (bracket)
+                (class_name)
+                (bracket))
               (method_name
                 (identifier_segment_immediate))
-              (method_args))))))))
+              (method_args
+                (bracket)
+                (bracket)))))))))
 
 ===
 valid
@@ -314,6 +346,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier))))
   (line_comment_4))
 
@@ -330,6 +363,7 @@ valid
       (pound_dim
         (keyword_dim)
         (lvn)
+        (keyword_as)
         (objectscript_identifier)
         (expression
           (expr_atom

@@ -10,7 +10,6 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-// Note: CommonJS warning is expected - TypeScript repos commonly have this issue
 const objectscript_expr = require('../expr/grammar');
 
 const {
@@ -33,9 +32,8 @@ const repeat_with_colons = function (rule) {
  * @return {RuleOrLiteral}
  */
 function build_command_rule_argumentful($, commandKeyword, commandArgument) {
-  // Argumentful
   return seq(
-    field('command_name', commandKeyword),
+    commandKeyword,
     optional($.post_conditional),
     $._immediate_single_whitespace_followed_by_non_whitespace,
     commandArgument,
@@ -50,13 +48,13 @@ function build_command_rule_argumentful($, commandKeyword, commandArgument) {
 function build_command_rule_special_argumentless($, commandKeyword) {
   return choice(
       seq(
-          field('command_name', commandKeyword),
+          commandKeyword,
           optional($.post_conditional),
           $._argumentless_command_end,
           repeat($.statement),
           $._termination,
       ),
-      seq(field('command_name', commandKeyword), optional($.post_conditional), $._termination)
+      seq(commandKeyword, optional($.post_conditional), $._termination)
   );
 }
 
@@ -66,9 +64,8 @@ function build_command_rule_special_argumentless($, commandKeyword) {
  * @return {RuleOrLiteral}
  */
 function build_command_rule_argumentless($, commandKeyword) {
-  // Argumentless
   return seq(
-    field('command_name', commandKeyword),
+    commandKeyword,
     optional($.post_conditional),
     choice(
         $._argumentless_command_end,
@@ -79,7 +76,6 @@ function build_command_rule_argumentless($, commandKeyword) {
 }
 
 const post_conditional_rules = generate_post_conditionals(
-  // LINT: Why is ts giving an error? .grammar is a valid field
   // @ts-ignore
   objectscript_expr.grammar,
   [sym('method_args'), sym('subscripts')],
@@ -92,7 +88,7 @@ module.exports = grammar(objectscript_expr, {
     $._assert_no_space_between_rules,
     $._argumentless_command_end,
     $._argumentless_loop,
-    $._whitespace, // handle whitespaces programatically. NOTE: Prioritize lexing whitespace as fast as possible!!!
+    $._whitespace,
     $.tag,
     $.angled_bracket_fenced_text,
     $.paren_fenced_text,
@@ -116,20 +112,11 @@ module.exports = grammar(objectscript_expr, {
   ],
   conflicts: ($, previous) =>
     previous.concat([
-      [$.use_parameters, $._parenthetical_expression],
-      [$.open_parameters, $._parenthetical_expression],
-      [ $.label_ref, $.objectscript_identifier ],
-      [$.xecute_argument, $._parenthetical_expression],
+      [$.use_parameters, $.parenthetical_expression],
+      [$.open_parameters, $.parenthetical_expression],
+      [$.xecute_argument, $.parenthetical_expression],
     ]),
 
-  // These are what I can think of
-  // \r: Carriage return
-  // \f: Form feed
-  // : Space
-  // \v: Vertical tab
-  // \u00A0: Non-breaking space
-  // \u2028: Line separator
-  // \u2029: Paragraph separator
   extras: ($) => [
     $._whitespace,
     $.line_comment_1,
@@ -171,16 +158,16 @@ module.exports = grammar(objectscript_expr, {
         $.command_lock,
         $.command_read,
         $.command_open,
-        $.command_close, 
-        $.command_use, 
+        $.command_close,
+        $.command_use,
         $.command_new,
         $.command_if,
         $.command_else,
         $.command_throw,
         $.command_trycatch,
-        $.command_job, 
-        $.command_break, 
-        $.command_merge, 
+        $.command_job,
+        $.command_break,
+        $.command_merge,
         $.command_quit,
         $.command_goto,
         $.command_return,
@@ -193,16 +180,16 @@ module.exports = grammar(objectscript_expr, {
         $.command_view,
         $.command_xecute,
         $.command_zbreak,
-        $.command_zkill, 
+        $.command_zkill,
         $.command_zn,
         $.command_zsu,
         $.command_ztrap,
-        $.command_zz, 
+        $.command_zz,
         $.embedded_html,
-        $.embedded_xml, 
+        $.embedded_xml,
         $.embedded_sql,
         $.embedded_js,
-        $.pound_dim, 
+        $.pound_dim,
         $.pound_define,
         $.pound_def1arg,
         $.pound_if,
@@ -216,6 +203,95 @@ module.exports = grammar(objectscript_expr, {
         $.procedure,
       ),
 
+    keyword_set: (_) => /[sS]([eE][tT])?/,
+    keyword_as: (_) => /As/i,
+      keyword_of: (_) => /Of/i,
+    keyword_dim: (_) => /\#[dD][iI][mM]/,
+    keyword_pound_define: (_) => /\#define/i,
+    keyword_pound_def1arg: (_) => /\#def1arg/i,
+    keyword_pound_execute: (_) => /\#execute/i,
+    keyword_pound_import: (_) => /\#import/i,
+    keyword_pound_include: (_) => /\#include/i,
+    keyword_pound_if: (_) => /\#if/i,
+    keyword_pound_endif: (_) => /\#endif/i,
+    keyword_pound_elseif: (_) => /\#elseif/i,
+    keyword_pound_ifdef: (_) => /#ifdef/i,
+    keyword_pound_else: (_) => /#else/i,
+    keyword_pound_ifndef: (_) => choice(/\#ifndef/i,/\#ifundef/i),
+    keyword_write: (_) => /[wW]([rR][iI][tT][eE])?/,
+    keyword_do: (_) => /[dD]([oO])?/,
+    keyword_for: (_) => /[fF]([oO][rR])?/,
+    keyword_while: (_) => /[wW][hH][iI][lL][eE]/,
+    keyword_kill: (_) => /[kK]([iI][lL][lL])?/,
+    keyword_lock: (_) => /[lL]([oO][cC][kK])?/,
+    keyword_read: (_) => /[Rr]([eE][aA][dD])?/,
+    keyword_open: (_) => /O(pen)?/i,
+    keyword_close: (_) => /Close/i,
+    keyword_use: (_) => /U(se)?/i,
+    keyword_new: (_) => /[nN]([eE][wW])?/,
+    keyword_if: (_) => /I(f)?/i,
+    keyword_elseif: (_) => /ElseIf/i,
+    keyword_else: (_) => /Else/i,     // NOTE: New style Else must be spelled out
+    keyword_oldelse: (_) => /E(lse)?/i,
+    keyword_throw: (_) => /Throw/i,
+    keyword_try: (_) => /[tT][rR][yY]/,
+    keyword_catch: (_) => /[cC][aA][tT][cC][hH]/,
+    // JOB command syntax examples:
+    // routine(routine-params):(process-params):timeout
+    // routine(routine-params)[joblocation]:(process-params):timeout
+    // routine(routine-params)|joblocation|:(process-params):timeout
+    // ##class(className).methodName(args):(process-params):timeout
+    // ..methodName(args):(process-params):timeout
+    keyword_job: (_) => /[jJ]([oO][bB])?/,
+    keyword_break: (_) => /B(REAK)?/i,
+    keyword_merge: (_) => /[mM]([eE][rR][gG][eE])?/,
+    // Technically ^$GLOBAL() can be the source
+    keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
+    keyword_quit: (_) => /[Qq]([uU][iI][tT])?/,
+    keyword_goto: (_) => /[Gg]([oO][tT][oO])?/,
+    keyword_halt: (_) => /Halt/i,
+    keyword_hang: (_) => /Hang/i,
+      keyword_halt_or_hang: (_) => /h/i,
+    keyword_continue: (_) => /Continue/i,
+    keyword_tcommit: (_) => /TC(OMMIT)?/i,
+    keyword_trollback: (_) => /TRO(LLBACK)?/i,
+    keyword_tstart: (_) => /TS(TART)?/i,
+    keyword_xecute: (_) => /X(ECUTE)?/i,
+    // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cview
+    keyword_view: (_) => /V(IEW)?/i,
+    keyword_zbreak: (_) => /ZB(REAK)?/i,
+    keyword_normal: (_) => /N(ormal)?/i,
+    keyword_ext: (_) => /EXT/i,
+    keyword_destruct: (_) => /DESTRUCT/i,
+    keyword_stepmethod: (_) => /METHOD/i,
+    keyword_interrupt: (_) => /I(nterrupt)?/i,
+    keyword_on: (_) => /ON/i,
+    keyword_off: (_) => /OFF/i,
+    keyword_all: (_) => /All/i,
+    // one :
+    keyword_debug: (_) => /D(ebug)?/i,
+    keyword_errortrap: (_) => /ErrorTrap/i,
+    // two :
+    keyword_trace: (_) => /T(race)?/i,
+    keyword_step: (_) => /Step/i,
+    keyword_nostep: (_) => /NoStep/i,
+    // 0 :
+    keyword_clear: (_) => /C(lear)?/i,
+    keyword_zkill: (_) => /ZK(ILL)?/i,
+    keyword_zn: (_) => /ZN(SPACE)?/i,
+    keyword_zsu: (_) => /ZSU/i,
+    keyword_ztrap: (_) => /ZT(RAP)?/i,
+    keyword_zwrite: (_) => /ZW(RITE)?/i,
+    keyword_zz: (_) => /ZZ[A-Z0-9]+/i,
+    keyword_embedded_html: (_) => /&html/i,
+    keyword_embedded_xml: (_) => /&xml/i,
+    keyword_embedded_sql_amp: (_) => /&sql/i,
+    keyword_embedded_sql_hash: (_) => /##sql/i,
+      keyword_js: (_) => choice('&js','&jscript','&javascript'),
+    keyword_private: (_) => /private/i,
+    keyword_public: (_) => /public/i,
+    keyword_methodimpl: (_) => /methodimpl/i,
+    // Shared parameter list rule for both tag_with_params and procedure
     dotted_statement: ($) =>
        seq(
          // this is from the external scanner, and it means that it was
@@ -224,20 +300,21 @@ module.exports = grammar(objectscript_expr, {
         repeat('.'), // in the whitespace case, I don't want to consume the . in the scanner, so they would appear here
         $.statement,
       ),
-    pound_dim: ($) =>
+
+      pound_dim: ($) =>
       seq(
-        field('preproc_keyword', $.keyword_dim),
+        field('keyword', $.keyword_dim),
         repeat_with_commas(alias($.objectscript_identifier, $.lvn)),
         optional(
           seq(
-            field('preproc_keyword', /As/i),
+              field('keyword', $.keyword_as),
             choice(
               $.objectscript_identifier,
               $.oref_set_target,
             ),
             optional(
               seq(
-                /Of/i,
+                  field('keyword', $.keyword_of),
                 choice(
                   $.objectscript_identifier,
                   $.oref_set_target
@@ -249,106 +326,95 @@ module.exports = grammar(objectscript_expr, {
         optional(seq('=', $.expression)),
       ),
 
-    keyword_dim: (_) => /\#[dD][iI][mM]/,
-    keyword_list:(_)=> /list/i,
-    keyword_array:(_)=> /array/i,
-
     pound_define: ($) =>
       seq(
-        field('preproc_keyword', $.keyword_pound_define),
+          field('keyword', $.keyword_pound_define),
         prec(10, seq(
-          field('macro_name', $.pound_define_variable_name),
+          alias($.pound_define_variable_name, $.objectscript_identifier),
           optional($.pound_define_variable_args),
         )),
         choice($.macro_value, $._termination),
       ),
-    pound_define_variable_name: ($) =>
+    pound_define_variable_name: (_) =>
       /[A-Za-z0-9]+/,
     pound_define_variable_args: ($) =>
       prec(15, seq(
-        token.immediate('('),
+        alias(token.immediate('('), $.bracket),
+
         optional(
           seq(
-            field('macro_arg', $.macro_arg),
-            repeat(seq(',', field('macro_arg', $.macro_arg))),
+            $.macro_arg,
+            repeat(seq(',', $.macro_arg)),
           ),
         ),
-        token.immediate(')'),
+        alias(token.immediate(')'), $.bracket),
+
       )),
-    keyword_pound_define: (_) => /\#define/i,
     pound_def1arg: ($) =>
       seq(
-        field('preproc_keyword', $.keyword_pound_def1arg),
+          field('keyword', $.keyword_pound_def1arg),
         prec(10, seq(
-          field('macro_name' ,$.pound_define_variable_name),
+          alias($.pound_define_variable_name, $.objectscript_identifier),
           optional($.pound_def1arg_variable_arg),
         )),
         optional($.macro_value),
       ),
     pound_def1arg_variable_arg: ($) =>
       prec(15, seq(
-        token.immediate('('),
-        optional(field('macro_arg', $.macro_arg)),
-        token.immediate(')'),
+        alias(token.immediate('('), $.bracket),
+
+        optional($.macro_arg),
+        alias(token.immediate(')'), $.bracket),
+
       )),
-    keyword_pound_def1arg: (_) => /\#def1arg/i,
-
-    pound_execute: ($) => field('preproc_keyword', $.keyword_pound_execute),
-    keyword_pound_execute: (_) => /\#execute/i,
-
+    pound_execute: ($) => field('keyword', $.keyword_pound_execute),
     pound_if: ($) =>
       seq(
-        field('preproc_keyword', $.keyword_pound_if),
-        field('condition', $.expression),
+          field('keyword', $.keyword_pound_if),
+        $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        field('preproc_keyword', $.keyword_pound_endif),
+          field('keyword', $.keyword_pound_endif),
       ),
-
     pound_ifdef: ($) =>
       seq(
-        field('preproc_keyword', alias(/\#ifdef/i, $.kw_pound_ifdef)),
-        field('condition', $.expression),
+        field('keyword', $.keyword_pound_ifdef),
+        $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        field('preproc_keyword', $.keyword_pound_endif),
+          field('keyword', $.keyword_pound_endif),
       ),
 
     pound_ifndef: ($) =>
       seq(
-        choice(/\#ifndef/i,/\#ifundef/i,),
-        field('condition', $.expression),
+        field('keyword', $.keyword_pound_ifndef),
+        $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        field('preproc_keyword', $.keyword_pound_endif),
+          field('keyword', $.keyword_pound_endif),
       ),
 
-    keyword_pound_if: (_) => /\#if/i,
-    keyword_pound_endif: (_) => /\#endif/i,
     pound_elseif: ($) =>
       prec.right(
         seq(
-          field('preproc_keyword', $.keyword_pound_elseif),
-          field('condition', $.expression),
+            field('keyword', $.keyword_pound_elseif),
+          $.expression,
           repeat($.statement),
         ),
       ),
-    keyword_pound_elseif: (_) => /\#elseif/i,
-
     pound_else: ($) =>
-      seq(field('preproc_keyword', $.keyword_pound_else), $.statements),
-    keyword_pound_else: (_) => /#else/i,
-
+      seq(field('keyword', $.keyword_pound_else), $.statements),
+    class_name: (_) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
     pound_import: ($) =>
       seq(
-        field('preproc_keyword', alias(/\#import/i, $.kw_pound_import)),
-        repeat_with_commas(/[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/),
+          field('keyword', $.keyword_pound_import),
+        repeat_with_commas($.class_name),
       ),
 
     pound_include: ($) =>
       seq(
-        field('preproc_keyword', alias(/\#include/i, $.kw_pound_include)),
-        /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+          field('keyword', $.keyword_pound_include),
+        $.class_name
       ),
 
     // TODO: Unimplemented preprocessor directives (lower priority):
@@ -368,7 +434,7 @@ module.exports = grammar(objectscript_expr, {
       seq(
         repeat(
           // Multi-line macro (starts with continuation and can have more)
-          $.macro_value_line_with_continue,  
+          $.macro_value_line_with_continue,
         ),
         $.macro_value_line, // Final line without continuation
       ),
@@ -376,32 +442,33 @@ module.exports = grammar(objectscript_expr, {
     command_set: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_set,
+        field('keyword', $.keyword_set),
         repeat_with_commas($.set_argument),
       ),
-    keyword_set: (_) => /[sS]([eE][tT])?/,
     set_argument: ($) =>
         choice(
             seq(
-                field('lhs', choice($.set_target, $.set_target_list)),
-                field('operator', '='),
-                field('rhs', $.expression),
+                choice($.set_target, $.set_target_list),
+                '=',
+                optional($._xecute_arg_invalid), $.expression,
             ),
             $.indirection,
         ),
 
-    set_target_list: ($) => seq('(', repeat_with_commas($.set_target), ')'),
+    set_target_list: ($) => seq(alias('(', $.bracket), repeat_with_commas($.set_target), alias(')', $.bracket)),
     set_target: ($) =>
-      choice(
-        $.glvn,
-        $.instance_variable,
-        $.oref_set_target,
-        $.system_defined_function,  // For things like, set $LB(a, b) = 3
-        $.system_defined_variable,
-        $.sql_field_reference,
-        $.indirection,
-      ),
-
+        seq(
+            optional($._xecute_arg_invalid),
+            choice(
+                $.glvn,
+                $.instance_variable,
+                $.oref_set_target,
+                $.system_defined_function,  // For things like, set $LB(a, b) = 3
+                $.system_defined_variable,
+                $.sql_field_reference,
+                $.indirection,
+            ),
+        ),
     oref_set_target: ($) =>
       choice(
         $.relative_dot_property,
@@ -412,26 +479,22 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_property,
             $.relative_dot_method,
           ),
-          repeat1($._oref_chain_segment),
-          // // Whatever we have here must end in a property
-          // token.immediate('.'),
-          // $.oref_property,
+          repeat1($.oref_chain_segment),
         ),
       ),
 
     command_write: ($) =>
       prec.right(
         choice(
-          build_command_rule_argumentless($, $.keyword_write),
+          build_command_rule_argumentless($, field('keyword', $.keyword_write)),
           seq(
-          $.keyword_write,
+           field('keyword', $.keyword_write),
           optional($.post_conditional),
           choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
           repeat_with_commas($.write_argument)
         )
         ),
       ),
-    keyword_write: (_) => /[wW]([rR][iI][tT][eE])?/,
     write_argument: ($) => choice($.write_device_control, $.expression),
     write_device_control: ($) =>
       choice(
@@ -447,33 +510,26 @@ module.exports = grammar(objectscript_expr, {
 
     write_mnemonic: ($) =>
       seq(
-        field('mnemonic', $.mnemonic_name),
+        $.mnemonic_name,
         optional($.method_args)
       ),
-    mnemonic_name: ($) =>
+    mnemonic_name: (_) =>
       seq(
         "/",
-        $.identifier_segment_immediate
+        token.immediate(/[%A-Za-z][A-Za-z0-9]*/),
       ),
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
       choice(
-          prec.right(seq($.keyword_do, repeat1($.dotted_statement))),
+          prec.right(seq(field('keyword', $.keyword_do), repeat1($.dotted_statement))),
         // DO with parameters
         build_command_rule_argumentful(
           $,
-          $.keyword_do,
+          field('keyword', $.keyword_do),
           repeat_with_commas($.do_parameter),
         ),
-        // // Argumentless DO
-        // seq(
-        //     $.keyword_do,
-        //     $
-        // ),
-        // build_command_rule_argumentless($, $.keyword_do),
       ),
-    keyword_do: (_) => /[dD]([oO])?/,
     do_parameter: ($) =>
         seq(
             choice(
@@ -491,14 +547,15 @@ module.exports = grammar(objectscript_expr, {
       choice(
         $.relative_dot_method,
         seq(
+            optional($._xecute_arg_invalid),
           choice(
             $.lvn,
             $.instance_variable,
             $.relative_dot_property,
             $.relative_dot_method,
-            $._parenthetical_expression,
+            $.parenthetical_expression,
           ),
-          repeat($._oref_chain_segment),
+          repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
           token.immediate('.'),
           $.oref_method,
@@ -513,21 +570,22 @@ module.exports = grammar(objectscript_expr, {
 
     doable_dollar_functions: ($) =>
       choice(
-        // These are more specialized
         $.dollar_classmethod,
         $.dollar_method,
         $.dollarsf,
-        // Generic $ functions
-        seq(
-          field('function_name', choice(
+        alias(
+          seq(
+          choice(
             /\$I(NCREMENT)?/i,
             /\$ZF/i,
             /\$ZU(TIL)?/i
-          )),
-          token.immediate('('),
+          ),
+          alias(token.immediate('('), $.bracket),
           repeat_with_commas($.expression),
-          ')',
+          alias(')', $.bracket),
         ),
+        $.system_defined_function
+        )
       ),
 
 
@@ -541,7 +599,7 @@ module.exports = grammar(objectscript_expr, {
       choice(
         // Block style FOR with parameters
         seq(
-          field('command_name', $.keyword_for),
+            field('keyword', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.for_parameter),
           optional($._termination),
@@ -551,7 +609,7 @@ module.exports = grammar(objectscript_expr, {
         ),
         // Block style FOR without parameters (argumentless)
         seq(
-          field('command_name', $.keyword_for),
+            field('keyword', $.keyword_for),
           $._argumentless_loop,
           '{',
           repeat($.statement),
@@ -559,93 +617,93 @@ module.exports = grammar(objectscript_expr, {
         ),
         // Old style FOR with parameters
         seq(
-          field('command_name', $.keyword_for),
+            field('keyword', $.keyword_for),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.for_parameter),
           repeat($.statement),
           $._termination,
         ),
-        // // Old style argumentless FOR
+        // Old style argumentless FOR
         seq(
-          field('command_name', $.keyword_for),
+            field('keyword', $.keyword_for),
           $._argumentless_command_end,
           repeat($.statement),
           $._termination,
         ),
         seq(
-            field('command_name', $.keyword_for),
+            field('keyword', $.keyword_for),
             $._termination,
         )
       ),
 
-    keyword_for: (_) => /[fF]([oO][rR])?/,
     for_parameter: ($) => prec.right(
         seq(
+            optional($._xecute_arg_invalid),
       choice(
         $.glvn,
         $.instance_variable,
         $.indirection,
       ),
-      field('operator','='),
+      '=',
       repeat_with_commas($.for_parameter_arg),
     )),
     for_parameter_arg: ($) =>
       choice(
         $.expression,
         seq(
-          field('initial', $.expression),
-          field('operator',':'),
-          field('increment', $.expression),
+          $.expression,
+          ':',
+          $.expression,
         ),
         seq(
-          field('initial', $.expression),
-          field('operator',':'),
-          field('increment', $.expression),
-          field('operator',':'),
-          field('limit', $.expression),
+          $.expression,
+          ':',
+          $.expression,
+          ':',
+          $.expression,
         ),
       ),
 
-    // Note: Parser prioritizes DO statement over KILL in certain contexts.
-    // This is acceptable behavior for the current implementation.
     command_while: ($) =>
       seq(
-        field('command_name', $.keyword_while),
+          field('keyword', $.keyword_while),
         $._immediate_single_whitespace_followed_by_non_whitespace,
         repeat_with_commas($.expression),
         '{',
         repeat($.statement),
         '}',
       ),
-    keyword_while: (_) => /[wW][hH][iI][lL][eE]/,
-
     command_kill: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_kill),
+        build_command_rule_argumentless($, field('keyword', $.keyword_kill)),
         build_command_rule_argumentful(
           $,
-          $.keyword_kill,
+          field('keyword', $.keyword_kill),
           repeat_with_commas($.kill_argument),
         ),
       ),
 
-    keyword_kill: (_) => /[kK]([iI][lL][lL])?/,
     kill_argument: ($) =>
         choice(
             $.kill_target,
-            seq('(', repeat_with_commas($.kill_target), ')'),
+            seq( alias('(', $.bracket), repeat_with_commas($.kill_target), alias(')', $.bracket)
+),
         ),
 
     kill_target: ($) =>
-        choice(
-            $.glvn,
-            $.instance_variable,
-            $.oref_set_target,
+        seq(
+            optional($._xecute_arg_invalid),
+            choice(
+                $.glvn,
+                $.instance_variable,
+                $.oref_set_target,
+            ),
         ),
+
 
     command_lock: ($) =>
       choice(
-        seq(field('command_name', $.keyword_lock),
+        seq(field('keyword', $.keyword_lock),
             choice($._argumentless_command_end,
                 $._termination,
             ),
@@ -654,43 +712,40 @@ module.exports = grammar(objectscript_expr, {
 
         build_command_rule_argumentful(
           $,
-          $.keyword_lock,
+          field('keyword', $.keyword_lock),
           repeat_with_commas($.command_lock_argument),
         ),
       ),
-    keyword_lock: (_) => /[lL]([oO][cC][kK])?/,
     command_lock_argument: ($) =>
       choice(
         $.command_lock_arguments_variant_1,
         $.command_lock_arguments_variant_2,
       ),
     command_lock_arguments_variant_1: ($) =>
-      field(
-        'argument',
         seq(
-          optional(/[\+\-]/),
+          optional(choice('+', '-')),
           optional('@'),
+            optional($._xecute_arg_invalid),
           $.glvn,
           optional($.locktype),
           optional($.timeout),
         ),
-      ),
+      
     command_lock_arguments_variant_2: ($) =>
       seq(
-        optional(/[\+\-]/),
-        '(',
+        optional(choice('+', '-')),
+         alias('(', $.bracket),
         repeat_with_commas(
-          field(
-            'argument',
+      
             seq(
-              optional(/[\+\-]/),
+              optional(choice('+', '-')),
               optional('@'),
+                optional($._xecute_arg_invalid),
               $.glvn,
               optional($.locktype),
             ),
-          ),
         ),
-        ')',
+         alias(')', $.bracket),
         optional($.timeout),
       ),
     // Available values are “S” (shared lock), ”E” (escalating lock), “I” (immediate unlock), and “D” (deferred unlock
@@ -709,29 +764,25 @@ module.exports = grammar(objectscript_expr, {
     command_read: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_read,
+        field('keyword', $.keyword_read),
         repeat_with_commas($.read_argument),
       ),
-    keyword_read: (_) => /[Rr]([eE][aA][dD])?/,
     read_argument: ($) =>
       choice(
-        field('fchar', repeat1($._read_fchar)),
-        field('prompt', alias($.string_literal, $._read_prompt)),
-        field('variable', $._read_variable),
+        repeat1($.read_fchar),
+        $.string_literal,
+        $.read_variable,
           $.indirection,
       ),
-    _read_fchar: (_) => choice('!', '#', '?', '/'),
-    _read_variable: ($) =>
+    read_fchar: (_) => choice('!', '#', '?', '/'),
+    read_variable: ($) =>
       seq(
         choice(
-          field('variable', $.glvn),
-          field(
-            'single_character',
-            seq('*', $._assert_no_space_between_rules, $.glvn),
-          ),
-          field('fixed', seq($.glvn, '#', $.expression)),
+          $.glvn,
+          seq('*', $._assert_no_space_between_rules, $.glvn),
+          seq($.glvn, '#', $.expression),
         ),
-        optional(field('timeout', seq(token.immediate(':'), $.expression))),
+        optional(seq(token.immediate(':'), $.expression)),
       ),
 
     // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_copen#RCOS_copen25
@@ -740,11 +791,10 @@ module.exports = grammar(objectscript_expr, {
     command_open: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_open,
+        field('keyword', $.keyword_open),
         repeat_with_commas($.open_argument),
       ),
-    keyword_open: (_) => /O(pen)?/i,
-    open_argument: ($) => 
+    open_argument: ($) =>
       seq(
         $.device,
         optional(
@@ -755,55 +805,55 @@ module.exports = grammar(objectscript_expr, {
             ),
             seq(
               token.immediate(':'),token.immediate(':'),
-              field('timeout',$.expression)
+              $.expression
             ),
             seq(
               token.immediate(':'),
               $.open_parameters,
               token.immediate(':'),
-              field('timeout',$.expression)
+              $.expression
             ),
              seq(
               token.immediate(':'),
               $.open_parameters,
               token.immediate(':'),
-              field('timeout',$.expression),
+              $.expression,
               token.immediate(':'),
-              field('mnespace', $.expression)
+              $.expression
             ),
             seq(
               token.immediate(':'),token.immediate(':'),token.immediate(':'),
-              field('mnespace', $.expression)
+              $.expression
             ),
             seq(
               token.immediate(':'),token.immediate(':'),
-              field('timeout',$.expression),
+              $.expression,
               token.immediate(':'),
-              field('mnespace', $.expression)
+              $.expression
             ),
             seq(
               token.immediate(':'),
               $.open_parameters,
               token.immediate(':'),token.immediate(':'),
-              field('mnespace', $.expression)
+              $.expression
             ),
           )
         )
       ),
 
-        
+
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cclose
     // eslint-disable-next-line max-len
     command_close: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_close,
+        field('keyword', $.keyword_close),
         repeat_with_commas($.close_argument),
       ),
-    close_parameters: ($) => 
+    close_parameters: ($) =>
       choice(
         seq(
-        '(',
+         alias('(', $.bracket),
         optional(
           seq(
             optional($.close_parameter_option_value),
@@ -815,16 +865,15 @@ module.exports = grammar(objectscript_expr, {
             )
           )
         ),
-        ')'
+         alias(')', $.bracket)
         ),
         $.close_parameter_option_value
       ),
-    keyword_close: (_) => /Close/i,
     close_argument: ($) =>
       seq($.device, optional(seq(token.immediate(':'),$.close_parameters))),
     // "D", "K", ("R":newname or /REN=newname or /RENAME=newman)
-    close_rename: ($) => 
-      choice(
+    close_rename: (_) =>
+        choice(
         seq('"R"',':'),
         seq(choice('/REN=','/RENAME='))
       ),
@@ -835,7 +884,7 @@ module.exports = grammar(objectscript_expr, {
         seq($.close_rename, $.device),
         seq($.open_keyword_delete, optional(seq(token.immediate('='), $.expression))),
       ),
-    
+
     open_keyword_translate: (_) => /\/Tra(nslate)?/i,
     open_keyword_translate_equals: (_) => /\/Tra(nslate)?=/i,
     open_keyword_iotable: (_) => /\/IOT(able)?/i,
@@ -852,8 +901,8 @@ module.exports = grammar(objectscript_expr, {
     open_keyword_terminator: (_) => /\/TER(MINATOR)?=/i,
     open_keyword_fixed: (_) => /\/fix(ed)?/i,
     immediate_equal: (_) => token.immediate('='),
-    open_keywords: ($) => 
-      choice(
+    open_keywords: ($) =>
+        choice(
         '/NEW',
         $.open_keyword_create,
         $.open_keyword_write,
@@ -866,32 +915,32 @@ module.exports = grammar(objectscript_expr, {
         $.open_keyword_fixed,
         '/UNDEFINED',
 
-        seq($.open_keyword_delete_equals, seq($.expression)),
+        seq($.open_keyword_delete_equals, seq(optional($._xecute_arg_invalid), $.expression)),
         $.open_keyword_delete,
         '/NOXY',
-        seq('/NOXY=', $.expression),
-        seq('/OBUFSIZE=', $.expression),
+        seq('/NOXY=', optional($._xecute_arg_invalid), $.expression),
+        seq('/OBUFSIZE=', optional($._xecute_arg_invalid), $.expression),
         '/GZIP',
-        seq('/GZIP=', $.expression),
-        seq('/COMPRESS=', $.expression),
+        seq('/GZIP=', optional($._xecute_arg_invalid), $.expression),
+        seq('/COMPRESS=', optional($._xecute_arg_invalid), $.expression),
         $.open_keyword_translate,
         $.open_keyword_translate,
         $.open_keyword_xytable,
-        seq($.open_keyword_translate_equals, $.expression),
+        seq($.open_keyword_translate_equals, optional($._xecute_arg_invalid), $.expression),
         seq($.open_keyword_iotable_equals, choice($.string_literal,$.objectscript_identifier)),
         seq($.open_keyword_xytable_equals, choice($.string_literal,$.objectscript_identifier)),
         seq($.open_keyword_terminator, choice($.string_literal,$.objectscript_identifier)),
         seq($.open_keyword_record_size, choice($.string_literal,$.objectscript_identifier)),
         seq($.open_keyword_params, choice($.string_literal,$.objectscript_identifier)),
       )
-      
+
     ,
 
     // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cuse
     // USE:pc device:(parameters):"mnespace",...
     // U:pc device:(parameters):"mnespace",...
 
-    use_argument: ($) => 
+    use_argument: ($) =>
       seq(
         $.device,
         optional(
@@ -902,25 +951,25 @@ module.exports = grammar(objectscript_expr, {
             ),
             seq(
             token.immediate(':'),token.immediate(':'),
-            field('mnespace',$.expression)
+            $.expression
             ),
             seq(
             token.immediate(':'),
             $.use_parameters,
             token.immediate(':'),
-            field('mnespace',$.expression)
+            $.expression
             ),
           )
         )
-      )   
+      )
       ,
 
     use_keywords: ($) => seq('/POSITION=', $.expression),
 
-    use_parameters: ($) => 
+    use_parameters: ($) =>
       choice(
         seq(
-        '(',
+         alias('(', $.bracket),
         optional(
           seq(
             optional(choice($.open_keywords,$.expression,$.use_keywords)),
@@ -932,17 +981,17 @@ module.exports = grammar(objectscript_expr, {
             )
           )
         ),
-        ')'
+         alias(')', $.bracket)
         ),
         choice($.open_keywords,$.expression,$.use_keywords),
       ),
 
-   
 
-    open_parameters: ($) => 
+
+    open_parameters: ($) =>
       choice(
         seq(
-        '(',
+         alias('(', $.bracket),
         optional(
           seq(
             optional(choice($.open_keywords,$.expression)),
@@ -954,49 +1003,46 @@ module.exports = grammar(objectscript_expr, {
             )
           )
         ),
-        ')'
+         alias(')', $.bracket),
         ),
         choice($.open_keywords,$.expression),
       ),
-      
+
     command_use: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_use,
+        field('keyword', $.keyword_use),
         repeat_with_commas($.use_argument),
       ),
-    keyword_use: (_) => /U(se)?/i,
-
     command_dowhile: ($) =>
       seq(
-        field('command_name', $.keyword_do),
+        field('keyword', $.keyword_do),
         $._argumentless_loop,
         '{',
         repeat($.statement),
         '}',
-        field('command_name', $.keyword_while),
+        field('keyword', $.keyword_while),
         $.expression,
       ),
 
     command_new: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_new),
+        build_command_rule_argumentless($, field('keyword', $.keyword_new)),
         build_command_rule_argumentful(
           $,
-          $.keyword_new,
-          repeat_with_commas($._command_new_argument),
+          field('keyword', $.keyword_new),
+          repeat_with_commas($.command_new_argument),
         ),
       ),
-    _command_new_argument: ($) =>
-      choice($._command_new_item, seq('(', repeat_with_commas($._command_new_item), ')')),
-    keyword_new: (_) => /[nN]([eE][wW])?/,
-    _command_new_item: ($) =>
+    command_new_argument: ($) =>
+      choice($.command_new_item, seq( alias('(', $.bracket), repeat_with_commas($.command_new_item),  alias(')', $.bracket))),
+    command_new_item: ($) =>
       choice(
         $.lvn,
-        $.estack_token,
-        $.etrap_token,
-        $.namespace_token,
-        $.roles_token,
+        alias($.estack_token, $.system_defined_variable),
+        alias($.etrap_token, $.system_defined_variable),
+        alias($.namespace_token, $.system_defined_variable),
+       alias($.roles_token,  $.system_defined_variable),
       ),
 
     command_if: ($) =>
@@ -1009,37 +1055,37 @@ module.exports = grammar(objectscript_expr, {
         // Block style IF
 
           seq(
-              field('command_name', $.keyword_if),
+              field('keyword', $.keyword_if),
               $._immediate_single_whitespace_followed_by_non_whitespace,
               repeat_with_commas($.expression),
               optional($._termination),
               '{',
               repeat($.statement),
               '}',
-              repeat(field('elseif_block', $.elseif_block)),
-              optional(field('else_block', $.else_block)),
+              repeat($.elseif_block),
+              optional($.else_block),
           ),
           seq(
-              field('command_name', $.keyword_if),
+              field('keyword', $.keyword_if),
               $._argumentless_loop,
               '{',
               repeat($.statement),
               '}',
-              repeat(field('elseif_block', $.elseif_block)),
-              optional(field('else_block', $.else_block)),
+              repeat($.elseif_block),
+              optional($.else_block),
           ),
           seq(
-              field('command_name', $.keyword_if),
+              field('keyword', $.keyword_if),
               $._argumentless_command_end,
               repeat1($.statement),
               $._termination,
           ),
           seq(
-              field('command_name', $.keyword_if),
+              field('keyword', $.keyword_if),
               $._termination,
           ),
           seq(
-              field('command_name', $.keyword_if),
+              field('keyword', $.keyword_if),
               $._immediate_single_whitespace_followed_by_non_whitespace,
               repeat_with_commas($.expression),
               repeat($.statement),
@@ -1049,25 +1095,20 @@ module.exports = grammar(objectscript_expr, {
     command_else: ($) =>
         choice(
             seq(
-                field('command_name', $.keyword_oldelse),
+                field('keyword', $.keyword_oldelse),
                 $._argumentless_command_end,
                 repeat($.statement),
                 $._termination,
             ),
             seq (
-                field('command_name', $.keyword_oldelse),
+                field('keyword', $.keyword_oldelse),
                 $._termination,
             )
         ),
 
-    keyword_if: (_) => /I(f)?/i,
-    keyword_elseif: (_) => /ElseIf/i,
-    keyword_else: (_) => /Else/i,     // NOTE: New style Else must be spelled out
-    keyword_oldelse: (_) => /E(lse)?/i,
-
     elseif_block: ($) =>
       seq(
-        field('command_name', $.keyword_elseif),
+          field('keyword', $.keyword_elseif),
         $._immediate_single_whitespace_followed_by_non_whitespace,
         repeat_with_commas($.expression),
         '{',
@@ -1076,7 +1117,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     else_block: ($) =>
       seq(
-        field('command_name', $.keyword_else),
+          field('keyword', $.keyword_else),
         '{',
         repeat($.statement),
         '}',
@@ -1085,72 +1126,56 @@ module.exports = grammar(objectscript_expr, {
     command_throw: ($) =>
       prec.right(
         choice(
-          build_command_rule_argumentless($, $.keyword_throw),
+          build_command_rule_argumentless($, field('keyword', $.keyword_throw)),
           build_command_rule_argumentful(
             $,
-            $.keyword_throw,
-            field('throw_argument', $.expression),
+            field('keyword', $.keyword_throw),
+            $.expression,
           ),
         ),
       ),
-    keyword_throw: (_) => /Throw/i,
-
     command_trycatch: ($) =>
       seq(
-        field(
-          'try_block',
-          seq(
-            field('command_name', $.keyword_try),
+          field('keyword', $.keyword_try),
             '{',
             repeat($.statement),
             '}',
-          ),
-        ),
-        field(
-          'catch_block',
           $.catch_block,
-        ),
       ),
 
     catch_block: ($) =>
       seq(
-        field('command_name', $.keyword_catch),
-        optional(choice(seq('(', $.glvn, ')'), $.glvn)),
+        field('keyword', $.keyword_catch),
+        optional(choice(seq( alias('(', $.bracket), optional($._xecute_arg_invalid), $.glvn,  alias(')', $.bracket)), seq(optional($._xecute_arg_invalid), $.glvn))),
         '{',
         repeat($.statement),
         '}',
       ),
 
-    keyword_try: (_) => /[tT][rR][yY]/,
-    keyword_catch: (_) => /[cC][aA][tT][cC][hH]/,
-    // JOB command syntax examples:
-    // routine(routine-params):(process-params):timeout
-    // routine(routine-params)[joblocation]:(process-params):timeout
-    // routine(routine-params)|joblocation|:(process-params):timeout
-    // ##class(className).methodName(args):(process-params):timeout
-    // ..methodName(args):(process-params):timeout
     command_job: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_job,
+        field('keyword', $.keyword_job),
         repeat_with_commas($.job_argument),
       ),
-    keyword_job: (_) => /[jJ]([oO][bB])?/,
     job_argument: ($) =>
       seq(
+          optional($._xecute_arg_invalid),
         choice(
-          $.routine_tag_call,
+          seq(
+            $.routine_tag_call,
+            optional(
+              // jobLocation
+              seq(
+                choice(token.immediate('['), token.immediate('|')),
+                $.expression,
+                choice(token.immediate(']'), token.immediate('|')),
+              ),
+            ),
+          ),
           $.class_method_call,
           $.relative_dot_method,
-          $.dollar_classmethod,
-        ),
-        optional(
-          // jobLocation
-          seq(
-            token.immediate(/[\[\|]/),
-            $.expression,
-            token.immediate(/[\]\|]/),
-          ),
+          alias($.dollar_classmethod, $.system_defined_function),
         ),
         optional(
           seq(
@@ -1158,7 +1183,7 @@ module.exports = grammar(objectscript_expr, {
             optional(
               // process-params
               seq(
-                token.immediate('('),
+                 alias('(', $.bracket),
                 optional($.expression),
                 repeat(
                   seq(
@@ -1166,7 +1191,7 @@ module.exports = grammar(objectscript_expr, {
                     optional($.expression),
                   ),
                 ),
-                token.immediate(')'),
+                 alias(')', $.bracket),
               ),
             ),
             optional($.timeout),
@@ -1177,131 +1202,122 @@ module.exports = grammar(objectscript_expr, {
     // eslint-disable-next-line max-len
     command_break: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_break),
-        build_command_rule_argumentful(
-          $,
-          $.keyword_break,
-          repeat_with_commas($.break_argument),
-        ),
+          seq(
+              field('keyword', $.keyword_break),
+              optional($.post_conditional),
+              choice(
+                  $._argumentless_command_end,
+                  $._termination,
+              )
+          ),
+          seq(
+              field('keyword', $.keyword_break),
+              optional($.post_conditional),
+              $._immediate_single_whitespace_followed_by_non_whitespace,
+              repeat_with_commas($.break_argument),
+          ),
       ),
     break_argument: ($) =>
-      choice(field('extend', $.string_literal), field('flag', /[0145]/)),
-    keyword_break: (_) => /B(REAK)?/i,
-
+      choice( $.string_literal, alias(/[0145]/, $.numeric_literal),),
     command_merge: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_merge,
+        field('keyword', $.keyword_merge),
         repeat_with_commas($.merge_argument),
       ),
-    keyword_merge: (_) => /[mM]([eE][rR][gG][eE])?/,
-    // Technically ^$GLOBAL() can be the source
     merge_argument: ($) => seq(
-      field('lhs', $.glvn),
-      field('operator', '='),
-      field('rhs', $.glvn),
+      optional($._xecute_arg_invalid),
+      $.glvn,
+      '=',
+      optional($._xecute_arg_invalid),
+      $.glvn,
     ),
 
     command_return: ($) =>
-      prec.right(
-        choice(
-          build_command_rule_argumentless($, $.keyword_return),
-          build_command_rule_argumentful(
-            $,
-            $.keyword_return,
-            repeat_with_commas($.expression),
-          ),
+        prec.right(
+            choice(
+                seq(
+                    field('keyword', $.keyword_return),
+                    optional($.post_conditional),
+                    choice(
+                        $._argumentless_command_end,
+                        $._termination,
+                    )
+                ),
+                seq(
+                    field('keyword', $.keyword_return),
+                    optional($.post_conditional),
+                    $._immediate_single_whitespace_followed_by_non_whitespace,
+                    repeat_with_commas(seq(optional($._xecute_arg_invalid),$.expression)),
+                ),
+            )
         ),
-      ),
-    keyword_return: (_) => /[rR][eE][tT]([uU][rR][nN])?/,
+
     command_quit: ($) =>choice(
-        build_command_rule_special_argumentless($,$.keyword_quit),
+        build_command_rule_special_argumentless($,field('keyword', $.keyword_quit)),
 
         build_command_rule_argumentful(
             $,
-            $.keyword_quit,
-            repeat_with_commas($.expression),
+            field('keyword', $.keyword_quit),
+            repeat_with_commas(seq(optional($._xecute_arg_invalid),$.expression)),
         ),
     ),
-
-    keyword_quit: (_) => /[Qq]([uU][iI][tT])?/,
 
     command_goto: ($) =>
       prec.right(
         choice(
-          build_command_rule_argumentless($, $.keyword_goto),
+          build_command_rule_argumentless($, field('keyword', $.keyword_goto)),
           build_command_rule_argumentful(
             $,
-            $.keyword_goto,
+            field('keyword', $.keyword_goto),
             repeat_with_commas($.goto_argument),
           ),
         ),
       ),
-    keyword_goto: (_) => /[Gg]([oO][tT][oO])?/,
-
     goto_argument: ($) => seq(
       $.line_ref,
       optional($.post_conditional),
     ),
 
-    command_halt_or_hang: ($) => 
-      // hang or h is argumentless
+    command_halt_or_hang: ($) =>
       choice(
         seq(
-          choice('h', 'H'), 
-          // halt case 
+            field('keyword', $.keyword_halt_or_hang),
           optional($.post_conditional),
           choice($._argumentless_command_end,$._termination)
         ),
         seq(
-          choice('h', 'H'), 
-          // hang case 
+            field('keyword', $.keyword_halt_or_hang),
           optional($.post_conditional),
           $._immediate_single_whitespace_followed_by_non_whitespace,
-          field('hang_argument',repeat_with_commas($.expression))
+          repeat_with_commas($.expression)
         ),
         seq(
-          $.keyword_halt, 
-          // halt case 
+            field('keyword', $.keyword_halt),
           optional($.post_conditional),
           choice($._argumentless_command_end,$._termination)
-          
+
         ),
         seq(
-          $.keyword_hang, 
+            field('keyword', $.keyword_hang),
           optional($.post_conditional),
-          field('hang',$._immediate_single_whitespace_followed_by_non_whitespace),
+          $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.expression)
         ),
       )
       ,
 
-    keyword_halt: (_) => /Halt/i,
-    keyword_hang: (_) => /Hang/i,
-
     command_continue: ($) =>
-        // this one is special, becuase if there is anything after the
-        // continue but on the same line, that stuff doesn't actually ever get executed
-        // i am enclosing any commands written on the same line as the continue WITHIN
-        // the continue, as they will never be executed
-      build_command_rule_special_argumentless($,$.keyword_continue),
-      //build_command_rule_argumentless($, $.keyword_continue),
-    keyword_continue: (_) => /Continue/i,
-
+        // Commands on the same line after CONTINUE are unreachable; parse them under CONTINUE.
+      build_command_rule_special_argumentless($,field('keyword', $.keyword_continue)),
     command_tcommit: ($) =>
-      build_command_rule_argumentless($, $.keyword_tcommit),
-    keyword_tcommit: (_) => /TC(OMMIT)?/i,
-
+      build_command_rule_argumentless($, field('keyword', $.keyword_tcommit)),
     command_trollback: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_trollback),
-        build_command_rule_argumentful($, $.keyword_trollback, '1'),
+        build_command_rule_argumentless($, field('keyword', $.keyword_trollback)),
+        build_command_rule_argumentful($, field('keyword', $.keyword_trollback), alias('1', $.numeric_literal)),
       ),
-    keyword_trollback: (_) => /TRO(LLBACK)?/i,
-
-    command_tstart: ($) => build_command_rule_argumentless($, $.keyword_tstart),
-    keyword_tstart: (_) => /TS(TART)?/i,
-    
+    command_tstart: ($) => build_command_rule_argumentless($, field('keyword', $.keyword_tstart)),
     byref_arg: ($) =>
       seq(
         '.',
@@ -1319,78 +1335,72 @@ module.exports = grammar(objectscript_expr, {
 
         // Parameter-passing form: XECUTE ("cmdline", params... )[:pc]
         seq(
-          '(',
-          $.expression,                 
+           alias('(', $.bracket),
+          $.expression,
           repeat(
             seq(
               ',',
-              choice($.byref_arg,$.expression),                
+              choice($.byref_arg,$.expression),
             ),
           ),
-          ')',
+           alias(')', $.bracket),
           optional($.post_conditional),
         ),
       ),
     command_xecute: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_xecute,
+        field('keyword', $.keyword_xecute),
         repeat_with_commas($.xecute_argument),
       )
     ,
-    keyword_xecute: (_) => /X(ECUTE)?/i,
-
-    // Link: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cview
     command_view: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_view,
+        field('keyword', $.keyword_view),
         alias($.view_parameter, $.view_parameters),
       ),
-    keyword_view: (_) => /V(IEW)?/i,
     view_parameter: ($) =>
       choice(
-        field('block', $.expression),
+        $.expression,
         seq(
-          field('offset', $.expression),
+          $.expression,
           ':',
-          field('mode', $.expression),
+          $.expression,
           ':',
-          field('length', $.expression),
+          $.expression,
           ':',
-          field('newvalue', $.expression),
+          $.expression,
         ),
       ),
 
     command_zbreak: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_zbreak),
+        build_command_rule_argumentless($, field('keyword', $.keyword_zbreak)),
         seq(
-          field('command_name', $.keyword_zbreak),
+          field('keyword', $.keyword_zbreak),
           optional($.post_conditional),
           $.zbreak_arguments,
         )
       ),
-    keyword_zbreak: (_) => /ZB(REAK)?/i,
-    zbreak_execute_command: ($) => $.string_literal,
-    zbreak_arg: ($) => 
+    zbreak_arg: ($) =>
       seq(
         $.zbreak_location,
         optional(
           choice(
             seq(
             token.immediate(':'),
-            field('zbreak_action',$.string_literal), 
+            $.string_literal,
             token.immediate(':'),
             $.zbreak_condition,
             token.immediate(':'),
-            $.zbreak_execute_command,
+            $.string_literal,
             ),
             seq(
               token.immediate(':'),token.immediate(':'),
               $.zbreak_condition,
               token.immediate(':'),
-              $.zbreak_execute_command,
+              $.string_literal,
             ),
             seq(
               token.immediate(':'),token.immediate(':'),
@@ -1398,29 +1408,29 @@ module.exports = grammar(objectscript_expr, {
             ),
             seq(
               token.immediate(':'),token.immediate(':'), token.immediate(':'),
-              $.zbreak_execute_command,
+              $.string_literal,
             ),
             seq(
               token.immediate(':'),
-              field('zbreak_action',$.string_literal),
+              $.string_literal,
               token.immediate(':'),token.immediate(':'),
-              $.zbreak_execute_command,
+              $.string_literal,
             ),
             seq(
               token.immediate(':'),
-              field('zbreak_action',$.string_literal), 
+              $.string_literal,
               token.immediate(':'),
               $.zbreak_condition,
             ),
             seq(
               token.immediate(':'),
-              field('zbreak_action',$.string_literal), 
+              $.string_literal,
             )
           )
         ),
-        
+
       ),
-    zbreak_location: ($) => 
+    zbreak_location: ($) =>
       seq(
         optional(choice('+', '-', '--')),
         choice(
@@ -1431,13 +1441,13 @@ module.exports = grammar(objectscript_expr, {
           // single step breakpoint
           '$'
         ),
-        optional('#delay'),
+        optional(field('keyword','#delay')),
       ),
-    
 
-    zbreak_condition: ($) => 
+
+    zbreak_condition: ($) =>
         seq('"', $.expression, '"'),
-    
+
     zbreak_arguments: ($) =>
       choice(
         seq(
@@ -1453,9 +1463,9 @@ module.exports = grammar(objectscript_expr, {
           $.zbreak_command,
           token.immediate('/'),
           choice(
-            $.keyword_clear,
+            field('keyword', $.keyword_clear),
             seq(
-              $.keyword_debug,
+              field('keyword', $.keyword_debug),
               optional(
                 seq(
                   token.immediate(':'),
@@ -1464,22 +1474,22 @@ module.exports = grammar(objectscript_expr, {
               )
             ),
             seq(
-              $.keyword_errortrap,
+              field('keyword', $.keyword_errortrap),
               token.immediate(':'),
               choice(
-              $.keyword_on,
-              $.keyword_off
+              field('keyword', $.keyword_on),
+              field('keyword', $.keyword_off)
               )
             ),
             seq(
-              $.keyword_trace,
+              field('keyword', $.keyword_trace),
               optional(
                 seq(
                   token.immediate(':'),
                   choice(
-                  $.keyword_on,
-                  $.keyword_off,
-                  $.keyword_all
+                  field('keyword', $.keyword_on),
+                  field('keyword', $.keyword_off),
+                  field('keyword', $.keyword_all)
                   ),
                   optional(
                     seq(
@@ -1492,28 +1502,28 @@ module.exports = grammar(objectscript_expr, {
             ),
             seq(
               choice(
-                $.keyword_step,
-                $.keyword_nostep
+                field('keyword', $.keyword_step),
+                field('keyword', $.keyword_nostep)
               ),
               repeat1(
                 seq(
                   token.immediate(':'),
                   choice(
-                    $.keyword_ext,
-                    $.keyword_destruct,
-                    $.keyword_stepmethod,
+                    field('keyword', $.keyword_ext),
+                    field('keyword', $.keyword_destruct),
+                    field('keyword', $.keyword_stepmethod),
                   )
                 )
               )
             ),
             seq(
-              $.keyword_interrupt,
+              field('keyword', $.keyword_interrupt),
               optional(
                 seq(
                   token.immediate(':'),
                   choice(
-                    $.keyword_break,
-                    $.keyword_normal,
+                    field('keyword', $.keyword_break),
+                    field('keyword', $.keyword_normal),
                   )
                 )
               )
@@ -1521,7 +1531,7 @@ module.exports = grammar(objectscript_expr, {
           )
         ),
       ),
-     device: ($) => 
+     device: ($) =>
       seq(
         $.expression,
         optional(
@@ -1529,97 +1539,67 @@ module.exports = grammar(objectscript_expr, {
               seq(
                 token.immediate('/'),
                 $.expression,
-              ) 
+              )
             ),
         )
       ),
-    keyword_normal: (_) => /N(ormal)?/i,
-    keyword_ext: (_) => /EXT/i,
-    keyword_destruct: (_) => /DESTRUCT/i,
-    keyword_stepmethod: (_) => /METHOD/i,
-
-    keyword_interrupt: (_) => /I(nterrupt)?/i,
-    
-    keyword_on: (_) => /ON/i,
-    keyword_off: (_) => /OFF/i,
-    keyword_all: (_) => /All/i,
-    // one :
-    keyword_debug: (_) => /D(ebug)?/i,
-    keyword_errortrap: (_) => /ErrorTrap/i,
-    // two :
-    keyword_trace: (_) => /T(race)?/i,
-    keyword_step: (_) => /Step/i,
-    keyword_nostep: (_) => /NoStep/i,
-    // 0 :
-    keyword_clear: (_) => /C(lear)?/i,
     command_zkill: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_zkill,
+        field('keyword', $.keyword_zkill),
         repeat_with_commas($.glvn),
       ),
-    keyword_zkill: (_) => /ZK(ILL)?/i,
-
     command_zn: ($) =>
       build_command_rule_argumentful(
         $,
-        $.keyword_zn,
+        field('keyword', $.keyword_zn),
         repeat_with_commas($.expression),
       ),
-    keyword_zn: (_) => /ZN(SPACE)?/i,
-
     command_zsu: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_zsu),
+        build_command_rule_argumentless($, field('keyword', $.keyword_zsu)),
         build_command_rule_argumentful(
           $,
-          $.keyword_zsu,
+          field('keyword', $.keyword_zsu),
           repeat_with_commas($.expression),
         ),
       ),
-    keyword_zsu: (_) => /ZSU/i,
-
     command_ztrap: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_ztrap),
+        build_command_rule_argumentless($, field('keyword', $.keyword_ztrap)),
         build_command_rule_argumentful(
           $,
-          $.keyword_ztrap,
+          field('keyword', $.keyword_ztrap),
           repeat_with_commas($.expression),
         ),
       ),
-    keyword_ztrap: (_) => /ZT(RAP)?/i,
     command_zwrite: ($) =>
       choice(
-        build_command_rule_argumentless($, $.keyword_zwrite),
+        build_command_rule_argumentless($, field('keyword', $.keyword_zwrite)),
         seq(
-          $.keyword_zwrite,
+            field('keyword', $.keyword_zwrite),
           optional($.post_conditional),
           choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
           repeat_with_commas($.expression)
         )
       ),
-    keyword_zwrite: (_) => /ZW(RITE)?/i,
-
     command_zz: ($) =>
       seq(
-          $.keyword_zz,
+          field('keyword', $.keyword_zz),
           optional($.post_conditional),
           choice($._immediate_single_whitespace_followed_by_non_whitespace,$._zw_block),
           repeat_with_commas($.expression)
         ),
-    keyword_zz: (_) => /ZZ[A-Z0-9]+/i,
-
     embedded_html: ($) =>
       choice(
         seq(
-        $.keyword_embedded_html,
+        field('keyword', $.keyword_embedded_html),
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
       ),
         seq(
-        $.keyword_embedded_html,
+            field('keyword', $.keyword_embedded_html),
         $.html_marker,
         token.immediate('<'),
         $.angled_bracket_fenced_text,
@@ -1627,52 +1607,49 @@ module.exports = grammar(objectscript_expr, {
         $.html_marker_reversed,
       ),
     ),
-      
-    keyword_embedded_html: (_) => /&html/i,
 
     embedded_xml: ($) =>
       seq(
-        $.keyword_embedded_xml,
+          field('keyword', $.keyword_embedded_xml),
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
       ),
-    keyword_embedded_xml: (_) => /&xml/i,
-
     embedded_sql: ($) => choice($.embedded_sql_amp, $.embedded_sql_hash),
     embedded_sql_amp: ($) =>
       choice(
         seq(
-        $.keyword_embedded_sql_amp,
+            field('keyword', $.keyword_embedded_sql_amp),
         $.embedded_sql_marker,
-        token.immediate('('),
+        alias(token.immediate('('), $.bracket),
+
         $.paren_fenced_text,
-        token.immediate(')'),
+        alias(token.immediate(')'), $.bracket),
+
         $.embedded_sql_reverse_marker,
       ),
       seq(
-        $.keyword_embedded_sql_amp,
-        token.immediate('('),
+          field('keyword', $.keyword_embedded_sql_amp),
+        alias(token.immediate('('), $.bracket),
         $.paren_fenced_text,
-        token.immediate(')'),
+        alias(token.immediate(')'), $.bracket),
+
       ),
       ),
-      
+
     // NOTE: We put the marker within the &sql keyword def to make it easier to query for highlighting
     embedded_sql_hash: ($) =>
       seq(
-        $.keyword_embedded_sql_hash,
-        token.immediate('('),
-        $.paren_fenced_text,
-        ')',
-      ),
-    keyword_embedded_sql_amp: (_) => /&sql/i,
-    keyword_embedded_sql_hash: (_) => /##sql/i,
+          field('keyword', $.keyword_embedded_sql_hash),
+          alias(token.immediate('('), $.bracket),
 
+        $.paren_fenced_text,
+        alias(')', $.bracket),
+      ),
     embedded_js: ($) =>
       choice(
         seq(
-        choice('&js','&jscript','&javascript'),
+        field('keyword', $.keyword_js),
         $.html_marker,
         token.immediate('<'),
         $.embedded_js_special_case,
@@ -1680,13 +1657,13 @@ module.exports = grammar(objectscript_expr, {
         $.embedded_js_special_case_complete
         ),
         seq(
-        choice('&js','&jscript','&javascript'),
+            field('keyword', $.keyword_js),
         token.immediate('<'),
         $.angled_bracket_fenced_text,
         '>',
         ),
       ),
-      
+
 
     // Simple parameterized tag/label: tagname(params) - no modifiers, no body
     // Example: bar(a,b=2)
@@ -1696,11 +1673,11 @@ module.exports = grammar(objectscript_expr, {
         $.parameter_list,
       ),
 
-    procedure_pub_vars: ($) => 
+    procedure_pub_vars: ($) =>
       seq(
         '[',
         optional(
-          repeat_with_commas($.objectscript_identifier),
+          repeat_with_commas(alias($.objectscript_identifier, $.attribute)),
         ),
         ']',
       ),
@@ -1713,9 +1690,9 @@ module.exports = grammar(objectscript_expr, {
         optional($.procedure_pub_vars),
         optional(
           choice(
-            $.keyword_public,
-            $.keyword_private,
-            $.keyword_methodimpl,
+            field('keyword', $.keyword_public),
+            field('keyword', $.keyword_private),
+            field('keyword', $.keyword_methodimpl),
           ),
         ),
         // Code block { statements }, separated by whitespace
@@ -1724,27 +1701,23 @@ module.exports = grammar(objectscript_expr, {
         '}',
       ),
 
-    keyword_private: (_) => /private/i,
-    keyword_public: (_) => /public/i,
-    keyword_methodimpl: (_) => /methodimpl/i,
-
-    // Shared parameter list rule for both tag_with_params and procedure
     parameter_list: ($) =>
       seq(
-        token.immediate('('),
+        alias(token.immediate('('), $.bracket),
         optional(
           seq(
             $.tag_parameter,
             repeat(seq(',', $.tag_parameter)),
           ),
         ),
-        token.immediate(')'),
+        alias(token.immediate(')'), $.bracket),
+
       ),
 
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>
       seq(
-        field('parameter', $.objectscript_identifier),
+        $.objectscript_identifier,
         optional(seq('=', $.expression)),
       ),
 

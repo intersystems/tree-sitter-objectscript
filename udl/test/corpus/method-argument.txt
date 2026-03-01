@@ -20,47 +20,45 @@ ClassMethod GetSDA(Output pXml, p as %String) {
   (documatic_line)
   (class_definition
     keyword: (keyword_class)
-    class_name: (identifier)
+    (class_name)
     (class_extends
       keyword: (keyword_extends)
-      (identifier))
+      (class_name))
     (class_keywords
       (class_keyword
         (class_keyword_procedure_block
-          (keyword_not)
-          (identifier))))
-    class_body: (class_body
+          (keyword_not))))
+    (class_body
       (class_statement
         (parameter
           keyword: (keyword_parameter)
-          name: (identifier
+          (parameter_name
             (identifier))
           (default_argument_value
-            value: (numeric_literal))))
+            (numeric_literal))))
       (class_statement
         (classmethod
           keyword: (keyword_classmethod)
           (method_definition
-            name: (identifier
+            (method_name
               (identifier))
-            arguments: (arguments
+            (arguments
               (argument
                 keyword: (keyword_output)
                 (identifier))
               (argument
                 (identifier)
-                (argument_type
+                (return_type
                   keyword: (keyword_as)
                   (typename
                     (identifier)))))
-            body: (core_method_body_content
-              (statement
-                (command_set
-                  command_name: (keyword_set)
-                  (set_argument
-                    lhs: (glvn
-                      (lvn
-                        (objectscript_identifier)))
-                    rhs: (expression
-                      (expr_atom
-                        (numeric_literal)))))))))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))

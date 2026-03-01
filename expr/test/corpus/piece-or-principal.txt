@@ -1,0 +1,300 @@
+==================================
+$PIECE with string and delimiter
+==================================
+ $PIECE("one^two^three","^")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$PIECE with from position
+==================================
+ $PIECE("one^two^three","^",2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$PIECE with from and to positions
+==================================
+ $PIECE("one^two^three^four","^",2,3)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$PIECE with variable references
+==================================
+ $PIECE(myString,delim,start,end)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+==================================
+$PIECE with star position (all from position)
+==================================
+ $PIECE(str,"^",*-2)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$PIECE with star in from and to
+==================================
+ $PIECE(str,"^",*-2,*)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (dollar_func_pos))))))
+
+==================================
+$PIECE shorthand with delimiter
+==================================
+ $P("a:b:c",":")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (string_literal)))
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+==================================
+$PIECE shorthand with all args
+==================================
+ $P(x,",",1,3)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$PRINCIPAL as system variable
+==================================
+ $PRINCIPAL
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$P without parentheses is $PRINCIPAL
+==================================
+ $P
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_variable))))
+
+==================================
+$P with parentheses is $PIECE
+==================================
+ $P(x,y)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$PIECE case insensitive
+==================================
+ $piece(x,y)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+==================================
+$PIECE with nested function
+==================================
+ $PIECE($GET(x),"^",1)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (system_defined_function
+                (dollar_function
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))
+          (expression
+            (expr_atom
+              (string_literal)))
+          (dollar_func_pos
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+==================================
+$PIECE with global variable
+==================================
+ $PIECE(^data(1),"~")
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_piece
+          (expression
+            (expr_atom
+              (gvn
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (bracket)))))
+          (expression
+            (expr_atom
+              (string_literal))))))))

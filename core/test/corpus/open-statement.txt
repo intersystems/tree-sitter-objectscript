@@ -25,12 +25,14 @@ OPEN VALID STATEMENTS
               (expr_atom
                 (string_literal))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (numeric_literal)))
             (expression
               (expr_atom
-                (string_literal))))
+                (string_literal)))
+            (bracket))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -44,12 +46,14 @@ OPEN VALID STATEMENTS
               (expr_atom
                 (numeric_literal))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (numeric_literal)))
             (expression
               (expr_atom
-                (numeric_literal)))))))
+                (numeric_literal)))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -62,9 +66,12 @@ OPEN VALID STATEMENTS
           (open_parameters
             (expression
               (expr_atom
-                (expression
-                  (expr_atom
-                    (string_literal))))))
+                (parenthetical_expression
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (bracket)))))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -101,6 +108,7 @@ OPEN VALID STATEMENTS
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (lvn
@@ -120,7 +128,8 @@ OPEN VALID STATEMENTS
                 (expression
                   (expr_atom
                     (lvn
-                      (objectscript_identifier)))))))
+                      (objectscript_identifier))))))
+            (bracket))
           (expression
             (expr_atom
               (lvn
@@ -135,6 +144,7 @@ OPEN VALID STATEMENTS
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (lvn
@@ -154,7 +164,8 @@ OPEN VALID STATEMENTS
                 (expression
                   (expr_atom
                     (lvn
-                      (objectscript_identifier)))))))
+                      (objectscript_identifier))))))
+            (bracket))
           (expression
             (expr_atom
               (lvn
@@ -277,23 +288,27 @@ OPEN Valid Statements
               (expr_atom
                 (string_literal))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (string_literal)))
             (expression
               (expr_atom
                 (system_defined_function
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))
+                  (dollar_function
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))
               (expr_tail
                 (binary_operator)
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))))))
+                      (dollar_function
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -303,12 +318,14 @@ OPEN Valid Statements
               (expr_atom
                 (string_literal))))
           (open_parameters
+            (bracket)
             (expression
               (expr_atom
                 (string_literal)))
             (expression
               (expr_atom
-                (numeric_literal)))))))))
+                (numeric_literal)))
+            (bracket)))))))
 
 ===================
 OPEN Valid Keywords
@@ -358,7 +375,9 @@ OPEN Valid Keywords
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
-            (open_keywords)))))
+            (bracket)
+            (open_keywords)
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -482,6 +501,7 @@ OPEN Valid Keywords
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (open_keywords
               (open_keyword_translate_equals)
               (expression
@@ -489,7 +509,8 @@ OPEN Valid Keywords
                   (numeric_literal))))
             (open_keywords
               (open_keyword_iotable_equals)
-              (string_literal))))))
+              (string_literal))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -500,6 +521,7 @@ OPEN Valid Keywords
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (open_keywords
               (open_keyword_translate_equals)
               (expression
@@ -507,7 +529,8 @@ OPEN Valid Keywords
                   (numeric_literal))))
             (open_keywords
               (open_keyword_iotable_equals)
-              (string_literal))))))
+              (string_literal))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -673,8 +696,10 @@ OPEN Valid Keywords
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (open_keywords
-              (open_keyword_create))))))
+              (open_keyword_create))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -710,9 +735,11 @@ OPEN Valid Keywords
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (open_keywords
               (open_keyword_terminator)
-              (string_literal))))))
+              (string_literal))
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -759,11 +786,13 @@ Open Valid Whitespace for Keyword Parameters
                 (lvn
                   (objectscript_identifier)))))
           (open_parameters
+            (bracket)
             (open_keywords
               (open_keyword_delete_equals)
               (expression
                 (expr_atom
-                  (numeric_literal))))))))))
+                  (numeric_literal))))
+            (bracket)))))))
 
 =====================
 Open Valid Parameters
@@ -783,7 +812,9 @@ Open Valid Parameters
               (expr_atom
                 (lvn
                   (objectscript_identifier)))))
-          (open_parameters))))
+          (open_parameters
+            (bracket)
+            (bracket)))))
     (statement
       (command_open
         (keyword_open)
@@ -793,7 +824,9 @@ Open Valid Parameters
               (expr_atom
                 (lvn
                   (objectscript_identifier)))))
-          (open_parameters))))))
+          (open_parameters
+            (bracket)
+            (bracket)))))))
 
 ==============================
 Open Invalid Terminator No Str

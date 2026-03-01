@@ -42,15 +42,6 @@
   "<" @keyword.directive
   ">" @keyword.directive
 )
-; (embedded_sql_hash
-;   (keyword_embedded_sql_hash) @keyword.directive
-; )
-; (embedded_sql_amp
-;   (keyword_embedded_sql_amp) @keyword.directive
-;   "(" @keyword.directive
-;   ")" @keyword.directive
-;   (embedded_sql_reverse_marker) @keyword.directive
-; )
 
 (embedded_sql_amp
   (keyword_embedded_sql_amp) @keyword.directive
