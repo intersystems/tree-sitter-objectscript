@@ -1,74 +1,122 @@
+(pattern_expression) @string.regex
+(numeric_literal) @number
+(string_literal) @string
+
+(keyword_pound_pound_class) @keyword
+(keyword_pound_pound_super) @keyword
+(system_defined_variable) @variable.special
+(system_defined_function) @variable.special
+(sql_field_modifier) @variable.special
+(property_name) @property
+(method_name) @function
+(parameter_name) @property
+(class_name) @type
+(macro) @constant
+
+(routine_ref) @variable
+(sql_field_identifier) @variable
+(lvn) @variable
+(gvn) @variable
+(ssvn) @variable
+(instance_variable) @variable
+(objectscript_identifier) @variable
+
+(method_arg) @variable.parameter
+; I didn't include ( or ) in this, because they are often grouped 
+; as part of a sequence that gets turned into a single token, so they 
+; don't get matched, and one ends up getting colored differently than the other.
+[
+  "_"
+  ","
+  ":"
+  "."
+  ".."
+  "..."
+  "'["
+  "']"
+  "']]"
+  "\""
+  "\"\""
+  "["
+  "]"
+  "]]"
+  "{"
+  "}"
+  "/"
+  "\\"
+  "#"
+  "|"
+  "||"
+  "/"
+  "/"
+  "$$"
+] @punctuation
+
+[
+  "'&"
+  "&"
+  "&&"
+  "'<"
+  "'="
+  "'>"
+  "^"
+  "-"
+  "^$"
+  "+"
+  "<"
+  "<="
+  "="
+  ">"
+  ">="
+   "@"
+  "*"
+  "**"
+  "'"
+  "'!"
+  "'?"
+    "!"
+  "?"
+] @operator
+
+(json_string_literal) @string
+(json_boolean_literal) @boolean
+(json_number_literal) @number
+(json_null_literal) @string
+(bracket) @punctuation.bracket
 ;; inherits: objectscript_expr
-; -------------- Objectscript Core -------------
-; Commands
-; e.g. 'set', 'do', 'D'
-; -----------------------------------------
-(_ command_name: (_) @keyword)
+(locktype) @variable
 
-(_ macro_name: (_) @keyword.macro)
-(_ macro_arg: (_) @constant.macro)
-(_ mnemonic: (_) @constant.macro)
+(macro_arg) @variable
+(macro_value) @constant.builtin
+keyword: (_) @keyword
 
-(_ parameter: _ @variable.parameter)
+(embedded_js_special_case_complete) @punctuation.special
+(embedded_sql_marker) @punctuation.special
+(embedded_sql_reverse_marker) @punctuation.special
+(html_marker) @punctuation.special
+(html_marker_reversed) @punctuation.special
 
-; Functions that can be on the LHS of a SET
-(doable_dollar_functions) @function.builtin
+(attribute) @attribute
 
-; non-extrinsic routine call
-(routine_tag_call) @function.call
+(open_keywords) @attribute
+(use_keywords) @attribute
+(close_parameter_option_value) @attribute
 
-; method call
-(instance_method_call) @function.method.call
-
-;; Technically elseif and else_block are not statements,
-;; so we need ot query them explicitly
-;(elseif_block command_name: (_) @keyword)
-;(else_block command_name: (_) @keyword)
-
-"{" @punctuation.bracket
-"}" @punctuation.bracket
-
-; Comments
-; e.g. '// fj;lkasdfj', '#; sklfjas;k', '; sklfjas','/* sdfs */'
 [
   (line_comment_1)
   (line_comment_2)
   (line_comment_3)
+  (line_comment_4)
   (block_comment)
 ] @comment
 
-(embedded_html
-  (keyword_embedded_html) @keyword.directive
-  "<" @keyword.directive
-  ">" @keyword.directive
-)
+(tag) @tag
 
-(embedded_sql_amp
-  (keyword_embedded_sql_amp) @keyword.directive
-  "(" @keyword.directive
-  ")" @keyword.directive
-)
-
-(embedded_sql_hash
-  (keyword_embedded_sql_hash) @keyword.directive
-  "(" @keyword.directive
-  ")" @keyword.directive
-)
-
-(embedded_js
-  (keyword_embedded_js) @keyword.directive
-  "<" @keyword.directive
-  ">" @keyword.directive
-)
-
-(embedded_xml
-  (keyword_embedded_xml) @keyword.directive
-  "<" @keyword.directive
-  ">" @keyword.directive
-)
-
-(tag) @label
-
-; Lock type specifications
-(locktype) @type.qualifier
-
+[
+  "--"
+  ";"
+  "//"
+  "#;"
+  "##;"
+  "$"
+] @punctuation

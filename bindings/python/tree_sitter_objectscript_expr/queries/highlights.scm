@@ -1,70 +1,85 @@
-; -------------- Objectscript -------------
-
-
-; Variables
-; ^| e.g. '^||ppg', 'do', 'D'
-; -----------------------------------------
-(gvn) @variable.special
-(ssvn) @variable.special
-(lvn) @variable
-(instance_variable) @variable.special
-
-; String literals
-; e.g. "Fo345349*_)(*_)8023841-40"" "
-; -----------------------------------------
-(string_literal) @string
 (pattern_expression) @string.regex
-
-; Operators
-(_ operator: _ @operator)
-
-; Numeric literals
-; e.g. 12345
 (numeric_literal) @number
+(string_literal) @string
 
-; System variable name
-; e.g. $IO, $SY[SYTEM]
-(system_defined_variable) @function.builtin
-
-; System defined functions
-; e.g. $ASCII(62)
-(system_defined_function) @function.builtin
-
-(dollarsf
-  ; $SYSTEM.Foo.Bar()
-  (dollar_system_keyword) @function.builtin
-)
-
+(keyword_pound_pound_class) @keyword
+(keyword_pound_pound_super) @keyword
+(system_defined_variable) @variable.special
+(system_defined_function) @variable.special
+(sql_field_modifier) @variable.special
 (property_name) @property
-(parameter_name) @constant
-(parameter_name) @variable.parameter
+(method_name) @function
+(parameter_name) @property
+(class_name) @type
+(macro) @constant
 
-; Method invcoations
-(class_method_call
-    (class_ref (class_name) @type.definition)
-    (method_name) @function.method.call
-)
-(oref_method (method_name) @function.method.call)
+(routine_ref) @variable
+(sql_field_identifier) @variable
+(lvn) @variable
+(gvn) @variable
+(ssvn) @variable
+(instance_variable) @variable
+(objectscript_identifier) @variable
 
-(_ preproc_keyword: (_) @keyword.directive)
-(_ modifier: (_) @keyword.directive)
+(method_arg) @variable.parameter
+; I didn't include ( or ) in this, because they are often grouped 
+; as part of a sequence that gets turned into a single token, so they 
+; don't get matched, and one ends up getting colored differently than the other.
+[
+  "_"
+  ","
+  ":"
+  "."
+  ".."
+  "..."
+  "'["
+  "']"
+  "']]"
+  "\""
+  "\"\""
+  "["
+  "]"
+  "]]"
+  "{"
+  "}"
+  "/"
+  "\\"
+  "#"
+  "|"
+  "||"
+  "/"
+  "/"
+  "$$"
+] @punctuation
 
+[
+  "'&"
+  "&"
+  "&&"
+  "'<"
+  "'="
+  "'>"
+  "^"
+  "-"
+  "^$"
+  "+"
+  "<"
+  "<="
+  "="
+  ">"
+  ">="
+   "@"
+  "*"
+  "**"
+  "'"
+  "'!"
+  "'?"
+    "!"
+  "?"
+] @operator
 
-; User-defined functions
-(extrinsic_function) @function.call
-
-; Goto labels and locations
-(_ label: (_) @label)
-(_ offset: (_) @number)
-(_ routine: (_) @namespace)
-
-; JSON literals
+(json_string_literal) @string
 (json_boolean_literal) @boolean
-(json_null_literal) @constant.builtin
 (json_number_literal) @number
-(json_string_literal) @string.escape
-
-; Macros
-(macro (macro_constant)) @constant.macro
-(macro (macro_function)) @function.macro
-
+(json_null_literal) @string
+(bracket) @punctuation.bracket

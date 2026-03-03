@@ -12,6 +12,12 @@ This project provides a [Tree-sitter](https://tree-sitter.github.io/tree-sitter/
 
 **InterSystems ObjectScript** is a dynamic, multi-paradigm programming language that combines procedural and object-oriented approaches with novel multi-model data access features for key-value, SQL, Object and Document stores. It is the core language for the InterSystems IRIS Data Platform, particularly well-known in mission-critical applications in healthcare, financial services, and other data-intensive domains.
 
+This repository now publishes four related grammars:
+- `objectscript`: playground/sandbox grammar for partial snippets (top-level statements and class members allowed).
+- `objectscript_udl`: class-file grammar for `.cls` content.
+- `objectscript_core`: routine/statement grammar.
+- `objectscript_expr`: expression grammar.
+
 The grammar currently integrates with these editors:
 - [zed.dev](#zeddev)
 - [neovim](#neovim-nvim-treesitter)
@@ -69,14 +75,15 @@ Associate the `.cls` extension with the objectscript parser by adding the follow
 ```lua
 vim.filetype.add({
   extension = {
-    cls = 'objectscript',
+    cls = 'objectscript_udl',
   },
 })
 ```
 
 #### Installation
-Open a new instance of neovim and type `:TSInstall objectscript` to install the tree-sitter-objectscript parser.
-After this completes and you've added the filetype mapping for `.cls` then you should be able to open `*.cls` files with ObjectScript syntax coloring (or use `set filetype=objectscript` if you didn't add the mapping).
+Open a new instance of neovim and type `:TSInstall objectscript_udl` to install the class-file parser.
+For playground/snippet parsing (for example terminal-like input), also install `:TSInstall objectscript`.
+After this completes and you've added the filetype mapping for `.cls` then you should be able to open `*.cls` files with ObjectScript syntax coloring (or use `set filetype=objectscript_udl` if you didn't add the mapping).
 
 **NOTE**: On Windows, if the parser is currently in-use, nvim-treesitter will fail to update it; simply exit any nvim sessions and start a new one to redo the `:TSInstall objectscript` command.
 
@@ -102,13 +109,17 @@ Contributions are welcome. Please submit changes via Pull Requests. Our preferen
 
 ### Project Overview
 
-There are three main grammars in this repository:
+There are four main grammars in this repository:
 
-- **expr**: Handles ObjectScript expressions.
-- **core**: Core ObjectScript "routine" syntax (e.g., lines of code).
-- **udl**: Grammar for the `.cls` files that IRIS uses for storing ObjectScript classes.
+- **objectscript**: Playground grammar that extends `udl` and allows mixed top-level ObjectScript snippets.
+- **udl**: Grammar for `.cls` files (`objectscript_udl`) used for class definitions.
+- **core**: Core ObjectScript routine syntax (lines/statements).
+- **expr**: ObjectScript expressions.
 
-UDL is the grammar for the `.cls` files and extends the `core` grammar that represents one or more lines/statements of ObjectScript.  The `core` grammar similarly extends the `expr` grammar.
+Extension chain:
+`objectscript` -> `udl` -> `core` -> `expr`
+
+Detailed notes for the playground introduction commit are available in [docs/objectscript-playground-commit-notes.md](docs/objectscript-playground-commit-notes.md).
 
 The reason behind the multiple grammar architecture is that there are cases where we need to inject ObjectScript
 expressions as well as lines of ObjectScript into other grammars (see future work below).  Although it adds a little bit of complexity, it does promote reuse, for example a IRIS specific dialect of SQL could extend the stock SQL grammar and use tree-sitter injections to handle the ObjectScript extensions.
@@ -117,7 +128,7 @@ expressions as well as lines of ObjectScript into other grammars (see future wor
 
 You'll need to install the [tree-sitter-cli](https://github.com/tree-sitter/tree-sitter/blob/master/crates/cli/README.md) tooling (best done via your local package manager, e.g. homebrew on macOS, scoop on Windows).
 
-Since there are three parsers, you'll need to cd into the directory containing the one you want to work on.
+Since there are four parsers, you'll need to cd into the directory containing the one you want to work on.
 
 #### Build the Parser(s)
 
@@ -159,7 +170,7 @@ This will start up a web browser running the playground with the .wasm built fro
 3. Update or add cases in `test/corpus` as needed.
 4. Repeat until all tests pass.
 
-**NOTE**: Since `udl` extends `core` which extends `expr`, if you make changes to the "upstream" grammars, you'll need to regenerate/rebuild the downstream one(s).
+**NOTE**: Since `objectscript` extends `udl` which extends `core` which extends `expr`, if you make changes to an upstream grammar, regenerate/rebuild the downstream one(s).
 
 ## License
 
@@ -193,4 +204,3 @@ From the root directory run `go get github.com/tree-sitter/go-tree-sitter@v0.24.
 
 ### C
 Run `make test`
-

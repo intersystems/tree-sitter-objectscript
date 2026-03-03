@@ -46,14 +46,14 @@ pub const LANGUAGE_OBJECTSCRIPT_CORE: LanguageFn = unsafe { LanguageFn::from_raw
 /// [LanguageFn]: https://docs.rs/tree-sitter-language/*/tree_sitter_language/struct.LanguageFn.html
 pub const LANGUAGE_OBJECTSCRIPT_EXPR: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_objectscript_expr) };
 
-/// The content of the [`node-types.json`][] file for ObjectScript.
-///
-/// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
-pub const OBJECTSCRIPT_NODE_TYPES: &str = include_str!("../../objectscript/src/node-types.json");
 /// The content of the [`node-types.json`][] file for ObjectScript UDL.
 ///
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
 pub const OBJECTSCRIPT_UDL_NODE_TYPES: &str = include_str!("../../udl/src/node-types.json");
+/// The content of the [`node-types.json`][] file for ObjectScript Playground.
+///
+/// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
+pub const OBJECTSCRIPT_PLAYGROUND_NODE_TYPES: &str = include_str!("../../objectscript/src/node-types.json");
 /// The content of the [`node-types.json`][] file for ObjectScript Core (routines).
 ///
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
@@ -63,14 +63,12 @@ pub const OBJECTSCRIPT_CORE_NODE_TYPES: &str = include_str!("../../core/src/node
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
 pub const OBJECTSCRIPT_EXPR_NODE_TYPES: &str = include_str!("../../expr/src/node-types.json");
 
-/// The syntax highlighting query for ObjectScript.
+/// The syntax highlighting query for ObjectScript and ObjectScript UDL.
 pub const OBJECTSCRIPT_HIGHLIGHTS_QUERY: &str = concat!(
 include_str!("../../expr/queries/highlights.scm"), "\n",
 include_str!("../../core/queries/highlights.scm"), "\n",
 include_str!("../../udl/queries/highlights.scm"),
 );
-/// The syntax highlighting query for ObjectScript UDL.
-pub const OBJECTSCRIPT_UDL_HIGHLIGHTS_QUERY: &str = OBJECTSCRIPT_HIGHLIGHTS_QUERY;
 
 /// The syntax highlighting query for ObjectScript Core (routines).
 pub const OBJECTSCRIPT_CORE_HIGHLIGHTS_QUERY: &str = concat!(
@@ -82,23 +80,19 @@ include_str!("../../core/queries/highlights.scm")
 pub const OBJECTSCRIPT_EXPR_HIGHLIGHTS_QUERY: &str =
     include_str!("../../expr/queries/highlights.scm");
 
-/// The injections query for ObjectScript.
+/// The injections query for ObjectScript and ObjectScript UDL.
 pub const OBJECTSCRIPT_INJECTIONS_QUERY: &str = concat!(
 include_str!("../../core/queries/injections.scm"), "\n",
 include_str!("../../udl/queries/injections.scm"),
 );
-/// The injections query for ObjectScript UDL.
-pub const OBJECTSCRIPT_UDL_INJECTIONS_QUERY: &str = OBJECTSCRIPT_INJECTIONS_QUERY;
 
 /// The injections query for ObjectScript Core (routines).
 pub const OBJECTSCRIPT_CORE_INJECTIONS_QUERY: &str =
     include_str!("../../core/queries/injections.scm");
 
-/// The indents query for ObjectScript and ObjectScript Core (routines).
+/// The indents query for ObjectScript, ObjectScript UDL, and ObjectScript Core (routines).
 pub const OBJECTSCRIPT_INDENTS_QUERY: &str =
     include_str!("../../core/queries/indents.scm");
-/// The indents query for ObjectScript UDL.
-pub const OBJECTSCRIPT_UDL_INDENTS_QUERY: &str = OBJECTSCRIPT_INDENTS_QUERY;
 
 
 #[cfg(test)]
