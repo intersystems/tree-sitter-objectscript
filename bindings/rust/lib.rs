@@ -48,8 +48,6 @@ pub const OBJECTSCRIPT_UDL_NODE_TYPES: &str = include_str!("../../udl/src/node-t
 ///
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers#static-node-types
 pub const OBJECTSCRIPT_PLAYGROUND_NODE_TYPES: &str = include_str!("../../objectscript/src/node-types.json");
-/// The content of the [`node-types.json`][] file for ObjectScript Core (routines).
-///
 
 /// The syntax highlighting query for ObjectScript.
 pub const OBJECTSCRIPT_HIGHLIGHTS_QUERY: &str = concat!(
