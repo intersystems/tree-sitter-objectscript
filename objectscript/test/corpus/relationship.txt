@@ -1,0 +1,104 @@
+====
+Valid Relationship Properties
+====
+Class test {
+    Relationship manyProp As classB [ Cardinality = many, Inverse = oneProp ];
+    Relationship oneProp As classA [ Cardinality = one, Inverse = manyProp ];
+    Relationship childProp As classB [ Cardinality = children, Inverse = parentProp ];
+    Relationship parentProp As classA [ Cardinality = parent, Inverse = childProp ];
+    Relationship Employees As MyApp.Employee [ Cardinality = many, Inverse = Employer ];
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs))))))
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs))))))
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs))))))
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs))))))
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs)))))))))
+
+====
+Invalid Relationship Property (needs keywords)
+:error
+====
+Class test {
+    Relationship manyProp As classB;
+}
+---
+
+

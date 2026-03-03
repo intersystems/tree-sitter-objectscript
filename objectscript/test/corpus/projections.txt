@@ -1,0 +1,451 @@
+===
+Projections
+===
+class MyApp.Person extends %Persistent
+{
+Projection JavaClient As %Projection.Java(ROOTDIR="c:\java");
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal)))))))))
+
+===
+Projection Class
+===
+Class MyApp.MyProjection Extends %Projection.AbstractProjection
+{
+
+Parameter MYPARAM;
+
+/// This method is invoked when a class is compiled
+ClassMethod CreateProjection(cls As %String, ByRef params) As %Status
+{
+    // code here...
+    QUIT $$$OK 
+}
+
+/// This method is invoked when a class is 'uncompiled'
+ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean) As %Status
+{
+    // code here...
+    QUIT $$$OK 
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))))
+      (documatic_line)
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (return_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (keyword_byref)
+                (identifier)))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (line_comment_1)
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant)))))))))
+      (documatic_line)
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (return_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (keyword_byref)
+                (identifier))
+              (argument
+                (identifier)
+                (return_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (line_comment_1)
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant))))))))))))
+
+===
+projection - minimal
+===
+Class dc.Test.ProjMinimal
+{
+Projection MyProj As %Projection.SomeProjection;
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+===
+projection - with description comment
+===
+Class dc.Test.ProjDoc
+{
+/// This projection runs at compile time.
+Projection CompileHook As %Projection.AbstractProjection;
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+===
+projection - with parameter list
+===
+Class dc.Test.ProjParams
+{
+Projection P1 As dc.proj.CustomProjection(FOO=1,BAR="baz");
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal)))))))))
+
+===
+projection - with keyword list [ Internal ]
+===
+Class dc.Test.ProjInternal
+{
+Projection HiddenOne As dc.proj.CustomProjection [ Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (projection_keywords
+            (projection_keyword
+              (parameter_keyword_internal))))))))
+
+===
+projection - with keyword list [ Not Internal ]
+===
+Class dc.Test.ProjNotInternal
+{
+Projection VisibleOne As dc.proj.CustomProjection [ Not Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (projection_keywords
+            (projection_keyword
+              (parameter_keyword_internal
+                (keyword_not)))))))))
+
+===
+projection - with params + keywords
+===
+Class dc.Test.ProjParamsAndKeywords
+{
+Projection Combo As dc.proj.CustomProjection(ENABLED=1,MODE="fast") [ Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (projection_keywords
+            (projection_keyword
+              (parameter_keyword_internal))))))))
+
+===
+projection - multiple projections in one class
+===
+Class dc.Test.ProjMany
+{
+Projection A As dc.proj.PA;
+Projection B As dc.proj.PB(Answer=42) [ Internal ];
+Projection C As dc.proj.PC(Name="x",Flag=0);
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))))
+          (projection_keywords
+            (projection_keyword
+              (parameter_keyword_internal)))))
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))
+              (typename_param
+                (identifier)
+                (numeric_literal)))))))))
+
+===
+projection - allow whitespace/newlines in params
+===
+Class dc.Test.ProjWhitespace
+{
+Projection W As dc.proj.CustomProjection(
+  A=1,
+  B="two"
+) [ Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (projection
+          (keyword_projection)
+          (projection_name
+            (identifier))
+          (projection_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (projection_keywords
+            (projection_keyword
+              (parameter_keyword_internal))))))))
+
+===
+invalid projection - missing semicolon
+:error
+===
+Class dc.Test.BadProj1
+{
+Projection X As dc.proj.CustomProjection
+}
+---
+
+
+
+===
+invalid projection - missing projection class after As
+:error
+===
+Class dc.Test.BadProj2
+{
+Projection X As ;
+}
+---
+
+
+
+===
+invalid projection - parentheses present but empty
+:error
+===
+Class dc.Test.BadProj3
+{
+Projection X As dc.proj.CustomProjection();
+}
+---
+
+
+
+===
+invalid projection - trailing comma in parameter list
+:error
+===
+Class dc.Test.BadProj5
+{
+Projection X As dc.proj.CustomProjection(A=1,);
+}
+---
+
+
+
+===
+invalid projection - "Not" without following keyword
+:error
+===
+Class dc.Test.BadProj6
+{
+Projection X As dc.proj.CustomProjection [ Not ];
+}
+---
+
+

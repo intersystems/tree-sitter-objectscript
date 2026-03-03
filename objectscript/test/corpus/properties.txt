@@ -1,0 +1,944 @@
+=====
+Valid Property Keywords
+=====
+Class barricade {
+    Property DateTime As %Date [ InitialExpression = {$zdateh("1966-10-28",3)} ];
+
+    Property MyString As %String [ InitialExpression = {$char(0)} ];
+
+    /// this one is initialized with the value of a parameter
+    Property MyProp As %String [ InitialExpression = {..#MYPARAM} ];
+
+    /// this one is initialized by a class method
+    Property MyProp2 As %Numeric [ InitialExpression = {..Initialize()} ];
+    Property FullName As %String [ SqlComputeCode = {set {*}={FirstName}_" "_{LastName}}, SqlComputed ];
+    Property TestProp As %String [ SqlComputeCode = {set {*} = {OtherField}}, SqlComputed ];
+    /// Person's Social Security number. 
+    Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required  ]; 
+    Property LastUpdate As %TimeStamp [ SqlComputeCode = {set {*}=$ZDATETIME($HOROLOG,3)}, SqlComputed, SqlComputeOnChange = (%%INSERT, %%UPDATE) ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs
+                  (expr_atom
+                    (system_defined_function
+                      (built_in_functions_with_optional_args
+                        (function_argument
+                          (expr_atom
+                            (string_literal)))
+                        (function_argument
+                          (expr_atom
+                            (numeric_literal))))))))))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (expression
+                          (expr_atom
+                            (numeric_literal))))))))))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs
+                  (expr_atom
+                    (relative_dot_parameter
+                      (oref_parameter
+                        (parameter_name
+                          (member_name
+                            (identifier_segment_immediate))))))))))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs
+                  (expr_atom
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket)))))))))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_compute_code
+                (rhs
+                  (expression
+                    (expr_atom
+                      (sql_field_reference
+                        (sql_field_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (sql_field_reference
+                            (sql_field_identifier)))))))))
+            (property_keyword
+              (property_keyword_sql_computed)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_compute_code
+                (rhs
+                  (expression
+                    (expr_atom
+                      (sql_field_reference
+                        (sql_field_identifier)))))))
+            (property_keyword
+              (property_keyword_sql_computed)))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_compute_code
+                (rhs
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (built_in_functions_with_optional_args
+                          (function_argument
+                            (expr_atom
+                              (system_defined_variable)))
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal))))))))))
+            (property_keyword
+              (property_keyword_sql_computed))
+            (property_keyword
+              (property_keyword_sql_compute_on_change
+                (rhs)
+                (rhs)))))))))
+
+========================
+Simple literal property
+========================
+
+Class Test {
+  /// Person's Social Security number.
+  Property SSN As %String;
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+==============================
+Property with parameter_list
+==============================
+
+Class Test {
+  /// Person's Social Security number.
+  Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N");
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal)))))))))
+
+===========================
+Property with keyword_list
+===========================
+
+Class Test {
+  /// Person's Social Security number.
+  Property SSN As %String [ Required ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required))))))))
+
+========================================
+Property with parameters and keywords
+========================================
+
+Class Test {
+  /// Person's Social Security number.
+  Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required))))))))
+
+==========================
+List Of property (literal)
+==========================
+
+Class Test {
+  /// A list of tag strings.
+  Property Tags As List Of %String;
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)))))))))
+
+==========================================
+List Of property with parameters/keywords
+==========================================
+
+Class Test {
+  /// A list of tag strings with SQL options.
+  Property Tags As List Of %String(COLLATION = "EXACT") 
+    [ SqlListType = LIST, Required ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)
+                (typename_param
+                  (identifier)
+                  (string_literal)))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_list_type
+                (rhs)))
+            (property_keyword
+              (property_keyword_required))))))))
+
+===========================
+Array Of property (literal)
+===========================
+
+Class Test {
+  /// An array of scores indexed by name.
+  Property Scores As Array Of %Integer;
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)))))))))
+
+=========================================================
+Array Of property with parameter_list and keyword_list
+=========================================================
+
+Class Test {
+  /// An array of scores indexed by name with constraints.
+  Property Scores As Array Of %Integer(MINVAL = 0, MAXVAL = 100)
+    [ Required, SqlFieldName = ScoreArray ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)
+                (typename_param
+                  (identifier)
+                  (numeric_literal))
+                (typename_param
+                  (identifier)
+                  (numeric_literal)))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required))
+            (property_keyword
+              (property_keyword_sql_field_name
+                (rhs)))))))))
+
+=====================================
+Relationship property with keywords
+=====================================
+
+Class Test {
+  /// One-to-many relationship to orders.
+  Relationship Orders As MyApp.Order [ Cardinality = many, Inverse = Customer ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs)))))))))
+
+=====================================
+Property without classname (datatype)
+=====================================
+
+Class Test {
+  /// A simple intrinsic-typed property.
+  Property Age As %Integer [ Required ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required))))))))
+
+=========================================
+Property with no parameter_list/keywords
+=========================================
+
+Class Test {
+  /// Minimal property using only As + classname.
+  Property Name As %String;
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+===========================================
+Valid — List Of + parameter_list + keywords
+===========================================
+
+Class Test {
+  Property Tags As List Of %String(COLLATION = "EXACT")
+    [ SqlListType = LIST, SqlListDelimiter = ",", Required ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)
+                (typename_param
+                  (identifier)
+                  (string_literal)))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_list_type
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_list_delim
+                (rhs)))
+            (property_keyword
+              (property_keyword_required))))))))
+
+===================================
+Valid — Array Of <type>
+===================================
+
+Class Test {
+  Property Scores As Array Of %Integer;
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)))))))))
+
+======================================================
+Valid — Array Of + parameters + multiple keywords
+======================================================
+
+Class Test {
+  Property Scores As Array Of %Integer(MINVAL = 0, MAXVAL = 100)
+    [ 
+      Private,
+      Transient,
+      SqlComputed,
+      SqlComputeCode = {Set {*}={1}},
+      SqlComputeOnChange = (%%INSERT, %%UPDATE)
+    ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (keyword_of)
+              (typename
+                (identifier)
+                (typename_param
+                  (identifier)
+                  (numeric_literal))
+                (typename_param
+                  (identifier)
+                  (numeric_literal)))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_private))
+            (property_keyword
+              (property_keyword_transient))
+            (property_keyword
+              (property_keyword_sql_computed))
+            (property_keyword
+              (property_keyword_sql_compute_code
+                (rhs
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))
+            (property_keyword
+              (property_keyword_sql_compute_on_change
+                (rhs)
+                (rhs)))))))))
+
+=============================================
+Valid — Test all property keywords together
+=============================================
+
+Class Test {
+  Property FullTest As %String
+    [ 
+      Aliases = {Alias1,Alias2},
+      Calculated,
+      ClientName = FullName,
+      ComputeLocalOnly = 1,
+      Deferred,
+      Identity,
+      InitialExpression = {1+2},
+      Internal,
+      Multidimensional,
+      Private,
+      ReadOnly,
+      Required,
+      ServerOnly = 1,
+      SqlColumnNumber = 12,
+      SqlComputed,
+      SqlComputeOnChange = (%%INSERT,%%UPDATE),
+      SqlFieldName = FNAME,
+      SqlListDelimiter = "|",
+      SqlListType = SUBNODE,
+      Transient
+    ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_aliases
+                (rhs)
+                (rhs)))
+            (property_keyword
+              (property_keyword_calculated))
+            (property_keyword
+              (property_keyword_client_name
+                (rhs)))
+            (property_keyword
+              (property_keyword_compute_local_only
+                (rhs)))
+            (property_keyword
+              (property_keyword_deferred))
+            (property_keyword
+              (property_keyword_identity))
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs
+                  (expr_atom
+                    (numeric_literal))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))
+            (property_keyword
+              (parameter_keyword_internal))
+            (property_keyword
+              (property_keyword_multidimensional))
+            (property_keyword
+              (property_keyword_private))
+            (property_keyword
+              (property_keyword_readonly))
+            (property_keyword
+              (property_keyword_required))
+            (property_keyword
+              (property_keyword_server_only
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_column_number
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_computed))
+            (property_keyword
+              (property_keyword_sql_compute_on_change
+                (rhs)
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_field_name
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_list_delim
+                (rhs)))
+            (property_keyword
+              (property_keyword_sql_list_type
+                (rhs)))
+            (property_keyword
+              (property_keyword_transient))))))))
+
+=============================================
+Valid — SqlComputeCode example from docs
+=============================================
+
+Class Test {
+  Property LastUpdate As %TimeStamp 
+    [ SqlComputeCode = {set {*}=$ZDATETIME($HOROLOG,3)}, SqlComputed ];
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_sql_compute_code
+                (rhs
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (built_in_functions_with_optional_args
+                          (function_argument
+                            (expr_atom
+                              (system_defined_variable)))
+                          (function_argument
+                            (expr_atom
+                              (numeric_literal))))))))))
+            (property_keyword
+              (property_keyword_sql_computed))))))))
+
+===================================
+Invalid — missing As
+:error
+===================================
+Class Test {
+  Property Name %String;
+}
+---
+
+
+
+===================================
+Invalid — missing semicolon
+:error
+===================================
+Class Test {
+  Property Name As %String
+}
+---
+
+
+
+===================================
+Invalid — List Of missing Of
+:error
+===================================
+Class Test {
+  Property MyList As List %String;
+}
+---
+
+
+
+===================================
+Invalid — Array Of missing type
+:error
+===================================
+Class Test {
+  Property Data As Array Of ;
+}
+---
+
+
+
+===================================
+Invalid — missing closing ] on keywords
+:error
+===================================
+Class Test {
+  Property Name As %String [ Required;
+}
+---
+
+
+
+===================================
+Invalid — malformed parameter list (== not allowed)
+:error
+===================================
+Class Test {
+  Property SSN As %String(PATTERN == "BAD");
+}
+---
+
+
+
+===================================
+Invalid — SqlComputeOnChange missing value
+:error
+===================================
+Class Test {
+  Property LastUpdate As %TimeStamp 
+    [ SqlComputeOnChange = (, %%UPDATE) ];
+}
+---
+
+
+
+===================================
+Invalid — SqlComputeCode missing {}
+:error
+===================================
+Class Test {
+  Property Updated As %TimeStamp
+    [ SqlComputeCode = Set {*}=$HOROLOG ];
+}
+---
+
+
+
+===================================
+Invalid — unknown property keyword
+:error
+===================================
+Class Test {
+  Property Something As %String [ TotallyFakeKeyword ];
+}
+---
+
+
+
+===================================
+Invalid — extra garbage after property
+:error
+===================================
+Class Test {
+  Property Age As %Integer; junk
+}
+---
+
+

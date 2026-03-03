@@ -1,0 +1,702 @@
+================
+If Statements 0
+================
+  if 1 set x = 3 set set = 3
+  if 1 { set x = 3 } else { w 2 }
+  set x = 3
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (numeric_literal)))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (numeric_literal)))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (else_block
+        (keyword_else)
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+================
+If Statements 1
+================
+ if seg="ORC" {
+		set type=$zcvt($$$ORCOrderTypeIdentifier,"U")
+  } elseif msgType="ORU_R01" {  // Results
+			if type="OBS" {
+				set ^||HS.Data(s)="ORCOBS"
+			} else {
+				W "hello", !
+			}
+	}
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_constant))))
+                    (expression
+                      (expr_atom
+                        (string_literal))))))))))
+      (elseif_block
+        (keyword_elseif)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (line_comment_1)
+        (statement
+          (command_if
+            (keyword_if)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal)))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (gvn
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (string_literal))))))
+            (else_block
+              (keyword_else)
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (write_argument
+                    (write_device_control
+                      (write_device_fflf))))))))))))
+
+================
+If Statements 2
+================
+
+ if x=1 set x = 2 ;old version arguments
+ else  set x =3
+
+ if  set x = 2 ; old version argumentless
+ else  set x =3
+
+ if x = 1 { ; if block
+	set x = 2
+ }
+ else {
+	set x = 4 ;else block
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (line_comment_3)
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (statement
+    (command_if
+      (keyword_if)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (line_comment_3)
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (line_comment_3)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (else_block
+        (keyword_else)
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (glvn
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (line_comment_3)))))
+
+================
+If Statements 3
+================
+ If ($E(classname,1)="%") && (sysclasses=0) Continue
+
+ If ..DebugDevice = "" {
+     Set sc = $$$ERROR($$$GeneralError, "No debug device configured")
+     Quit
+     }
+
+ If line [ "@", line [ ">" {
+    Set done = 1
+    Quit
+    }
+
+ If classname = "%Net.HttpRequest"
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (parenthetical_expression
+            (bracket)
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_extract
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))
+                    (dollar_func_pos
+                      (expression
+                        (expr_atom
+                          (numeric_literal)))))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal)))))
+            (bracket)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (parenthetical_expression
+                (bracket)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))
+                (bracket))))))
+      (statement
+        (command_continue
+          (keyword_continue)))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (relative_dot_property
+            (oref_property
+              (property_name
+                (identifier_segment_immediate)))))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_function
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (macro
+                              (macro_constant)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (bracket)))))))))
+      (statement
+        (command_quit
+          (keyword_quit)))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (statement
+        (command_quit
+          (keyword_quit)))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===========================
+Else statements old version
+===========================
+ else  w 0
+ else ; wwww
+ else
+ else // ww
+ else /* */
+ else /* */ w 0
+---
+
+(source_file
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (numeric_literal))))))))
+  (statement
+    (command_else
+      (keyword_oldelse)))
+  (line_comment_3)
+  (statement
+    (command_else
+      (keyword_oldelse)))
+  (statement
+    (command_else
+      (keyword_oldelse)))
+  (statement
+    (command_else
+      (keyword_oldelse)))
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
+
+======================
+Else Statement Invalid
+:error
+======================
+ ELSE /* */ { w 0 }
+---
+
+
+
+====================
+If Statement Invalid
+:error
+====================
+ if set x = 2
+
+---
+
+
+
+============================
+If Block to old Else Invalid
+:error
+============================
+  if 1 {
+  	w 1,!
+  }
+  ; comment
+  else  w 0,!
+  q
+---
+
+
+
+====================
+If Statement Invalid
+:error
+====================
+  if 0 { a=1 w 1 }
+---
+
+
+
+==========================
+If Block to Old Else Valid
+==========================
+  if 1 {
+  	w 1,!
+  }
+  s x=""
+  e  w 0,!
+  q
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (numeric_literal)))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf)))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf)))))))
+  (statement
+    (command_quit
+      (keyword_quit))))
+
+========
+If Alone
+========
+ if
+ i
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)))
+  (statement
+    (command_if
+      (keyword_if))))
+
+==========
+Else alone
+==========
+ else
+ e
+---
+
+(source_file
+  (statement
+    (command_else
+      (keyword_oldelse)))
+  (statement
+    (command_else
+      (keyword_oldelse))))
+
+=========================
+If Expression Indirection
+=========================
+ IF zip'?@pat {
+   WRITE !,"Invalid ZIP code"
+   DO GetZip()
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (pattern_operator
+            (unary_expression
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (write_device_control
+              (write_device_fflf)))
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_do
+          (keyword_do)
+          (do_parameter
+            (routine_tag_call
+              (line_ref
+                (objectscript_identifier))
+              (method_args
+                (bracket)
+                (bracket)))))))))
+
+====================================
+If with Expression, Block on newline
+====================================
+ if x 
+ {}
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))))))
+
+====
+Valid If
+====
+  if ..#PARMNAME=1 { 
+  //do something
+  } else { 
+  //do something else
+  }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (relative_dot_parameter
+            (oref_parameter
+              (parameter_name
+                (member_name
+                  (identifier_segment_immediate))))))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (line_comment_1)
+      (else_block
+        (keyword_else)
+        (line_comment_1)))))

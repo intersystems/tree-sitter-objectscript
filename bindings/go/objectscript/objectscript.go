@@ -1,9 +1,9 @@
 package tree_sitter_objectscript
 
-// #cgo CPPFLAGS: -I../../../udl/src
+// #cgo CPPFLAGS: -I../../../objectscript/src
 // #cgo CFLAGS: -std=c11 -fPIC
-// #include "../../../udl/src/parser.c"
-// #include "../../../udl/src/scanner.c"
+// #include "../../../objectscript/src/parser.c"
+// #include "../../../objectscript/src/scanner.c"
 import "C"
 
 import "unsafe"

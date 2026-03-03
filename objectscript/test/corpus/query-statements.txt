@@ -1,0 +1,413 @@
+===
+Valid Class query
+===
+Class test {
+Query ByName(name As %String = "") 
+    As %SQLQuery(CONTAINID = 1, ROWSPEC = "ID:%Integer,Name,DOB,SSN", SELECTMODE = "RUNTIME") 
+   [ SqlName = SP_Sample_By_Name, SqlProc ]
+{
+        SELECT ID, Name, DOB, SSN
+            FROM Sample.Person
+            WHERE (Name %STARTSWITH :name)
+            ORDER BY Name
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier)
+              (return_type
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (default_argument_value
+                (string_literal))))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))
+              (typename_param
+                (identifier)
+                (string_literal))
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (query_keywords
+            (query_keyword
+              (method_keyword_sql_name
+                (rhs)))
+            (query_keyword
+              (method_keyword_sql_proc)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query With SELECT
+===
+Class test {
+Query ListEmployees(City As %String = "") 
+   As %SQLQuery (ROWSPEC="ID:%Integer,Name:%String,Title:%String", CONTAINID = 1) [SqlProc, SqlName=MyProcedureName]
+{
+SELECT ID,Name,Title FROM Employee
+ WHERE (Home_City %STARTSWITH :City)
+ ORDER BY Name
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier)
+              (return_type
+                (keyword_as)
+                (typename
+                  (identifier)))
+              (default_argument_value
+                (string_literal))))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))
+              (typename_param
+                (identifier)
+                (numeric_literal))))
+          (query_keywords
+            (query_keyword
+              (method_keyword_sql_proc))
+            (query_keyword
+              (method_keyword_sql_name
+                (rhs))))
+          (query_body
+            (query_body_content)))))))
+
+===
+Max Len
+===
+Class test {
+Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc] 
+{
+
+}
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier)
+              (return_type
+                (keyword_as)
+                (typename
+                  (identifier)
+                  (typename_param
+                    (identifier)
+                    (numeric_literal))))))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_keywords
+            (query_keyword
+              (method_keyword_sql_proc)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: minimal (no args, no keywords)
+===
+Class Test {
+  Query Q1() As %SQLQuery
+  {
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments)
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: with arguments (untyped args)
+===
+Class Test {
+  Query FindById(id) As %SQLQuery
+  {
+    // body treated as external content by grammar
+    SELECT 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier)))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: with multiple arguments
+===
+Class Test {
+  Query FindByRange(a, b, c) As %SQLQuery
+  {
+    SELECT 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier))
+            (argument
+              (identifier))
+            (argument
+              (identifier)))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: name is quoted identifier
+===
+Class Test {
+  Query "My Query"() As %SQLQuery
+  {
+    SELECT 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name)
+          (arguments)
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: with keyword list (smoke test)
+===
+Class Test {
+  Query QWithKw() As %SQLQuery [ ClientName="QWithKwClient" ]
+  {
+    SELECT 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments)
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_keywords
+            (query_keyword
+              (property_keyword_client_name
+                (rhs))))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: with keyword list (multiple keywords, smoke test)
+===
+Class Test {
+  Query QWithManyKw(x, y) As %SQLQuery [ ClientName="QX", Final ]
+  {
+    SELECT 1
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments
+            (argument
+              (identifier))
+            (argument
+              (identifier)))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_keywords
+            (query_keyword
+              (property_keyword_client_name
+                (rhs)))
+            (query_keyword
+              (parameter_keyword_final)))
+          (query_body
+            (query_body_content)))))))
+
+===
+Query: classname is custom query class
+===
+Class Test {
+  Query CustomQ() As %Query
+  {
+    // custom implementation
+  }
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (query
+          (keyword_query)
+          (query_name
+            (identifier))
+          (arguments)
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (query_body
+            (query_body_content)))))))
+
+===
+invalid: Query missing parentheses (your grammar requires arguments rule)
+:error
+===
+Class Test {
+  Query NoParens As %SQLQuery
+  {
+    SELECT 1
+  }
+}
+---
+
+
+
+===
+invalid: Query missing As clause (required)
+:error
+===
+Class Test {
+  Query MissingAs() %SQLQuery
+  {
+    SELECT 1
+  }
+}
+---
+
+
+
+===
+invalid: Query missing body braces (required)
+:error
+===
+Class Test {
+  Query MissingBody() As %SQLQuery
+}
+---
+
+

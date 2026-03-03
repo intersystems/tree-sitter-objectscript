@@ -1,0 +1,2652 @@
+==================
+adta01
+==================
+
+Class HL7ToSDA3 {
+
+ClassMethod adta01()
+{
+ set Action=$s(msgType="ADT_A13":"CancelDischarge",1:"AddOrUpdate")
+ do ..EVN(),..PID(),..PD1()
+ while $$$Next("NK1") {do ..NK1()} do ..end("NK1")
+ do ..end("PID")
+ while $$$Next("AL1") {do ..AL1()} do ..end("AL1")
+ if ($$$Next("PV1"))&&(..StartEncounters()) {
+	do ..PV1(),..PV2()
+    while $$$Next("GT1") {do ..GT1()} do ..end("GT1")
+	while $$$Next("IN1") {do ..IN1()} do ..end("IN1")
+	If ($$$Next("DRG")) Do ..DRG()
+	do ..EndEncounters()
+ }
+ do ..MessageHeader()
+ while $$$Next("DG1") {do ..DG1()} do ..end("DG1")
+ while $$$Next("PR1") {do ..PR1()} do ..end("PR1")
+ while $$$Next("OBX") {do ..OBX("obs")} do ..end("OBX")
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    keyword: (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          keyword: (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_select
+                          (dollar_arg_pair
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (dollar_arg_pair
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))
+                            (expression
+                              (expr_atom
+                                (string_literal)))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))))
+            (statement
+              (command_while
+                keyword: (keyword_while)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))
+            (statement
+              (command_while
+                keyword: (keyword_while)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))
+            (statement
+              (command_if
+                keyword: (keyword_if)
+                (expression
+                  (expr_atom
+                    (parenthetical_expression
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_function
+                              (method_args
+                                (bracket)
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))
+                                (bracket))))))
+                      (bracket)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (parenthetical_expression
+                          (bracket)
+                          (expression
+                            (expr_atom
+                              (relative_dot_method
+                                (oref_method
+                                  (method_name
+                                    (identifier_segment_immediate))
+                                  (method_args
+                                    (bracket)
+                                    (bracket))))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))
+                (statement
+                  (command_while
+                    keyword: (keyword_while)
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_function
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (bracket))))))
+                    (statement
+                      (command_do
+                        keyword: (keyword_do)
+                        (do_parameter
+                          (instance_method_call
+                            (relative_dot_method
+                              (oref_method
+                                (method_name
+                                  (identifier_segment_immediate))
+                                (method_args
+                                  (bracket)
+                                  (bracket))))))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (bracket))))))))
+                (statement
+                  (command_while
+                    keyword: (keyword_while)
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_function
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (bracket))))))
+                    (statement
+                      (command_do
+                        keyword: (keyword_do)
+                        (do_parameter
+                          (instance_method_call
+                            (relative_dot_method
+                              (oref_method
+                                (method_name
+                                  (identifier_segment_immediate))
+                                (method_args
+                                  (bracket)
+                                  (bracket))))))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (bracket))))))))
+                (statement
+                  (command_if
+                    keyword: (keyword_if)
+                    (expression
+                      (expr_atom
+                        (parenthetical_expression
+                          (bracket)
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_function
+                                  (method_args
+                                    (bracket)
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (bracket))))))
+                          (bracket))))
+                    (statement
+                      (command_do
+                        keyword: (keyword_do)
+                        (do_parameter
+                          (instance_method_call
+                            (relative_dot_method
+                              (oref_method
+                                (method_name
+                                  (identifier_segment_immediate))
+                                (method_args
+                                  (bracket)
+                                  (bracket))))))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))))
+            (statement
+              (command_while
+                keyword: (keyword_while)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))
+            (statement
+              (command_while
+                keyword: (keyword_while)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))
+            (statement
+              (command_while
+                keyword: (keyword_while)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (relative_dot_method
+                          (oref_method
+                            (method_name
+                              (identifier_segment_immediate))
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (bracket))))))))))
+            (statement
+              (command_do
+                keyword: (keyword_do)
+                (do_parameter
+                  (instance_method_call
+                    (relative_dot_method
+                      (oref_method
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (bracket))))))))))))))
+
+==================
+GetData
+==================
+
+Class HL7ToSDA3 {
+
+ClassMethod GetData()
+{
+ new s,line,seg,fno,fval,field,occ,sval,sub,tSegment
+ set seps=pRequest.Separators
+ set s1=$e(seps,1),s2=$e(seps,2),s3=$e(seps,3),s4=$e(seps,4),s5=$e(seps,5)
+ //Set up array mapping HL7 escape sequences to target characters
+ //The XML escaping is mostly for "&"
+ set:s1'="^" escape(s4_"F"_s4) = s1
+ set:s2'="^" escape(s4_"S"_s4) = s2
+ set:s3'="^" escape(s4_"R"_s4) = s3
+ set:s4'="^" escape(s4_"E"_s4) = s4
+ set:s5'="^" escape(s4_"T"_s4) = s5
+ set escape(s4_".br"_s4) = $c(13,10)
+ #;
+ #;	build ^||HS.Data(s,field,sub,occ)
+ #;		  ^||HS.Data(s)=seg
+ #;		  ^||HS.Data(seg)=lasts
+ #;		  ^||HS.Data(seg,s)=""
+ #;		s     = sequence number, keep segments in order
+ #;		seg   = segment type (eg "PID"), for "ORC" add indexes (see below)
+ #;		lasts = s of last segment of that type processed
+ #;		field = the main field number within a segment
+ #;		sub   = the second level field number (note: we do not use any 3rd-level subfields)
+ #;		occ   = the occurrence number within a repeating field
+ #;
+ #;		for fields with just a value, set ^||HS.Data(s,field)=val and ^||HS.Data(s,field,1)=val
+ #;		  and ^||HS.Data(s,field,1,1)
+ #;		for fields with subfields, set ^||HS.Data(s,field)=val1^val2^... and ^||HS.Data(s,field,f)=valf
+ #;		  and ^||HS.Data(s,field,f,1)
+ #;		for repeating fields, set ^||HS.Data(s,field)=val1^val2~val3... and ^||HS.Data(s,field,sub,occ)=val
+ #;		  and ^||HS.Data(s,field,sub)=^||HS.Data(seg,n,field,sub,1)
+
+ for s=1:1:pRequest.SegCount {
+	kill tSegment
+	set tSegment=pRequest.getSegmentByIndex(s)
+	set line=tSegment.GetValueAt("",,.tSC) quit:$$$ISERR(tSC)
+	set seg=$p(line,s1),^||HS.Data(s)=seg,^||HS.Data(seg)=s,^||HS.Data(seg,s)=""
+	for fno=2:1:$l(line,s1) {
+		set fval=$p(line,s1,fno) if fval="" continue
+		set field=fno-(seg'="MSH")
+		if fval'[s3,fval'[s2 set (^||HS.Data(s,field),^||HS.Data(s,field,1),^||HS.Data(s,field,1,1))=fval continue
+		if fval[s3 {  // repeating field
+			set ^||HS.Data(s,field)=fval
+			for occ=1:1:$l(fval,s3) {
+				set sval=$p(fval,s3,occ) if sval="" continue
+					for sub=1:1:$l(sval,s2) {
+						set val=$p(sval,s2,sub) if val="" continue
+						set ^||HS.Data(s,field,sub,occ)=val
+						if occ=1 set ^||HS.Data(s,field,sub)=val}}
+		} else { // not repeating field
+			set ^||HS.Data(s,field)=fval
+			if fval[s2 {for sub=1:1:$l(fval,s2) {
+				set val=$p(fval,s2,sub) if val="" continue
+				set (^||HS.Data(s,field,sub),^||HS.Data(s,field,sub,1))=val}}
+		}
+	}
+	do pRequest.commitSegmentByIndex(s)
+
+	#; for ORC add index for orders (ORCMED or ORCORD)
+	#;  and results (ORCOBS or ORCRES)
+	if seg="ORC" {
+		set type=$zcvt($$$ORCOrderTypeIdentifier,"U")
+		if msgType="ORM_O01" {  // Orders
+			if type="MED" {
+				set ^||HS.Data(s)="ORCMED",^||HS.Data("ORCMED",s)=""
+			} else {
+				set ^||HS.Data(s)="ORCORD",^||HS.Data("ORCORD",s)=""
+			}
+		}
+		elseif msgType="OMP_O09" {  // Med Orders
+			set ^||HS.Data(s)="ORCOMP",^||HS.Data("ORCOMP",s)=""
+		}
+		elseif msgType="ORU_R01" {  // Results
+			if type="OBS" {
+				set ^||HS.Data(s)="ORCOBS",^||HS.Data("ORCOBS",s)=""
+			} else {
+				set ^||HS.Data(s)="ORCRES",^||HS.Data("ORCRES",s)=""
+			}
+		}
+		elseif msgType="RDE_O11" {
+			set ^||HS.Data(s)="ORCRDE",^||HS.Data("ORCRDE",s)=""
+		}
+		elseif msgType="PPR_PC1" {
+			if (type="LAB")||(type="RAD") { set ^||HS.Data(s)="ORCRES",^||HS.Data("ORCRES",s)="" }
+			elseif type="OBS" { set ^||HS.Data(s)="ORCOBS",^||HS.Data("ORCOBS",s)="" }
+			else { set ^||HS.Data(s)="ORCORD",^||HS.Data("ORCORD",s)="" }
+		}
+	}
+	#; initialize last-processed of each segment type
+	set ^||HS.Data(seg)=0
+ }
+
+ #; for ORCRES, check if only OBR, OBX(FT/TX) and NTE
+ set res="" for {
+	set res=$o(^||HS.Data("ORCRES",res)) quit:res=""
+	#; If there are no OBX then alltext will be null.
+	set tItem=""
+	set alltext="" for s=res+1:1 {
+		if '$d(^||HS.Data(s)) quit  // end
+		if (^||HS.Data(s)="OBR")||(^||HS.Data(s)="NTE")||(^||HS.Data(s)="TQ1") continue
+		if ^||HS.Data(s)'="OBX" quit  // next order or other segment
+		#; An OBX found for comparison.
+		if alltext="" set alltext=1
+		if tItem="" set tItem=$$$OBXObservationIdentifierIdentifier(s)
+		if ('(multilineobxmode)&&(tItem'=$$$OBXObservationIdentifierIdentifier(s))){
+			set alltext=0
+			quit
+		}
+		if ",FT,TX,ED,"'[(","_$zcvt($$$OBXValueType,"U")_",") set alltext=0 quit
+	}
+	set ^||HS.Data("ORCRES",res)=alltext
+ }
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    keyword: (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          keyword: (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (statement
+              (command_new
+                keyword: (keyword_new)
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (oref_chain_expr
+                        (lvn
+                          (objectscript_identifier))
+                        (oref_chain_segment
+                          (oref_property
+                            (property_name
+                              (identifier_segment_immediate))))))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_extract
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_extract
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_extract
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_extract
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_extract
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (dollar_func_pos
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))))))))
+            (line_comment_1)
+            (line_comment_1)
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))))
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (bracket))))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))))
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (line_comment_2)
+            (statement
+              (command_for
+                keyword: (keyword_for)
+                (for_parameter
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (for_parameter_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (oref_chain_expr
+                          (lvn
+                            (objectscript_identifier))
+                          (oref_chain_segment
+                            (oref_property
+                              (property_name
+                                (identifier_segment_immediate)))))))))
+                (statement
+                  (command_kill
+                    keyword: (keyword_kill)
+                    (kill_argument
+                      (kill_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier)))))))
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (oref_chain_expr
+                            (lvn
+                              (objectscript_identifier))
+                            (oref_chain_segment
+                              (oref_method
+                                (method_name
+                                  (identifier_segment_immediate))
+                                (method_args
+                                  (bracket)
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (bracket))))))))))
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (oref_chain_expr
+                            (lvn
+                              (objectscript_identifier))
+                            (oref_chain_segment
+                              (oref_method
+                                (method_name
+                                  (identifier_segment_immediate))
+                                (method_args
+                                  (bracket)
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))
+                                  (method_arg
+                                    (byref_arg
+                                      (lvn
+                                        (objectscript_identifier))))
+                                  (bracket))))))))))
+                (statement
+                  (command_quit
+                    keyword: (keyword_quit)
+                    (post_conditional
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_function
+                              (method_args
+                                (bracket)
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier)))))
+                                (bracket)))))))))
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_piece
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier))))
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))))))
+                    (set_argument
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (set_argument
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (set_argument
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket))))
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (statement
+                  (command_for
+                    keyword: (keyword_for)
+                    (for_parameter
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))
+                        (expression
+                          (expr_atom
+                            (system_defined_function
+                              (dollar_function
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))))))))
+                    (statement
+                      (command_set
+                        keyword: (keyword_set)
+                        (set_argument
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (dollar_piece
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))
+                                  (dollar_func_pos
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))))))))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal)))))
+                        (statement
+                          (command_continue
+                            keyword: (keyword_continue)))))
+                    (statement
+                      (command_set
+                        keyword: (keyword_set)
+                        (set_argument
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (parenthetical_expression
+                                    (bracket)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expr_tail
+                                        (binary_operator)
+                                        (expression
+                                          (expr_atom
+                                            (string_literal)))))
+                                    (bracket)))))))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (set_target_list
+                                (bracket)
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (numeric_literal)))
+                                      (bracket))))
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (numeric_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (numeric_literal)))
+                                      (bracket))))
+                                (bracket))
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))))
+                        (statement
+                          (command_continue
+                            keyword: (keyword_continue)))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))
+                        (line_comment_1)
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (glvn
+                                (gvn
+                                  (subscripts
+                                    (bracket)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))
+                                    (bracket))))
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))))
+                        (statement
+                          (command_for
+                            keyword: (keyword_for)
+                            (for_parameter
+                              (glvn
+                                (lvn
+                                  (objectscript_identifier)))
+                              (for_parameter_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (expression
+                                  (expr_atom
+                                    (system_defined_function
+                                      (dollar_function
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))))))))
+                            (statement
+                              (command_set
+                                keyword: (keyword_set)
+                                (set_argument
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expression
+                                    (expr_atom
+                                      (system_defined_function
+                                        (dollar_piece
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (dollar_func_pos
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))))))))))
+                            (statement
+                              (command_if
+                                keyword: (keyword_if)
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expr_tail
+                                    (binary_operator)
+                                    (expression
+                                      (expr_atom
+                                        (string_literal)))))
+                                (statement
+                                  (command_continue
+                                    keyword: (keyword_continue)))))
+                            (statement
+                              (command_for
+                                keyword: (keyword_for)
+                                (for_parameter
+                                  (glvn
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (for_parameter_arg
+                                    (expression
+                                      (expr_atom
+                                        (numeric_literal)))
+                                    (expression
+                                      (expr_atom
+                                        (numeric_literal)))
+                                    (expression
+                                      (expr_atom
+                                        (system_defined_function
+                                          (dollar_function
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))))))))
+                                (statement
+                                  (command_set
+                                    keyword: (keyword_set)
+                                    (set_argument
+                                      (glvn
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expression
+                                        (expr_atom
+                                          (system_defined_function
+                                            (dollar_piece
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (dollar_func_pos
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))))))))))
+                                (statement
+                                  (command_if
+                                    keyword: (keyword_if)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expr_tail
+                                        (binary_operator)
+                                        (expression
+                                          (expr_atom
+                                            (string_literal)))))
+                                    (statement
+                                      (command_continue
+                                        keyword: (keyword_continue)))))
+                                (statement
+                                  (command_set
+                                    keyword: (keyword_set)
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))))))
+                                (statement
+                                  (command_if
+                                    keyword: (keyword_if)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expr_tail
+                                        (binary_operator)
+                                        (expression
+                                          (expr_atom
+                                            (numeric_literal)))))
+                                    (statement
+                                      (command_set
+                                        keyword: (keyword_set)
+                                        (set_argument
+                                          (glvn
+                                            (gvn
+                                              (subscripts
+                                                (bracket)
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (bracket))))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier)))))))))))))
+                        (else_block
+                          keyword: (keyword_else)
+                          (line_comment_1)
+                          (statement
+                            (command_set
+                              keyword: (keyword_set)
+                              (set_argument
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))))
+                          (statement
+                            (command_if
+                              keyword: (keyword_if)
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))
+                                (expr_tail
+                                  (binary_operator)
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))
+                              (statement
+                                (command_for
+                                  keyword: (keyword_for)
+                                  (for_parameter
+                                    (glvn
+                                      (lvn
+                                        (objectscript_identifier)))
+                                    (for_parameter_arg
+                                      (expression
+                                        (expr_atom
+                                          (numeric_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (numeric_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (system_defined_function
+                                            (dollar_function
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))))))))
+                                  (statement
+                                    (command_set
+                                      keyword: (keyword_set)
+                                      (set_argument
+                                        (glvn
+                                          (lvn
+                                            (objectscript_identifier)))
+                                        (expression
+                                          (expr_atom
+                                            (system_defined_function
+                                              (dollar_piece
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (dollar_func_pos
+                                                  (expression
+                                                    (expr_atom
+                                                      (lvn
+                                                        (objectscript_identifier))))))))))))
+                                  (statement
+                                    (command_if
+                                      keyword: (keyword_if)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))
+                                        (expr_tail
+                                          (binary_operator)
+                                          (expression
+                                            (expr_atom
+                                              (string_literal)))))
+                                      (statement
+                                        (command_continue
+                                          keyword: (keyword_continue)))))
+                                  (statement
+                                    (command_set
+                                      keyword: (keyword_set)
+                                      (set_argument
+                                        (set_target_list
+                                          (bracket)
+                                          (glvn
+                                            (gvn
+                                              (subscripts
+                                                (bracket)
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (bracket))))
+                                          (glvn
+                                            (gvn
+                                              (subscripts
+                                                (bracket)
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (lvn
+                                                      (objectscript_identifier))))
+                                                (expression
+                                                  (expr_atom
+                                                    (numeric_literal)))
+                                                (bracket))))
+                                          (bracket))
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))))))))))))))
+                (statement
+                  (command_do
+                    keyword: (keyword_do)
+                    (do_parameter
+                      (instance_method_call
+                        (lvn
+                          (objectscript_identifier))
+                        (oref_method
+                          (method_name
+                            (identifier_segment_immediate))
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))
+                            (bracket)))))))
+                (line_comment_2)
+                (line_comment_2)
+                (statement
+                  (command_if
+                    keyword: (keyword_if)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (string_literal)))))
+                    (statement
+                      (command_set
+                        keyword: (keyword_set)
+                        (set_argument
+                          (glvn
+                            (lvn
+                              (objectscript_identifier)))
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (dollar_function
+                                  (expression
+                                    (expr_atom
+                                      (macro
+                                        (macro_constant))))
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))))))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal)))))
+                        (line_comment_1)
+                        (statement
+                          (command_if
+                            keyword: (keyword_if)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))
+                            (statement
+                              (command_set
+                                keyword: (keyword_set)
+                                (set_argument
+                                  (glvn
+                                    (gvn
+                                      (subscripts
+                                        (bracket)
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))
+                                        (bracket))))
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))
+                                (set_argument
+                                  (glvn
+                                    (gvn
+                                      (subscripts
+                                        (bracket)
+                                        (expression
+                                          (expr_atom
+                                            (string_literal)))
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier))))
+                                        (bracket))))
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))))
+                            (else_block
+                              keyword: (keyword_else)
+                              (statement
+                                (command_set
+                                  keyword: (keyword_set)
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (string_literal)))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal)))))))))
+                        (elseif_block
+                          keyword: (keyword_elseif)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (string_literal)))))
+                          (line_comment_1)
+                          (statement
+                            (command_set
+                              keyword: (keyword_set)
+                              (set_argument
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (set_argument
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))))
+                        (elseif_block
+                          keyword: (keyword_elseif)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (string_literal)))))
+                          (line_comment_1)
+                          (statement
+                            (command_if
+                              keyword: (keyword_if)
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))
+                                (expr_tail
+                                  (binary_operator)
+                                  (expression
+                                    (expr_atom
+                                      (string_literal)))))
+                              (statement
+                                (command_set
+                                  keyword: (keyword_set)
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (string_literal)))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))))
+                              (else_block
+                                keyword: (keyword_else)
+                                (statement
+                                  (command_set
+                                    keyword: (keyword_set)
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (string_literal)))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))))))))
+                        (elseif_block
+                          keyword: (keyword_elseif)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (string_literal)))))
+                          (statement
+                            (command_set
+                              keyword: (keyword_set)
+                              (set_argument
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expression
+                                  (expr_atom
+                                    (string_literal))))
+                              (set_argument
+                                (glvn
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))))
+                        (elseif_block
+                          keyword: (keyword_elseif)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (string_literal)))))
+                          (statement
+                            (command_if
+                              keyword: (keyword_if)
+                              (expression
+                                (expr_atom
+                                  (parenthetical_expression
+                                    (bracket)
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))
+                                      (expr_tail
+                                        (binary_operator)
+                                        (expression
+                                          (expr_atom
+                                            (string_literal)))))
+                                    (bracket)))
+                                (expr_tail
+                                  (binary_operator)
+                                  (expression
+                                    (expr_atom
+                                      (parenthetical_expression
+                                        (bracket)
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier)))
+                                          (expr_tail
+                                            (binary_operator)
+                                            (expression
+                                              (expr_atom
+                                                (string_literal)))))
+                                        (bracket))))))
+                              (statement
+                                (command_set
+                                  keyword: (keyword_set)
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))
+                                  (set_argument
+                                    (glvn
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (string_literal)))
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))))
+                              (elseif_block
+                                keyword: (keyword_elseif)
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expr_tail
+                                    (binary_operator)
+                                    (expression
+                                      (expr_atom
+                                        (string_literal)))))
+                                (statement
+                                  (command_set
+                                    keyword: (keyword_set)
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (string_literal)))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))))))
+                              (else_block
+                                keyword: (keyword_else)
+                                (statement
+                                  (command_set
+                                    keyword: (keyword_set)
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (set_argument
+                                      (glvn
+                                        (gvn
+                                          (subscripts
+                                            (bracket)
+                                            (expression
+                                              (expr_atom
+                                                (string_literal)))
+                                            (expression
+                                              (expr_atom
+                                                (lvn
+                                                  (objectscript_identifier))))
+                                            (bracket))))
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))))))))))))
+                (line_comment_2)
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket))))
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))
+            (line_comment_2)
+            (statement
+              (command_set
+                keyword: (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (string_literal))))))
+            (statement
+              (command_for
+                keyword: (keyword_for)
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (expression
+                                (expr_atom
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))))))))))
+                (statement
+                  (command_quit
+                    keyword: (keyword_quit)
+                    (post_conditional
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (string_literal))))))))
+                (line_comment_2)
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (statement
+                  (command_for
+                    keyword: (keyword_for)
+                    (for_parameter
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))))
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (unary_expression
+                              (unary_operator)
+                              (expression
+                                (expr_atom
+                                  (system_defined_function
+                                    (dollar_function
+                                      (expression
+                                        (expr_atom
+                                          (gvn
+                                            (subscripts
+                                              (bracket)
+                                              (expression
+                                                (expr_atom
+                                                  (lvn
+                                                    (objectscript_identifier))))
+                                              (bracket))))))))))))
+                        (statement
+                          (command_quit
+                            keyword: (keyword_quit)))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (parenthetical_expression
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))
+                                      (bracket))))
+                                (expr_tail
+                                  (binary_operator)
+                                  (expression
+                                    (expr_atom
+                                      (string_literal)))))
+                              (bracket)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (parenthetical_expression
+                                  (bracket)
+                                  (expression
+                                    (expr_atom
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expr_tail
+                                      (binary_operator)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))))
+                                  (bracket)))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (parenthetical_expression
+                                  (bracket)
+                                  (expression
+                                    (expr_atom
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))
+                                    (expr_tail
+                                      (binary_operator)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))))
+                                  (bracket))))))
+                        (statement
+                          (command_continue
+                            keyword: (keyword_continue)))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (gvn
+                              (subscripts
+                                (bracket)
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (bracket))))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal)))))
+                        (statement
+                          (command_quit
+                            keyword: (keyword_quit)))))
+                    (line_comment_2)
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal)))))
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (glvn
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expression
+                                (expr_atom
+                                  (numeric_literal))))))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (string_literal)))))
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (glvn
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_function
+                                      (method_args
+                                        (bracket)
+                                        (method_arg
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier)))))
+                                        (bracket)))))))))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (parenthetical_expression
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (unary_expression
+                                    (unary_operator)
+                                    (expression
+                                      (expr_atom
+                                        (parenthetical_expression
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier))))
+                                          (bracket))))))
+                                (expr_tail
+                                  (binary_operator)
+                                  (expression
+                                    (expr_atom
+                                      (parenthetical_expression
+                                        (bracket)
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier)))
+                                          (expr_tail
+                                            (binary_operator)
+                                            (expression
+                                              (expr_atom
+                                                (macro
+                                                  (macro_function
+                                                    (method_args
+                                                      (bracket)
+                                                      (method_arg
+                                                        (expression
+                                                          (expr_atom
+                                                            (lvn
+                                                              (objectscript_identifier)))))
+                                                      (bracket))))))))
+                                        (bracket))))))
+                              (bracket))))
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (glvn
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expression
+                                (expr_atom
+                                  (numeric_literal))))))
+                        (statement
+                          (command_quit
+                            keyword: (keyword_quit)))))
+                    (statement
+                      (command_if
+                        keyword: (keyword_if)
+                        (expression
+                          (expr_atom
+                            (string_literal))
+                          (expr_tail
+                            (binary_operator)
+                            (expression
+                              (expr_atom
+                                (parenthetical_expression
+                                  (bracket)
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))
+                                    (expr_tail
+                                      (binary_operator)
+                                      (expression
+                                        (expr_atom
+                                          (system_defined_function
+                                            (dollar_function
+                                              (expression
+                                                (expr_atom
+                                                  (macro
+                                                    (macro_constant))))
+                                              (expression
+                                                (expr_atom
+                                                  (string_literal))))))))
+                                    (expr_tail
+                                      (binary_operator)
+                                      (expression
+                                        (expr_atom
+                                          (string_literal)))))
+                                  (bracket))))))
+                        (statement
+                          (command_set
+                            keyword: (keyword_set)
+                            (set_argument
+                              (glvn
+                                (lvn
+                                  (objectscript_identifier)))
+                              (expression
+                                (expr_atom
+                                  (numeric_literal))))))
+                        (statement
+                          (command_quit
+                            keyword: (keyword_quit)))))))
+                (statement
+                  (command_set
+                    keyword: (keyword_set)
+                    (set_argument
+                      (glvn
+                        (gvn
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (string_literal)))
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))

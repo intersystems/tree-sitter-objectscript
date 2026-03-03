@@ -1,0 +1,115 @@
+======================
+Valid #import commands
+======================
+#import customers,employees,Sales
+  &sql(SELECT Name,DOB INTO :n,:date FROM Person)
+  WRITE "name: ",n," birthdate: ",date,!
+  WRITE "SQLCODE=",SQLCODE
+  #import Voters
+  #import Bloggers
+  &sql(SELECT Name,DOB INTO :n,:date FROM Sample.Person)
+  WRITE "name: ",n," birthdate: ",date,!
+  WRITE "SQLCODE=",SQLCODE
+---
+
+(source_file
+  (statement
+    (pound_import
+      (keyword_pound_import)
+      (class_name)
+      (class_name)
+      (class_name)))
+  (statement
+    (embedded_sql
+      (embedded_sql_amp
+        (keyword_embedded_sql_amp)
+        (bracket)
+        (paren_fenced_text)
+        (bracket))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))
+      (write_argument
+        (write_device_control
+          (write_device_fflf)))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))))
+  (statement
+    (pound_import
+      (keyword_pound_import)
+      (class_name)))
+  (statement
+    (pound_import
+      (keyword_pound_import)
+      (class_name)))
+  (statement
+    (embedded_sql
+      (embedded_sql_amp
+        (keyword_embedded_sql_amp)
+        (bracket)
+        (paren_fenced_text)
+        (bracket))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))
+      (write_argument
+        (write_device_control
+          (write_device_fflf)))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))))))
