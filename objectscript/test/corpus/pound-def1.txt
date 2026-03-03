@@ -1,0 +1,207 @@
+========================
+Valid def1 statements
+========================
+#def1arg Macro1 22
+#def1arg MarxBros(%MBNames) WRITE "%MBNames:",!,"The Marx Brothers!",!
+#def1arg Macro2 "Wilma"
+#def1arg Macro3 x+y
+#def1arg Macro4 $Length(x)
+#def1arg Macro5 film.Title
+#def1arg Macro6 +$h
+#def1arg Macro7 SET x = 4
+#def1arg Macro7A(%x) SET x = 4+%x
+#def1arg Macro8 DO ##class(%Library.PopulateUtils).Name()
+#def1arg Macro9 READ !,"Name: ",name  WRITE !,"Nice to meet you, ",name,!
+#def1arg Macro1A(%x) 22+%x
+#def1arg Macro2A(%x) "Wilma" _ ": %x"
+#def1arg Macro3A(%x) (x+y)*%x
+#def1arg Macro4A(%x) $Length(x) + $Length(%x)
+#def1arg Macro5A(%x) film.Title _ ": " _ film.%x
+#def1arg Macro6A(%x) +$h - %x
+#def1arg Macro8A(%x) DO ##class(%Library.PopulateUtils).Name(%x)
+#def1arg Macro9A(%x) READ !,"Name: ",name  WRITE !,"%x ",name,!
+#def1arg Macro7 SET x =
+
+---
+
+(source_file
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (pound_def1arg_variable_arg
+        (bracket)
+        (macro_arg)
+        (bracket))
+      (macro_value
+        (macro_value_line))))
+  (statement
+    (pound_def1arg
+      (keyword_pound_def1arg)
+      (objectscript_identifier)
+      (macro_value
+        (macro_value_line)))))
+
+===========================================
+Invalid def1arg (multiple args with commas)
+:error
+===========================================
+#def1arg Macro9B(%x,%y) READ !,"Name: ",name  WRITE !,"%x %y",name,!
+
+---
+
+
+
+==============================================
+Invalid #def1arg macro arg doesn't start with %
+:error
+==============================================
+#def1arg Macro7A(x) SET x = 4+%x
+
+---
+
+

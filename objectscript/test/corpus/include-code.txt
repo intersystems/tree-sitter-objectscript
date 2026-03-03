@@ -1,0 +1,99 @@
+=============
+Include Valid
+=============
+include MyMacros
+
+Class MyPackage.MyClass {
+
+//
+}
+---
+
+(source_file
+  (include_code
+    (keyword_include)
+    (include_clause
+      (class_name)))
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (line_comment_1))))
+
+======================
+Include Multiple Files
+======================
+include (MyMacros, YourMacros) 
+Class barricade {
+
+}
+---
+
+(source_file
+  (include_code
+    (keyword_include)
+    (include_clause
+      (class_name)
+      (class_name)))
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body)))
+
+====
+Import
+====
+Import packages
+
+Class name {}
+---
+
+(source_file
+  (import_code
+    (keyword_import)
+    (include_clause
+      (class_name)))
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body)))
+
+===
+Valid Import,include, includegenerator
+===
+Import packagelist  
+Include includecode  
+IncludeGenerator includegeneratorcode  
+
+/// description 
+Class package.shortclassname Extends superclasslist [ DependsOn = MyApp.Class1 ] 
+{  
+
+}
+---
+
+(source_file
+  (import_code
+    (keyword_import)
+    (include_clause
+      (class_name)))
+  (include_code
+    (keyword_include)
+    (include_clause
+      (class_name)))
+  (include_generator
+    (keyword_includegenerator)
+    (include_clause
+      (class_name)))
+  (documatic_line)
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_keywords
+      (class_keyword
+        (class_keyword_depends_on
+          (rhs))))
+    (class_body)))

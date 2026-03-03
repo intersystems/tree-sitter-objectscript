@@ -1,0 +1,406 @@
+===
+class: minimal AFTER INSERT trigger
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger LogEvent [ Event = INSERT, Time = AFTER ]
+{
+    NEW id
+    SET id = {ID}
+    &sql(INSERT INTO LogTable (TableName, IDValue) VALUES ('MyApp.Person', :id))
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (statement
+              (command_new
+                (keyword_new)
+                (command_new_argument
+                  (command_new_item
+                    (lvn
+                      (objectscript_identifier))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (sql_field_reference
+                        (sql_field_identifier)))))))
+            (statement
+              (embedded_sql
+                (embedded_sql_amp
+                  (keyword_embedded_sql_amp)
+                  (bracket)
+                  (paren_fenced_text)
+                  (bracket))))))))))
+
+===
+class: BEFORE UPDATE trigger
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TBefore [ Event = UPDATE, Time = BEFORE ]
+{
+    SET x = 1
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))
+
+===
+class: multiple events using slash form
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TAllEvents [ Event = INSERT/UPDATE/DELETE, Time = AFTER ]
+{
+    // fires for insert, update, or delete
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+class: statement-level trigger (Foreach=statement)
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TStatement [ Event = DELETE, Foreach = statement, Time = AFTER ]
+{
+    // statement-level trigger body
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_foreach
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+class: unified trigger (Foreach=row/object)
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TUnified [ Event = UPDATE, Foreach = row/object, Time = AFTER ]
+{
+    // unified trigger (SQL + object access)
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_foreach
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+class: transition tables (OldTable/NewTable) with underscores
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TTransitionTables [ Event = UPDATE, OldTable = old_vals_tbl, NewTable = new_vals_tbl, Time = AFTER ]
+{
+    // transition tables allowed
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_oldtable
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_newtable
+                  (rhs)))
+              (trigger_keyword
+                (trigger_keyword_time
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+class: CodeMode objectgenerator
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger TGen [ Event = INSERT, CodeMode = objectgenerator ]
+{
+    // generator implementation here
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (core_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (rhs)))
+              (trigger_keyword
+                (method_keyword_codemode
+                  (rhs))))
+            (line_comment_1)))))))
+
+===
+invalid class: bad Time value
+:error
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger BadTime [ Event = INSERT, Time = DURING ]
+{
+    SET x = 1
+}
+
+}
+---
+
+
+
+===
+invalid class: bad Foreach value
+:error
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger BadForeach [ Event = UPDATE, Foreach = rows ]
+{
+    SET x = 1
+}
+
+}
+---
+
+
+
+===
+invalid class: keyword_list missing comma
+:error
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger MissingComma [ Event = INSERT Time = AFTER ]
+{
+    SET x = 1
+}
+
+}
+---
+
+
+
+===
+invalid class: missing closing brace for trigger body
+:error
+===
+Class MyApp.Person Extends %Persistent
+{
+
+Trigger MissingBrace [ Event = INSERT, Time = AFTER ]
+{
+    SET x = 1
+
+
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (identifier)
+    (class_extends
+      (keyword_extends)
+      (identifier))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (identifier
+            (identifier))
+          (trigger_keywords
+            (trigger_keyword
+              (trigger_keyword_event
+                (identifier)
+                (rhs)))
+            (trigger_keyword
+              (trigger_keyword_time
+                (identifier)
+                (rhs))))
+          (core_trigger_body_content
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (glvn
+                    (lvn
+                      (objectscript_identifier)))
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))))))))))

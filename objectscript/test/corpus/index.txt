@@ -1,0 +1,676 @@
+===
+Valid Index: Unique
+===
+Class test {
+  Index Prop1IDX on Prop1 [ Unique ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_unique))))))))
+
+===
+Valid Index: PrimaryKey
+===
+Class test {
+  Index Prop2IDX on Prop2 [ PrimaryKey ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_primary_key))))))))
+
+===
+Valid Index: IdKey
+===
+Class test {
+  Index Prop3IDX on Prop3 [ IdKey ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_idkey))))))))
+
+===
+Valid Index: IdKey + PrimaryKey
+===
+Class test {
+  Index IDPKIDX on Prop4 [ IdKey, PrimaryKey ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_idkey))
+            (index_keyword
+              (index_keyword_primary_key))))))))
+
+===
+Valid Index: Data = Name
+===
+Class test {
+  Index NameIDX On Name [ Data = Name ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_data
+                (rhs
+                  (identifier))))))))))
+
+===
+Valid Index: Type = bitmap
+===
+Class test {
+  Index RegionIDX On Region [ Type = bitmap ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_type
+                (rhs)))))))))
+
+===
+Valid Index: composite + IdKey + Unique
+===
+Class test {
+  Index IDIdx On (IdField1, IdField2) [ IdKey, Unique ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_idkey))
+            (index_keyword
+              (index_keyword_unique))))))))
+
+===
+Valid Index: Type = key + Unique (BATKey)
+===
+Class test {
+  Index MyBATKey On MyBID [ Type = key, Unique ]; /* BATKey Index */
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_type
+                (rhs)))
+            (index_keyword
+              (index_keyword_unique)))))
+      (block_comment))))
+
+===
+Valid Index: composite 3 cols + Unique (%BID Locator)
+===
+Class test {
+  Index BIDLocIdx On (IdField1, IdField2, MyBID) [ Unique ]; /* %BID Locator Index */
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_unique)))))
+      (block_comment))))
+
+===
+Valid Index: Extent + Type = bitmap (no On clause)
+===
+Class test {
+  Index ExtentIndex [ Extent, Type = bitmap ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (extent_index_keywords
+            (index_keyword_extent)
+            (index_keyword
+              (index_keyword_type
+                (rhs)))))))))
+
+===
+Valid Index: collection properties (KEYS/ELEMENTS)
+===
+Class test {
+  Index EmpIndex On (Employees(KEYS), Employees(ELEMENTS));
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))
+                (bracket)
+                (index_property_type)
+                (bracket)))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))
+                (bracket)
+                (index_property_type)
+                (bracket)))))))))
+
+===
+Valid Index: On clause with As + SQLUPPER/EXACT w/ args
+===
+Class test {
+  Index Index1 On (Property1 As SQLUPPER(77), Property2 AS EXACT);
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))
+              (keyword_as)
+              (index_type
+                (index_type_params
+                  (numeric_literal))))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))
+              (keyword_as)
+              (index_type))))))))
+
+===
+Valid Index: On clause with As + SQLUPPER/EXACT
+===
+Class test {
+  Index Index1 On (F1 As SQLUPPER, F2 As EXACT);
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))
+              (keyword_as)
+              (index_type))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))
+              (keyword_as)
+              (index_type))))))))
+
+===
+Invalid Index Name
+:error
+===
+Class test {
+    index _hi On Name;
+}
+---
+
+
+
+===
+Invalid Index, No property expression
+:error
+===
+Class test {
+    index hi;
+}
+---
+
+
+
+===
+Invalid Index, No property expression  after on
+:error
+===
+Class test {
+    index hi on ;
+}
+---
+
+
+
+===
+Index: CoshardWith keyword (docs-style ShardKey index)
+===
+Class User.Employee
+{
+  /// ShardKey index for Sharded table, auto-generated by DDL CREATE TABLE statement
+  Index ShardKey On DeptNum [ Abstract, CoshardWith = User.Department, ShardKey, SqlName = %ShardKey ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (documatic_line)
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (parameter_keyword_abstract))
+            (index_keyword
+              (index_coshardwith
+                (rhs)))
+            (index_keyword
+              (index_keyword_shardkey))
+            (index_keyword
+              (method_keyword_sql_name
+                (rhs)))))))))
+
+===
+Index: CoshardWith + Unique on multiple properties
+===
+Class Pkg.Test
+{
+  Index Ix2 On (DeptNum, TeamNum) [ Unique, CoshardWith = User.Department ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier))))
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_unique))
+            (index_keyword
+              (index_coshardwith
+                (rhs)))))))))
+
+===
+Index: CoshardWith with % class name and mixed keyword order
+===
+Class Pkg.Test
+{
+  Index Ix3 On DeptNum [ SqlName = %ShardKey, CoshardWith = %SYS.Sample, ShardKey ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (method_keyword_sql_name
+                (rhs)))
+            (index_keyword
+              (index_coshardwith
+                (rhs)))
+            (index_keyword
+              (index_keyword_shardkey))))))))
+
+===
+Index: quoted index name + CoshardWith
+===
+Class Pkg.Test
+{
+  Index "ShardKey" On DeptNum [ CoshardWith = User.Department ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name)
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_coshardwith
+                (rhs)))))))))
+
+===
+Index: case-insensitive CoshardWith spelling
+===
+Class Pkg.Test
+{
+  Index Ix4 On DeptNum [ coshardwith = User.Department ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_coshardwith
+                (rhs)))))))))
+
+===
+INVALID: CoshardWith missing '='
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad1 On DeptNum [ CoshardWith User.Department ];
+}
+---
+
+
+
+===
+INVALID: CoshardWith value is a string literal (grammar expects identifier)
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad2 On DeptNum [ CoshardWith = "User.Department" ];
+}
+---
+
+
+
+===
+INVALID: CoshardWith value wrapped in parentheses
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad3 On DeptNum [ CoshardWith = (User.Department) ];
+}
+---
+
+
+
+===
+INVALID: trailing comma in index keywords list
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad4 On DeptNum [ CoshardWith = User.Department, ];
+}
+---
+
+
+
+===
+INVALID: missing CoshardWith value
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad5 On DeptNum [ CoshardWith = ];
+}
+---
+
+
+
+===
+INVALID: double '='
+:error
+===
+Class Pkg.Bad
+{
+  Index Bad6 On DeptNum [ CoshardWith == User.Department ];
+}
+---
+
+

@@ -1,6 +1,7 @@
 import XCTest
 import SwiftTreeSitter
 import TreeSitterObjectScript
+import TreeSitterObjectScriptUDL
 import TreeSitterObjectScriptExpr
 import TreeSitterObjectScriptCore
 
@@ -11,6 +12,12 @@ final class TreeSitterObjectScriptTests: XCTestCase {
         let language = Language(language: tree_sitter_objectscript())
         XCTAssertNoThrow(try parser.setLanguage(language),
                          "Error loading ObjectScript grammar")
+    }
+    func testCanLoadObjectScriptUdlGrammar() throws {
+        let parser = Parser()
+        let language = Language(language: tree_sitter_objectscript_udl())
+        XCTAssertNoThrow(try parser.setLanguage(language),
+                         "Error loading ObjectScript UDL grammar")
     }
     func testCanLoadObjectScriptCoreGrammar() throws {
         let parser = Parser()

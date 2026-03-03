@@ -1,0 +1,313 @@
+===
+Valid Xecute Statements
+===
+    XECUTE "WRITE ""hello "",!  WRITE ""world"",!"
+    XECUTE "WRITE ""hello "",!"_
+    " WRITE ""world"",!"
+    XECUTE "WRITE ""hello "",!",
+    "WRITE ""world"",!"
+    XECUTE "SET x=""hello "" /* 1st val */ SET y=""world"" /* 2nd val */ "_
+    " WRITE x,! /* part of 1st cmdline */ ",
+    "WRITE y,! /* 2nd cmdline */ "
+    XECUTE ("(in,out) SET out=in+3", x, .y)
+    XECUTE ("(in,out) { SET out=in+3 }", x, .y)
+    XECUTE ("(in,out) [x] { SET out=in+3 }", x, .y)
+    XECUTE ("(pay) SET ^acct1=pay",val):bad,("(pay) SET ^acct2=pay",val):good
+    XECUTE ("(in,out) SET out=in*in*in",x,.y)
+    XECUTE "hi","y"
+    XECUTE "SET A=$SELECT(A>100:B,1:D)"
+    XECUTE patient.Name
+    XECUTE "WRITE patient.Name"
+    XECUTE "DO ^ROUT WRITE !,""DONE"""
+    XECUTE "GOTO ^ROUT WRITE !,""DONE""" WRITE !,"FINISH"
+    XECUTE ("(arg) WRITE ""now var="",arg,!",$GET(var,"<UNDEFINED>")) 
+    X:pc "WRITE ""with command postconditional"",!"
+
+---
+
+(source_file
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal))))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (bracket))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (bracket))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (bracket))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (bracket)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (bracket)
+        (post_conditional
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (byref_arg
+          (lvn
+            (objectscript_identifier)))
+        (bracket))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (oref_chain_expr
+              (lvn
+                (objectscript_identifier))
+              (oref_chain_segment
+                (oref_property
+                  (property_name
+                    (identifier_segment_immediate))))))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (write_device_control
+          (write_device_fflf)))
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (bracket)
+        (expression
+          (expr_atom
+            (string_literal)))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (dollar_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))
+        (bracket))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (post_conditional
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))
+      (xecute_argument
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+Invalid XECUTE Argumentless
+:error
+===
+ XECUTE
+---
+
+
+
+===
+Invalid XECUTE Argumentless
+:error
+===
+ XECUTE ()
+---
+
+
+
+===
+Invalid XECUTE Not Expression
+:error
+===
+ XECUTE WRITE "hello"
+---
+
+
+
+===
+Invalid XECUTE Missing Comma
+:error
+===
+ XECUTE ("(in,out) SET out=in+3" x, .y)
+---
+
+
+
+===
+Invalid XECUTE Missing Parens
+:error
+===
+ XECUTE "(in,out) SET out=in+3", x, .y
+---
+
+

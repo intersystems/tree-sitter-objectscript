@@ -1,0 +1,471 @@
+=====
+XData Blocks- 0: Test parsing different mime types
+=====
+
+Class User.XData
+{
+XData MARKDOWN [ MimeType = "text/markdown" ]
+{
+# This is some markdown
+
+We can write markdown in here using various *formatting* and other
+options:
+1. A list
+2. Code Blocks
+3. Etc.
+
+## Code Block
+
+```json
+{ "key": "value", "pi": 3.14159 }
+```
+}
+
+/// Now XML with a MimeType
+XData XML [ MimeType = "text/xml" ]
+{
+<?xml version="1.0"?>
+<document>
+  <item id="1"/>
+</document>
+}
+
+/// No MimeType, defaults to XML
+XData DEFAULT
+{
+<?xml version="1.0"?>
+
+<root/>
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content))))
+      (documatic_line)
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content))))
+      (documatic_line)
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+XML namespace
+===
+Class test {
+  XData MyXData [ XMLNamespace = "http://www.mynamespace.org" ]
+{
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_xmlnamespace
+                  (rhs))))
+            (external_method_body_content)))))))
+
+===
+SchemaSpec
+===
+Class test {
+  XData MyXData [ SchemaSpec = "http:///www.person.com http://www.MyCompany.com/schemas/person.xsd" ]
+{
+}
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_schemaspec
+                  (rhs))))
+            (external_method_body_content)))))))
+
+===
+Valid xdata
+===
+Class Demo.CoffeeMakerRESTServer Extends %CSP.REST
+ {
+  Parameter HandleCorsRequest = 1;
+
+  XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
+  {
+    <Routes>
+      <Route Url="/test" Method="GET" Call="test"/>
+      <Route Url="/coffeemakers" Method="GET" Call="GetAll" /> 
+      <Route Url="/coffeemaker/:id" Method="GET" Call="GetCoffeeMakerInfo" /> 
+      <Route Url="/newcoffeemaker" Method="POST" Call="NewMaker" /> 
+      <Route Url="/coffeemaker/:id" Method="PUT" Call="EditMaker" /> 
+      <Route Url="/coffeemaker/:id" Method="DELETE" Call="RemoveCoffeemaker"/>
+   </Routes> 
+  }
+ }
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (default_argument_value
+            (numeric_literal))))
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (xdata_keywords
+              (xdata_keyword
+                (xdata_keyword_xmlnamespace
+                  (rhs))))
+            (external_method_body_content)))))))
+
+===
+class: xdata minimal (no keywords, empty payload)
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData EmptyBlock
+{
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+class: xdata with description comment
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+/// This is shown in class reference (description)
+XData WithDescription
+{
+<root/>
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (documatic_line)
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+class: xdata with XML payload (well-formed, single root, no declaration)
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData XmlPayload
+{
+<table>
+  <row>1^Minor</row>
+  <row>2^Moderate</row>
+</table>
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+class: xdata with MimeType keyword (json)
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData JsonPayload [ MimeType = application/json ]
+{
+{
+  "a": 1,
+  "b": [2, 3]
+}
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
+
+===
+class: xdata with multiple keywords (Internal + MimeType)
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData InternalJson [ Internal, MimeType = application/json ]
+{
+{ "ok": true }
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword
+                (parameter_keyword_internal))
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
+
+===
+class: xdata with keyword list omitted (no brackets allowed)
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData NoKeywordList
+{
+some arbitrary text payload
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+class: xdata name as class member name with percent
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData %MyXData99
+{
+<r>ok</r>
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_xml
+            (external_method_body_content)))))))
+
+===
+class: xdata payload containing braces/brackets as plain text
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData BracesInPayload [ MimeType = text/plain ]
+{
+This is not ObjectScript code: { a: [1,2,3] }
+}
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (xdata
+          (keyword_xdata)
+          (xdata_name
+            (identifier))
+          (xdata_any
+            (xdata_keywords
+              (xdata_keyword_mimetype
+                (rhs)))
+            (external_method_body_content)))))))
+
+===
+invalid class: keyword list missing comma
+:error
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData MissingComma [ Internal MimeType = application/json ]
+{
+{ "a": 1 }
+}
+
+}
+---
+
+
+
+===
+invalid class: missing closing brace for XData body
+:error
+===
+Class Demo.XDataTest Extends %RegisteredObject
+{
+
+XData MissingClose
+{
+<r>oops</r>
+
+}
+---
+
+

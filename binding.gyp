@@ -6,12 +6,15 @@
         "<!(node -p \"require('node-addon-api').targets\"):node_addon_api_except",
       ],
       "include_dirs": [
+        "objectscript/src",
         "udl/src",
         "core/src",
         "expr/src"
       ],
       "sources": [
         "bindings/node/binding.cc",
+        "objectscript/src/parser.c",
+        "objectscript/src/scanner.c",
         "udl/src/parser.c",
         "udl/src/scanner.c",
         "core/src/parser.c",

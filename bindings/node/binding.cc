@@ -3,6 +3,7 @@
 typedef struct TSLanguage TSLanguage;
 
 extern "C" TSLanguage *tree_sitter_objectscript();
+extern "C" TSLanguage *tree_sitter_objectscript_udl();
 extern "C" TSLanguage *tree_sitter_objectscript_core();
 extern "C" TSLanguage *tree_sitter_objectscript_expr();
 
@@ -18,6 +19,12 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     objectscript_language.TypeTag(&LANGUAGE_TYPE_TAG);
     objectscript["language"] = objectscript_language;
 
+    auto objectscript_udl = Napi::Object::New(env);
+    objectscript_udl["name"] = Napi::String::New(env, "objectscript_udl");
+    auto objectscript_udl_language = Napi::External<TSLanguage>::New(env, tree_sitter_objectscript_udl());
+    objectscript_udl_language.TypeTag(&LANGUAGE_TYPE_TAG);
+    objectscript_udl["language"] = objectscript_udl_language;
+
     auto objectscript_core = Napi::Object::New(env);
     objectscript_core["name"] = Napi::String::New(env, "objectscript_core");
     auto objectscript_core_language = Napi::External<TSLanguage>::New(env, tree_sitter_objectscript_core());
@@ -31,6 +38,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     objectscript_expr["language"] = objectscript_expr_language;
 
     exports["objectscript"] = objectscript;
+    exports["objectscript_udl"] = objectscript_udl;
     exports["objectscript_core"] = objectscript_core;
     exports["objectscript_expr"] = objectscript_expr;
     return exports;

@@ -10,6 +10,7 @@ class Build(build):
     def run(self):
         copies = [
             ("udl/queries",  join(self.build_lib, "tree_sitter_objectscript",        "queries")),
+            ("udl/queries",  join(self.build_lib, "tree_sitter_objectscript_udl",    "queries")),
             ("core/queries", join(self.build_lib, "tree_sitter_objectscript_core",   "queries")),
             ("expr/queries", join(self.build_lib, "tree_sitter_objectscript_expr",   "queries")),
         ]
@@ -33,6 +34,8 @@ setup(
     package_data={
         "tree_sitter_objectscript": ["*.pyi", "py.typed"],
         "tree_sitter_objectscript.queries": ["*.scm"],
+        "tree_sitter_objectscript_udl": ["*.pyi", "py.typed"],
+        "tree_sitter_objectscript_udl.queries": ["*.scm"],
         "tree_sitter_objectscript_core.queries": ["*.scm"],
         "tree_sitter_objectscript_expr.queries": ["*.scm"],
     },
@@ -41,6 +44,26 @@ setup(
             name="tree_sitter_objectscript._binding",
             sources=[
                 "bindings/python/tree_sitter_objectscript/binding.c",
+                "objectscript/src/parser.c",
+                "objectscript/src/scanner.c",
+            ],
+            extra_compile_args=[
+                "-std=c11",
+            ] if system() != "Windows" else [
+                "/std:c11",
+                "/utf-8",
+            ],
+            define_macros=[
+                ("Py_LIMITED_API", "0x03080000"),
+                ("PY_SSIZE_T_CLEAN", None)
+            ],
+            include_dirs=["objectscript/src", "common"],
+            py_limited_api=True,
+        ),
+        Extension(
+            name="tree_sitter_objectscript_udl._binding",
+            sources=[
+                "bindings/python/tree_sitter_objectscript_udl/binding.c",
                 "udl/src/parser.c",
                 "udl/src/scanner.c",
             ],

@@ -1,0 +1,192 @@
+===
+Multiple Extends
+===
+Class User.MySubclass Extends (%Library.Persistent, %Library.Populate)
+{
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (bracket)
+      (class_name)
+      (class_name)
+      (bracket))
+    (class_body)))
+
+===
+Extends Defined class
+===
+Class MyApp.Employee Extends Person
+{
+Property Salary As %Integer;
+Property Department As %String;
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier))))))))
+
+===
+Extends Persistent
+===
+/// This sample persistent class represents a person.
+Class MyApp.Person Extends %Persistent [ SqlTableName = MyAppPerson ]
+{
+
+/// Define a unique index for the SSN property.
+Index SSNKey On SSN [ Unique ];
+
+/// Name of the person.
+Property Name As %String [ Required ];
+
+/// Person's Social Security number.
+Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
+
+}
+---
+
+(source_file
+  (documatic_line)
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_keywords
+      (class_keyword
+        (class_keyword_sql_table_name
+          (rhs))))
+    (class_body
+      (documatic_line)
+      (class_statement
+        (index
+          (keyword_index)
+          (index_name
+            (identifier))
+          (keyword_on)
+          (index_properties
+            (index_item
+              (index_property
+                (identifier
+                  (identifier)))))
+          (index_keywords
+            (index_keyword
+              (index_keyword_unique)))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required)))))
+      (documatic_line)
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (string_literal))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required))))))))
+
+===
+Parent and Child Tables
+===
+Class Sample.Invoice Extends %Persistent 
+{
+  Property Buyer As %String(MAXLEN=50) [Required];
+  Property InvoiceDate As %TimeStamp;
+  Relationship Pchildren AS Sample.LineItem [ Cardinality = children, Inverse = Cparent ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)
+              (typename_param
+                (identifier)
+                (numeric_literal))))
+          (property_keywords
+            (property_keyword
+              (property_keyword_required)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (relationship
+          (keyword_relationship)
+          (relationship_name
+            (identifier))
+          (keyword_as)
+          (typename
+            (identifier))
+          (relationship_keywords
+            (relationship_keyword
+              (relationship_keyword_cardinality
+                (rhs)))
+            (relationship_keyword
+              (relationship_keyword_inverse
+                (rhs)))))))))

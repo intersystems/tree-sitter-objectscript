@@ -1,0 +1,715 @@
+===================
+For Loop var = expr
+===================
+ FOR alpha(7)=val_"defg" {
+     WRITE alpha(7),!
+ }
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)
+            (subscripts
+              (bracket)
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (bracket))))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal)))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (bracket))))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf))))))))
+
+================================
+For Loop var=start:increment:end
+================================
+ SET string1="123 Primrose Path"
+ SET len=$LENGTH(string1)
+ FOR index=1:1:len-1 {
+    WRITE $EXTRACT(string1,index)
+ }
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (dollar_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))))))
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_extract
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))
+                    (dollar_func_pos
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+============================
+For Loop var=start:increment
+============================
+ FOR i(1)=0:7 {
+ 	QUIT:$LENGTH(i(1))=3
+    WRITE "multiple of 7 = ",i(1),! }
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)
+            (subscripts
+              (bracket)
+              (expression
+                (expr_atom
+                  (numeric_literal)))
+              (bracket))))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (post_conditional
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))
+                            (bracket))))))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (bracket))))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf))))))))
+
+====================================
+For Loop with Multiple forparameters
+====================================
+ FOR i=1:1:10,i:10:100,i:100:1000 {WRITE i,!}
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal))))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal))))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf))))))))
+
+=================
+For Loop with New
+=================
+  SET a=1,b=1,c=8
+  FOR i=a:b:c {
+    WRITE !,"count is ",i
+    NEW a,c
+    WRITE " loop"
+    NEW (i)
+    WRITE " again"
+  }
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal))))
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal))))
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal))))))
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (write_device_control
+              (write_device_fflf)))
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
+      (statement
+        (command_new
+          (keyword_new)
+          (command_new_argument
+            (command_new_item
+              (lvn
+                (objectscript_identifier))))
+          (command_new_argument
+            (command_new_item
+              (lvn
+                (objectscript_identifier))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_new
+          (keyword_new)
+          (command_new_argument
+            (bracket)
+            (command_new_item
+              (lvn
+                (objectscript_identifier)))
+            (bracket))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal)))))))))
+
+=====================
+For Loop Argumentless
+=====================
+ FOR {
+    READ !,"Number: ",num
+    QUIT:num=""
+    DO Calc(num)
+  }
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_read
+          (keyword_read)
+          (read_argument
+            (read_fchar))
+          (read_argument
+            (string_literal))
+          (read_argument
+            (read_variable
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))))
+      (statement
+        (command_do
+          (keyword_do)
+          (do_parameter
+            (routine_tag_call
+              (line_ref
+                (objectscript_identifier))
+              (method_args
+                (bracket)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (bracket)))))))))
+
+===============================
+Old Style For Loop Argumentless
+===============================
+ FOR  READ !,"Number: ",num QUIT:num=""  DO Calc(num)
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_read
+          (keyword_read)
+          (read_argument
+            (read_fchar))
+          (read_argument
+            (string_literal))
+          (read_argument
+            (read_variable
+              (glvn
+                (lvn
+                  (objectscript_identifier)))))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (post_conditional
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (statement
+            (command_do
+              (keyword_do)
+              (do_parameter
+                (routine_tag_call
+                  (line_ref
+                    (objectscript_identifier))
+                  (method_args
+                    (bracket)
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (bracket)))))))))))
+
+==========================================
+Old Style For Loop var=start:increment:end
+==========================================
+ SET len=$LENGTH(string1)
+ FOR index=1:1:len-2 WRITE $EXTRACT(string1,index)
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (dollar_function
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))))))
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_extract
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))
+                    (dollar_func_pos
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
+
+======================================
+Old Style For Loop var=start:increment
+======================================
+ SET sum=0
+ FOR i=0:1 DO Averageloop
+ SET average=sum/i
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal))))))
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_do
+          (keyword_do)
+          (do_parameter
+            (routine_tag_call
+              (line_ref
+                (objectscript_identifier))))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+===========================
+Old Style For Loop var=expr
+===========================
+ SET val=4
+ FOR num=val WRITE num*3 QUIT
+
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (expr_atom
+            (numeric_literal))))))
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))))
+      (statement
+        (command_quit
+          (keyword_quit))))))
+
+=========
+For Alone
+=========
+ For
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for))))
+
+=========================================
+For Block Alone, Block Starts on new line
+=========================================
+ For
+ {}
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for))))
+
+=================================================
+For Block Alone, 1 space and newline before block
+=================================================
+ For
+ {}
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for))))
+
+======================================
+For Block Alone, no space before block
+======================================
+ For{}
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for))))
+
+====================================
+For with parameter, block on newline
+====================================
+ for i=1:1:100
+    {
+    }
+---
+
+(source_file
+  (statement
+    (command_for
+      (keyword_for)
+      (for_parameter
+        (glvn
+          (lvn
+            (objectscript_identifier)))
+        (for_parameter_arg
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))))

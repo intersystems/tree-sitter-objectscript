@@ -1,0 +1,567 @@
+===============================
+Valid Properties and Parameters
+===============================
+Include %occInclude
+Class MyClass Extends %Library.Persistent
+{
+Parameter MYPARAMETER = "ABC" ; 
+
+Property DateOfBirth As %Library.Date; 
+
+Property Home As Sample.Address; 
+Property Prop1 as %Library.String [InitialExpression = "ABC"];
+
+Property Prop2 as %Library.String [InitialExpression = "DEF"];
+
+Method CurrentAge() As %Library.Integer 
+{
+ //details
+}
+
+ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.Integer
+{
+ //details
+}
+
+}
+---
+
+(source_file
+  (include_code
+    (keyword_include)
+    (include_clause
+      (class_name)))
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs))))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (property_keyword_initial_expression
+                (rhs))))))
+      (class_statement
+        (method
+          (keyword_method)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (line_comment_1))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (argument
+                (identifier)
+                (return_type
+                  (keyword_as)
+                  (typename
+                    (identifier))))
+              (argument
+                (identifier)
+                (return_type
+                  (keyword_as)
+                  (typename
+                    (identifier)))))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (line_comment_1)))))))
+
+========================
+Valid Parameter Keywords
+========================
+Class hi {
+    Parameter MYPARAMETER [Abstract] = "ABC" ; 
+    Parameter MYPARAM [ Constraint = "X,Y,Z", Flags = ENUM ] = "X";
+    Parameter MYPARAM [ Deprecated ] = "X";
+    Parameter MYPARAM [ Final ] = "X";
+    Parameter MYPARAM [ Internal ] = "X";
+    Parameter PARAMNAME As COSEXPRESSION = "ObjectScriptExpression";
+    Parameter DateParam As COSEXPRESSION = "$H";
+
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_abstract)))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_constraint
+                (rhs)))
+            (parameter_keyword
+              (parameter_keyword_flags
+                (rhs))))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_deprecated)))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_final)))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_internal)))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))
+          (default_argument_value
+            (string_literal))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))
+          (default_argument_value
+            (string_literal)))))))
+
+========================
+Calling Parameters
+========================
+Class hi {
+    ClassMethod test() {
+        w ##class(Package.Class).#PARMNAME
+        set object.PropName=..#PARMNAME
+         if ..#PARMNAME=1 { 
+        //do something
+        } else { 
+        //do something else
+        }
+        w $PARAMETER(classnameOrOref,parameter)
+
+    }
+
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (class_parameter_ref
+                        (class_ref
+                          (keyword_pound_pound_class)
+                          (bracket)
+                          (class_name)
+                          (bracket))
+                        (parameter_name
+                          (member_name
+                            (identifier_segment_immediate)))))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (oref_set_target
+                    (lvn
+                      (objectscript_identifier))
+                    (oref_chain_segment
+                      (oref_property
+                        (property_name
+                          (identifier_segment_immediate)))))
+                  (expression
+                    (expr_atom
+                      (relative_dot_parameter
+                        (oref_parameter
+                          (parameter_name
+                            (member_name
+                              (identifier_segment_immediate))))))))))
+            (statement
+              (command_if
+                (keyword_if)
+                (expression
+                  (expr_atom
+                    (relative_dot_parameter
+                      (oref_parameter
+                        (parameter_name
+                          (member_name
+                            (identifier_segment_immediate))))))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))
+                (line_comment_1)
+                (else_block
+                  (keyword_else)
+                  (line_comment_1))))
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
+
+========================
+InValid Parameter Keywords Placement
+:error
+========================
+Class hi {
+    Parameter MYPARAMETER  = "ABC" [Abstract]; 
+}
+---
+
+
+
+========================
+InValid Parameter , Has As but no parameter type
+:error
+========================
+Class hi {
+    Parameter MYPARAMETER As  = "ABC" [Abstract]; 
+}
+---
+
+
+
+========================
+InValid Parameter , Has As and keywords but no parameter type
+:error
+========================
+Class hi {
+    Parameter MYPARAMETER As [Abstract] = "ABC"; 
+}
+---
+
+
+
+========================
+InValid Parameter , Has = but no value
+:error
+========================
+Class hi {
+    Parameter MYPARAMETER As [Abstract] = ; 
+}
+---
+
+
+
+========================
+InValid Parameter Keyword
+:error
+========================
+Class hi {
+    Parameter MYPARAMETER [Private]; 
+}
+---
+
+
+
+========================
+InValid Parameter Type
+:error
+========================
+Class hi {
+    Parameter HI AS HELLO; 
+}
+---
+
+
+
+========================
+InValid Parameter Keyword Flags
+:error
+========================
+Class hi {
+    Parameter HI [Flags = PRIVATE]; 
+}
+---
+
+
+
+========================
+InValid Parameter Type Placement
+:error
+========================
+Class hi {
+    Parameter HI [Final] As String; 
+}
+---
+
+
+
+========================
+Valid Parameter Keyword Flags ENUM
+========================
+Class hi {
+    Parameter HI [Flags = ENUM]; 
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_flags
+                (rhs)))))))))
+
+========================
+Valid Parameter Keyword Flags LIST
+========================
+Class hi {
+    Parameter HI [Flags = LIST]; 
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_keywords
+            (parameter_keyword
+              (parameter_keyword_flags
+                (rhs)))))))))
+
+========================
+Valid Parameter Types
+========================
+Class hi {
+    Parameter HI As BOOLEAN; 
+    Parameter HI As CLASSNAME; 
+    Parameter HI As COSCODE; 
+    Parameter HI As COSEXPRESSION; 
+    Parameter HI As COSIDENTIFIER; 
+    Parameter HI As INTEGER; 
+    Parameter HI As SQL; 
+    Parameter HI As SQLIDENTIFIER; 
+    Parameter HI As STRING; 
+    Parameter HI As TEXT; 
+    Parameter HI As CONFIGVALUE; 
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as))))
+      (class_statement
+        (parameter
+          (keyword_parameter)
+          (parameter_name
+            (identifier))
+          (parameter_type
+            (keyword_as)))))))
+
+========================
+InValid Parameter Type List
+:error
+========================
+Class hi {
+    Parameter HI As LIST; 
+}
+---
+
+

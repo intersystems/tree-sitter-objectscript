@@ -123,6 +123,9 @@ struct ObjectScript_Core_Scanner {
   int32_t marker_buffer[MARKER_BUFFER_MAX_LEN];
   int marker_buffer_len;
   bool terminated_newline;
+  // When true, column-1 identifiers are treated as statements unless they
+  // are clearly labels/tags.
+  bool column1_statement_mode;
   int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
   int html_marker_buffer_len;
   int32_t sql_marker_buffer[MARKER_BUFFER_MAX_LEN];
@@ -130,6 +133,93 @@ struct ObjectScript_Core_Scanner {
   int32_t js_marker_buffer_reversed[MARKER_BUFFER_MAX_LEN];
   int js_marker_buffer_reversed_len;
 };
+
+static inline bool is_label_char(int32_t c) {
+  return iswalnum(c) || c == '%';
+}
+
+static inline int32_t ascii_toupper_i32(int32_t c) {
+  if (c >= 'a' && c <= 'z') return c - ('a' - 'A');
+  return c;
+}
+
+static bool ascii_upper_eq(const int32_t *text, uint32_t len, const char *kw) {
+  uint32_t i = 0;
+  for (; kw[i] != 0; i++) {
+    if (i >= len) return false;
+    if (ascii_toupper_i32(text[i]) != (int32_t)kw[i]) return false;
+  }
+  return i == len;
+}
+
+static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
+  // Only ASCII letter-start keywords are relevant here.
+  if (len == 0) return false;
+  int32_t c0 = ascii_toupper_i32(text[0]);
+  if (!(c0 >= 'A' && c0 <= 'Z')) return false;
+
+  // ZZ* commands
+  if (len >= 3 && c0 == 'Z' && ascii_toupper_i32(text[1]) == 'Z') return true;
+
+  // Statement keywords (including short forms accepted by the grammar)
+  if (ascii_upper_eq(text, len, "S") || ascii_upper_eq(text, len, "SET")) return true;
+  if (ascii_upper_eq(text, len, "W") || ascii_upper_eq(text, len, "WRITE")) return true;
+  if (ascii_upper_eq(text, len, "D") || ascii_upper_eq(text, len, "DO")) return true;
+  if (ascii_upper_eq(text, len, "ZW") || ascii_upper_eq(text, len, "ZWRITE")) return true;
+  if (ascii_upper_eq(text, len, "F") || ascii_upper_eq(text, len, "FOR")) return true;
+  if (ascii_upper_eq(text, len, "WHILE")) return true;
+  if (ascii_upper_eq(text, len, "K") || ascii_upper_eq(text, len, "KILL")) return true;
+  if (ascii_upper_eq(text, len, "L") || ascii_upper_eq(text, len, "LOCK")) return true;
+  if (ascii_upper_eq(text, len, "R") || ascii_upper_eq(text, len, "READ") ||
+      ascii_upper_eq(text, len, "RET") || ascii_upper_eq(text, len, "RETURN")) return true;
+  if (ascii_upper_eq(text, len, "O") || ascii_upper_eq(text, len, "OPEN")) return true;
+  if (ascii_upper_eq(text, len, "CLOSE")) return true;
+  if (ascii_upper_eq(text, len, "U") || ascii_upper_eq(text, len, "USE")) return true;
+  if (ascii_upper_eq(text, len, "N") || ascii_upper_eq(text, len, "NEW")) return true;
+  if (ascii_upper_eq(text, len, "I") || ascii_upper_eq(text, len, "IF")) return true;
+  if (ascii_upper_eq(text, len, "E") || ascii_upper_eq(text, len, "ELSE")) return true;
+  if (ascii_upper_eq(text, len, "THROW")) return true;
+  if (ascii_upper_eq(text, len, "TRY")) return true;
+  if (ascii_upper_eq(text, len, "CATCH")) return true;
+  if (ascii_upper_eq(text, len, "J") || ascii_upper_eq(text, len, "JOB")) return true;
+  if (ascii_upper_eq(text, len, "B") || ascii_upper_eq(text, len, "BREAK")) return true;
+  if (ascii_upper_eq(text, len, "M") || ascii_upper_eq(text, len, "MERGE")) return true;
+  if (ascii_upper_eq(text, len, "Q") || ascii_upper_eq(text, len, "QUIT")) return true;
+  if (ascii_upper_eq(text, len, "G") || ascii_upper_eq(text, len, "GOTO")) return true;
+  if (ascii_upper_eq(text, len, "H") || ascii_upper_eq(text, len, "HALT") ||
+      ascii_upper_eq(text, len, "HANG")) return true;
+  if (ascii_upper_eq(text, len, "CONTINUE")) return true;
+  if (ascii_upper_eq(text, len, "TC") || ascii_upper_eq(text, len, "TCOMMIT")) return true;
+  if (ascii_upper_eq(text, len, "TRO") || ascii_upper_eq(text, len, "TROLLBACK")) return true;
+  if (ascii_upper_eq(text, len, "TS") || ascii_upper_eq(text, len, "TSTART")) return true;
+  if (ascii_upper_eq(text, len, "X") || ascii_upper_eq(text, len, "XECUTE")) return true;
+  if (ascii_upper_eq(text, len, "V") || ascii_upper_eq(text, len, "VIEW")) return true;
+  if (ascii_upper_eq(text, len, "ZB") || ascii_upper_eq(text, len, "ZBREAK")) return true;
+  if (ascii_upper_eq(text, len, "ZK") || ascii_upper_eq(text, len, "ZKILL")) return true;
+  if (ascii_upper_eq(text, len, "ZN") || ascii_upper_eq(text, len, "ZNSPACE")) return true;
+  if (ascii_upper_eq(text, len, "ZSU")) return true;
+  if (ascii_upper_eq(text, len, "ZT") || ascii_upper_eq(text, len, "ZTRAP")) return true;
+
+  // Top-level class/objectscript keywords that can start a non-tag statement.
+  if (ascii_upper_eq(text, len, "CLASS")) return true;
+  if (ascii_upper_eq(text, len, "METHOD")) return true;
+  if (ascii_upper_eq(text, len, "CLASSMETHOD")) return true;
+  if (ascii_upper_eq(text, len, "PROPERTY")) return true;
+  if (ascii_upper_eq(text, len, "PARAMETER")) return true;
+  if (ascii_upper_eq(text, len, "RELATIONSHIP")) return true;
+  if (ascii_upper_eq(text, len, "FOREIGNKEY")) return true;
+  if (ascii_upper_eq(text, len, "QUERY")) return true;
+  if (ascii_upper_eq(text, len, "INDEX")) return true;
+  if (ascii_upper_eq(text, len, "TRIGGER")) return true;
+  if (ascii_upper_eq(text, len, "XDATA")) return true;
+  if (ascii_upper_eq(text, len, "PROJECTION")) return true;
+  if (ascii_upper_eq(text, len, "STORAGE")) return true;
+  if (ascii_upper_eq(text, len, "IMPORT")) return true;
+  if (ascii_upper_eq(text, len, "INCLUDE")) return true;
+  if (ascii_upper_eq(text, len, "INCLUDEGENERATOR")) return true;
+
+  return false;
+}
 
 static bool ObjectScript_Core_Scanner_lex_fenced_text(
     TSLexer *lexer,
@@ -656,17 +746,35 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     return false;
   } else if (valid_symbols[TAG] &&
                lexer->get_column(lexer) == 0 &&
-               (iswalnum(lexer->lookahead) || lexer->lookahead == '%')) {
-    if (iswalnum(lexer->lookahead) || lexer->lookahead == '%') {
-      do {
-        advance(lexer);
-      } while (iswalnum(lexer->lookahead) || lexer->lookahead == '%');
+               is_label_char(lexer->lookahead)) {
+    int32_t ident[96];
+    uint32_t len = 0;
+    do {
+      if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
+      advance(lexer);
+    } while (is_label_char(lexer->lookahead));
+
+    if (!scanner->column1_statement_mode) {
       lexer->result_symbol = TAG;
       scanner->terminated_newline = false;
       return true;
-    } else {
-      return false;
     }
+
+    // Rule 1: if there is a tab after the identifier, treat as a definite tag.
+    if (lexer->lookahead == '\t') {
+      lexer->result_symbol = TAG;
+      scanner->terminated_newline = false;
+      return true;
+    }
+
+    // Rule 2/3: in column-1 statement mode, keyword-like names default to
+    // statements/class-statements; non-keywords are tags.
+    if (!is_statement_or_class_keyword(ident, len)) {
+      lexer->result_symbol = TAG;
+      scanner->terminated_newline = false;
+      return true;
+    }
+    return false;
   } else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {
     bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
         lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>'); 
@@ -824,4 +932,5 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->sql_marker_buffer_len = 0;
   scanner->html_marker_buffer_len = 0;
   scanner->terminated_newline = false;
+  scanner->column1_statement_mode = false;
 }

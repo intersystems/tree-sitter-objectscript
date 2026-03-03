@@ -1,0 +1,63 @@
+====
+Valid ifDef Statements
+====
+#define Heads
+
+#ifDef Heads
+  WRITE "The coin landed heads up.",!
+#else
+  WRITE "The coin landed tails up.",!
+#endif
+---
+
+(source_file
+  (statement
+    (pound_define
+      (keyword_pound_define)
+      (objectscript_identifier)))
+  (statement
+    (pound_ifdef
+      (keyword_pound_ifdef)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))
+          (write_argument
+            (write_device_control
+              (write_device_fflf)))))
+      (pound_else
+        (keyword_pound_else)
+        (statements
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (write_argument
+                (write_device_control
+                  (write_device_fflf)))))))
+      (keyword_pound_endif))))
+
+====
+Invalid ifDef Statements (no #endif)
+:error
+====
+#define Heads
+ 
+#ifDef Heads
+  WRITE "The coin landed heads up.",!
+#else
+  WRITE "The coin landed tails up.",!
+
+---
+
+

@@ -1,0 +1,1041 @@
+===
+NoCheck
+===
+Class test {
+    ForeignKey keyname(keyprops) References pkg.class(refindex) [ NoCheck ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_no_check))))))))
+
+===
+Not NoCheck
+===
+Class test {
+    ForeignKey keyname(keyprops) References pkg.class(refindex) [ Not NoCheck ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_no_check
+                (keyword_not)))))))))
+
+===
+OnDelete
+===
+Class test {
+    ForeignKey EmpKey(EmpId) References MyApp.Employee(EmpIDX) [ OnDelete = cascade ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (relationship_keyword_on_delete
+                (rhs)))))))))
+
+===
+foreign key keyword - OnUpdate = noaction (default)
+===
+Class Test.ChildNoAction Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentNoAction(KeyIndex) [ OnUpdate = noaction ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))))))))
+
+===
+foreign key keyword - OnUpdate = cascade
+===
+Class Test.ChildCascade Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentCascade(KeyIndex) [ OnUpdate = cascade ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))))))))
+
+===
+foreign key keyword - OnUpdate = setdefault
+===
+Class Test.ChildSetDefault Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentSetDefault(KeyIndex) [ OnUpdate = setdefault ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))))))))
+
+===
+foreign key keyword - OnUpdate = setnull
+===
+Class Test.ChildSetNull Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentSetNull(KeyIndex) [ OnUpdate = setnull ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))))))))
+
+===
+foreign key keyword - OnUpdate keyword/value case-insensitive
+===
+Class Test.ChildCase Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentCase(KeyIndex) [ oNuPdAtE = CaScAdE ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))))))))
+
+===
+invalid - OnUpdate unknown rhs
+:error
+===
+Class Test.ParentInvalid1 Extends %Persistent
+{
+Property Key As %Integer;
+Index KeyIndex On Key [ Unique ];
+}
+
+Class Test.ChildInvalid1 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentInvalid1(KeyIndex) [ OnUpdate = restrict ];
+}
+---
+
+
+
+===
+invalid - OnUpdate missing equals
+:error
+===
+Class Test.ChildInvalid2 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentInvalid2(KeyIndex) [ OnUpdate cascade ];
+}
+---
+
+
+
+===
+invalid - OnUpdate missing rhs
+:error
+===
+Class Test.ChildInvalid3 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentInvalid3(KeyIndex) [ OnUpdate = ];
+}
+---
+
+
+
+===
+invalid - OnUpdate rhs is quoted
+:error
+===
+Class Test.ChildInvalid4 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentInvalid4(KeyIndex) [ OnUpdate = "cascade" ];
+}
+---
+
+
+
+===
+invalid - OnUpdate without brackets
+:error
+===
+Class Test.ChildInvalid5 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.ParentInvalid5(KeyIndex) OnUpdate = cascade;
+}
+---
+
+
+
+===
+foreign key syntax - minimal (ref_index omitted; uses IDKEY)
+===
+Class Test.FK.Child1 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1 [ ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (foreignkey_keywords))))))
+
+===
+foreign key syntax - with explicit ref_index
+===
+Class Test.FK.Child2 Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.Parent2(KeyIndex) [ ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords))))))
+
+===
+foreign key syntax - composite key_props list
+===
+Class Test.FK.Child3 Extends %Persistent
+{
+Property A As %Integer;
+Property B As %Integer;
+ForeignKey FKAB(A, B) References Test.FK.Parent3(ABIndex) [ ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords))))))
+
+===
+foreign key syntax - description doc comment
+===
+Class Test.FK.Child4 Extends %Persistent
+{
+Property ParentKey As %Integer;
+
+/// Links child to parent
+ForeignKey FK1(ParentKey) References Test.FK.Parent4(KeyIndex) [ ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (documatic_line)
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords))))))
+
+===
+foreign key keyword - Internal
+===
+Class Test.FK.ChildInternal Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentInternal(KeyIndex) [ Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (parameter_keyword_internal))))))))
+
+===
+foreign key keyword - Not Internal
+===
+Class Test.FK.ChildNotInternal Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentNotInternal(KeyIndex) [ Not Internal ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (parameter_keyword_internal
+                (keyword_not)))))))))
+
+===
+foreign key keyword - NoCheck
+===
+Class Test.FK.ChildNoCheck Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentNoCheck(KeyIndex) [ NoCheck ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_no_check))))))))
+
+===
+foreign key keyword - Not NoCheck
+===
+Class Test.FK.ChildNotNoCheck Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentNotNoCheck(KeyIndex) [ Not NoCheck ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (foreignkey_keyword_no_check
+                (keyword_not)))))))))
+
+===
+foreign key keyword - SqlName = alternate_name
+===
+Class Test.FK.ChildSqlName Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentSqlName(KeyIndex) [ SqlName = FK_PARENT ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (method_keyword_sql_name
+                (rhs)))))))))
+
+===
+foreign key keyword - OnDelete = cascade
+===
+Class Test.FK.ChildOnDelete Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentOnDelete(KeyIndex) [ OnDelete = cascade ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (relationship_keyword_on_delete
+                (rhs)))))))))
+
+===
+foreign key keywords - multiple keywords in list
+===
+Class Test.FK.ChildMany Extends %Persistent
+{
+Property ParentKey As %Integer;
+ForeignKey FK1(ParentKey) References Test.FK.ParentMany(KeyIndex)
+  [ SqlName = FK_PARENT, NoCheck, Internal, OnUpdate = noaction, OnDelete = setnull ];
+}
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (property_type
+            (keyword_as)
+            (typename
+              (identifier)))))
+      (class_statement
+        (foreignkey
+          (keyword_foreignkey)
+          (foreignkey_name
+            (identifier))
+          (bracket)
+          (identifier
+            (identifier))
+          (bracket)
+          (keyword_references)
+          (identifier
+            (identifier))
+          (identifier
+            (identifier))
+          (foreignkey_keywords
+            (foreignkey_keyword
+              (method_keyword_sql_name
+                (rhs)))
+            (foreignkey_keyword
+              (foreignkey_keyword_no_check))
+            (foreignkey_keyword
+              (parameter_keyword_internal))
+            (foreignkey_keyword
+              (foreignkey_keyword_on_update
+                (rhs)))
+            (foreignkey_keyword
+              (relationship_keyword_on_delete
+                (rhs)))))))))
+
+===
+invalid - missing ForeignKey name
+:error
+===
+Class Test.FK.Invalid1 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey (ParentID) References Test.FK.Parent1 [ ];
+}
+---
+
+
+
+===
+invalid - missing key_props parentheses
+:error
+===
+Class Test.FK.Invalid2 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1 ParentID References Test.FK.Parent1 [ ];
+}
+---
+
+
+
+===
+invalid - empty key_props
+:error
+===
+Class Test.FK.Invalid3 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1() References Test.FK.Parent1 [ ];
+}
+---
+
+
+
+===
+invalid - missing References clause
+:error
+===
+Class Test.FK.Invalid4 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) Test.FK.Parent1 [ ];
+}
+---
+
+
+
+===
+invalid - missing referenced_class
+:error
+===
+Class Test.FK.Invalid5 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References (IDKEY) [ ];
+}
+---
+
+
+
+===
+invalid - ref_index missing closing paren
+:error
+===
+Class Test.FK.Invalid6 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1(IDKEY [ ];
+}
+---
+
+
+
+===
+invalid - missing semicolon
+:error
+===
+Class Test.FK.Invalid7 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1 [ ]
+}
+---
+
+
+
+===
+invalid - keyword list uses wrong delimiter (should be comma-separated)
+:error
+===
+Class Test.FK.Invalid8 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1 [ NoCheck Internal ];
+}
+---
+
+
+
+===
+invalid - SqlName missing equals
+:error
+===
+Class Test.FK.Invalid9 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1 [ SqlName FK_PARENT ];
+}
+---
+
+
+
+===
+invalid - OnDelete unknown rhs
+:error
+===
+Class Test.FK.Invalid10 Extends %Persistent
+{
+Property ParentID As %Integer;
+ForeignKey FK1(ParentID) References Test.FK.Parent1 [ OnDelete = restrict ];
+}
+---
+
+
