@@ -867,9 +867,8 @@ module.exports = grammar({
             ),
         dollar_classmethod: ($) =>
             seq(
-                token(
-                    seq(/\$(ZOBJ)?CLASSMETHOD/i, token.immediate('(')),
-                ),
+                /\$(ZOBJ)?CLASSMETHOD/i, 
+                alias(token.immediate('('), $.bracket),
                 optional(alias($.expression, $.class_name)),
                 ',',
                 alias($.expression, $.method_name),
@@ -878,14 +877,13 @@ module.exports = grammar({
             ),
         dollar_method: ($) =>
             seq(
-                token(
-                    seq(/\$(ZOBJ)?METHOD/i, token.immediate('(')),
-                ),
+                /\$(ZOBJ)?METHOD/i, 
+                alias(token.immediate('('), $.bracket),
                 optional(alias($.expression, $.class_name)),
                 ',',
                 alias($.expression, $.class_name),
                 repeat(seq(',', $.method_arg)),
-                ')',
+                alias(')', $.bracket),
             ),
         dollar_arg_pair: ($) => seq($.expression, ':', $.expression),
         dollar_func_pos: ($) => choice(
