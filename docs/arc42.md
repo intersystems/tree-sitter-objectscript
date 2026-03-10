@@ -18,7 +18,7 @@
 | 1 | **Correctness** | Parse valid ObjectScript without errors; produce accurate ASTs |
 | 2 | **Performance** | Sub-millisecond incremental parsing for editor responsiveness |
 | 3 | **Completeness** | Cover the full ObjectScript language including UDL class syntax |
-| 4 | **Maintainability** | Modular grammar structure for independent evolution of expr/core/udl |
+| 4 | **Maintainability** | Modular grammar structure for independent evolution of expr/core/objectscript_udl/objectscript |
 | 5 | **Portability** | Language bindings for Rust, Python, Node.js, Go, Swift, C |
 
 ### 1.3 Stakeholders
@@ -55,7 +55,7 @@
 
 | Convention | Description |
 |------------|-------------|
-| Grammar Layering | expr → core → udl inheritance chain |
+| Grammar Layering | expr → core → objectscript_udl → objectscript inheritance chain |
 | Keyword Fields | Keywords attached at usage sites via `field('keyword', ...)` |
 | Query Inheritance | Highlight queries use `;; inherits:` directive for layered application |
 
@@ -99,11 +99,12 @@
 
 ### 4.1 Layered Grammar Architecture
 
-The grammar is split into three layers to enable reuse and independent injection:
+The grammar is split into four layers to enable reuse and independent injection:
 
 1. **expr**: Pure expressions (can be injected into SQL extensions, CSP templates)
 2. **core**: Full routine syntax (lines of ObjectScript code)
-3. **udl**: Class definition syntax (`.cls` files)
+3. **objectscript_udl**: Class definition syntax (`.cls` files)
+4. **objectscript**: Playground grammar for mixed snippets (top-level statements and class members)
 
 Each layer extends the previous using tree-sitter's `grammar()` inheritance mechanism.
 
@@ -134,12 +135,12 @@ Polyglot support is achieved through injection queries that detect:
 ┌────────────────────────────────────────────────────────────────┐
 │                    tree-sitter-objectscript                     │
 ├────────────────────────────────────────────────────────────────┤
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐                   │
-│  │   expr   │◀──│   core   │◀──│   udl    │                   │
-│  │ grammar  │   │ grammar  │   │ grammar  │                   │
-│  └──────────┘   └──────────┘   └──────────┘                   │
-│       │              │              │                          │
-│       └──────────────┴──────────────┘                          │
+│  ┌──────────┐   ┌──────────┐   ┌────────────────┐   ┌──────────┐ │
+│  │   expr   │◀──│   core   │◀──│objectscript_udl│◀──│objectscript│ │
+│  │ grammar  │   │ grammar  │   │    grammar     │   │  grammar  │ │
+│  └──────────┘   └──────────┘   └────────────────┘   └──────────┘ │
+│       │              │                 │                 │         │
+│       └──────────────┴─────────────────┴─────────────────┘         │
 │                      │                                          │
 │              ┌───────┴───────┐                                 │
 │              │    common     │                                 │
@@ -173,7 +174,7 @@ Polyglot support is achieved through injection queries that detect:
 | Preprocessor | Macros/conditionals | `pound_define`, `pound_if`, `pound_include` |
 | Tags | Routine labels | `tag`, `tag_with_params`, `procedure` |
 
-### 5.4 Level 2: udl Grammar Components
+### 5.4 Level 2: objectscript_udl Grammar Components
 
 | Component | Responsibility | Key Rules |
 |-----------|----------------|-----------|
@@ -186,6 +187,14 @@ Polyglot support is achieved through injection queries that detect:
 | XDATA | Data blocks | `xdata`, `xdata_xml`, `xdata_any` |
 | Storage | Storage definitions | `storage`, `storage_body` |
 | Indices | Index definitions | `index`, `index_properties` |
+
+### 5.5 Level 2: objectscript Grammar Components
+
+| Component | Responsibility | Key Rules |
+|-----------|----------------|-----------|
+| Top-level source | Parse mixed snippet/class-member input | `source_file` |
+| Statement/class merge | Allow class statements and routine statements together | `class_statement`, `statement` |
+| Scanner mode | Column-1 tag/statement disambiguation in playground mode | `column1_statement_mode` |
 
 ---
 
@@ -223,7 +232,7 @@ Polyglot support is achieved through injection queries that detect:
 | Editor | Integration Method | Installation |
 |--------|-------------------|--------------|
 | Zed | Zed Extension | Extensions panel → ObjectScript |
-| Neovim | nvim-treesitter | `:TSInstall objectscript` |
+| Neovim | nvim-treesitter | `:TSInstall objectscript_udl` for `.cls`; `:TSInstall objectscript` for playground snippets |
 | Emacs | emacs-objectscript-ts-mode | Package installation from GitHub |
 
 ### 7.2 Build Artifacts
@@ -268,22 +277,23 @@ Highlight queries use the `;; inherits:` directive:
 (locktype) @variable
 ```
 
-This allows layered application: expr highlights → core highlights → udl highlights.
+This allows layered application: expr highlights → core highlights → objectscript_udl highlights → objectscript highlights.
 
 ---
 
 ## 9. Architecture Decisions
 
-### ADR-1: Three-Grammar Layering
+### ADR-1: Four-Grammar Layering
 
 **Context**: ObjectScript expressions, routine code, and class definitions have different use cases.
 
-**Decision**: Split into expr → core → udl with grammar inheritance.
+**Decision**: Split into expr → core → objectscript_udl → objectscript with grammar inheritance.
 
 **Consequences**: 
 - (+) expr can be injected into SQL extensions independently
 - (+) core can be used for routine files without UDL overhead
-- (-) Changes to expr require regenerating core and udl
+- (+) objectscript_udl remains strict for `.cls` while objectscript supports playground snippets
+- (-) Changes to expr require regenerating downstream grammars
 
 ### ADR-2: External Scanner for Whitespace
 
@@ -323,9 +333,9 @@ Quality
 │   └── Full parse < 100ms for typical files
 ├── Maintainability
 │   ├── Modular grammar structure
-│   └── Test coverage (112 corpus files)
+│   └── Test coverage (166 corpus files)
 └── Compatibility
-    ├── tree-sitter 0.24+ support
+    ├── tree-sitter 0.26+ support (Rust crate floor: 0.26.6)
     └── Multi-platform bindings
 ```
 
@@ -335,7 +345,7 @@ Quality
 |----------|----------|----------|---------|
 | Edit in large file | Single character change | Incremental reparse | < 5ms |
 | Open 10KB .cls file | File open event | Full parse complete | < 100ms |
-| Grammar update | Change to expr/grammar.js | Regenerate all grammars | < 30s build |
+| Grammar update | Change to expr/grammar.js | Regenerate downstream grammars | < 30s build |
 | New platform | Add Swift binding | All tests pass | 100% test success |
 
 ---
@@ -368,13 +378,15 @@ Quality
 | **CSP** | Caché Server Pages; HTML template format |
 | **expr** | Expression grammar layer |
 | **core** | Core routine grammar layer |
+| **objectscript** | Playground/sandbox grammar layer |
+| **objectscript_udl** | UDL class-file grammar layer |
 | **gvn** | Global Variable Name (^name) |
 | **IRIS** | InterSystems IRIS Data Platform |
 | **lvn** | Local Variable Name |
 | **ObjectScript** | InterSystems' programming language |
 | **ssvn** | Structured System Variable Name (^$name) |
 | **tree-sitter** | Incremental parsing library |
-| **udl** | Universal Definition Language; class file format |
+| **udl** | Universal Definition Language; class file format (`objectscript_udl`) |
 | **XDATA** | XML Data block in class definitions |
 
 ---
@@ -392,7 +404,7 @@ The following data structures are central to the grammar:
 
 ## Assumptions
 
-- tree-sitter 0.24+ is the target runtime
+- tree-sitter 0.26+ is the target runtime (Rust crate floor is 0.26.6)
 - Editors support tree-sitter's injection query mechanism
 - Users install required injection grammars (SQL, HTML, Python, etc.)
 
@@ -405,8 +417,9 @@ The following data structures are central to the grammar:
 
 - `expr/grammar.js:1-700` — Expression grammar rules
 - `core/grammar.js:1-1200` — Core grammar rules
-- `udl/grammar.js:1-400` — UDL grammar rules
+- `udl/grammar.js:1-400` — objectscript_udl grammar rules
+- `objectscript/grammar.js:1-120` — objectscript playground grammar rules
 - `common/scanner.h` — External scanner implementation
 - `tree-sitter.json:1-80` — Grammar configuration
 - `README.md:1-200` — Project documentation and usage
-- `*/test/corpus/*.txt` — 112 test corpus files
+- `*/test/corpus/*.txt` — 166 test corpus files

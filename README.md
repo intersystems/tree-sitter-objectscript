@@ -111,15 +111,13 @@ Contributions are welcome. Please submit changes via Pull Requests. Our preferen
 
 There are four main grammars in this repository:
 
-- **objectscript**: Playground grammar that extends `udl` and allows mixed top-level ObjectScript snippets.
-- **udl**: Grammar for `.cls` files (`objectscript_udl`) used for class definitions.
-- **core**: Core ObjectScript routine syntax (lines/statements).
-- **expr**: ObjectScript expressions.
+- **objectscript**: Playground grammar that extends `objectscript_udl` and allows mixed top-level ObjectScript snippets.
+- **objectscript_udl**: Grammar for `.cls` files used for class definitions (extends `objectscript_core`).
+- **objectscript_core**: Core ObjectScript routine syntax (lines/statements).
+- **objectscript_expr**: ObjectScript expressions.
 
 Extension chain:
-`objectscript` -> `udl` -> `core` -> `expr`
-
-Detailed notes for the playground introduction commit are available in [docs/objectscript-playground-commit-notes.md](docs/objectscript-playground-commit-notes.md).
+`objectscript` -> `objectscript_udl` -> `objectscript_core` -> `objectscript_expr`
 
 The reason behind the multiple grammar architecture is that there are cases where we need to inject ObjectScript
 expressions as well as lines of ObjectScript into other grammars (see future work below).  Although it adds a little bit of complexity, it does promote reuse, for example a IRIS specific dialect of SQL could extend the stock SQL grammar and use tree-sitter injections to handle the ObjectScript extensions.
@@ -170,7 +168,7 @@ This will start up a web browser running the playground with the .wasm built fro
 3. Update or add cases in `test/corpus` as needed.
 4. Repeat until all tests pass.
 
-**NOTE**: Since `objectscript` extends `udl` which extends `core` which extends `expr`, if you make changes to an upstream grammar, regenerate/rebuild the downstream one(s).
+**NOTE**: Since `objectscript` extends `objectscript_udl`, which extends `objectscript_core`, which extends `objectscript_expr`, if you make changes to an upstream grammar, regenerate/rebuild the downstream one(s).
 
 ## License
 
@@ -187,7 +185,9 @@ The binding tests verify that you can create a parser with your grammar.
 From the root directory, run `cargo build` and then `cargo test`.
 
 ### Python 
-From the root directory, run `python -m pip install -e .` and then `python -m pytest -q bindings/python/tests/test_binding.py`
+From the root directory, create/activate a virtual environment and run:
+`python3 -m pip install -e .`
+`python3 -m pytest -q bindings/python/tests/test_binding.py`
 
 ### Swift
 From the root directory, run `swift test`. Make sure you have `Xcode` downloaded from the App Store, and before running swift test, run `sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`

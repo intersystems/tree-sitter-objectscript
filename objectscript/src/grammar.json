@@ -3864,24 +3864,21 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "TOKEN",
+          "type": "PATTERN",
+          "value": "\\$(ZOBJ)?CLASSMETHOD",
+          "flags": "i"
+        },
+        {
+          "type": "ALIAS",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$(ZOBJ)?CLASSMETHOD",
-                "flags": "i"
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
-          }
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "("
+            }
+          },
+          "named": true,
+          "value": "bracket"
         },
         {
           "type": "CHOICE",
@@ -3939,24 +3936,21 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "TOKEN",
+          "type": "PATTERN",
+          "value": "\\$(ZOBJ)?METHOD",
+          "flags": "i"
+        },
+        {
+          "type": "ALIAS",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$(ZOBJ)?METHOD",
-                "flags": "i"
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
-          }
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "("
+            }
+          },
+          "named": true,
+          "value": "bracket"
         },
         {
           "type": "CHOICE",
@@ -4005,8 +3999,13 @@
           }
         },
         {
-          "type": "STRING",
-          "value": ")"
+          "type": "ALIAS",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          },
+          "named": true,
+          "value": "bracket"
         }
       ]
     },
@@ -6506,16 +6505,31 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "dollar_classmethod"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "dollar_classmethod"
+          },
+          "named": true,
+          "value": "system_defined_function"
         },
         {
-          "type": "SYMBOL",
-          "name": "dollar_method"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "dollar_method"
+          },
+          "named": true,
+          "value": "system_defined_function"
         },
         {
-          "type": "SYMBOL",
-          "name": "dollarsf"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "dollarsf"
+          },
+          "named": true,
+          "value": "system_defined_function"
         },
         {
           "type": "ALIAS",

@@ -8,7 +8,7 @@
 | **Authors** | Dave McCaldon, Hannah Kimura |
 | **Status** | Implemented |
 | **Created** | 2023 |
-| **Updated** | 2025 |
+| **Updated** | 2026 |
 
 ---
 
@@ -64,12 +64,15 @@ There was no accurate, performant, incrementally-updatable parser for ObjectScri
 
 ### High-Level Design
 
-Implement a **three-layer grammar architecture** using tree-sitter:
+Implement a **four-layer grammar architecture** using tree-sitter:
 
 ```
 ┌─────────────────────────────────────┐
-│            udl Grammar              │  ← .cls class files
-│  (extends core, adds UDL syntax)    │
+│         objectscript Grammar         │  ← Playground/snippet parsing
+│ (extends objectscript_udl, mixed src)│
+├─────────────────────────────────────┤
+│      objectscript_udl Grammar       │  ← .cls class files
+│      (extends core, adds UDL)       │
 ├─────────────────────────────────────┤
 │           core Grammar              │  ← Routine files, statements
 │   (extends expr, adds commands)     │
@@ -79,7 +82,7 @@ Implement a **three-layer grammar architecture** using tree-sitter:
 └─────────────────────────────────────┘
 ```
 
-Each layer is a complete, standalone tree-sitter grammar that can be used independently or composed.
+Each layer is a complete tree-sitter grammar. `objectscript` is the playground profile, while `objectscript_udl` remains the class-file profile.
 
 ### Detailed Design
 
@@ -131,7 +134,7 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 
 **Evidence**: `core/grammar.js:30-80` defines command builder functions.
 
-#### 3. UDL Grammar (udl)
+#### 3. UDL Grammar (objectscript_udl)
 
 **Scope**: ObjectScript class definitions in `.cls` files.
 
@@ -152,12 +155,31 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 **Design decisions**:
 
 - **Method body variants**: `_core_method` (ObjectScript), `_expression_method` (single expression), `_external_method` (Python/SQL), `_call_method` (routine call)
-- **Keyword definitions** factored into `keywords.js` for maintainability
+- **Keyword definitions** factored into `common/keywords.js` for maintainability
 - **External scanner extension** for IRIS username and external method body content
 
 **Evidence**: `udl/grammar.js:50-150` defines class structure rules.
 
-#### 4. Shared Components (common)
+#### 4. Playground Grammar (objectscript)
+
+**Scope**: Mixed/top-level snippet parsing for terminal/agent output and incomplete code fragments.
+
+**Key constructs**:
+
+| Category | Constructs |
+|----------|------------|
+| Top-level source | `source_file` accepts `class_definition`, `class_statement`, and `statement` |
+| Scanner behavior | `column1_statement_mode = true` for tag/statement disambiguation |
+| Inheritance | Extends `objectscript_udl` without duplicating full class/routine rules |
+
+**Design decisions**:
+
+- Preserve strict `.cls` parsing in `objectscript_udl`, but permit mixed snippets in `objectscript`
+- Reuse shared scanner with mode flag instead of duplicating scanner logic
+
+**Evidence**: `objectscript/grammar.js:1-80` and `common/scanner.h` scanner mode handling.
+
+#### 5. Shared Components (common)
 
 | Component | Purpose |
 |-----------|---------|
@@ -167,7 +189,7 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 
 **Evidence**: `common/identifiers.js:1-15` defines identifier patterns.
 
-#### 5. Query Files
+#### 6. Query Files
 
 | Query | Purpose |
 |-------|---------|
@@ -180,8 +202,9 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 - **Inheritance via comments**: `;; inherits: objectscript_expr`
 - **Zed-compatible capture names**: `@keyword`, `@variable`, `@function`, `@type`, etc.
 - **MimeType-based injection**: XDATA blocks use MimeType attribute to select injected language
+- **Shared UDL/playground query sources**: `objectscript` and `objectscript_udl` both consume the same `expr/core/udl` query files from `tree-sitter.json`
 
-**Evidence**: `udl/queries/injections.scm:1-100` defines XDATA injection rules.
+**Evidence**: `udl/queries/injections.scm:1-100` defines XDATA injection rules; `tree-sitter.json:1-80` defines shared query mappings.
 
 ---
 
@@ -210,7 +233,7 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 **Approach**: No query inheritance; duplicate rules in each grammar's highlights.scm.
 
 **Rejected because**:
-- Maintenance burden: changes need three updates
+- Maintenance burden: changes need updates across multiple layers
 - Inconsistency risk between layers
 - tree-sitter's inheritance mechanism already solves this
 
@@ -222,7 +245,7 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 
 | Benefit | Cost |
 |---------|------|
-| Reusable expr grammar for SQL dialects | Build complexity (three grammars) |
+| Reusable expr grammar for SQL dialects | Build complexity (four grammars) |
 | Independent testing of each layer | Regeneration cascade on base changes |
 | Clear separation of concerns | Learning curve for contributors |
 
@@ -266,9 +289,16 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 - [x] Add class, method, property, parameter rules
 - [x] Add query, trigger, XDATA, storage rules
 - [x] Create udl/queries/highlights.scm and injections.scm
-- [x] Factor keywords into keywords.js
+- [x] Factor keywords into common/keywords.js
 
-### Phase 4: Language Bindings ✅
+### Phase 4: Playground Grammar ✅
+
+- [x] Implement `objectscript` grammar extending `objectscript_udl`
+- [x] Enable top-level mixed source parsing for snippets
+- [x] Add scanner mode flag (`column1_statement_mode`) and playground scanner wiring
+- [x] Add full `objectscript/test/corpus` suite
+
+### Phase 5: Language Bindings ✅
 
 - [x] Rust binding (Cargo crate)
 - [x] Python binding (pip wheel)
@@ -276,14 +306,16 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 - [x] Go binding (Go module)
 - [x] Swift binding (Swift package)
 - [x] C binding (headers and library)
+- [x] Expose both `objectscript` (playground) and `objectscript_udl` language entry points across bindings
+- [x] Rust constants align to new naming (`LANGUAGE_OBJECTSCRIPT_PLAYGROUND`, `LANGUAGE_OBJECTSCRIPT_UDL`)
 
-### Phase 5: Editor Integrations ✅
+### Phase 6: Editor Integrations ✅
 
 - [x] Zed extension (published)
 - [x] nvim-treesitter integration
 - [x] Emacs major mode
 
-### Phase 6: Ongoing Maintenance
+### Phase 7: Ongoing Maintenance
 
 - [ ] CSP template grammar (future)
 - [ ] IRIS language evolution tracking
@@ -297,7 +329,7 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 
 | Level | Method | Coverage |
 |-------|--------|----------|
-| Unit | tree-sitter corpus tests | 112 test files across expr/core/udl |
+| Unit | tree-sitter corpus tests | corpus coverage across expr/core/objectscript_udl/objectscript |
 | Integration | Binding tests | Rust, Python, Node, Go, Swift, C |
 | E2E | Editor manual testing | Zed, Neovim, Emacs |
 
@@ -305,13 +337,14 @@ Each layer is a complete, standalone tree-sitter grammar that can be used indepe
 
 ```bash
 # Grammar tests
+cd objectscript && tree-sitter test
 cd expr && tree-sitter test
 cd core && tree-sitter test
 cd udl && tree-sitter test
 
 # Binding tests
 cargo test                                    # Rust
-python -m pytest bindings/python/tests/       # Python
+python3 -m pytest bindings/python/tests/      # Python (in venv)
 npm test                                       # Node
 go test ./bindings/go/...                      # Go
 swift test                                     # Swift
@@ -323,14 +356,15 @@ make test                                      # C
 - [x] All corpus tests pass
 - [x] All binding tests pass
 - [x] Zed extension published and installable
-- [x] nvim-treesitter `:TSInstall objectscript` works
+- [x] nvim-treesitter `:TSInstall objectscript_udl` for `.cls` works
+- [x] nvim-treesitter `:TSInstall objectscript` for playground snippets works
 - [x] Emacs major mode loads without errors
 
 ---
 
 ## Assumptions
 
-1. **tree-sitter 0.24+** is the target runtime version
+1. **tree-sitter 0.26+** is the target runtime version (Rust crate floor: 0.26.6)
 2. **Editors support** tree-sitter's injection query mechanism
 3. **Users will install** required injection grammars (SQL, HTML, Python, etc.)
 4. **ObjectScript syntax** remains stable in future IRIS releases
@@ -338,7 +372,7 @@ make test                                      # C
 
 ## Open Questions
 
-1. **CSP support**: Should a fourth grammar extend HTML with ObjectScript injection?
+1. **CSP support**: Should a fifth grammar extend HTML with ObjectScript injection?
 2. **Standalone expr**: Should expr be published independently for SQL dialect authors?
 3. **Version alignment**: How to coordinate grammar versions with IRIS releases?
 4. **LSP integration**: Should this project include LSP server hooks?
@@ -347,10 +381,11 @@ make test                                      # C
 
 - `expr/grammar.js:1-700` — Expression grammar implementation
 - `core/grammar.js:1-1200` — Core grammar implementation
-- `udl/grammar.js:1-400` — UDL grammar implementation
+- `udl/grammar.js:1-400` — objectscript_udl grammar implementation
+- `objectscript/grammar.js:1-120` — objectscript playground grammar implementation
 - `common/scanner.h` — External scanner C implementation
-- `udl/keywords.js:1-500` — UDL keyword definitions
+- `common/keywords.js:1-500` — shared keyword definitions
 - `tree-sitter.json:1-80` — Multi-grammar configuration
 - `README.md:1-200` — Project documentation
-- `*/test/corpus/*.txt` — 112 test corpus files
+- `*/test/corpus/*.txt` — 166 test corpus files
 - `bindings/*/` — Language binding implementations

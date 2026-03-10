@@ -570,9 +570,9 @@ module.exports = grammar(objectscript_expr, {
 
     doable_dollar_functions: ($) =>
       choice(
-        $.dollar_classmethod,
-        $.dollar_method,
-        $.dollarsf,
+        alias($.dollar_classmethod, $.system_defined_function),
+        alias($.dollar_method,$.system_defined_function),
+        alias($.dollarsf, $.system_defined_function),
         alias(
           seq(
           choice(
