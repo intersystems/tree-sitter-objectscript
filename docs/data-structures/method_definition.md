@@ -226,7 +226,7 @@ Work^MyRoutine
 
 | Operation | Location | Notes |
 |-----------|----------|-------|
-| Add method keyword | `udl/keywords.js` | Add to `method_keywords` rule |
+| Add method keyword | `common/keywords.js` | Add to `method_keywords` rule |
 | Add body variant | `udl/grammar.js:173-179` | Add to `choice()` |
 | Modify argument syntax | `udl/grammar.js:217-230` | Update `argument` rule |
 
@@ -268,5 +268,5 @@ External methods trigger language injection:
 
 - `udl/grammar.js:173-211` — Method definition and body variants
 - `udl/grammar.js:217-230` — Arguments structure
-- `udl/keywords.js` — Method keyword definitions
+- `common/keywords.js` — Method keyword definitions
 - `udl/queries/injections.scm:1-35` — Method body injections

@@ -14,16 +14,3 @@ test('can load ObjectScript UDL grammar', () => {
   assert.doesNotThrow(() => parser.setLanguage(require('./objectscript_udl')));
 });
 
-test('can load ObjectScript Core grammar', () => {
-  
-  const parser = new Parser();
-  assert.doesNotThrow(() => parser.setLanguage(require('./objectscript_core')));
-});
-
-test('can load ObjectScript Expr grammar', () => {
-  
-  const parser = new Parser();
-  assert.doesNotThrow(() => parser.setLanguage(require('./objectscript_expr')));
-});
-
-

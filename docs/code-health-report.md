@@ -50,7 +50,7 @@
 - `expr/grammar.js:14-17`
 - `core/grammar.js:17-20` (imported from utils)
 - `udl/grammar.js:19-22`
-- `udl/keywords.js:14-17`
+- `common/keywords.js:15-17`
 
 **Evidence**:
 ```javascript
@@ -88,9 +88,9 @@ const repeat_with_commas = function (rule) {
 
 ---
 
-#### M3: Large File Size - `udl/keywords.js`
+#### M3: Large File Size - `common/keywords.js`
 
-**Location**: `udl/keywords.js` (948 lines)
+**Location**: `common/keywords.js` (947 lines)
 
 **Evidence**: All keyword definitions in single file.
 
@@ -112,14 +112,14 @@ const repeat_with_commas = function (rule) {
 
 **Evidence**:
 ```javascript
-// Found in: expr/grammar.js, core/grammar.js, udl/grammar.js, udl/keywords.js, common/grammar.js
+// Found in: expr/grammar.js, core/grammar.js, udl/grammar.js, common/keywords.js
 /* eslint-disable indent */
 /* eslint-disable camelcase */
 ```
 
 **Impact**: Inconsistent code style; potential for style drift.
 
-**Suggested Fix**: Configure ESLint to allow tree-sitter DSL patterns instead of disabling rules entirely. Create `.eslintrc` with grammar-specific overrides.
+**Suggested Fix**: Configure ESLint to allow tree-sitter DSL patterns instead of disabling rules entirely. Keep flat config in `eslint.config.mjs` with grammar-specific overrides.
 
 **Validation**: Run `npm run lint` after configuration.
 
@@ -188,7 +188,7 @@ open_keywords: ($) =>
 
 #### L3: Missing Type Annotations in Some Functions
 
-**Location**: `core/utils.js:53-56`, `common/grammar.js`
+**Location**: `core/utils.js:53-56`, `common/define_grammar.js`
 
 **Evidence**: Some helper functions lack JSDoc type annotations.
 
@@ -203,7 +203,7 @@ open_keywords: ($) =>
 | Location | Comment | Action |
 |----------|---------|--------|
 | `core/grammar.js:420-423` | TODO for unimplemented directives | Keep - still valid |
-| `udl/keywords.js:3` | "NOTE: A file somewhat resembling this can be regenerated" | Update or remove if script no longer exists |
+| `common/keywords.js:3` | "NOTE: A file somewhat resembling this can be regenerated" | Update or remove if script no longer exists |
 
 ---
 
@@ -299,12 +299,12 @@ open_keywords: ($) =>
 
 1. Are the unimplemented preprocessor directives used in real codebases?
 2. Should large files be split, or is single-file navigation preferred?
-3. Is there a script to regenerate `udl/keywords.js` as the comment suggests?
+3. Is there a script to regenerate `common/keywords.js` as the comment suggests?
 
 ## Evidence
 
 - `core/grammar.js:420-423` — TODO for unimplemented directives
-- `expr/grammar.js:14-17`, `udl/keywords.js:14-17` — Duplicated utility functions
+- `expr/grammar.js:14-17`, `common/keywords.js:15-17` — Duplicated utility functions
 - `core/grammar.js:839` — Duplicate `open_keyword_translate`
 - `core/utils.js:53-56` — Hardcoded exclusion list
 - File line counts from `wc -l` command

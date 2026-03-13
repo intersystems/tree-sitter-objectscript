@@ -162,6 +162,8 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (len >= 3 && c0 == 'Z' && ascii_toupper_i32(text[1]) == 'Z') return true;
 
   // Statement keywords (including short forms accepted by the grammar)
+  if (ascii_upper_eq(text, len, "P") || ascii_upper_eq(text, len, "PRINT")) return true;
+  if (ascii_upper_eq(text, len, "ZP") || ascii_upper_eq(text, len, "ZPRINT")) return true;
   if (ascii_upper_eq(text, len, "S") || ascii_upper_eq(text, len, "SET")) return true;
   if (ascii_upper_eq(text, len, "W") || ascii_upper_eq(text, len, "WRITE")) return true;
   if (ascii_upper_eq(text, len, "D") || ascii_upper_eq(text, len, "DO")) return true;

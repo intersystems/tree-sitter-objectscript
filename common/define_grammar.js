@@ -1,6 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable camelcase */
-/* eslint-disable-next-line spaced-comment */
 /// <reference types="tree-sitter-cli/dsl" />
 
 /**
@@ -9,7 +6,7 @@
  *
  * @param {GrammarSchema<string>} baseGrammar base grammar schema to extend from
  * @param {Grammar<string, string>} options grammar options for the new extended language
- * @return {GrammarSchema<RuleName>}
+ * @returns {GrammarSchema<RuleName>}
  */
 function define_grammar(baseGrammar, options) {
   if (baseGrammar.grammar.name == options.name) {

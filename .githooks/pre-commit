@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+should_sync=0
+if git diff --cached --name-only --diff-filter=ACMR | grep -Eq '^(expr|core|udl)/queries/.*\.scm$|^bindings/python/.*/queries/.*\.scm$|^scripts/sync_queries\.py$'; then
+  should_sync=1
+fi
+
+if [ "$should_sync" -ne 1 ]; then
+  exit 0
+fi
+
+python3 scripts/sync_queries.py
+
+git add -- \
+  expr/queries \
+  core/queries \
+  udl/queries \
+  bindings/python/tree_sitter_objectscript/queries \
+  bindings/python/tree_sitter_objectscript_core/queries \
+  bindings/python/tree_sitter_objectscript_udl/queries \
+  bindings/python/tree_sitter_objectscript_expr/queries

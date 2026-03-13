@@ -185,7 +185,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 |-----------|---------|
 | `identifiers.js` | Regex patterns for ObjectScript identifiers |
 | `scanner.h` | C external scanner for whitespace, comments, markers |
-| `grammar.js` | `define_grammar()` helper for grammar extension |
+| `define_grammar.js` | `define_grammar()` helper for grammar extension |
 
 **Evidence**: `common/identifiers.js:1-15` defines identifier patterns.
 
@@ -317,6 +317,10 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 ### Phase 7: Ongoing Maintenance
 
+- [x] Add repository-managed pre-commit hook for query synchronization
+- [x] Add CI workflow to verify Python query copies match source query trees
+- [x] Switch JavaScript lint installs to deterministic `npm ci` using committed `package-lock.json`
+- [x] Migrate ESLint configuration to flat config (`eslint.config.mjs`)
 - [ ] CSP template grammar (future)
 - [ ] IRIS language evolution tracking
 - [ ] Community contribution support
@@ -346,9 +350,14 @@ cd udl && tree-sitter test
 cargo test                                    # Rust
 python3 -m pytest bindings/python/tests/      # Python (in venv)
 npm test                                       # Node
+npm run lint                                   # JavaScript lint
 go test ./bindings/go/...                      # Go
 swift test                                     # Swift
 make test                                      # C
+
+# Query synchronization and verification
+make installhooks                              # Install repo pre-commit hook
+python3 scripts/sync_queries.py --check-python # Verify Python query copies
 ```
 
 ### Success Criteria
@@ -385,7 +394,13 @@ make test                                      # C
 - `objectscript/grammar.js:1-120` — objectscript playground grammar implementation
 - `common/scanner.h` — External scanner C implementation
 - `common/keywords.js:1-500` — shared keyword definitions
+- `common/define_grammar.js:1-120` — shared grammar extension helper
 - `tree-sitter.json:1-80` — Multi-grammar configuration
+- `.githooks/pre-commit` — local query synchronization hook
+- `.github/workflows/sync-queries.yml` — CI verification for Python query parity
+- `.github/workflows/lint.yml` — deterministic `npm ci` lint workflow
+- `eslint.config.mjs` — ESLint flat configuration
+- `package-lock.json` — lockfile for deterministic npm dependency resolution
 - `README.md:1-200` — Project documentation
-- `*/test/corpus/*.txt` — 166 test corpus files
+- `*/test/corpus/*.txt` — 186 test corpus files
 - `bindings/*/` — Language binding implementations

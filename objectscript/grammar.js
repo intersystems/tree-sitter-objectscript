@@ -7,15 +7,11 @@
  *
  */
 
-/* eslint-disable indent */
-/* eslint-disable camelcase */
-/* eslint-disable-next-line spaced-comment */
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 const objectscript_udl = require('../udl/grammar');
-const define_grammar = require('../common/grammar');
+const define_grammar = require('../common/define_grammar');
 
-// @ts-ignore
 module.exports = define_grammar(objectscript_udl, {
   name: 'objectscript',
   rules: {

@@ -1,0 +1,39 @@
+[package]
+name = "tree-sitter-objectscript-playground"
+description = "ObjectScript playground grammar for tree-sitter"
+version = "1.5.0"
+keywords = ["incremental", "parsing", "objectscript"]
+categories = ["parsing", "text-editors"]
+repository = "https://github.com/intersystems/tree-sitter-objectscript"
+edition = "2021"
+license = "MIT"
+authors = [
+  "Dave McCaldon <davem@intersystems.com>",
+  "Hannah Kimura <hkimura@intersystems.com>",
+]
+build = "build.rs"
+include = [
+  "/LICENSE",
+  "/cargo_readme_playground.md",
+  "/build.rs",
+  "/lib.rs",
+  "/common/scanner.h",
+  "/objectscript/src/parser.c",
+  "/objectscript/src/scanner.c",
+  "/objectscript/src/node-types.json",
+  "/objectscript/src/tree_sitter/parser.h",
+  "/udl/queries/highlights.scm",
+  "/udl/queries/indents.scm",
+  "/udl/queries/injections.scm",
+]
+readme = "cargo_readme_playground.md"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+tree-sitter = ">=0.26.6"
+tree-sitter-language = "0.1"
+
+[build-dependencies]
+cc = "1.0"

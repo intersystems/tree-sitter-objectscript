@@ -211,7 +211,7 @@ Method Process() As %Status [ Private, Final ] {
 - `method_keywords` containing `property_keyword_private`, `parameter_keyword_final`
 - `_core_method` body with `statement` children
 
-**Evidence**: `udl/keywords.js:99-130` (method_keyword rule)
+**Evidence**: `common/keywords.js:111-140` (method_keyword rule)
 
 ---
 

@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+      - master
+      - workflow_and_bindings
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test:
+    name: Test parser
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Run tests
+        uses: tree-sitter/parser-test-action@v3
+        with:
+          test-rust: true
+          test-node: true
+          node-version: "22"
+          test-python: true
+          test-go: true
+          test-swift: true
+          test-parser-cmd: cd objectscript && tree-sitter test && cd ../udl && tree-sitter test && cd ../core && tree-sitter test && cd ../expr && tree-sitter test && cd ..
+          
+
+  query:
+    name: Validate queries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up repository
+        uses: actions/checkout@v6
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Set up ts_query_ls
+        run: curl -fL https://github.com/ribru17/ts_query_ls/releases/latest/download/ts_query_ls-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+      - name: Check queries
+        run: make checkquery
+
+  examples:
+    name: Parse examples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Parse .cls examples with UDL parser
+        shell: bash
+        run: |-
+          set -euo pipefail
+
+          repo_root="$(pwd)"
+          found=0
+          while IFS= read -r -d '' file; do
+            found=1
+            echo "Parsing $file with parser udl"
+            (
+              cd udl
+              tree-sitter parse --quiet "$repo_root/$file"
+            )
+          done < <(find examples -type f -name '*.cls' -print0)
+
+          if [ "$found" -eq 0 ]; then
+            echo "No .cls examples found under examples/"
+          fi
+  

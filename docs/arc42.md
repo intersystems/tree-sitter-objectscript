@@ -58,6 +58,9 @@
 | Grammar Layering | expr → core → objectscript_udl → objectscript inheritance chain |
 | Keyword Fields | Keywords attached at usage sites via `field('keyword', ...)` |
 | Query Inheritance | Highlight queries use `;; inherits:` directive for layered application |
+| Query Sync Automation | `.githooks/pre-commit` runs `scripts/sync_queries.py` when query-related files are staged; CI verifies Python query copies via `.github/workflows/sync-queries.yml` |
+| Deterministic Node Installs | `package-lock.json` is committed and workflows use `npm ci` |
+| ESLint Configuration | Linting uses flat config in `eslint.config.mjs` |
 
 ---
 
