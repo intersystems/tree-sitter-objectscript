@@ -269,13 +269,13 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 ## Implementation Plan
 
-### Phase 1: Core Expression Parsing ✅
+### Phase 1: Core Expression Parsing
 
 - [x] Implement expr grammar with all expression constructs
 - [x] Add tests for literals, operators, variables, functions
 - [x] Create expr/queries/highlights.scm
 
-### Phase 2: Routine Syntax ✅
+### Phase 2: Routine Syntax
 
 - [x] Implement core grammar extending expr
 - [x] Add external scanner for whitespace handling
@@ -283,7 +283,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Add embedded language constructs
 - [x] Create core/queries/highlights.scm and injections.scm
 
-### Phase 3: UDL Class Definitions ✅
+### Phase 3: UDL Class Definitions
 
 - [x] Implement udl grammar extending core
 - [x] Add class, method, property, parameter rules
@@ -291,14 +291,14 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Create udl/queries/highlights.scm and injections.scm
 - [x] Factor keywords into common/keywords.js
 
-### Phase 4: Playground Grammar ✅
+### Phase 4: Playground Grammar
 
 - [x] Implement `objectscript` grammar extending `objectscript_udl`
 - [x] Enable top-level mixed source parsing for snippets
 - [x] Add scanner mode flag (`column1_statement_mode`) and playground scanner wiring
 - [x] Add full `objectscript/test/corpus` suite
 
-### Phase 5: Language Bindings ✅
+### Phase 5: Language Bindings
 
 - [x] Rust binding (Cargo crate)
 - [x] Python binding (pip wheel)
@@ -311,7 +311,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
   - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`
   - `tree-sitter-objectscript-playground`: `LANGUAGE_OBJECTSCRIPT`
 
-### Phase 6: Editor Integrations ✅
+### Phase 6: Editor Integrations
 
 - [x] Zed extension (published)
 - [x] nvim-treesitter integration

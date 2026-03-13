@@ -4,23 +4,23 @@
 
 | Metric | Status | Details |
 |--------|--------|---------|
-| **Overall Health** | ✅ Good | Well-structured, maintainable codebase |
-| **Technical Debt** | 🟡 Low-Medium | Some unimplemented features, minor style issues |
-| **Test Coverage** | ✅ Good | 168 corpus test files across 4 grammars |
-| **Documentation** | ✅ Good | Comprehensive README, inline comments |
-| **Code Quality** | ✅ Good | Consistent patterns, type annotations |
+| **Overall Health** | Good | Well-structured, maintainable codebase |
+| **Technical Debt** | Low-Medium | Some unimplemented features, minor style issues |
+| **Test Coverage** | Good | 168 corpus test files across 4 grammars |
+| **Documentation** | Good | Comprehensive README, inline comments |
+| **Code Quality** | Good | Consistent patterns, type annotations |
 
 ---
 
 ## Findings by Severity
 
-### 🔴 Critical Issues
+### Critical Issues
 
 *None identified.*
 
 ---
 
-### 🟠 High Priority
+### High Priority
 
 #### H1: Unimplemented Preprocessor Directives
 
@@ -42,7 +42,7 @@
 
 ---
 
-### 🟡 Medium Priority
+### Medium Priority
 
 #### M1: Duplicated `repeat_with_commas` Utility
 
@@ -145,7 +145,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 ---
 
-### 🟢 Low Priority
+### Low Priority
 
 #### L1: Inconsistent Comment Style
 
@@ -257,7 +257,7 @@ open_keywords: ($) =>
 
 ## Positive Findings
 
-### ✅ Strengths
+### Strengths
 
 1. **Well-layered architecture**: expr → core → udl inheritance is clean and enables reuse
 2. **Comprehensive keyword handling**: UDL keywords are exhaustively defined
@@ -266,7 +266,7 @@ open_keywords: ($) =>
 5. **Type annotations**: JSDoc types improve IDE support
 6. **External scanner**: Complex tokenization handled efficiently in C
 
-### ✅ Best Practices Observed
+### Best Practices Observed
 
 - Conventional Commits for change tracking
 - MIT license for broad compatibility
