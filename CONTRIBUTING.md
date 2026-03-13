@@ -4,7 +4,7 @@ Thanks for contributing to `tree-sitter-objectscript`.
 
 ## Prerequisites
 
-- `tree-sitter` CLI `0.26.6`
+- `tree-sitter` CLI `>=0.26.6`
 - Node.js `22` and npm `>=10` (`nvm use`)
 - Rust toolchain (`cargo`)
 - Python `>=3.9`
@@ -84,6 +84,7 @@ Run from repository root.
 
 ```bash
 cargo test --lib --package tree-sitter-objectscript
+./scripts/rust_playground_crate.sh package --allow-dirty --no-verify
 ```
 
 - Python:

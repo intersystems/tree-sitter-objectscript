@@ -45,6 +45,7 @@ Quick binding checks from repo root:
 nvm use
 npm install
 cargo test --lib --package tree-sitter-objectscript
+python3 -m pip install -e .
 python3 -m pytest -q bindings/python/tests/test_binding.py
 npm test
 go test ./bindings/go/...

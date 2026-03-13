@@ -199,7 +199,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 **Design decisions**:
 
-- **Inheritance via comments**: `;; inherits: objectscript_expr`
+- **Generated layered composition**: `scripts/sync_queries.py` composes EXPR/CORE/LOCAL sections for core/udl query files
 - **Zed-compatible capture names**: `@keyword`, `@variable`, `@function`, `@type`, etc.
 - **MimeType-based injection**: XDATA blocks use MimeType attribute to select injected language
 - **Shared UDL/playground query sources**: `objectscript` and `objectscript_udl` both consume the same `expr/core/udl` query files from `tree-sitter.json`
@@ -307,7 +307,9 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Swift binding (Swift package)
 - [x] C binding (headers and library)
 - [x] Expose both `objectscript` (playground) and `objectscript_udl` language entry points across bindings
-- [x] Rust constants align to new naming (`LANGUAGE_OBJECTSCRIPT_PLAYGROUND`, `LANGUAGE_OBJECTSCRIPT_UDL`)
+- [x] Rust crates expose current constants:
+  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`
+  - `tree-sitter-objectscript-playground`: `LANGUAGE_OBJECTSCRIPT`
 
 ### Phase 6: Editor Integrations ✅
 
@@ -401,6 +403,6 @@ python3 scripts/sync_queries.py --check-python # Verify Python query copies
 - `.github/workflows/lint.yml` — deterministic `npm ci` lint workflow
 - `eslint.config.mjs` — ESLint flat configuration
 - `package-lock.json` — lockfile for deterministic npm dependency resolution
-- `README.md:1-200` — Project documentation
+- `README.md:1-111` — Project documentation
 - `*/test/corpus/*.txt` — 186 test corpus files
 - `bindings/*/` — Language binding implementations

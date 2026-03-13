@@ -2,8 +2,7 @@ name: Publish packages
 
 on:
   push:
-    branches: [workflow_and_bindings]
-    # tags: ["*"]
+    tags: ["*"]
 
 permissions:
   contents: write
@@ -12,11 +11,12 @@ permissions:
 
 jobs:
   github:
-    if: github.repository == 'hkimura-intersys/tree-sitter-objectscript'
+    if: github.repository == 'intersystems/tree-sitter-objectscript'
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
     with:
       generate: true
   npm:
+    if: github.repository == 'intersystems/tree-sitter-objectscript'
     uses: tree-sitter/workflows/.github/workflows/package-npm.yml@31a611b89757509757378e3d94f28a41a782d9df
     with:
       generate: true
@@ -24,6 +24,7 @@ jobs:
       NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   pypi:
+    if: github.repository == 'intersystems/tree-sitter-objectscript'
     uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@56557c4133653a3537051dbdc31f4af09dffaef4
     with:
       generate: true
@@ -31,7 +32,7 @@ jobs:
       PYPI_API_TOKEN: ${{secrets.PYPI_API_TOKEN}}
 
   crates:
-    if: github.repository == 'hkimura-intersys/tree-sitter-objectscript'
+    if: github.repository == 'intersystems/tree-sitter-objectscript'
     uses: tree-sitter/workflows/.github/workflows/package-crates.yml@main
     secrets:
       CARGO_REGISTRY_TOKEN: ${{secrets.CARGO_REGISTRY_TOKEN}}
@@ -39,7 +40,7 @@ jobs:
       generate: true
 
   crates_playground:
-    if: github.repository == 'hkimura-intersys/tree-sitter-objectscript'
+    if: github.repository == 'intersystems/tree-sitter-objectscript'
     name: Publish Rust playground package
     runs-on: ubuntu-latest
     environment:

@@ -5,9 +5,11 @@ ObjectScript UDL grammar for [tree-sitter](https://github.com/tree-sitter/tree-s
 This crate publishes the `objectscript_udl` grammar, intended for `.cls` files.
 It includes:
 
-- `LANGUAGE_OBJECTSCRIPT_UDL` (and `LANGUAGE_OBJECTSCRIPT` alias)
-- `OBJECTSCRIPT_UDL_NODE_TYPES` (and `OBJECTSCRIPT_NODE_TYPES` alias)
-- UDL query constants for highlights, injections, and indents
+- `LANGUAGE_OBJECTSCRIPT_UDL`
+- `NODE_TYPES`
+- `HIGHLIGHTS_QUERY`
+- `INJECTIONS_QUERY`
+- `INDENTS_QUERY`
 
 If you want the playground/snippet grammar instead, use:
 `tree-sitter-objectscript-playground`.

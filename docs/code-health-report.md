@@ -6,7 +6,7 @@
 |--------|--------|---------|
 | **Overall Health** | ✅ Good | Well-structured, maintainable codebase |
 | **Technical Debt** | 🟡 Low-Medium | Some unimplemented features, minor style issues |
-| **Test Coverage** | ✅ Good | 94 corpus test files across 3 grammars |
+| **Test Coverage** | ✅ Good | 168 corpus test files across 4 grammars |
 | **Documentation** | ✅ Good | Comprehensive README, inline comments |
 | **Code Quality** | ✅ Good | Consistent patterns, type annotations |
 
@@ -261,7 +261,7 @@ open_keywords: ($) =>
 
 1. **Well-layered architecture**: expr → core → udl inheritance is clean and enables reuse
 2. **Comprehensive keyword handling**: UDL keywords are exhaustively defined
-3. **Good test coverage**: 94 corpus tests provide confidence in parsing accuracy
+3. **Good test coverage**: 168 corpus tests provide confidence in parsing accuracy
 4. **Consistent patterns**: Command builder functions reduce duplication
 5. **Type annotations**: JSDoc types improve IDE support
 6. **External scanner**: Complex tokenization handled efficiently in C
@@ -282,7 +282,7 @@ open_keywords: ($) =>
 |--------|-------|------------|
 | Total Grammar LOC | ~4,400 | Reasonable for language complexity |
 | Scanner LOC (C) | 827 | Acceptable |
-| Test Files | 94 | Good coverage |
+| Test Files | 168 | Good coverage |
 | Language Bindings | 6 | Excellent portability |
 | TODO Comments | 1 | Low debt indicator |
 | ESLint Disables | 18 | Moderate - consider cleanup |

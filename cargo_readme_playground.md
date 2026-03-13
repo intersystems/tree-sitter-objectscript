@@ -9,9 +9,11 @@ instead of full `.cls` files.
 
 It includes:
 
-- `LANGUAGE_OBJECTSCRIPT` (and `LANGUAGE_OBJECTSCRIPT_PLAYGROUND` alias)
-- `OBJECTSCRIPT_NODE_TYPES` (and `OBJECTSCRIPT_PLAYGROUND_NODE_TYPES` alias)
-- Query constants for highlights, injections, and indents
+- `LANGUAGE_OBJECTSCRIPT`
+- `NODE_TYPES`
+- `HIGHLIGHTS_QUERY`
+- `INJECTIONS_QUERY`
+- `INDENTS_QUERY`
 
 For full class-file parsing (`objectscript_udl`), use:
 `tree-sitter-objectscript`.
