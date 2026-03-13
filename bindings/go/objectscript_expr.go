@@ -1,8 +1,8 @@
-package tree_sitter_objectscript_expr
+package tree_sitter_objectscript
 
-// #cgo CPPFLAGS: -I../../../expr/src
+// #cgo CPPFLAGS: -I../../expr/src
 // #cgo CFLAGS: -std=c11 -fPIC
-// #include "../../../expr/src/parser.c"
+// #include "../../expr/src/parser.c"
 import "C"
 
 import "unsafe"

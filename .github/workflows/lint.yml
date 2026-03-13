@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint_js:
+    name: Lint JS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install modules
+        run: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Run ESLint
+        run: npm run lint
+
+  lint_queries:
+    name: Lint Query Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up ts_query_ls
+        run: curl -fL https://github.com/ribru17/ts_query_ls/releases/latest/download/ts_query_ls-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+      - name: Format
+        run: |
+          make formatquery
+          git diff --exit-code -- \
+            expr/queries \
+            core/queries \
+            udl/queries \
+            bindings/python/tree_sitter_objectscript/queries \
+            bindings/python/tree_sitter_objectscript_core/queries \
+            bindings/python/tree_sitter_objectscript_udl/queries \
+            bindings/python/tree_sitter_objectscript_expr/queries
+      - name: Lint
+        run: make lintquery

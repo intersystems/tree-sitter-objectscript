@@ -167,7 +167,7 @@ Class MyPackage.MyClass Extends (%Persistent, %XML.Adaptor) {
 
 | Operation | Location | Notes |
 |-----------|----------|-------|
-| Add class keyword | `udl/keywords.js` | Define in `class_keywords` rule |
+| Add class keyword | `common/keywords.js` | Define in `class_keywords` rule |
 | Add member type | `udl/grammar.js:110-124` | Add to `class_statement` choice |
 | Modify extends syntax | `udl/grammar.js:89-99` | Update `class_extends` rule |
 
@@ -221,4 +221,4 @@ source_file: ($) =>
 - `udl/grammar.js:89-99` — `class_extends` rule
 - `udl/grammar.js:107-125` — `class_body` and `class_statement` rules
 - `udl/grammar.js:46-67` — `source_file` with include/import
-- `udl/keywords.js` — Class keyword definitions
+- `common/keywords.js` — Class keyword definitions

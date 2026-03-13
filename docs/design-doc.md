@@ -185,7 +185,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 |-----------|---------|
 | `identifiers.js` | Regex patterns for ObjectScript identifiers |
 | `scanner.h` | C external scanner for whitespace, comments, markers |
-| `grammar.js` | `define_grammar()` helper for grammar extension |
+| `define_grammar.js` | `define_grammar()` helper for grammar extension |
 
 **Evidence**: `common/identifiers.js:1-15` defines identifier patterns.
 
@@ -199,7 +199,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 **Design decisions**:
 
-- **Inheritance via comments**: `;; inherits: objectscript_expr`
+- **Generated layered composition**: `scripts/sync_queries.py` composes EXPR/CORE/LOCAL sections for core/udl query files
 - **Zed-compatible capture names**: `@keyword`, `@variable`, `@function`, `@type`, etc.
 - **MimeType-based injection**: XDATA blocks use MimeType attribute to select injected language
 - **Shared UDL/playground query sources**: `objectscript` and `objectscript_udl` both consume the same `expr/core/udl` query files from `tree-sitter.json`
@@ -269,13 +269,13 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 ## Implementation Plan
 
-### Phase 1: Core Expression Parsing ✅
+### Phase 1: Core Expression Parsing
 
 - [x] Implement expr grammar with all expression constructs
 - [x] Add tests for literals, operators, variables, functions
 - [x] Create expr/queries/highlights.scm
 
-### Phase 2: Routine Syntax ✅
+### Phase 2: Routine Syntax
 
 - [x] Implement core grammar extending expr
 - [x] Add external scanner for whitespace handling
@@ -283,7 +283,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Add embedded language constructs
 - [x] Create core/queries/highlights.scm and injections.scm
 
-### Phase 3: UDL Class Definitions ✅
+### Phase 3: UDL Class Definitions
 
 - [x] Implement udl grammar extending core
 - [x] Add class, method, property, parameter rules
@@ -291,14 +291,14 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Create udl/queries/highlights.scm and injections.scm
 - [x] Factor keywords into common/keywords.js
 
-### Phase 4: Playground Grammar ✅
+### Phase 4: Playground Grammar
 
 - [x] Implement `objectscript` grammar extending `objectscript_udl`
 - [x] Enable top-level mixed source parsing for snippets
 - [x] Add scanner mode flag (`column1_statement_mode`) and playground scanner wiring
 - [x] Add full `objectscript/test/corpus` suite
 
-### Phase 5: Language Bindings ✅
+### Phase 5: Language Bindings
 
 - [x] Rust binding (Cargo crate)
 - [x] Python binding (pip wheel)
@@ -307,9 +307,11 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Swift binding (Swift package)
 - [x] C binding (headers and library)
 - [x] Expose both `objectscript` (playground) and `objectscript_udl` language entry points across bindings
-- [x] Rust constants align to new naming (`LANGUAGE_OBJECTSCRIPT_PLAYGROUND`, `LANGUAGE_OBJECTSCRIPT_UDL`)
+- [x] Rust crates expose current constants:
+  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`
+  - `tree-sitter-objectscript-playground`: `LANGUAGE_OBJECTSCRIPT`
 
-### Phase 6: Editor Integrations ✅
+### Phase 6: Editor Integrations
 
 - [x] Zed extension (published)
 - [x] nvim-treesitter integration
@@ -317,6 +319,10 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 ### Phase 7: Ongoing Maintenance
 
+- [x] Add repository-managed pre-commit hook for query synchronization
+- [x] Add CI workflow to verify Python query copies match source query trees
+- [x] Switch JavaScript lint installs to deterministic `npm ci` using committed `package-lock.json`
+- [x] Migrate ESLint configuration to flat config (`eslint.config.mjs`)
 - [ ] CSP template grammar (future)
 - [ ] IRIS language evolution tracking
 - [ ] Community contribution support
@@ -346,9 +352,14 @@ cd udl && tree-sitter test
 cargo test                                    # Rust
 python3 -m pytest bindings/python/tests/      # Python (in venv)
 npm test                                       # Node
+npm run lint                                   # JavaScript lint
 go test ./bindings/go/...                      # Go
 swift test                                     # Swift
 make test                                      # C
+
+# Query synchronization and verification
+make installhooks                              # Install repo pre-commit hook
+python3 scripts/sync_queries.py --check-python # Verify Python query copies
 ```
 
 ### Success Criteria
@@ -385,7 +396,13 @@ make test                                      # C
 - `objectscript/grammar.js:1-120` — objectscript playground grammar implementation
 - `common/scanner.h` — External scanner C implementation
 - `common/keywords.js:1-500` — shared keyword definitions
+- `common/define_grammar.js:1-120` — shared grammar extension helper
 - `tree-sitter.json:1-80` — Multi-grammar configuration
-- `README.md:1-200` — Project documentation
-- `*/test/corpus/*.txt` — 166 test corpus files
+- `.githooks/pre-commit` — local query synchronization hook
+- `.github/workflows/sync-queries.yml` — CI verification for Python query parity
+- `.github/workflows/lint.yml` — deterministic `npm ci` lint workflow
+- `eslint.config.mjs` — ESLint flat configuration
+- `package-lock.json` — lockfile for deterministic npm dependency resolution
+- `README.md:1-111` — Project documentation
+- `*/test/corpus/*.txt` — 186 test corpus files
 - `bindings/*/` — Language binding implementations

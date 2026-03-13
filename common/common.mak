@@ -3,7 +3,7 @@ $(error Windows is not supported)
 endif
 
 HOMEPAGE_URL := https://github.com/intersystems/tree-sitter-objectscript
-VERSION := 1.4.3
+VERSION := 1.5.1
 
 # repository
 SRC_DIR := src
@@ -57,7 +57,7 @@ ifneq ($(STRIP),)
 	$(STRIP) $@
 endif
 
-$(LANGUAGE_NAME).pc: bindings/c/$(LANGUAGE_NAME).pc.in
+$(LANGUAGE_NAME).pc: ../bindings/c/$(LANGUAGE_NAME).pc.in
 	sed -e 's|@CMAKE_PROJECT_VERSION@|$(VERSION)|' \
 		-e 's|@CMAKE_INSTALL_LIBDIR@|$(LIBDIR:$(PREFIX)/%=%)|' \
 		-e 's|@CMAKE_INSTALL_INCLUDEDIR@|$(INCLUDEDIR:$(PREFIX)/%=%)|' \

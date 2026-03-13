@@ -1,0 +1,40 @@
+name: Fuzz
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: Fuzz scanner
+    runs-on: ubuntu-latest
+    if: >-
+      !github.event.repository.is_template &&
+      github.event.head_commit.message != 'Initial commit'
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [objectscript, udl, core]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Check for scanner changes
+        id: scanner-check
+        shell: sh
+        run: |-
+          {
+            ! git rev-parse HEAD^ >/dev/null 2>&1 && printf 'changed=true\n' ||
+            ! git diff --quiet HEAD^ -- common/scanner.h &&
+            printf 'changed=true\n' || printf 'changed=false\n'
+          } >> "$GITHUB_OUTPUT"
+      - name: Run fuzzer
+        uses: tree-sitter/fuzz-action@v4
+        if: steps.scanner-check.outputs.changed == 'true'
+        with:
+          directory: ${{matrix.language}}
