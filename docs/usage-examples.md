@@ -8,7 +8,7 @@ This document contains current, runnable examples for using the grammars and bin
 - `objectscript_udl`: class-file grammar for `.cls`
 - `objectscript_core`: routine/statement grammar
 - `objectscript_expr`: expression grammar
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.rtn`
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.int`
 
 ## CLI Workflow
 

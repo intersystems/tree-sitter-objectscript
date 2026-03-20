@@ -109,7 +109,7 @@ The grammar is split into five related targets to enable reuse and independent i
 1. **expr**: Pure expressions (can be injected into SQL extensions, CSP templates)
 2. **core**: Full routine syntax (lines of ObjectScript code)
 3. **objectscript_udl**: Class definition syntax (`.cls` files)
-4. **objectscript_routine**: Routine-header grammar for `.mac`, `.inc`, and `.rtn` files
+4. **objectscript_routine**: Routine-header grammar for `.mac`, `.inc`, and `.int` files
 5. **objectscript**: Playground grammar for mixed snippets (top-level statements and class members)
 
 Each layer extends the previous using tree-sitter's `grammar()` inheritance mechanism.
@@ -309,7 +309,7 @@ Generated files include explicit section markers:
 - (+) expr can be injected into SQL extensions independently
 - (+) core can be used for routine files without UDL overhead
 - (+) objectscript_udl remains strict for `.cls` while objectscript supports playground snippets
-- (+) objectscript_routine provides a dedicated routine-header profile for `.mac/.inc/.rtn`
+- (+) objectscript_routine provides a dedicated routine-header profile for `.mac/.inc/.int`
 - (-) Changes to expr require regenerating downstream grammars
 
 ### ADR-2: External Scanner for Whitespace

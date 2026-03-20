@@ -16,7 +16,7 @@ This repository publishes five related grammars:
 - `objectscript_udl`: class-file grammar for `.cls`.
 - `objectscript_core`: routine/statement grammar.
 - `objectscript_expr`: expression grammar.
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, and `.rtn`.
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, and `.int`.
 
 Grammar extension graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`

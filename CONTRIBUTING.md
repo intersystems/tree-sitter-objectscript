@@ -16,7 +16,7 @@ Thanks for contributing to `tree-sitter-objectscript`.
 - `udl/`: `.cls` grammar
 - `core/`: routine/statement grammar
 - `expr/`: expression grammar
-- `objectscript_routine/`: routine-header grammar for `.mac`, `.inc`, `.rtn`
+- `objectscript_routine/`: routine-header grammar for `.mac`, `.inc`, `.int`
 
 Grammar graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
