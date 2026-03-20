@@ -144,9 +144,7 @@
   (keyword_catch)
 ] @keyword.exception
 
-[
-  (keyword_return)
-] @keyword.return
+(keyword_return) @keyword.return
 
 [
   (keyword_break)
