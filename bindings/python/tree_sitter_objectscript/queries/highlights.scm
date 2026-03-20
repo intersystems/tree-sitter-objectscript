@@ -128,6 +128,7 @@
   (keyword_for)
   (keyword_while)
   (keyword_continue)
+  (keyword_quit)
 ] @keyword.repeat
 
 [
@@ -145,7 +146,6 @@
 
 [
   (keyword_return)
-  (keyword_quit)
 ] @keyword.return
 
 [
