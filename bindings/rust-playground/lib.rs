@@ -19,13 +19,13 @@ pub const LANGUAGE_OBJECTSCRIPT: LanguageFn = unsafe { LanguageFn::from_raw(tree
 pub const NODE_TYPES: &str = include_str!("objectscript/src/node-types.json");
 
 /// The syntax highlighting query for ObjectScript.
-pub const HIGHLIGHTS_QUERY: &str = include_str!("udl/queries/highlights.scm");
+pub const HIGHLIGHTS_QUERY: &str = include_str!("objectscript/queries/highlights.scm");
 
 /// The injections query for ObjectScript.
-pub const INJECTIONS_QUERY: &str = include_str!("udl/queries/injections.scm");
+pub const INJECTIONS_QUERY: &str = include_str!("objectscript/queries/injections.scm");
 
 /// The indents query for ObjectScript.
-pub const INDENTS_QUERY: &str = include_str!("udl/queries/indents.scm");
+pub const INDENTS_QUERY: &str = include_str!("objectscript/queries/indents.scm");
 
 #[cfg(test)]
 mod tests {

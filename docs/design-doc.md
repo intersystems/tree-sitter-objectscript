@@ -1,5 +1,7 @@
 # Design Document - tree-sitter-objectscript
 
+> Update note (2026): The implemented system now includes a fifth grammar target, `objectscript_routine`, branching from `core`. Operational workflows and hook behavior were also expanded (query sync, lint auto-fix, parser/query checks). Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
+
 ## Metadata
 
 | Field | Value |
@@ -64,25 +66,14 @@ There was no accurate, performant, incrementally-updatable parser for ObjectScri
 
 ### High-Level Design
 
-Implement a **four-layer grammar architecture** using tree-sitter:
+Implement a **five-target grammar architecture** using tree-sitter:
 
 ```
-┌─────────────────────────────────────┐
-│         objectscript Grammar         │  ← Playground/snippet parsing
-│ (extends objectscript_udl, mixed src)│
-├─────────────────────────────────────┤
-│      objectscript_udl Grammar       │  ← .cls class files
-│      (extends core, adds UDL)       │
-├─────────────────────────────────────┤
-│           core Grammar              │  ← Routine files, statements
-│   (extends expr, adds commands)     │
-├─────────────────────────────────────┤
-│           expr Grammar              │  ← Pure expressions
-│     (literals, operators, vars)     │
-└─────────────────────────────────────┘
+expr -> core -> objectscript_udl -> objectscript
+expr -> core -> objectscript_routine
 ```
 
-Each layer is a complete tree-sitter grammar. `objectscript` is the playground profile, while `objectscript_udl` remains the class-file profile.
+Each target is a complete tree-sitter grammar. `objectscript` is the playground profile, `objectscript_udl` remains the class-file profile, and `objectscript_routine` is the routine-header profile.
 
 ### Detailed Design
 
@@ -245,7 +236,7 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 
 | Benefit | Cost |
 |---------|------|
-| Reusable expr grammar for SQL dialects | Build complexity (four grammars) |
+| Reusable expr grammar for SQL dialects | Build complexity (five grammar targets) |
 | Independent testing of each layer | Regeneration cascade on base changes |
 | Clear separation of concerns | Learning curve for contributors |
 
@@ -306,9 +297,9 @@ Each layer is a complete tree-sitter grammar. `objectscript` is the playground p
 - [x] Go binding (Go module)
 - [x] Swift binding (Swift package)
 - [x] C binding (headers and library)
-- [x] Expose both `objectscript` (playground) and `objectscript_udl` language entry points across bindings
+- [x] Expose `objectscript`, `objectscript_udl`, and `objectscript_routine` entry points across bindings (plus `core`/`expr` where supported)
 - [x] Rust crates expose current constants:
-  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`
+  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`, `LANGUAGE_OBJECTSCRIPT_ROUTINE`
   - `tree-sitter-objectscript-playground`: `LANGUAGE_OBJECTSCRIPT`
 
 ### Phase 6: Editor Integrations

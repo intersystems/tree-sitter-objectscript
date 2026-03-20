@@ -2,7 +2,10 @@ from os.path import isdir, join
 from platform import system
 
 from setuptools import Extension, find_packages, setup
-from setuptools.command.build import build
+try:
+    from setuptools.command.build import build
+except ImportError:
+    from distutils.command.build import build
 from wheel.bdist_wheel import bdist_wheel
 
 
@@ -11,6 +14,7 @@ class Build(build):
         copies = [
             ("udl/queries",  join(self.build_lib, "tree_sitter_objectscript",        "queries")),
             ("udl/queries",  join(self.build_lib, "tree_sitter_objectscript_udl",    "queries")),
+            ("objectscript_routine/queries", join(self.build_lib, "tree_sitter_objectscript_routine", "queries")),
         ]
         for src, dest in copies:
             if isdir(src):
@@ -34,6 +38,8 @@ setup(
             "tree_sitter_objectscript.queries",
             "tree_sitter_objectscript_udl",
             "tree_sitter_objectscript_udl.queries",
+            "tree_sitter_objectscript_routine",
+            "tree_sitter_objectscript_routine.queries",
         ],
     ),
     package_dir={"": "bindings/python"},
@@ -42,6 +48,8 @@ setup(
         "tree_sitter_objectscript.queries": ["*.scm"],
         "tree_sitter_objectscript_udl": ["*.pyi", "py.typed"],
         "tree_sitter_objectscript_udl.queries": ["*.scm"],
+        "tree_sitter_objectscript_routine": ["*.pyi", "py.typed"],
+        "tree_sitter_objectscript_routine.queries": ["*.scm"],
     },
     ext_modules=[
         Extension(
@@ -82,6 +90,26 @@ setup(
                 ("PY_SSIZE_T_CLEAN", None)
             ],
             include_dirs=["udl/src", "common"],
+            py_limited_api=True,
+        ),
+        Extension(
+            name="tree_sitter_objectscript_routine._binding",
+            sources=[
+                "bindings/python/tree_sitter_objectscript_routine/binding.c",
+                "objectscript_routine/src/parser.c",
+                "objectscript_routine/src/scanner.c",
+            ],
+            extra_compile_args=[
+                "-std=c11",
+            ] if system() != "Windows" else [
+                "/std:c11",
+                "/utf-8",
+            ],
+            define_macros=[
+                ("Py_LIMITED_API", "0x03080000"),
+                ("PY_SSIZE_T_CLEAN", None)
+            ],
+            include_dirs=["objectscript_routine/src", "common"],
             py_limited_api=True,
         ),
     ],

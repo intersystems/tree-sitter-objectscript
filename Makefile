@@ -1,5 +1,5 @@
 TS ?= tree-sitter
-QUERY_DIRS ?= core/queries udl/queries expr/queries
+QUERY_DIRS ?= core/queries udl/queries expr/queries objectscript/queries objectscript_routine/queries
 DEPDIR ?= .test-deps
 CURL ?= curl -sL --create-dirs
 
@@ -26,10 +26,24 @@ all install uninstall clean:
 	$(MAKE) -C udl $@
 	$(MAKE) -C core $@
 	$(MAKE) -C expr $@
+	$(MAKE) -C objectscript_routine $@
 
 test:
 	$(TS) test
-	$(TS) parse examples/* --quiet --time
+	@set -eu; \
+	repo_root="$(CURDIR)"; \
+	found=0; \
+	for file in "$$repo_root"/examples/*.cls; do \
+		[ -e "$$file" ] || continue; \
+		found=1; \
+		( \
+			cd udl; \
+			$(TS) parse --quiet --time "$$file"; \
+		); \
+	done; \
+	if [ "$$found" -eq 0 ]; then \
+		echo "No .cls examples found under examples/"; \
+	fi
 
 buildqueryparsers:
 	@set -eu; \

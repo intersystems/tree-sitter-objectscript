@@ -1,10 +1,10 @@
 {
   "name": "tree-sitter-objectscript",
-  "version": "1.5.1",
+  "version": "1.6.2",
   "description": "Tree Sitter Grammar for InterSystems ObjectScript",
   "scripts": {
     "install": "node-gyp-build",
-    "lint": "eslint common/define_grammar.js objectscript/grammar.js udl/grammar.js core/grammar.js expr/grammar.js common/keywords.js",
+    "lint": "eslint common/define_grammar.js objectscript/grammar.js udl/grammar.js core/grammar.js expr/grammar.js objectscript_routine/grammar.js common/keywords.js",
     "test": "node --test bindings/node/*_test.js"
   },
   "engines": {
@@ -23,8 +23,8 @@
     "objectscript"
   ],
   "dependencies": {
-    "node-gyp-build": "^4.8.2",
-    "node-addon-api": "^8.5.0"
+    "node-addon-api": "^8.5.0",
+    "node-gyp-build": "^4.8.2"
   },
   "peerDependencies": {
     "tree-sitter": "^0.25.0"
@@ -38,8 +38,8 @@
     "eslint": "^9.35.0",
     "eslint-config-treesitter": "^1.0.2",
     "prebuildify": "^6.0.1",
-    "tree-sitter-cli": "^0.26.6",
-    "tree-sitter": "^0.25.0"
+    "tree-sitter": "^0.25.0",
+    "tree-sitter-cli": "0.26.7"
   },
   "main": "bindings/node",
   "types": "bindings/node",
@@ -51,6 +51,7 @@
     "bindings/node/index.js",
     "bindings/node/objectscript.js",
     "bindings/node/objectscript_udl.js",
+    "bindings/node/objectscript_routine.js",
     "common/scanner.h",
     "objectscript/grammar.js",
     "objectscript/src/parser.c",
@@ -74,10 +75,17 @@
     "expr/src/parser.c",
     "expr/src/node-types.json",
     "expr/src/tree_sitter/*.h",
+    "objectscript_routine/grammar.js",
+    "objectscript_routine/queries/*",
+    "objectscript_routine/src/parser.c",
+    "objectscript_routine/src/scanner.c",
+    "objectscript_routine/src/node-types.json",
+    "objectscript_routine/src/tree_sitter/*.h",
     "tree-sitter.json",
     "objectscript/package.json",
     "udl/package.json",
     "core/package.json",
-    "expr/package.json"
+    "expr/package.json",
+    "objectscript_routine/package.json"
   ]
 }

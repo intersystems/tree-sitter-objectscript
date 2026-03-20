@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "TreeSitterObjectScript",
     products: [
-        .library(name: "TreeSitterObjectScript", targets: ["TreeSitterObjectScript", "TreeSitterObjectScriptUDL", "TreeSitterObjectScriptCore", "TreeSitterObjectScriptExpr"]),
+        .library(name: "TreeSitterObjectScript", targets: ["TreeSitterObjectScript", "TreeSitterObjectScriptUDL", "TreeSitterObjectScriptCore", "TreeSitterObjectScriptExpr", "TreeSitterObjectScriptRoutine"]),
     ],
     dependencies: [
     .package(url: "https://github.com/ChimeHQ/SwiftTreeSitter", from: "0.8.0"),
@@ -53,6 +53,17 @@ let package = Package(
                 ],
                 publicHeadersPath: "bindings/swift/objectscript_expr",
                 cSettings: [.headerSearchPath("expr/src")]),
+        .target(name: "TreeSitterObjectScriptRoutine",
+                path: ".",
+                sources: [
+                    "objectscript_routine/src/parser.c",
+                    "objectscript_routine/src/scanner.c",
+                ],
+                resources: [
+                    .copy("objectscript_routine/queries")
+                ],
+                publicHeadersPath: "bindings/swift/objectscript_routine",
+                cSettings: [.headerSearchPath("objectscript_routine/src")]),
         .testTarget(
             name: "TreeSitterTypeScriptTests",
             dependencies: [
@@ -61,6 +72,7 @@ let package = Package(
                 "TreeSitterObjectScriptUDL",
                 "TreeSitterObjectScriptCore",
                 "TreeSitterObjectScriptExpr",
+                "TreeSitterObjectScriptRoutine",
             ],
             path: "bindings/swift/TreeSitterObjectScriptTests"
             )

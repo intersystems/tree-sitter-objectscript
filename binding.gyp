@@ -7,14 +7,17 @@
       ],
       "include_dirs": [
         "objectscript/src",
-        "udl/src"
+        "udl/src",
+        "objectscript_routine/src",
       ],
       "sources": [
         "bindings/node/binding.cc",
         "objectscript/src/parser.c",
         "objectscript/src/scanner.c",
         "udl/src/parser.c",
-        "udl/src/scanner.c"
+        "udl/src/scanner.c",
+        "objectscript_routine/src/parser.c",
+        "objectscript_routine/src/scanner.c",
       ],
       "conditions": [
         ["OS!='win'", {

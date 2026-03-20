@@ -1,0 +1,78 @@
+====
+Valid routine, type = mac
+====
+Routine test.x [Type = mac]
+test
+/// testing
+
+ set x = 2
+ w x
+#INCLUDE %stringreplace
+---
+
+(source_file
+  (routine_definition
+    (routine)
+    (routine_name)
+    (routine_type)
+    (statement
+      (tag))
+    (documatic_line)
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (pound_include
+        (keyword_pound_include)
+        (class_name)))))
+
+====
+Valid routine header, type = int
+====
+Routine %test.x [Type = int]
+---
+
+(source_file
+  (routine_definition
+    (routine)
+    (routine_name)
+    (routine_type)))
+
+====
+Valid routine header, type = inc
+====
+Routine test [Type = inc]
+---
+
+(source_file
+  (routine_definition
+    (routine)
+    (routine_name)
+    (routine_type)))
+
+====
+Valid routine header, multiple spaces
+====
+Routine    test [Type=mac]
+---
+
+(source_file
+  (routine_definition
+    (routine)
+    (routine_name)
+    (routine_type)))

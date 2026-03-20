@@ -2,6 +2,7 @@ from unittest import TestCase
 import tree_sitter
 import tree_sitter_objectscript
 import tree_sitter_objectscript_udl
+import tree_sitter_objectscript_routine
 
 
 class TestLanguage(TestCase):
@@ -16,6 +17,12 @@ class TestLanguage(TestCase):
             tree_sitter.Language(tree_sitter_objectscript_udl.language_objectscript_udl())
         except Exception:
             self.fail("Error loading objectscript UDL grammar")
+
+    def test_can_load_objectscript_routine_grammar(self):
+        try:
+            tree_sitter.Language(tree_sitter_objectscript_routine.language_objectscript_routine())
+        except Exception:
+            self.fail("Error loading objectscript routine grammar")
 
     def test_objectscript_loads_and_has_queries(self):
         try:
@@ -34,3 +41,12 @@ class TestLanguage(TestCase):
             tree_sitter.Query(lang, tree_sitter_objectscript_udl.INDENTS_QUERY)
         except Exception:
             self.fail("Error loading objectscript UDL query files")
+
+    def test_objectscript_routine_loads_and_has_queries(self):
+        try:
+            lang = tree_sitter.Language(tree_sitter_objectscript_routine.language_objectscript_routine())
+            tree_sitter.Query(lang, tree_sitter_objectscript_routine.HIGHLIGHTS_QUERY)
+            tree_sitter.Query(lang, tree_sitter_objectscript_routine.INJECTIONS_QUERY)
+            tree_sitter.Query(lang, tree_sitter_objectscript_routine.INDENTS_QUERY)
+        except Exception:
+            self.fail("Error loading objectscript routine query files")

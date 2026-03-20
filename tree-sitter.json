@@ -1,6 +1,30 @@
 {
   "grammars": [
     {
+      "name": "objectscript_routine",
+      "camelcase": "ObjectScriptRoutine",
+      "scope": "source.objectscript_routine",
+      "path": "objectscript_routine",
+      "external-files": [
+        "common/scanner.h"
+      ],
+      "file-types": [
+        "mac",
+        "inc",
+        "int"
+      ],
+      "highlights": [
+        "objectscript_routine/queries/highlights.scm"
+      ],
+      "injections": [
+        "objectscript_routine/queries/injections.scm"
+      ],
+      "indents": [
+        "objectscript_routine/queries/indents.scm"
+      ],
+      "injection-regex": "^(cos|objectscript)$"
+    },
+    {
       "name": "objectscript",
       "camelcase": "ObjectScript",
       "scope": "source.objectscript",
@@ -9,16 +33,13 @@
         "common/scanner.h"
       ],
       "highlights": [
-        "expr/queries/highlights.scm",
-        "core/queries/highlights.scm",
-        "udl/queries/highlights.scm"
+        "objectscript/queries/highlights.scm"
       ],
       "injections": [
-        "core/queries/injections.scm",
-        "udl/queries/injections.scm"
+        "objectscript/queries/injections.scm"
       ],
       "indents": [
-        "core/queries/indents.scm"
+        "objectscript/queries/indents.scm"
       ],
       "injection-regex": "^(cos|objectscript)$"
     },
@@ -34,16 +55,13 @@
         "cls"
       ],
       "highlights": [
-        "expr/queries/highlights.scm",
-        "core/queries/highlights.scm",
         "udl/queries/highlights.scm"
       ],
       "injections": [
-        "core/queries/injections.scm",
         "udl/queries/injections.scm"
       ],
       "indents": [
-        "core/queries/indents.scm"
+        "udl/queries/indents.scm"
       ],
       "injection-regex": "^(cos|objectscript)$"
     },
@@ -56,7 +74,6 @@
         "common/scanner.h"
       ],
       "highlights": [
-        "expr/queries/highlights.scm",
         "core/queries/highlights.scm"
       ],
       "injections": [
@@ -79,7 +96,7 @@
     }
   ],
   "metadata": {
-    "version": "1.5.1",
+    "version": "1.6.2",
     "license": "MIT",
     "description": "ObjectScript grammars for tree-sitter", 
     "namespace": "io.github.treesitter.objectscript",

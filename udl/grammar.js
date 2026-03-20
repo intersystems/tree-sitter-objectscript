@@ -83,31 +83,31 @@ module.exports = define_grammar(objectscript_core, {
 
     import_code: ($) =>
       seq(
-        field('keyword', alias(/Import/i, $.keyword_import)),
+        alias(/Import/i, $.keyword_import),
         $.include_clause,
       ),
 
     include_code: ($) => seq(
-      field('keyword', $.keyword_include),
+      $.keyword_include,
       $.include_clause,
     ),
 
 
     include_generator: ($) => seq(
-      field('keyword', $.keyword_includegenerator),
+      $.keyword_includegenerator,
       $.include_clause,
     ),
 
     include_clause: ($) =>
       choice(
         alias($.identifier, $.class_name),
-        seq('(', alias($.identifier, $.class_name), repeat(seq(',', alias($.identifier, $.class_name))), ')'),
+        seq(alias('(', $.bracket), alias($.identifier, $.class_name), repeat(seq(',', alias($.identifier, $.class_name))), alias(')', $.bracket)),
       ),
 
 
     class_definition: ($) =>
       seq(
-        field('keyword', $.keyword_class),
+        $.keyword_class,
         alias($.identifier, $.class_name),
         optional($.class_extends),
         optional($.class_keywords),
@@ -117,7 +117,7 @@ module.exports = define_grammar(objectscript_core, {
 
     class_extends: ($) =>
       seq(
-        field('keyword', $.keyword_extends),
+        $.keyword_extends,
         choice(
           alias($.identifier, $.class_name),
           seq(alias('(', $.bracket), alias($.identifier, $.class_name), repeat(seq(',', alias($.identifier, $.class_name))), alias(')', $.bracket)),
@@ -155,21 +155,21 @@ module.exports = define_grammar(objectscript_core, {
 
     method: ($) =>
       seq(
-        field('keyword', $.keyword_method),
+        $.keyword_method,
         $.method_definition,
       ),
 
 
     classmethod: ($) =>
       seq(
-        field('keyword', $.keyword_classmethod),
+        $.keyword_classmethod,
         $.method_definition,
       ),
 
 
     query: ($) =>
       seq(
-        field('keyword', $.keyword_query),
+        $.keyword_query,
         alias($.quote_permitting_identifier, $.query_name),
         $.arguments,
         $.return_type,
@@ -186,8 +186,8 @@ module.exports = define_grammar(objectscript_core, {
 
     trigger: ($) =>
       seq(
-        field('keyword', $.keyword_trigger),
-        alias($.quote_permitting_identifier, $.identifier),
+        $.keyword_trigger,
+        alias($.quote_permitting_identifier, $.trigger_name),
         choice($.core_trigger, $.external_trigger),
       ),
 
@@ -209,7 +209,7 @@ module.exports = define_grammar(objectscript_core, {
 
     property: ($) =>
       seq(
-        field('keyword', $.keyword_property),
+        $.keyword_property,
         alias($.quote_permitting_identifier, $.property_name),
         optional($.property_type),
         optional($.property_keywords),
@@ -218,11 +218,11 @@ module.exports = define_grammar(objectscript_core, {
 
     relationship: ($) =>
       seq(
-        field('keyword', alias(/Relationship/i, $.keyword_relationship)),
+        alias(/Relationship/i, $.keyword_relationship),
         alias($.quote_permitting_identifier, $.relationship_name),
         optional(
           seq(
-            field('keyword', $.keyword_as),
+            $.keyword_as,
             $.typename,
           ),
         ),
@@ -232,19 +232,19 @@ module.exports = define_grammar(objectscript_core, {
 
     foreignkey: ($) =>
       seq(
-        field('keyword', $.keyword_foreignkey),
+        $.keyword_foreignkey,
         alias($.quote_permitting_identifier, $.foreignkey_name),
         alias(token.immediate('('), $.bracket),
-        alias($.quote_permitting_identifier, $.identifier),
-        repeat(seq(',', alias($.quote_permitting_identifier, $.identifier))),
+        alias($.quote_permitting_identifier, $.property_name),
+        repeat(seq(',', alias($.quote_permitting_identifier, $.property_name))),
         alias(token.immediate(')'), $.bracket),
-        field('keyword', $.keyword_references),
-        alias($.quote_permitting_identifier, $.identifier),
+        $.keyword_references,
+        alias($.quote_permitting_identifier, $.class_name),
         optional(
           seq(
-            '(',
-            alias($.quote_permitting_identifier, $.identifier),
-            ')',
+            alias('(', $.bracket),
+            alias($.quote_permitting_identifier, $.index_name),
+            alias(')', $.bracket),
           ),
         ),
         optional($.foreignkey_keywords),
@@ -254,7 +254,7 @@ module.exports = define_grammar(objectscript_core, {
 
     parameter_type: ($) =>
       seq(
-        field('keyword', $.keyword_as),
+        $.keyword_as,
         choice(
           /Boolean/i,
           /Classname/i,
@@ -272,7 +272,7 @@ module.exports = define_grammar(objectscript_core, {
 
     parameter: ($) =>
       seq(
-        field('keyword', $.keyword_parameter),
+        $.keyword_parameter,
         alias($.quote_permitting_identifier, $.parameter_name),
         optional($.parameter_type),
         optional($.parameter_keywords),
@@ -282,7 +282,7 @@ module.exports = define_grammar(objectscript_core, {
 
     projection: ($) =>
       seq(
-        field('keyword', $.keyword_projection),
+        $.keyword_projection,
         alias($.quote_permitting_identifier, $.projection_name),
         alias($.property_type, $.projection_type),
         optional($.projection_keywords),
@@ -292,17 +292,17 @@ module.exports = define_grammar(objectscript_core, {
     index: ($) =>
       choice(
         seq(
-        field('keyword', $.keyword_index),
+        $.keyword_index,
         alias($.quote_permitting_identifier, $.index_name),
         seq(
-          field('keyword', $.keyword_on),
+          $.keyword_on,
           $.index_properties,
         ),
         optional($.index_keywords),
         ';',
         ),
         seq(
-          field('keyword', $.keyword_index),
+          $.keyword_index,
           alias($.quote_permitting_identifier, $.index_name),
           $.extent_index_keywords,
           ';',
@@ -319,14 +319,14 @@ module.exports = define_grammar(objectscript_core, {
         $.index_property,
         optional(
           seq(
-            field('keyword', $.keyword_as),
+            $.keyword_as,
             $.index_type,
           ),
         ),
       ),
     index_property: ($) =>
       seq(
-        alias($.quote_permitting_identifier, $.identifier),
+        $.quote_permitting_identifier,
         optional(
           seq(
             alias('(', $.bracket),
@@ -366,7 +366,7 @@ module.exports = define_grammar(objectscript_core, {
 
     xdata: ($) =>
       seq(
-        field('keyword', $.keyword_xdata),
+        $.keyword_xdata,
         alias($.quote_permitting_identifier, $.xdata_name),
         choice($.xdata_xml, $.xdata_any),
       ),
@@ -389,7 +389,7 @@ module.exports = define_grammar(objectscript_core, {
 
     storage: ($) =>
       seq(
-        field('keyword', $.keyword_storage),
+        $.keyword_storage,
         alias($.quote_permitting_identifier, $.storage_name),
         optional($.storage_keywords),
         $.storage_body,
@@ -437,12 +437,12 @@ module.exports = define_grammar(objectscript_core, {
       ),
 
     property_type: ($) => seq(
-      field('keyword', $.keyword_as),
+      $.keyword_as,
       optional(
         seq(
           choice(
-            field('keyword', $.keyword_list),
-            field('keyword', $.keyword_array),
+            $.keyword_list,
+            $.keyword_array,
           ),
           $.keyword_of,
         ),
@@ -451,12 +451,12 @@ module.exports = define_grammar(objectscript_core, {
     ),
 
     arguments: ($) =>
-      seq(token.immediate('('), optional(seq($.argument, repeat(seq(',', $.argument)))), ')'),
+      seq(alias(token.immediate('('), $.bracket), optional(seq($.argument, repeat(seq(',', $.argument)))), alias(')', $.bracket)),
 
     argument: ($) =>
       seq(
-        optional( choice(field('keyword', $.keyword_byref), field('keyword', $.keyword_output))),
-        $.identifier,
+        optional( choice($.keyword_byref, $.keyword_output)),
+        $.method_arg,
         optional($.return_type),
         optional(seq('=', $.default_argument_value)),
       ),
@@ -468,7 +468,7 @@ module.exports = define_grammar(objectscript_core, {
         $.numeric_literal,
         seq('{', optional($.expression), '}'),
       ),
-    return_type: ($) => seq(field('keyword', $.keyword_as), $.typename),
+    return_type: ($) => seq($.keyword_as, $.typename),
 
     code_snippet: ($) =>
       seq(
@@ -503,7 +503,7 @@ module.exports = define_grammar(objectscript_core, {
           seq(optional(field('operator', '-')), $.numeric_literal),
         ),
       ),
-    identifier: ($) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/,
+    identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/,
     quote_permitting_identifier: ($) =>
       choice(/"((?:""|[^"])*)"/, $.identifier),
     _word: ($) => /[%A-Za-z0-9][A-Za-z0-9]+/,

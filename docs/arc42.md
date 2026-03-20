@@ -1,5 +1,7 @@
 # Arc42 Architecture Documentation - tree-sitter-objectscript
 
+> Update note (2026): The repository now includes an additional `objectscript_routine` grammar (`expr -> core -> objectscript_routine`) and expanded pre-commit checks (query sync, lint auto-fix, parser/query validation). Use `README.md` and `CONTRIBUTING.md` as the canonical operational docs.
+
 ## 1. Introduction and Goals
 
 ### 1.1 Requirements Overview
@@ -55,7 +57,7 @@
 
 | Convention | Description |
 |------------|-------------|
-| Grammar Layering | expr → core → objectscript_udl → objectscript inheritance chain |
+| Grammar Layering | expr → core with two downstream paths: objectscript_udl → objectscript, and objectscript_routine |
 | Keyword Fields | Keywords attached at usage sites via `field('keyword', ...)` |
 | Layered Query Composition | `scripts/sync_queries.py` composes EXPR/CORE/LOCAL sections for `core/queries` and `udl/queries` |
 | Query Sync Automation | `.githooks/pre-commit` runs `scripts/sync_queries.py` when query-related files are staged; CI verifies Python query copies via `.github/workflows/sync-queries.yml` |
@@ -102,12 +104,13 @@
 
 ### 4.1 Layered Grammar Architecture
 
-The grammar is split into four layers to enable reuse and independent injection:
+The grammar is split into five related targets to enable reuse and independent injection:
 
 1. **expr**: Pure expressions (can be injected into SQL extensions, CSP templates)
 2. **core**: Full routine syntax (lines of ObjectScript code)
 3. **objectscript_udl**: Class definition syntax (`.cls` files)
-4. **objectscript**: Playground grammar for mixed snippets (top-level statements and class members)
+4. **objectscript_routine**: Routine-header grammar for `.mac`, `.inc`, and `.int` files
+5. **objectscript**: Playground grammar for mixed snippets (top-level statements and class members)
 
 Each layer extends the previous using tree-sitter's `grammar()` inheritance mechanism.
 
@@ -294,16 +297,19 @@ Generated files include explicit section markers:
 
 ## 9. Architecture Decisions
 
-### ADR-1: Four-Grammar Layering
+### ADR-1: Five-Grammar Topology
 
 **Context**: ObjectScript expressions, routine code, and class definitions have different use cases.
 
-**Decision**: Split into expr → core → objectscript_udl → objectscript with grammar inheritance.
+**Decision**: Split into expr → core with two inheritance paths:
+- expr → core → objectscript_udl → objectscript
+- expr → core → objectscript_routine
 
 **Consequences**: 
 - (+) expr can be injected into SQL extensions independently
 - (+) core can be used for routine files without UDL overhead
 - (+) objectscript_udl remains strict for `.cls` while objectscript supports playground snippets
+- (+) objectscript_routine provides a dedicated routine-header profile for `.mac/.inc/.int`
 - (-) Changes to expr require regenerating downstream grammars
 
 ### ADR-2: External Scanner for Whitespace

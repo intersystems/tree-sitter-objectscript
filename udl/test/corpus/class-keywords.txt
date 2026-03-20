@@ -13,7 +13,7 @@ Class MyApp.MyClass [ DependsOn = MyApp.Class1 ] {
     (class_keywords
       (class_keyword
         (class_keyword_depends_on
-          (rhs))))
+          (class_name))))
     (class_body
       (line_comment_1))))
 
@@ -32,8 +32,8 @@ Class MyApp.MyClass [ DependsOn = (MyApp.Class1,MyApp.Class2) ] {
     (class_keywords
       (class_keyword
         (class_keyword_depends_on
-          (rhs)
-          (rhs))))
+          (class_name)
+          (class_name))))
     (class_body
       (line_comment_1))))
 
@@ -52,7 +52,7 @@ Class MyApp.MyClass [ CompileAfter = MyApp.Class1 ] {
     (class_keywords
       (class_keyword
         (class_keyword_compile_after
-          (rhs))))
+          (class_name))))
     (class_body
       (line_comment_1))))
 
@@ -71,9 +71,9 @@ Class MyApp.MyClass [ CompileAfter = (MyApp.Class1,MyApp.Class2,MyApp.Class3) ] 
     (class_keywords
       (class_keyword
         (class_keyword_compile_after
-          (rhs)
-          (rhs)
-          (rhs))))
+          (class_name)
+          (class_name)
+          (class_name))))
     (class_body
       (line_comment_1))))
 
@@ -92,7 +92,7 @@ Class MyApp.MyClass [ ClientName = clientclassname ]  {
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body
       (line_comment_1))))
 
@@ -111,7 +111,7 @@ Class Test.ClientDataTypeBigInt [ ClientDataType = bigint ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -129,7 +129,7 @@ Class Test.ClientDataTypeBinary [ ClientDataType = binary ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -147,7 +147,7 @@ Class Test.ClientDataTypeBinaryStream [ ClientDataType = binarystream ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -165,7 +165,7 @@ Class Test.ClientDataTypeBoolean [ ClientDataType = boolean ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -183,7 +183,7 @@ Class Test.ClientDataTypeCharacterStream [ ClientDataType = characterstream ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -201,7 +201,7 @@ Class Test.ClientDataTypeCurrency [ ClientDataType = currency ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -219,7 +219,7 @@ Class Test.ClientDataTypeDate [ ClientDataType = date ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -237,7 +237,7 @@ Class Test.ClientDataTypeDecimal [ ClientDataType = decimal ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -255,7 +255,7 @@ Class Test.ClientDataTypeDouble [ ClientDataType = double ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -273,7 +273,7 @@ Class Test.ClientDataTypeFDate [ ClientDataType = fdate ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -291,7 +291,7 @@ Class Test.ClientDataTypeFTimestamp [ ClientDataType = ftimestamp ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -309,7 +309,7 @@ Class Test.ClientDataTypeHandle [ ClientDataType = handle ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -327,7 +327,7 @@ Class Test.ClientDataTypeInteger [ ClientDataType = integer ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -345,7 +345,7 @@ Class Test.ClientDataTypeList [ ClientDataType = list ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -363,7 +363,7 @@ Class Test.ClientDataTypeLongVarchar [ ClientDataType = longvarchar ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -381,7 +381,7 @@ Class Test.ClientDataTypeNumeric [ ClientDataType = numeric ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -399,7 +399,7 @@ Class Test.ClientDataTypeStatus [ ClientDataType = status ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -417,7 +417,7 @@ Class Test.ClientDataTypeTime [ ClientDataType = time ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -435,7 +435,7 @@ Class Test.ClientDataTypeTimestamp [ ClientDataType = timestamp ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -453,7 +453,7 @@ Class Test.ClientDataTypeVarchar [ ClientDataType = varchar ]
     (class_keywords
       (class_keyword
         (class_keyword_clientdatatype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -515,7 +515,7 @@ Class Test.ClassTypeDatatype [ ClassType = datatype ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -533,7 +533,7 @@ Class Test.ClassTypeDynamic [ ClassType = dynamic ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -551,7 +551,7 @@ Class Test.ClassTypeIndex [ ClassType = index ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -569,7 +569,7 @@ Class Test.ClassTypePersistent [ ClassType = persistent ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -587,7 +587,7 @@ Class Test.ClassTypeSerial [ ClassType = serial ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -605,7 +605,7 @@ Class Test.ClassTypeStream [ ClassType = stream ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -623,7 +623,7 @@ Class Test.ClassTypeView [ ClassType = view ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -641,7 +641,7 @@ Class Test.ClassTypeEmpty [ ClassType = "" ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -659,7 +659,7 @@ Class Test.ClassTypeCaseInsensitive [ ClassType = PeRsIsTeNt ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -993,7 +993,7 @@ Class X Extends (A, B, C) [ Inheritance = right ]
     (class_keywords
       (class_keyword
         (class_keyword_inheritance
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1018,7 +1018,7 @@ Class X Extends (A, B, C) [ Inheritance = left ]
     (class_keywords
       (class_keyword
         (class_keyword_inheritance
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1036,7 +1036,7 @@ Class Test.ClientNameSimple [ ClientName = MyClientClass ]
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body)))
 
 ===
@@ -1054,7 +1054,7 @@ Class Test.ClientNameLower [ ClientName = myclientclass ]
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body)))
 
 ===
@@ -1072,7 +1072,7 @@ Class Test.ClientNameUnderscoreDigits [ ClientName = My_Client_2 ]
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body)))
 
 ===
@@ -1090,7 +1090,7 @@ Class Test.ClientNamePercent [ ClientName = %ClientClass ]
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body)))
 
 ===
@@ -1108,7 +1108,7 @@ Class Test.ClientNameKeywordCase [ cLiEnTnAmE = ClientAlias ]
     (class_keywords
       (class_keyword
         (property_keyword_client_name
-          (rhs))))
+          (property_name))))
     (class_body)))
 
 ===
@@ -1159,7 +1159,7 @@ Class Test.LanguageObjectScript [ Language = objectscript ]
     (class_keywords
       (class_keyword
         (class_keyword_language
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1180,7 +1180,7 @@ Class MyApp.MyClass Extends %Persistent [ Sharded = 1 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_sharded
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -1232,7 +1232,7 @@ Class Test.LanguageTSQL [ Language = tsql ]
     (class_keywords
       (class_keyword
         (class_keyword_language
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1250,7 +1250,7 @@ Class Test.LanguageCaseInsensitive [ lAnGuAgE = ObJeCtScRiPt ]
     (class_keywords
       (class_keyword
         (class_keyword_language
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1382,10 +1382,10 @@ Class Test.OdbcTypeBigInt [ ClassType = DataType, OdbcType = BIGINT ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1403,10 +1403,10 @@ Class Test.OdbcTypeBit [ ClassType = DataType, OdbcType = BIT ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1424,10 +1424,10 @@ Class Test.OdbcTypeDate [ ClassType = DataType, OdbcType = DATE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1445,10 +1445,10 @@ Class Test.OdbcTypeDouble [ ClassType = DataType, OdbcType = DOUBLE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1466,10 +1466,10 @@ Class Test.OdbcTypeInteger [ ClassType = DataType, OdbcType = INTEGER ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1487,10 +1487,10 @@ Class Test.OdbcTypeLongVarBinary [ ClassType = DataType, OdbcType = LONGVARBINAR
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1508,10 +1508,10 @@ Class Test.OdbcTypeLongVarchar [ ClassType = DataType, OdbcType = LONGVARCHAR ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1529,10 +1529,10 @@ Class Test.OdbcTypeNumeric [ ClassType = DataType, OdbcType = NUMERIC ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1550,10 +1550,10 @@ Class Test.OdbcTypeResultSet [ ClassType = DataType, OdbcType = RESULTSET ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1571,10 +1571,10 @@ Class Test.OdbcTypeSmallInt [ ClassType = DataType, OdbcType = SMALLINT ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1592,10 +1592,10 @@ Class Test.OdbcTypeStruct [ ClassType = DataType, OdbcType = STRUCT ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1613,10 +1613,10 @@ Class Test.OdbcTypeTime [ ClassType = DataType, OdbcType = TIME ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1634,10 +1634,10 @@ Class Test.OdbcTypeTimestamp [ ClassType = DataType, OdbcType = TIMESTAMP ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1655,10 +1655,10 @@ Class Test.OdbcTypeTinyInt [ ClassType = DataType, OdbcType = TINYINT ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1676,10 +1676,10 @@ Class Test.OdbcTypeVarBinary [ ClassType = DataType, OdbcType = VARBINARY ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1697,10 +1697,10 @@ Class Test.OdbcTypeVarchar [ ClassType = DataType, OdbcType = VARCHAR ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1718,10 +1718,10 @@ Class Test.OdbcTypeCaseInsensitive [ ClassType = DataType, OdbcType = vArChAr ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1739,10 +1739,10 @@ Class Test.OdbcTypeKeywordCase [ ClassType = DataType, oDbCtYpE = VARCHAR ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_odbc_type
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -1815,7 +1815,7 @@ Class Test.OwnerSimple [ Owner = {_SYSTEM} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1833,7 +1833,7 @@ Class Test.OwnerCase [ Owner = {JoHnDoE} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1851,7 +1851,7 @@ Class Test.OwnerWithSpaces [ Owner = {John Doe} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1869,7 +1869,7 @@ Class Test.OwnerUnicode [ Owner = {Hannah キムラ} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1887,7 +1887,7 @@ Class Test.OwnerPunct [ Owner = {dev-team.lead+ops} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1905,7 +1905,7 @@ Class Test.OwnerKeywordCase [ oWnEr = {Jane Doe} ]
     (class_keywords
       (class_keyword
         (class_keyword_owner
-          (rhs))))
+          (iris_username))))
     (class_body)))
 
 ===
@@ -1981,8 +1981,7 @@ Class PropClass.MyClass Extends %RegisteredObject [ PropertyClass = PropClass.My
     (class_keywords
       (class_keyword
         (class_keyword_propertyclass
-          (rhs
-            (identifier)))))
+          (class_name))))
     (class_body
       (line_comment_1))))
 
@@ -2001,7 +2000,7 @@ Class Test.ServerOnly0 [ ServerOnly = 0 ]
     (class_keywords
       (class_keyword
         (property_keyword_server_only
-          (rhs))))
+          (numeric_literal))))
     (class_body)))
 
 ===
@@ -2019,7 +2018,7 @@ Class Test.ServerOnly1 [ ServerOnly = 1 ]
     (class_keywords
       (class_keyword
         (property_keyword_server_only
-          (rhs))))
+          (numeric_literal))))
     (class_body)))
 
 ===
@@ -2037,7 +2036,7 @@ Class Test.ServerOnlyWhitespace [   ServerOnly    =    1   ]
     (class_keywords
       (class_keyword
         (property_keyword_server_only
-          (rhs))))
+          (numeric_literal))))
     (class_body)))
 
 ===
@@ -2055,7 +2054,7 @@ Class Test.ServerOnlyCase [ sErVeRoNlY = 0 ]
     (class_keywords
       (class_keyword
         (property_keyword_server_only
-          (rhs))))
+          (numeric_literal))))
     (class_body)))
 
 ===
@@ -2073,10 +2072,10 @@ Class Test.ServerOnlyWithOther [ ClassType = Persistent, ServerOnly = 1 ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (property_keyword_server_only
-          (rhs))))
+          (numeric_literal))))
     (class_body)))
 
 ===
@@ -2160,7 +2159,7 @@ Class Test.SOAPBindingStyleDocument [ SOAPBindingStyle = document ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2178,7 +2177,7 @@ Class Test.SOAPBindingStyleRPC [ SOAPBindingStyle = rpc ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2196,7 +2195,7 @@ Class Test.SOAPBindingStyleValueCase [ SOAPBindingStyle = DoCuMeNt ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2214,7 +2213,7 @@ Class Test.SOAPBindingStyleKeywordCase [ sOaPbInDiNgStYlE = rpc ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2232,10 +2231,10 @@ Class Test.SOAPBindingStyleWithOther [ ClassType = serial, SOAPBindingStyle = do
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2308,7 +2307,7 @@ Class Test.SoapBodyUseLiteral [ SoapBodyUse = literal ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_body_use
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2326,7 +2325,7 @@ Class Test.SoapBodyUseEncoded [ SoapBodyUse = encoded ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_body_use
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2344,7 +2343,7 @@ Class Test.SoapBodyUseValueCase [ SoapBodyUse = LiTeRaL ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_body_use
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2362,7 +2361,7 @@ Class Test.SoapBodyUseKeywordCase [ sOaPbOdYuSe = encoded ]
     (class_keywords
       (class_keyword
         (method_keyword_soap_body_use
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2380,10 +2379,10 @@ Class Test.SoapBodyUseWithOther [ SoapBindingStyle = document, SoapBodyUse = lit
     (class_keywords
       (class_keyword
         (method_keyword_soap_binding_style
-          (rhs)))
+          (typename)))
       (class_keyword
         (method_keyword_soap_body_use
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2456,10 +2455,10 @@ Class Test.SqlCategoryString [ ClassType = DataType, SqlCategory = STRING ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2477,10 +2476,10 @@ Class Test.SqlCategoryDate [ ClassType = DataType, SqlCategory = DATE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2498,10 +2497,10 @@ Class Test.SqlCategoryTime [ ClassType = DataType, SqlCategory = TIME ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2519,10 +2518,10 @@ Class Test.SqlCategoryTimestamp [ ClassType = DataType, SqlCategory = TIMESTAMP 
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2540,10 +2539,10 @@ Class Test.SqlCategoryDouble [ ClassType = DataType, SqlCategory = DOUBLE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2561,10 +2560,10 @@ Class Test.SqlCategoryInteger [ ClassType = DataType, SqlCategory = INTEGER ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2582,10 +2581,10 @@ Class Test.SqlCategoryNumeric [ ClassType = DataType, SqlCategory = NUMERIC ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2603,10 +2602,10 @@ Class Test.SqlCategoryName [ ClassType = DataType, SqlCategory = NAME ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2624,10 +2623,10 @@ Class Test.SqlCategoryFMDate [ ClassType = DataType, SqlCategory = FMDATE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2645,10 +2644,10 @@ Class Test.SqlCategoryFMTimestamp [ ClassType = DataType, SqlCategory = FMTIMEST
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2666,10 +2665,10 @@ Class Test.SqlCategoryMVDate [ ClassType = DataType, SqlCategory = MVDATE ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2687,10 +2686,10 @@ Class Test.SqlCategoryCaseInsensitive [ ClassType = DataType, sQlCaTeGoRy = tImE
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_category
-          (rhs))))
+          (typename))))
     (class_body)))
 
 ===
@@ -2763,7 +2762,7 @@ Class Test.SqlRowIdNameSimple [ SqlRowIdName = ID ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2781,7 +2780,7 @@ Class Test.SqlRowIdNameLower [ SqlRowIdName = id ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2799,7 +2798,7 @@ Class Test.SqlRowIdNameUnderscoreDigits [ SqlRowIdName = row_id1 ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2817,7 +2816,7 @@ Class Test.SqlRowIdNamePercent [ SqlRowIdName = %ID ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2835,7 +2834,7 @@ Class Test.SqlRowIdNameKeywordCase [ sQlRoWiDnAmE = RowId ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2853,10 +2852,10 @@ Class Test.SqlRowIdNameWithOther [ ClassType = Persistent, SqlRowIdName = ID ]
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_row_id_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2966,7 +2965,7 @@ Class Test.SqlTableNameSimple [ SqlTableName = MyTable ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_table_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -2984,7 +2983,7 @@ Class Test.SqlTableNameLower [ SqlTableName = mytable ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_table_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -3002,7 +3001,7 @@ Class Test.SqlTableNameUnderscoreDigits [ SqlTableName = my_table_2 ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_table_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -3020,7 +3019,7 @@ Class Test.SqlTableNameKeywordCase [ sQlTaBlEnAmE = MyTable ]
     (class_keywords
       (class_keyword
         (class_keyword_sql_table_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -3038,10 +3037,10 @@ Class Test.SqlTableNameWithOther [ ClassType = Persistent, SqlTableName = MyTabl
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_sql_table_name
-          (rhs))))
+          (query_name))))
     (class_body)))
 
 ===
@@ -3139,7 +3138,7 @@ Class MyApp.Person Extends %Persistent [ System = 4 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_system
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -3161,7 +3160,7 @@ Class MyApp.Person Extends %Persistent [ System = 3 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_system
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -3183,7 +3182,7 @@ Class MyApp.Person Extends %Persistent [ System = 2 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_system
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -3205,7 +3204,7 @@ Class MyApp.Person Extends %Persistent [ System = 1 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_system
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -3227,7 +3226,7 @@ Class MyApp.Person Extends %Persistent [ System = 0 ]  {
     (class_keywords
       (class_keyword
         (class_keyword_system
-          (rhs))))
+          (numeric_literal))))
     (class_body
       (line_comment_1))))
 
@@ -3246,7 +3245,7 @@ Class Test.StorageStrategyDefault [ StorageStrategy = Default ]
     (class_keywords
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3264,7 +3263,7 @@ Class Test.StorageStrategyExtent [ StorageStrategy = Extent ]
     (class_keywords
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3282,7 +3281,7 @@ Class Test.StorageStrategyStream [ StorageStrategy = Stream ]
     (class_keywords
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3300,7 +3299,7 @@ Class Test.StorageStrategyValueCase [ StorageStrategy = dEfAuLt ]
     (class_keywords
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3318,7 +3317,7 @@ Class Test.StorageStrategyKeywordCase [ sToRaGeStRaTeGy = Extent ]
     (class_keywords
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3336,10 +3335,10 @@ Class Test.StorageStrategyWithOther [ ClassType = Persistent, StorageStrategy = 
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_storage_strategy
-          (rhs))))
+          (storage_name))))
     (class_body)))
 
 ===
@@ -3401,8 +3400,8 @@ Class MyApp.MyView [ ClassType = view, ViewQuery = { SELECT ID, Name FROM MyApp.
     (class_keywords
       (class_keyword
         (class_keyword_classtype
-          (rhs)))
+          (typename)))
       (class_keyword
         (class_keyword_view_query
-          (rhs))))
+          (external_method_body_content))))
     (class_body)))

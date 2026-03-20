@@ -50,7 +50,7 @@ Do Statement No Param Passing
             (line_ref
               (objectscript_identifier)
               (routine_ref
-                (dotted_identifier_relaxed_token)))))))
+                (routine_name)))))))
     (statement
       (command_new
         (keyword_new)
@@ -73,10 +73,8 @@ Do Statement No Param Passing
           (routine_tag_call
             (line_ref
               (routine_ref
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (dotted_identifier_relaxed_token)))))))))
+                (namespace)
+                (routine_name)))))))))
 
 ===============================
 Do Statement With Param Passing
@@ -480,7 +478,7 @@ Do Statement Object Method
         (do_parameter
           (instance_method_call
             (instance_variable
-              (property_name
+              (member_name
                 (identifier_segment_immediate))
               (subscripts
                 (bracket)
@@ -570,7 +568,7 @@ Do Statement with Indirection
                                 (objectscript_identifier))))))
                       (bracket)))))
               (routine_ref
-                (dotted_identifier_relaxed_token)))))))
+                (routine_name)))))))
     (statement
       (command_do
         (keyword_do)

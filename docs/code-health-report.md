@@ -6,7 +6,7 @@
 |--------|--------|---------|
 | **Overall Health** | Good | Well-structured, maintainable codebase |
 | **Technical Debt** | Low-Medium | Some unimplemented features, minor style issues |
-| **Test Coverage** | Good | 168 corpus test files across 4 grammars |
+| **Test Coverage** | Good | 170 corpus test files across 5 grammars |
 | **Documentation** | Good | Comprehensive README, inline comments |
 | **Code Quality** | Good | Consistent patterns, type annotations |
 
