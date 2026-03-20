@@ -45,7 +45,7 @@ Quick binding checks from repo root:
 
 ```bash
 nvm use
-npm install
+npm ci
 cargo test --lib --package tree-sitter-objectscript
 python3 -m venv .venv
 source .venv/bin/activate
@@ -64,7 +64,7 @@ For Node bindings specifically, `.nvmrc` pins the expected Node version.
 
 - Zed: [ObjectScript extension](https://zed.dev/extensions/objectscript)
 - Neovim (`nvim-treesitter`):
-  - Install grammars with `:TSInstall objectscript_udl` and `:TSInstall objectscript`
+  - Install grammars with `:TSInstall objectscript_udl`, `:TSInstall objectscript`, and `:TSInstall objectscript_routine`
   - Optional filetype mapping for `.cls`:
 
 ```lua

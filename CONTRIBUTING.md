@@ -79,6 +79,7 @@ Query composition rules:
 - `expr/queries`: source layer
 - `core/queries`: `expr + core local`
 - `udl/queries`: `expr + core local + udl local`
+- `objectscript/queries`: `expr + core local + udl local` (highlights), plus core/udl layering for injections/indents
 - `objectscript_routine/queries`: `expr + core local + routine local`
 
 Manual query commands:
@@ -113,7 +114,7 @@ PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_
 
 ```bash
 nvm use
-npm install
+npm ci
 npm test
 ```
 
