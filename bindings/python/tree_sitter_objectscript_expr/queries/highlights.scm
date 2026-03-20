@@ -1,12 +1,21 @@
+; === BEGIN LOCAL ===
 (pattern_expression) @string.regexp
 
-(numeric_literal) @number
+[
+  (json_number_literal)
+  (numeric_literal)
+] @number
 
-(string_literal) @string
+[
+  (json_null_literal)
+  (json_string_literal)
+  (string_literal)
+] @string
 
-(keyword_pound_pound_class) @keyword
-
-(keyword_pound_pound_super) @keyword
+[
+  (keyword_pound_pound_super)
+  (keyword_pound_pound_class)
+] @keyword.operator
 
 (system_defined_variable) @variable.builtin
 
@@ -14,29 +23,36 @@
 
 (sql_field_modifier) @keyword.modifier
 
-(property_name) @property
+[
+  (property_name)
+  (parameter_name)
+  (sql_field_identifier)
+] @variable.member
 
-(method_name) @function
+(method_name) @function.method
 
-(parameter_name) @property
+[
+  (routine_name)
+  (class_name)
+] @type
 
-(class_name) @type
+(macro_function) @function.macro
 
-(macro) @constant
+(macro_constant) @constant.macro
 
-(routine_ref) @variable
+[
+  (lvn)
+  (gvn)
+  (ssvn)
+  (objectscript_identifier)
+] @variable
 
-(sql_field_identifier) @variable
+(namespace) @module
 
-(lvn) @variable
-
-(gvn) @variable
-
-(ssvn) @variable
-
-(instance_variable) @variable
-
-(objectscript_identifier) @variable
+[
+  (objectscript_identifier_special)
+  (instance_variable)
+] @variable.member
 
 (method_arg) @variable.parameter
 
@@ -93,12 +109,8 @@
   "?"
 ] @operator
 
-(json_string_literal) @string
-
 (json_boolean_literal) @boolean
 
-(json_number_literal) @number
-
-(json_null_literal) @string
-
 (bracket) @punctuation.bracket
+
+; === END LOCAL ===

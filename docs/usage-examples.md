@@ -8,10 +8,11 @@ This document contains current, runnable examples for using the grammars and bin
 - `objectscript_udl`: class-file grammar for `.cls`
 - `objectscript_core`: routine/statement grammar
 - `objectscript_expr`: expression grammar
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.rtn`
 
 ## CLI Workflow
 
-Run from the grammar directory you are editing (`objectscript`, `udl`, `core`, or `expr`):
+Run from the grammar directory you are editing (`objectscript`, `udl`, `core`, `expr`, or `objectscript_routine`):
 
 ```bash
 tree-sitter generate
@@ -39,6 +40,7 @@ This syncs query files, builds parser artifacts, and runs `ts_query_ls check` on
 - `core/queries`
 - `udl/queries`
 - `expr/queries`
+- `objectscript_routine/queries`
 
 ## Neovim Setup
 
@@ -75,6 +77,7 @@ console.log(tree.rootNode.type);
 ```
 
 Use `ObjectScript.objectscript` for playground/snippet parsing.
+Use `ObjectScript.objectscript_routine` for routine-header files.
 
 ## Python Example
 
@@ -82,15 +85,18 @@ Use `ObjectScript.objectscript` for playground/snippet parsing.
 import tree_sitter
 import tree_sitter_objectscript
 import tree_sitter_objectscript_udl
+import tree_sitter_objectscript_routine
 
 lang_udl = tree_sitter.Language(tree_sitter_objectscript_udl.language_objectscript_udl())
 lang_playground = tree_sitter.Language(tree_sitter_objectscript.language_objectscript())
+lang_routine = tree_sitter.Language(tree_sitter_objectscript_routine.language_objectscript_routine())
 
 tree_sitter.Query(lang_udl, tree_sitter_objectscript_udl.HIGHLIGHTS_QUERY)
 tree_sitter.Query(lang_playground, tree_sitter_objectscript.HIGHLIGHTS_QUERY)
+tree_sitter.Query(lang_routine, tree_sitter_objectscript_routine.HIGHLIGHTS_QUERY)
 ```
 
-## Rust Example (UDL crate)
+## Rust Example (UDL + routine crate)
 
 ```rust
 use tree_sitter::Parser;
@@ -101,6 +107,20 @@ fn main() {
     parser
         .set_language(&LANGUAGE_OBJECTSCRIPT_UDL.into())
         .expect("failed to load objectscript_udl grammar");
+}
+```
+
+Routine grammar from the same crate:
+
+```rust
+use tree_sitter::Parser;
+use tree_sitter_objectscript::LANGUAGE_OBJECTSCRIPT_ROUTINE;
+
+fn main() {
+    let mut parser = Parser::new();
+    parser
+        .set_language(&LANGUAGE_OBJECTSCRIPT_ROUTINE.into())
+        .expect("failed to load objectscript_routine grammar");
 }
 ```
 
@@ -148,7 +168,11 @@ npm install
 npm test
 
 cargo test --lib --package tree-sitter-objectscript
-python3 -m pytest -q bindings/python/tests/test_binding.py
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -U pip setuptools wheel pytest tree-sitter
+python3 setup.py build_ext --inplace
+PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_binding.py
 go test ./bindings/go/...
 swift test
 make test

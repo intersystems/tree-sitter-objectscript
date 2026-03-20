@@ -19,10 +19,10 @@ ClassMethod GetSDA(Output pXml, p as %String) {
 (source_file
   (documatic_line)
   (class_definition
-    keyword: (keyword_class)
+    (keyword_class)
     (class_name)
     (class_extends
-      keyword: (keyword_extends)
+      (keyword_extends)
       (class_name))
     (class_keywords
       (class_keyword
@@ -31,30 +31,40 @@ ClassMethod GetSDA(Output pXml, p as %String) {
     (class_body
       (class_statement
         (parameter
-          keyword: (keyword_parameter)
+          (keyword_parameter)
           (parameter_name
             (identifier))
           (default_argument_value
             (numeric_literal))))
       (class_statement
         (classmethod
-          keyword: (keyword_classmethod)
+          (keyword_classmethod)
           (method_definition
             (method_name
               (identifier))
             (arguments
+              (bracket)
               (argument
-                keyword: (keyword_output)
-                (identifier))
+                (keyword_output)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
-                  keyword: (keyword_as)
+                  (keyword_as)
                   (typename
-                    (identifier)))))
+                    (identifier))))
+              (bracket))
             (statement
               (command_set
-                keyword: (keyword_set)
+                (keyword_set)
                 (set_argument
                   (glvn
                     (lvn

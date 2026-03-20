@@ -1,5 +1,7 @@
 # Arc42 Architecture Documentation - tree-sitter-objectscript
 
+> Update note (2026): The repository now includes an additional `objectscript_routine` grammar (`expr -> core -> objectscript_routine`) and expanded pre-commit checks (query sync, lint auto-fix, parser/query validation). Use `README.md` and `CONTRIBUTING.md` as the canonical operational docs.
+
 ## 1. Introduction and Goals
 
 ### 1.1 Requirements Overview

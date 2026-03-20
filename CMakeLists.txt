@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(tree-sitter-objectscript
-        VERSION "1.5.1"
+        VERSION "1.6.1"
         DESCRIPTION "ObjectScript grammar for tree-sitter"
         HOMEPAGE_URL "https://github.com/intersystems/tree-sitter-objectscript"
         LANGUAGES C)
@@ -55,8 +55,10 @@ endmacro()
 
 
 add_subdirectory(objectscript tree-sitter-objectscript)
-
-add_subdirectory(objectscript_core tree-sitter-objectscript_core)
+add_subdirectory(udl tree-sitter-objectscript_udl)
+add_subdirectory(core tree-sitter-objectscript_core)
+add_subdirectory(expr tree-sitter-objectscript_expr)
+add_subdirectory(objectscript_routine tree-sitter-objectscript_routine)
 
 add_custom_target(ts-test "${TREE_SITTER_CLI}" test
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

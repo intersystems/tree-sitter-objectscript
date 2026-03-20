@@ -9,4 +9,5 @@ module.exports =
 try {
   module.exports.objectscript.nodeTypeInfo = require("../../objectscript/src/node-types.json");
   module.exports.objectscript_udl.nodeTypeInfo = require("../../udl/src/node-types.json");
+  module.exports.objectscript_routine.nodeTypeInfo = require("../../objectscript_routine/src/node-types.json");
 } catch (_) { }

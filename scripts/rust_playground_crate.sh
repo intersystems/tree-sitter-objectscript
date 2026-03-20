@@ -18,7 +18,7 @@ stage_playground_crate() {
 
   mkdir -p "$dest/common" \
            "$dest/objectscript/src/tree_sitter" \
-           "$dest/udl/queries"
+           "$dest/objectscript/queries"
 
   cp -f "$TEMPLATE_DIR/Cargo.toml" "$dest/Cargo.toml"
   cp -f "$TEMPLATE_DIR/build.rs" "$dest/build.rs"
@@ -33,9 +33,9 @@ stage_playground_crate() {
   cp -f "$ROOT_DIR/objectscript/src/node-types.json" "$dest/objectscript/src/node-types.json"
   cp -f "$ROOT_DIR/objectscript/src/tree_sitter/parser.h" "$dest/objectscript/src/tree_sitter/parser.h"
 
-  cp -f "$ROOT_DIR/udl/queries/highlights.scm" "$dest/udl/queries/highlights.scm"
-  cp -f "$ROOT_DIR/udl/queries/indents.scm" "$dest/udl/queries/indents.scm"
-  cp -f "$ROOT_DIR/udl/queries/injections.scm" "$dest/udl/queries/injections.scm"
+  cp -f "$ROOT_DIR/objectscript/queries/highlights.scm" "$dest/objectscript/queries/highlights.scm"
+  cp -f "$ROOT_DIR/objectscript/queries/indents.scm" "$dest/objectscript/queries/indents.scm"
+  cp -f "$ROOT_DIR/objectscript/queries/injections.scm" "$dest/objectscript/queries/injections.scm"
 }
 
 if [[ $# -lt 1 ]]; then

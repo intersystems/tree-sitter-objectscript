@@ -22,7 +22,7 @@ func TestCanLoadObjectScriptCoreGrammar(t *testing.T) {
 }
 
 func TestCanLoadObjectScriptUdlGrammar(t *testing.T) {
-	language := tree_sitter.NewLanguage(tree_sitter_objectscript.LanguageObjectscriptCore())
+	language := tree_sitter.NewLanguage(tree_sitter_objectscript.LanguageObjectscriptUdl())
 	if language == nil {
 		t.Errorf("Error loading ObjectScript Udl grammar")
 	}
@@ -32,5 +32,12 @@ func TestCanLoadObjectScriptExprGrammar(t *testing.T) {
 	language := tree_sitter.NewLanguage(tree_sitter_objectscript.LanguageObjectscriptExpr())
 	if language == nil {
 		t.Errorf("Error loading ObjectScript Expr grammar")
+	}
+}
+
+func TestCanLoadObjectScriptRoutineGrammar(t *testing.T) {
+	language := tree_sitter.NewLanguage(tree_sitter_objectscript.LanguageObjectscriptRoutine())
+	if language == nil {
+		t.Errorf("Error loading ObjectScript Routine grammar")
 	}
 }

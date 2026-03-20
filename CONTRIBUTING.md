@@ -16,9 +16,11 @@ Thanks for contributing to `tree-sitter-objectscript`.
 - `udl/`: `.cls` grammar
 - `core/`: routine/statement grammar
 - `expr/`: expression grammar
+- `objectscript_routine/`: routine-header grammar for `.mac`, `.inc`, `.rtn`
 
-Grammar chain:
-`objectscript -> objectscript_udl -> objectscript_core -> objectscript_expr`
+Grammar graph:
+`objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
+`objectscript_expr -> objectscript_core -> objectscript_routine`
 
 ## Grammar Workflow
 
@@ -37,7 +39,7 @@ tree-sitter build --wasm
 tree-sitter playground
 ```
 
-If you modify an upstream grammar (`expr`, `core`, or `udl`), regenerate and retest downstream grammars.
+If you modify an upstream grammar (`expr` or `core`), regenerate and retest downstream grammars (`udl`, `objectscript`, `objectscript_routine`).
 
 ## Query Sync and Git Hooks
 
@@ -66,8 +68,18 @@ Expected:
 
 Hook behavior:
 
-- On commit, the `pre-commit` hook runs `python3 scripts/sync_queries.py` when query-related files are staged.
-- If query files are updated, the hook stages those changes automatically.
+- On commit, the `pre-commit` hook:
+  - Runs `python3 scripts/sync_queries.py` and stages synchronized query files.
+  - Runs `npm run lint -- --fix`, then `npm run lint`.
+  - Runs `tree-sitter test` in `objectscript`, `udl`, `core`, `expr`, and `objectscript_routine`.
+  - Runs `make formatquery`, `make lintquery`, and `make checkquery`.
+
+Query composition rules:
+
+- `expr/queries`: source layer
+- `core/queries`: `expr + core local`
+- `udl/queries`: `expr + core local + udl local`
+- `objectscript_routine/queries`: `expr + core local + routine local`
 
 Manual query commands:
 
@@ -80,7 +92,7 @@ make query
 
 Run from repository root.
 
-- Rust (UDL crate):
+- Rust (UDL + routine crate):
 
 ```bash
 cargo test --lib --package tree-sitter-objectscript
@@ -90,8 +102,11 @@ cargo test --lib --package tree-sitter-objectscript
 - Python:
 
 ```bash
-python3 -m pip install -e .
-python3 -m pytest -q bindings/python/tests/test_binding.py
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -U pip setuptools wheel pytest tree-sitter
+python3 setup.py build_ext --inplace
+PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_binding.py
 ```
 
 - Node:

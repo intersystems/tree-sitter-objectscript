@@ -36,14 +36,14 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs
+                (expression
                   (expr_atom
                     (system_defined_function
                       (built_in_functions_with_optional_args
-                        (function_argument
+                        (expression
                           (expr_atom
                             (string_literal)))
-                        (function_argument
+                        (expression
                           (expr_atom
                             (numeric_literal))))))))))))
       (class_statement
@@ -58,7 +58,7 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs
+                (expression
                   (expr_atom
                     (system_defined_function
                       (dollar_function
@@ -78,7 +78,7 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs
+                (expression
                   (expr_atom
                     (relative_dot_parameter
                       (oref_parameter
@@ -98,7 +98,7 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs
+                (expression
                   (expr_atom
                     (relative_dot_method
                       (oref_method
@@ -119,7 +119,7 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_sql_compute_code
-                (rhs
+                (rhs_sql_compute_code
                   (expression
                     (expr_atom
                       (sql_field_reference
@@ -149,7 +149,7 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_sql_compute_code
-                (rhs
+                (rhs_sql_compute_code
                   (expression
                     (expr_atom
                       (sql_field_reference
@@ -184,23 +184,23 @@ Class barricade {
           (property_keywords
             (property_keyword
               (property_keyword_sql_compute_code
-                (rhs
+                (rhs_sql_compute_code
                   (expression
                     (expr_atom
                       (system_defined_function
                         (built_in_functions_with_optional_args
-                          (function_argument
+                          (expression
                             (expr_atom
                               (system_defined_variable)))
-                          (function_argument
+                          (expression
                             (expr_atom
                               (numeric_literal))))))))))
             (property_keyword
               (property_keyword_sql_computed))
             (property_keyword
               (property_keyword_sql_compute_on_change
-                (rhs)
-                (rhs)))))))))
+                (typename)
+                (typename)))))))))
 
 ========================
 Simple literal property
@@ -388,7 +388,7 @@ Class Test {
           (property_keywords
             (property_keyword
               (property_keyword_sql_list_type
-                (rhs)))
+                (typename)))
             (property_keyword
               (property_keyword_required))))))))
 
@@ -463,7 +463,7 @@ Class Test {
               (property_keyword_required))
             (property_keyword
               (property_keyword_sql_field_name
-                (rhs)))))))))
+                (query_name)))))))))
 
 =====================================
 Relationship property with keywords
@@ -493,10 +493,10 @@ Class Test {
           (relationship_keywords
             (relationship_keyword
               (relationship_keyword_cardinality
-                (rhs)))
+                (typename)))
             (relationship_keyword
               (relationship_keyword_inverse
-                (rhs)))))))))
+                (objectscript_identifier)))))))))
 
 =====================================
 Property without classname (datatype)
@@ -589,10 +589,10 @@ Class Test {
           (property_keywords
             (property_keyword
               (property_keyword_sql_list_type
-                (rhs)))
+                (typename)))
             (property_keyword
               (property_keyword_sql_list_delim
-                (rhs)))
+                (string_literal)))
             (property_keyword
               (property_keyword_required))))))))
 
@@ -673,14 +673,14 @@ Class Test {
               (property_keyword_sql_computed))
             (property_keyword
               (property_keyword_sql_compute_code
-                (rhs
+                (rhs_sql_compute_code
                   (expression
                     (expr_atom
                       (numeric_literal))))))
             (property_keyword
               (property_keyword_sql_compute_on_change
-                (rhs)
-                (rhs)))))))))
+                (typename)
+                (typename)))))))))
 
 =============================================
 Valid — Test all property keywords together
@@ -731,23 +731,23 @@ Class Test {
           (property_keywords
             (property_keyword
               (property_keyword_aliases
-                (rhs)
-                (rhs)))
+                (property_name)
+                (property_name)))
             (property_keyword
               (property_keyword_calculated))
             (property_keyword
               (property_keyword_client_name
-                (rhs)))
+                (property_name)))
             (property_keyword
               (property_keyword_compute_local_only
-                (rhs)))
+                (numeric_literal)))
             (property_keyword
               (property_keyword_deferred))
             (property_keyword
               (property_keyword_identity))
             (property_keyword
               (property_keyword_initial_expression
-                (rhs
+                (expression
                   (expr_atom
                     (numeric_literal))
                   (expr_tail
@@ -767,25 +767,25 @@ Class Test {
               (property_keyword_required))
             (property_keyword
               (property_keyword_server_only
-                (rhs)))
+                (numeric_literal)))
             (property_keyword
               (property_keyword_sql_column_number
-                (rhs)))
+                (numeric_literal)))
             (property_keyword
               (property_keyword_sql_computed))
             (property_keyword
               (property_keyword_sql_compute_on_change
-                (rhs)
-                (rhs)))
+                (typename)
+                (typename)))
             (property_keyword
               (property_keyword_sql_field_name
-                (rhs)))
+                (query_name)))
             (property_keyword
               (property_keyword_sql_list_delim
-                (rhs)))
+                (string_literal)))
             (property_keyword
               (property_keyword_sql_list_type
-                (rhs)))
+                (typename)))
             (property_keyword
               (property_keyword_transient))))))))
 
@@ -817,15 +817,15 @@ Class Test {
           (property_keywords
             (property_keyword
               (property_keyword_sql_compute_code
-                (rhs
+                (rhs_sql_compute_code
                   (expression
                     (expr_atom
                       (system_defined_function
                         (built_in_functions_with_optional_args
-                          (function_argument
+                          (expression
                             (expr_atom
                               (system_defined_variable)))
-                          (function_argument
+                          (expression
                             (expr_atom
                               (numeric_literal))))))))))
             (property_keyword

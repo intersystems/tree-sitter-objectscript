@@ -163,6 +163,7 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
 
   // Statement keywords (including short forms accepted by the grammar)
   if (ascii_upper_eq(text, len, "P") || ascii_upper_eq(text, len, "PRINT")) return true;
+  if (ascii_upper_eq(text, len, "ROUTINE")) return true;
   if (ascii_upper_eq(text, len, "ZP") || ascii_upper_eq(text, len, "ZPRINT")) return true;
   if (ascii_upper_eq(text, len, "S") || ascii_upper_eq(text, len, "SET")) return true;
   if (ascii_upper_eq(text, len, "W") || ascii_upper_eq(text, len, "WRITE")) return true;
@@ -603,6 +604,24 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
 
                 while (!lexer->eof(lexer) && !(lexer->lookahead=='\n')) {
                     lexer->advance(lexer, true);
+                }
+                // For argumentless FOR blocks, allow:
+                //   FOR //comment
+                //   {
+                // by treating the comment+newline gap as loop whitespace.
+                if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+                    bool new_line = false;
+                    while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                        if (lexer->lookahead == '\n') {
+                          new_line = true;
+                        }
+                        lexer->advance(lexer, false);
+                    }
+                    if (lexer->lookahead == '{' && new_line) {
+                        lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                        scanner->terminated_newline = false;
+                        return true;
+                    }
                 }
                 // means the rest of the line is a comment
                 if(valid_symbols[_TERMINATION]) {

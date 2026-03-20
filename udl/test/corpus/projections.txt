@@ -73,15 +73,25 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
             (method_name
               (identifier))
             (arguments
+              (bracket)
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (keyword_byref)
-                (identifier)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))
+              (bracket))
             (return_type
               (keyword_as)
               (typename
@@ -102,21 +112,35 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
             (method_name
               (identifier))
             (arguments
+              (bracket)
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (keyword_byref)
-                (identifier))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
-                    (identifier)))))
+                    (identifier))))
+              (bracket))
             (return_type
               (keyword_as)
               (typename

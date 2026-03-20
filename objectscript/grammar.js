@@ -37,15 +37,40 @@ module.exports = define_grammar(objectscript_udl, {
             seq($.import_code),
           ),
         ),
+
         repeat1(
           prec.right(
             choice(
               $.class_definition,
               $.class_statement,
               $.statement,
+              $.routine_definition,
             ),
           ),
         ),
+      ),
+
+    routine_definition: ($) =>
+      prec.right(seq(
+        alias(/routine/i, $.routine),
+        alias($.identifier, $.routine_name),
+        optional($.routine_type),
+        repeat(
+          $.statement,
+        ),
+      )),
+
+    routine_type: (_) =>
+      seq(
+        '[',
+        /type/i,
+        '=',
+        choice(
+          /mac/i,
+          /inc/i,
+          /int/i,
+        ),
+        ']',
       ),
   },
 });

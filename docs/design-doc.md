@@ -1,5 +1,7 @@
 # Design Document - tree-sitter-objectscript
 
+> Update note (2026): The implemented system now includes a fifth grammar target, `objectscript_routine`, branching from `core`. Operational workflows and hook behavior were also expanded (query sync, lint auto-fix, parser/query checks). Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
+
 ## Metadata
 
 | Field | Value |

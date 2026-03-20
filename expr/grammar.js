@@ -16,7 +16,7 @@ const repeat_with_commas = function(rule) {
   return seq(rule, repeat(seq(',', rule)));
 };
 
-const {IDENT_SEG, DOTTED_ID_STRICT, DOTTED_ID_RELAXED} = require('../common/identifiers');
+const {DOTTED_ID_STRICT, DOTTED_ID_RELAXED} = require('../common/identifiers');
 
 module.exports = grammar({
   name: 'objectscript_expr',
@@ -42,7 +42,6 @@ module.exports = grammar({
           repeat($.expr_tail),
         ),
       ),
-
     expr_atom: ($) =>
       choice(
         $.json_object_literal,
@@ -204,7 +203,7 @@ module.exports = grammar({
       ),
 
     keyword_pound_pound_class: (_) => /##CLASS/i,
-    class_name: ($) =>
+    class_name: (_) =>
       choice(
         // quoted class name
         seq(
@@ -213,7 +212,7 @@ module.exports = grammar({
           '"',
         ),
         // unquoted: each segment starts with letter or %
-        $.dotted_identifier_strict_token_immediate,
+        token.immediate(/[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/),
       ),
     superclass_method_call: ($) =>
       seq(
@@ -231,7 +230,7 @@ module.exports = grammar({
           choice(
             // label+offset+routine or label+routine or label only
             seq(
-              $.objectscript_identifier,
+              choice($.objectscript_identifier, $.objectscript_identifier_special),
               optional($.label_offset),
               optional($.routine_ref),
             ),
@@ -252,7 +251,7 @@ module.exports = grammar({
     line_ref: ($) => choice(
       // label+offset+routine or label+routine or label only
       seq(
-        $.objectscript_identifier,
+        choice($.objectscript_identifier, $.objectscript_identifier_special),
         optional($.label_offset),
         optional($.routine_ref),
       ),
@@ -283,12 +282,12 @@ module.exports = grammar({
             token.immediate('||'),
             seq(
               token.immediate('|'),
-              $.expression,
+              alias(choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), $.namespace),
               token.immediate('|'),
             ),
           ),
         ),
-        $.dotted_identifier_relaxed_token),
+        alias($.dotted_identifier_relaxed_token, $.routine_name)),
 
     dollarsf: ($) =>
       seq(
@@ -296,9 +295,15 @@ module.exports = grammar({
           /\$SYSTEM/i,
           token.immediate('.'),
         )),
-        alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.function_argument),
+        choice(
+          $.objectscript_identifier,
+          $.objectscript_identifier_special,
+        ),
         token.immediate('.'),
-        alias(token.immediate(/[%A-Za-z][A-Za-z0-9]*/), $.function_argument),
+        choice(
+          $.objectscript_identifier,
+          $.objectscript_identifier_special,
+        ),
         $.method_args,
       ),
 
@@ -358,20 +363,23 @@ module.exports = grammar({
           optional(
             choice(
               token.immediate('||'),
-              seq(token.immediate('|'), choice($.objectscript_identifier, $.string_literal), optional(seq(',', choice($.objectscript_identifier, $.string_literal) )), '|'),
-              seq(token.immediate('['), choice($.objectscript_identifier, $.string_literal), optional(seq(',', choice($.objectscript_identifier, $.string_literal) )), ']'),
+              seq(token.immediate('|'), choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), optional(seq(',', choice($.objectscript_identifier, $.string_literal) )), '|'),
+              seq(token.immediate('['), choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), optional(seq(',', choice($.objectscript_identifier, $.string_literal) )), ']'),
             ),
           ),
           optional(token.immediate(/[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/)),
           optional($.subscripts),
         ),
       ),
-    lvn: ($) => prec.right(seq($.objectscript_identifier, optional($.subscripts))),
+    lvn: ($) => prec.right(seq(choice($.objectscript_identifier, $.objectscript_identifier_special), optional($.subscripts))),
     ssvn: ($) =>
       prec.right(
         seq(
           '^$',
-          $.identifier_segment_immediate,
+          choice(
+            $.identifier_segment_immediate,
+            $.identifier_segment_immediate_special,
+          ),
           optional($.subscripts),
         ),
       ),
@@ -402,7 +410,7 @@ module.exports = grammar({
       token.immediate(/[ONC]/),
     sql_field_identifier: (_) =>
       choice(
-        IDENT_SEG,
+        /[%A-Za-z][A-Za-z0-9]*/,
         seq(
           '"',
           repeat(choice(
@@ -483,14 +491,17 @@ module.exports = grammar({
       prec.right(
         seq(
           token.immediate(/[irm]\%/),
-          alias($.member_name, $.property_name),
+          $.member_name,
           optional($.subscripts),
         ),
       ),
     member_name: ($) =>
       choice(
         seq(token.immediate('"'), repeat(choice(/[^"]+/, token.immediate('""'))), '"'),
-        $.identifier_segment_immediate,
+        choice(
+          $.identifier_segment_immediate,
+          $.identifier_segment_immediate_special,
+        ),
       ),
     parameter_name: ($) =>
       seq(
@@ -765,11 +776,11 @@ module.exports = grammar({
         ),
         optional(
           seq(
-            optional(alias($.expression, $.function_argument)),
+            optional($.expression),
             repeat(
               seq(
                 ',',
-                optional(alias($.expression, $.function_argument)),
+                optional($.expression),
               ),
             ),
           ),
@@ -868,9 +879,9 @@ module.exports = grammar({
       seq(
         /\$(ZOBJ)?CLASSMETHOD/i,
         alias(token.immediate('('), $.bracket),
-        optional(alias($.expression, $.class_name)),
+        optional($.expression),
         ',',
-        alias($.expression, $.method_name),
+        $.expression,
         repeat(seq(',', $.method_arg)),
         ')',
       ),
@@ -878,9 +889,9 @@ module.exports = grammar({
       seq(
         /\$(ZOBJ)?METHOD/i,
         alias(token.immediate('('), $.bracket),
-        optional(alias($.expression, $.class_name)),
+        optional($.expression),
         ',',
-        alias($.expression, $.class_name),
+        $.expression,
         repeat(seq(',', $.method_arg)),
         alias(')', $.bracket),
       ),
@@ -901,11 +912,13 @@ module.exports = grammar({
     ),
 
     // rules that can be reused:
-    identifier_segment_immediate: _ => token.immediate(IDENT_SEG),
-    objectscript_identifier: _ => IDENT_SEG,
+    dotted_identifier_relaxed_token: _ => token(DOTTED_ID_RELAXED), // routines only
+    objectscript_identifier_special: _ => /\%[A-Za-z0-9]*/,
+    identifier_segment_immediate_special: _ => token.immediate(/\%[A-Za-z0-9]*/),
+    identifier_segment_immediate: _ => token.immediate(/[A-Za-z][A-Za-z0-9]*/),
+    objectscript_identifier: _ => /[A-Za-z][A-Za-z0-9]*/,
     dotted_identifier_strict_token_immediate: _ => token.immediate(DOTTED_ID_STRICT),
     dotted_identifier_strict_token: _ => token(DOTTED_ID_STRICT), // class/UDL names
-    dotted_identifier_relaxed_token: _ => token(DOTTED_ID_RELAXED), // routines only
 
     numeric_literal: _ =>
       token(/[+-]?(?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?)/),

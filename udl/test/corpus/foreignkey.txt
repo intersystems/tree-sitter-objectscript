@@ -17,14 +17,16 @@ Class test {
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check))))))))
@@ -48,14 +50,16 @@ Class test {
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check
@@ -80,18 +84,20 @@ Class test {
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keyword - OnUpdate = noaction (default)
@@ -126,18 +132,20 @@ ForeignKey FK1(ParentKey) References Test.ParentNoAction(KeyIndex) [ OnUpdate = 
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keyword - OnUpdate = cascade
@@ -172,18 +180,20 @@ ForeignKey FK1(ParentKey) References Test.ParentCascade(KeyIndex) [ OnUpdate = c
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keyword - OnUpdate = setdefault
@@ -218,18 +228,20 @@ ForeignKey FK1(ParentKey) References Test.ParentSetDefault(KeyIndex) [ OnUpdate 
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keyword - OnUpdate = setnull
@@ -264,18 +276,20 @@ ForeignKey FK1(ParentKey) References Test.ParentSetNull(KeyIndex) [ OnUpdate = s
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keyword - OnUpdate keyword/value case-insensitive
@@ -310,18 +324,20 @@ ForeignKey FK1(ParentKey) References Test.ParentCase(KeyIndex) [ oNuPdAtE = CaSc
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 invalid - OnUpdate unknown rhs
@@ -427,11 +443,11 @@ ForeignKey FK1(ParentID) References Test.FK.Parent1 [ ];
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
           (foreignkey_keywords))))))
 
@@ -468,14 +484,16 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent2(KeyIndex) [ ];
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords))))))
 
 ===
@@ -521,16 +539,18 @@ ForeignKey FKAB(A, B) References Test.FK.Parent3(ABIndex) [ ];
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords))))))
 
 ===
@@ -569,14 +589,16 @@ ForeignKey FK1(ParentKey) References Test.FK.Parent4(KeyIndex) [ ];
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords))))))
 
 ===
@@ -612,14 +634,16 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentInternal(KeyIndex) [ Internal
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (parameter_keyword_internal))))))))
@@ -657,14 +681,16 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotInternal(KeyIndex) [ Not I
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (parameter_keyword_internal
@@ -703,14 +729,16 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNoCheck(KeyIndex) [ NoCheck ]
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check))))))))
@@ -748,14 +776,16 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentNotNoCheck(KeyIndex) [ Not No
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (foreignkey_keyword_no_check
@@ -794,18 +824,20 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentSqlName(KeyIndex) [ SqlName =
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (method_keyword_sql_name
-                (rhs)))))))))
+                (query_name)))))))))
 
 ===
 foreign key keyword - OnDelete = cascade
@@ -840,18 +872,20 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentOnDelete(KeyIndex) [ OnDelete
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 foreign key keywords - multiple keywords in list
@@ -887,28 +921,30 @@ ForeignKey FK1(ParentKey) References Test.FK.ParentMany(KeyIndex)
           (foreignkey_name
             (identifier))
           (bracket)
-          (identifier
+          (property_name
             (identifier))
           (bracket)
           (keyword_references)
-          (identifier
+          (class_name
             (identifier))
-          (identifier
+          (bracket)
+          (index_name
             (identifier))
+          (bracket)
           (foreignkey_keywords
             (foreignkey_keyword
               (method_keyword_sql_name
-                (rhs)))
+                (query_name)))
             (foreignkey_keyword
               (foreignkey_keyword_no_check))
             (foreignkey_keyword
               (parameter_keyword_internal))
             (foreignkey_keyword
               (foreignkey_keyword_on_update
-                (rhs)))
+                (typename)))
             (foreignkey_keyword
               (relationship_keyword_on_delete
-                (rhs)))))))))
+                (typename)))))))))
 
 ===
 invalid - missing ForeignKey name

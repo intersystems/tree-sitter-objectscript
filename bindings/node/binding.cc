@@ -4,6 +4,7 @@ typedef struct TSLanguage TSLanguage;
 
 extern "C" TSLanguage *tree_sitter_objectscript();
 extern "C" TSLanguage *tree_sitter_objectscript_udl();
+extern "C" TSLanguage *tree_sitter_objectscript_routine();
 
 // "tree-sitter", "language" hashed with BLAKE2
 const napi_type_tag LANGUAGE_TYPE_TAG = {
@@ -23,8 +24,15 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     objectscript_udl_language.TypeTag(&LANGUAGE_TYPE_TAG);
     objectscript_udl["language"] = objectscript_udl_language;
 
+    auto objectscript_routine = Napi::Object::New(env);
+    objectscript_routine["name"] = Napi::String::New(env, "objectscript_routine");
+    auto objectscript_routine_language = Napi::External<TSLanguage>::New(env, tree_sitter_objectscript_routine());
+    objectscript_routine_language.TypeTag(&LANGUAGE_TYPE_TAG);
+    objectscript_routine["language"] = objectscript_routine_language;
+
     exports["objectscript"] = objectscript;
     exports["objectscript_udl"] = objectscript_udl;
+    exports["objectscript_routine"] = objectscript_routine;
     return exports;
 }
 

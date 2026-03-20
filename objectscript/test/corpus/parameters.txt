@@ -75,7 +75,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs))))))
+                (string_literal))))))
       (class_statement
         (property
           (keyword_property)
@@ -88,14 +88,16 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (rhs))))))
+                (string_literal))))))
       (class_statement
         (method
           (keyword_method)
           (method_definition
             (method_name
               (identifier))
-            (arguments)
+            (arguments
+              (bracket)
+              (bracket))
             (return_type
               (keyword_as)
               (typename
@@ -108,18 +110,28 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
             (method_name
               (identifier))
             (arguments
+              (bracket)
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
-                (identifier)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
-                    (identifier)))))
+                    (identifier))))
+              (bracket))
             (return_type
               (keyword_as)
               (typename
@@ -165,10 +177,10 @@ Class hi {
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_constraint
-                (rhs)))
+                (string_literal)))
             (parameter_keyword
               (parameter_keyword_flags
-                (rhs))))
+                (typename))))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -250,7 +262,9 @@ Class hi {
           (method_definition
             (method_name
               (identifier))
-            (arguments)
+            (arguments
+              (bracket)
+              (bracket))
             (statement
               (command_write
                 (keyword_write)
@@ -429,7 +443,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_flags
-                (rhs)))))))))
+                (typename)))))))))
 
 ========================
 Valid Parameter Keyword Flags LIST
@@ -452,7 +466,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_flags
-                (rhs)))))))))
+                (keyword_list)))))))))
 
 ========================
 Valid Parameter Types

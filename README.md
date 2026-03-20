@@ -10,22 +10,24 @@ Tree-sitter grammars for InterSystems ObjectScript.
 
 ## Grammars
 
-This repository publishes four related grammars:
+This repository publishes five related grammars:
 
 - `objectscript`: playground/snippet grammar.
 - `objectscript_udl`: class-file grammar for `.cls`.
 - `objectscript_core`: routine/statement grammar.
 - `objectscript_expr`: expression grammar.
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, and `.rtn`.
 
-Grammar extension chain:
-`objectscript -> objectscript_udl -> objectscript_core -> objectscript_expr`
+Grammar extension graph:
+`objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
+`objectscript_expr -> objectscript_core -> objectscript_routine`
 
 ## Packages
 
 - npm: `tree-sitter-objectscript`
 - PyPI: `tree-sitter-objectscript`
 - Rust crates:
-  - `tree-sitter-objectscript` (UDL grammar)
+  - `tree-sitter-objectscript` (UDL + routine grammars)
   - `tree-sitter-objectscript-playground` (playground grammar)
 
 ## Bindings
@@ -45,8 +47,11 @@ Quick binding checks from repo root:
 nvm use
 npm install
 cargo test --lib --package tree-sitter-objectscript
-python3 -m pip install -e .
-python3 -m pytest -q bindings/python/tests/test_binding.py
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -U pip setuptools wheel pytest tree-sitter
+python3 setup.py build_ext --inplace
+PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_binding.py
 npm test
 go test ./bindings/go/...
 swift test
@@ -74,7 +79,7 @@ vim.filetype.add({
 
 ## Quick Development
 
-Install the [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/creating-parsers/1-getting-started.html), then run commands from a grammar directory (`objectscript`, `udl`, `core`, or `expr`):
+Install the [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/creating-parsers/1-getting-started.html), then run commands from a grammar directory (`objectscript`, `udl`, `core`, `expr`, or `objectscript_routine`):
 
 ```bash
 tree-sitter generate
@@ -89,7 +94,7 @@ tree-sitter build --wasm
 tree-sitter playground
 ```
 
-If you change an upstream grammar (`expr`, `core`, `udl`), regenerate downstream grammars as needed.
+If you change an upstream grammar (`expr` or `core`), regenerate downstream grammars as needed (`udl`, `objectscript`, `objectscript_routine`).
 
 ## Contributing
 
