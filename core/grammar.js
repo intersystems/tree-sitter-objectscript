@@ -35,6 +35,21 @@ function build_command_rule_argumentful($, commandKeyword, commandArgument) {
 /**
  * @param {GrammarSymbols<string>} $
  * @param {RuleOrLiteral} commandKeyword
+ * @param {RuleOrLiteral} commandArgument
+ * @returns {RuleOrLiteral}
+ */
+function build_command_rule_argumentful_block_allowed($, commandKeyword, commandArgument) {
+  return seq(
+    commandKeyword,
+    optional($.post_conditional),
+    choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
+    commandArgument,
+  );
+}
+
+/**
+ * @param {GrammarSymbols<string>} $
+ * @param {RuleOrLiteral} commandKeyword
  * @returns {RuleOrLiteral}
  */
 function build_command_rule_special_argumentless($, commandKeyword) {
@@ -484,12 +499,11 @@ module.exports = grammar(objectscript_expr, {
       prec.right(
         choice(
           build_command_rule_argumentless($, $.keyword_write),
-          seq(
-          $.keyword_write,
-          optional($.post_conditional),
-          choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
-          repeat_with_commas($.write_argument),
-        ),
+          build_command_rule_argumentful_block_allowed(
+            $,
+            $.keyword_write,
+            repeat_with_commas($.write_argument),
+          ),
         ),
       ),
     write_argument: ($) => choice($.write_device_control, $.expression),
@@ -733,14 +747,8 @@ module.exports = grammar(objectscript_expr, {
 
     command_lock: ($) =>
       choice(
-        seq($.keyword_lock,
-            choice($._argumentless_command_end,
-                $._termination,
-            ),
-
-            ),
-
-        build_command_rule_argumentful(
+        build_command_rule_argumentless($, $.keyword_lock),
+        build_command_rule_argumentful_block_allowed(
           $,
           $.keyword_lock,
           repeat_with_commas($.command_lock_argument),
@@ -792,7 +800,7 @@ module.exports = grammar(objectscript_expr, {
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cread#RCOS_cread25
     command_read: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_read,
         repeat_with_commas($.read_argument),
@@ -819,7 +827,7 @@ module.exports = grammar(objectscript_expr, {
     // OPEN:pc device:(parameters):timeout:"mnespace",...
     // O:pc device:(parameters):timeout:"mnespace",...
     command_open: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_open,
         repeat_with_commas($.open_argument),
@@ -875,7 +883,7 @@ module.exports = grammar(objectscript_expr, {
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cclose
 
     command_close: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_close,
         repeat_with_commas($.close_argument),
@@ -1036,7 +1044,7 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     command_use: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_use,
         repeat_with_commas($.use_argument),
@@ -1154,7 +1162,7 @@ module.exports = grammar(objectscript_expr, {
       prec.right(
         choice(
           build_command_rule_argumentless($, $.keyword_throw),
-          build_command_rule_argumentful(
+          build_command_rule_argumentful_block_allowed(
             $,
             $.keyword_throw,
             $.expression,
@@ -1226,28 +1234,20 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
-
     command_break: ($) =>
       choice(
-          seq(
-              $.keyword_break,
-              optional($.post_conditional),
-              choice(
-                  $._argumentless_command_end,
-                  $._termination,
-              ),
-          ),
-          seq(
-              $.keyword_break,
-              optional($.post_conditional),
-              $._immediate_single_whitespace_followed_by_non_whitespace,
-              repeat_with_commas($.break_argument),
+          build_command_rule_argumentless($, $.keyword_break),
+          build_command_rule_argumentful_block_allowed(
+            $,
+            $.keyword_break,
+            repeat_with_commas( $.break_argument),
           ),
       ),
     break_argument: ($) =>
-      choice( $.string_literal, alias(/[0145]/, $.numeric_literal)),
+      choice( $.string_literal, $.json_literal),
+
     command_merge: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_merge,
         repeat_with_commas($.merge_argument),
@@ -1263,38 +1263,26 @@ module.exports = grammar(objectscript_expr, {
     command_return: ($) =>
         prec.right(
             choice(
-                seq(
-                    $.keyword_return,
-                    optional($.post_conditional),
-                    choice(
-                        $._argumentless_command_end,
-                        $._termination,
-                    ),
-                ),
-                seq(
-                    $.keyword_return,
-                    optional($.post_conditional),
-                    $._immediate_single_whitespace_followed_by_non_whitespace,
-                    repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
-                ),
+              build_command_rule_argumentless($, $.keyword_return),
+              build_command_rule_argumentful_block_allowed($, $.keyword_return, repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression))),
             ),
         ),
 
     command_quit: ($) =>choice(
         build_command_rule_special_argumentless($, $.keyword_quit),
 
-        build_command_rule_argumentful(
+        build_command_rule_argumentful_block_allowed(
             $,
             $.keyword_quit,
             repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
-        ),
+          ),
     ),
 
     command_goto: ($) =>
       prec.right(
         choice(
           build_command_rule_argumentless($, $.keyword_goto),
-          build_command_rule_argumentful(
+          build_command_rule_argumentful_block_allowed(
             $,
             $.keyword_goto,
             repeat_with_commas($.goto_argument),
@@ -1306,31 +1294,13 @@ module.exports = grammar(objectscript_expr, {
       optional($.post_conditional),
     ),
 
+
     command_halt_or_hang: ($) =>
       choice(
-        seq(
-          $.keyword_halt_or_hang,
-          optional($.post_conditional),
-          choice($._argumentless_command_end, $._termination),
-        ),
-        seq(
-          $.keyword_halt_or_hang,
-          optional($.post_conditional),
-          $._immediate_single_whitespace_followed_by_non_whitespace,
-          repeat_with_commas($.expression),
-        ),
-        seq(
-          $.keyword_halt,
-          optional($.post_conditional),
-          choice($._argumentless_command_end, $._termination),
-
-        ),
-        seq(
-            $.keyword_hang,
-          optional($.post_conditional),
-          $._immediate_single_whitespace_followed_by_non_whitespace,
-          repeat_with_commas($.expression),
-        ),
+        build_command_rule_argumentless($, $.keyword_halt_or_hang),
+        build_command_rule_argumentless($, $.keyword_halt),
+        build_command_rule_argumentful_block_allowed($, $.keyword_halt_or_hang, repeat_with_commas($.expression)),
+        build_command_rule_argumentful_block_allowed($, $.keyword_hang, repeat_with_commas($.expression)),
       ),
 
     command_continue: ($) =>
@@ -1374,16 +1344,16 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     command_xecute: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_xecute,
         repeat_with_commas($.xecute_argument),
       ),
     command_view: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_view,
-        alias($.view_parameter, $.view_parameters),
+        $.view_parameter,
       ),
     view_parameter: ($) =>
       choice(
@@ -1569,13 +1539,13 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     command_zkill: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_zkill,
         repeat_with_commas($.glvn),
       ),
     command_zn: ($) =>
-      build_command_rule_argumentful(
+      build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_zn,
         repeat_with_commas($.expression),
@@ -1583,7 +1553,7 @@ module.exports = grammar(objectscript_expr, {
     command_zsu: ($) =>
       choice(
         build_command_rule_argumentless($, $.keyword_zsu),
-        build_command_rule_argumentful(
+        build_command_rule_argumentful_block_allowed(
           $,
           $.keyword_zsu,
           repeat_with_commas($.expression),
@@ -1592,7 +1562,7 @@ module.exports = grammar(objectscript_expr, {
     command_ztrap: ($) =>
       choice(
         build_command_rule_argumentless($, $.keyword_ztrap),
-        build_command_rule_argumentful(
+        build_command_rule_argumentful_block_allowed(
           $,
           $.keyword_ztrap,
           repeat_with_commas($.expression),
@@ -1601,20 +1571,15 @@ module.exports = grammar(objectscript_expr, {
     command_zwrite: ($) =>
       choice(
         build_command_rule_argumentless($, $.keyword_zwrite),
-        seq(
+        build_command_rule_argumentful_block_allowed(
+            $,
             $.keyword_zwrite,
-          optional($.post_conditional),
-          choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
-          repeat_with_commas($.expression),
-        ),
+            repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression)),
+          ),
       ),
     command_zz: ($) =>
-      seq(
-          $.keyword_zz,
-          optional($.post_conditional),
-          choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
-          repeat_with_commas($.expression),
-        ),
+      build_command_rule_argumentful_block_allowed($, $.keyword_zz, repeat_with_commas(seq(optional($._xecute_arg_invalid), $.expression))),
+
     embedded_html: ($) =>
       choice(
         seq(

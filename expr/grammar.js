@@ -922,14 +922,10 @@ module.exports = grammar({
 
     numeric_literal: _ =>
       token(/[+-]?(?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?)/),
-    // string literals in objecscript
-    // are an any length sequence of characters besides ", between ".
+    // any length sequence of characters besides ", between "
     // Double-quotes are escaped with double quotes
     string_literal: (_) =>
       token(seq('"', repeat(choice(/[^"]+/, '""')), '"')),
-    // NOTE: It's worthwhile distinguishing between macro_constant and macro_function
-    // as nvim has dedicated captures groups for both.
-    // @macro.constant, and @macro.function, repectively.
     macro: ($) => choice($.macro_function, $.macro_constant),
     macro_constant: (_) =>
       token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
