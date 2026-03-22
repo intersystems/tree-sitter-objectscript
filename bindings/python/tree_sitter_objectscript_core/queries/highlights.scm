@@ -10,7 +10,14 @@
 ] @number
 
 [
+  (json_boolean_literal)
   (json_null_literal)
+] @boolean
+
+(json_object_literal_pair
+  (json_string_literal) @string.special)
+
+[
   (json_string_literal)
   (string_literal)
 ] @string
@@ -112,8 +119,6 @@
   "?"
 ] @operator
 
-(json_boolean_literal) @boolean
-
 (bracket) @punctuation.bracket
 
 ; === END EXPR ===
@@ -161,7 +166,6 @@
   (keyword_zn)
   (keyword_zsu)
   (keyword_ztrap)
-  (keyword_zwrite)
   (keyword_zz)
 ] @keyword.debug
 
@@ -204,6 +208,7 @@
   (keyword_zprint)
   (keyword_set)
   (keyword_write)
+  (keyword_zwrite)
   (keyword_do)
   (keyword_for)
   (keyword_while)

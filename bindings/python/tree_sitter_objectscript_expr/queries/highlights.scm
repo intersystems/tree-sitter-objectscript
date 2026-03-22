@@ -7,7 +7,14 @@
 ] @number
 
 [
+  (json_boolean_literal)
   (json_null_literal)
+] @boolean
+
+(json_object_literal_pair
+  (json_string_literal) @string.special)
+
+[
   (json_string_literal)
   (string_literal)
 ] @string
@@ -108,8 +115,6 @@
   "!"
   "?"
 ] @operator
-
-(json_boolean_literal) @boolean
 
 (bracket) @punctuation.bracket
 

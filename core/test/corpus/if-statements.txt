@@ -711,3 +711,34 @@ Valid If
         (else_block
           (keyword_else)
           (line_comment_1))))))
+
+=====
+If statements, valid
+=====
+  if iristype = "" Return {"type": "string"} 
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_return
+            (keyword_return)
+            (expression
+              (expr_atom
+                (json_object_literal
+                  (json_object_literal_pair
+                    (json_string_literal)
+                    (json_literal
+                      (json_string_literal))))))))))))
