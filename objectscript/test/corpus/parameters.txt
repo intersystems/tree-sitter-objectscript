@@ -113,20 +113,18 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
               (bracket)
               (argument
                 (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -284,13 +282,14 @@ Class hi {
               (command_set
                 (keyword_set)
                 (set_argument
-                  (oref_set_target
-                    (lvn
-                      (objectscript_identifier))
-                    (oref_chain_segment
-                      (oref_property
-                        (property_name
-                          (identifier_segment_immediate)))))
+                  (set_target
+                    (oref_set_target
+                      (lvn
+                        (objectscript_identifier))
+                      (oref_chain_segment
+                        (oref_property
+                          (property_name
+                            (identifier_segment_immediate))))))
                   (expression
                     (expr_atom
                       (relative_dot_parameter
@@ -325,14 +324,16 @@ Class hi {
                     (expr_atom
                       (system_defined_function
                         (dollar_function
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))))))))))))))
 
 ========================
 InValid Parameter Keywords Placement

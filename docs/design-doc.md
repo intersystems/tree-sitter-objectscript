@@ -1,6 +1,6 @@
 # Design Document - tree-sitter-objectscript
 
-> Update note (2026): The implemented system now includes a fifth grammar target, `objectscript_routine`, branching from `core`. Operational workflows and hook behavior were also expanded (query sync, lint auto-fix, parser/query checks). Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
+> Update note (2026): The implemented system uses five grammar targets, including `objectscript_routine` as a branch from `core`. Operational workflows and hook behavior were expanded (corpus sync, query sync, lint auto-fix, parser/query checks). Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
 
 ## Metadata
 
@@ -190,7 +190,7 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 
 **Design decisions**:
 
-- **Generated layered composition**: `scripts/sync_queries.py` composes EXPR/CORE/LOCAL sections for core/udl query files
+- **Generated layered composition**: `scripts/sync_queries.py` composes layered EXPR/CORE/UDL/LOCAL sections for `core`, `udl`, `objectscript`, and `objectscript_routine` query trees
 - **Zed-compatible capture names**: `@keyword`, `@variable`, `@function`, `@type`, etc.
 - **MimeType-based injection**: XDATA blocks use MimeType attribute to select injected language
 - **Shared UDL/playground query sources**: `objectscript` and `objectscript_udl` both consume the same `expr/core/udl` query files from `tree-sitter.json`
@@ -310,7 +310,7 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 
 ### Phase 7: Ongoing Maintenance
 
-- [x] Add repository-managed pre-commit hook for query synchronization
+- [x] Add repository-managed pre-commit automation for corpus/query synchronization and staging of generated outputs
 - [x] Add CI workflow to verify Python query copies match source query trees
 - [x] Switch JavaScript lint installs to deterministic `npm ci` using committed `package-lock.json`
 - [x] Migrate ESLint configuration to flat config (`eslint.config.mjs`)
@@ -326,7 +326,7 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 
 | Level | Method | Coverage |
 |-------|--------|----------|
-| Unit | tree-sitter corpus tests | corpus coverage across expr/core/objectscript_udl/objectscript |
+| Unit | tree-sitter corpus tests | corpus coverage across expr/core/objectscript_udl/objectscript/objectscript_routine |
 | Integration | Binding tests | Rust, Python, Node, Go, Swift, C |
 | E2E | Editor manual testing | Zed, Neovim, Emacs |
 
@@ -338,8 +338,11 @@ cd objectscript && tree-sitter test
 cd expr && tree-sitter test
 cd core && tree-sitter test
 cd udl && tree-sitter test
+cd objectscript_routine && tree-sitter test
 
 # Binding tests
+nvm use
+npm ci
 cargo test                                    # Rust
 python3 -m pytest bindings/python/tests/      # Python (in venv)
 npm test                                       # Node
@@ -360,6 +363,7 @@ python3 scripts/sync_queries.py --check-python # Verify Python query copies
 - [x] Zed extension published and installable
 - [x] nvim-treesitter `:TSInstall objectscript_udl` for `.cls` works
 - [x] nvim-treesitter `:TSInstall objectscript` for playground snippets works
+- [x] nvim-treesitter `:TSInstall objectscript_routine` for routine files works
 - [x] Emacs major mode loads without errors
 
 ---
@@ -374,7 +378,7 @@ python3 scripts/sync_queries.py --check-python # Verify Python query copies
 
 ## Open Questions
 
-1. **CSP support**: Should a fifth grammar extend HTML with ObjectScript injection?
+1. **CSP support**: Should a sixth grammar profile extend HTML with ObjectScript injection?
 2. **Standalone expr**: Should expr be published independently for SQL dialect authors?
 3. **Version alignment**: How to coordinate grammar versions with IRIS releases?
 4. **LSP integration**: Should this project include LSP server hooks?

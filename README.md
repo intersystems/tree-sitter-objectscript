@@ -16,7 +16,7 @@ This repository publishes five related grammars:
 - `objectscript_udl`: class-file grammar for `.cls`.
 - `objectscript_core`: routine/statement grammar.
 - `objectscript_expr`: expression grammar.
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, and `.int`.
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.rtn`, and `.int`.
 
 Grammar extension graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
@@ -25,7 +25,7 @@ Grammar extension graph:
 ## Packages
 
 - npm: `tree-sitter-objectscript`
-- PyPI: `tree-sitter-objectscript`
+- PyPI: `tree-sitter-objectscript` (ships `tree_sitter_objectscript`, `tree_sitter_objectscript_udl`, and `tree_sitter_objectscript_routine`)
 - Rust crates:
   - `tree-sitter-objectscript` (UDL + routine grammars)
   - `tree-sitter-objectscript-playground` (playground grammar)
@@ -65,12 +65,16 @@ For Node bindings specifically, `.nvmrc` pins the expected Node version.
 - Zed: [ObjectScript extension](https://zed.dev/extensions/objectscript)
 - Neovim (`nvim-treesitter`):
   - Install grammars with `:TSInstall objectscript_udl`, `:TSInstall objectscript`, and `:TSInstall objectscript_routine`
-  - Optional filetype mapping for `.cls`:
+  - Optional filetype mapping for `.cls` and routine extensions:
 
 ```lua
 vim.filetype.add({
   extension = {
     cls = "objectscript_udl",
+    mac = "objectscript_routine",
+    inc = "objectscript_routine",
+    int = "objectscript_routine",
+    rtn = "objectscript_routine",
   },
 })
 ```
@@ -95,6 +99,17 @@ tree-sitter playground
 ```
 
 If you change an upstream grammar (`expr` or `core`), regenerate downstream grammars as needed (`udl`, `objectscript`, `objectscript_routine`).
+
+## Corpus Sync
+
+`objectscript/test/corpus` is treated as a synced corpus directory. On commit, the repository `pre-commit` hook:
+
+- Replaces `objectscript/test/corpus` contents with files from:
+  - `core/test/corpus`
+  - `udl/test/corpus`
+  - `objectscript_routine/test/corpus`
+- Removes `objectscript/test/corpus/invalid.txt`
+- Removes `objectscript/test/corpus/compiled-header.txt`
 
 ## Contributing
 

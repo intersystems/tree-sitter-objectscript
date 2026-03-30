@@ -156,12 +156,15 @@ JOB statements
         (job_argument
           (system_defined_function
             (bracket)
-            (expression
-              (expr_atom
-                (string_literal)))
-            (expression
-              (expr_atom
-                (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (bracket))
           (bracket)
           (expression
             (expr_atom
@@ -262,9 +265,10 @@ JOB statements
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (system_defined_variable))))))
@@ -279,60 +283,65 @@ JOB statements
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (ssvn
-                        (identifier_segment_immediate)
-                        (subscripts
-                          (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
-                          (bracket))))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (ssvn
+                          (identifier_segment_immediate)
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket)))))))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (ssvn
-                        (identifier_segment_immediate)
-                        (subscripts
-                          (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
-                          (bracket))))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (ssvn
+                          (identifier_segment_immediate)
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))
+                            (bracket)))))))))))))
     (statement
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (ssvn
-                        (identifier_segment_immediate)
-                        (subscripts
-                          (bracket)
-                          (expression
-                            (expr_atom
-                              (string_literal)))
-                          (bracket))))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (ssvn
+                          (identifier_segment_immediate)
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (string_literal)))
+                            (bracket)))))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -355,12 +364,14 @@ JOB statements
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (unary_expression
-                        (glvn
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (indirection
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
 
 =========================
 JOB With Postconditionals

@@ -13,9 +13,10 @@ TAG
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -23,9 +24,10 @@ TAG
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (system_defined_function
@@ -105,7 +107,8 @@ Trap
     (command_set
       (keyword_set)
       (set_argument
-        (system_defined_variable)
+        (set_target
+          (system_defined_variable))
         (expression
           (expr_atom
             (string_literal))))))
@@ -113,9 +116,10 @@ Trap
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (lvn
@@ -144,9 +148,10 @@ Trap
                     (bracket)
                     (bracket))))))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (string_literal))))))
@@ -174,9 +179,10 @@ Trap
                     (bracket)
                     (bracket))))))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (string_literal))))))
@@ -191,17 +197,19 @@ Trap
               (expr_atom
                 (system_defined_function
                   (dollar_function
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier))))))))))))
       (statement
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -226,9 +234,10 @@ Trap
                   (expr_atom
                     (string_literal))))))
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -271,9 +280,10 @@ Trap
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (lvn
@@ -322,9 +332,10 @@ Trap
                         (expr_atom
                           (numeric_literal))))))
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn
@@ -338,9 +349,10 @@ Trap
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn
@@ -382,9 +394,10 @@ Trap
                         (expr_atom
                           (string_literal))))))
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn
@@ -409,9 +422,10 @@ Trap
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (lvn
@@ -427,7 +441,8 @@ Trap
           (command_set
             (keyword_set)
             (set_argument
-              (system_defined_variable)
+              (set_target
+                (system_defined_variable))
               (expression
                 (expr_atom
                   (string_literal))))))
@@ -453,9 +468,10 @@ Trap
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -477,7 +493,8 @@ Trap
           (command_set
             (keyword_set)
             (set_argument
-              (system_defined_variable)
+              (set_target
+                (system_defined_variable))
               (expression
                 (expr_atom
                   (numeric_literal)))))))))
@@ -488,9 +505,11 @@ Trap
       (keyword_lock)
       (command_lock_argument
         (command_lock_arguments_variant_1
-          (glvn
-            (lvn
-              (objectscript_identifier)))))))
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))))
   (statement
     (command_quit
       (keyword_quit)
@@ -530,7 +549,8 @@ Trap
     (command_set
       (keyword_set)
       (set_argument
-        (system_defined_variable)
+        (set_target
+          (system_defined_variable))
         (expression
           (expr_atom
             (string_literal))))))
@@ -539,9 +559,10 @@ Trap
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (system_defined_function
@@ -549,14 +570,15 @@ Trap
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (dollar_piece
+                      (built_in_func_with_pos_options
                         (expression
                           (expr_atom
                             (system_defined_variable)))
-                        (expression
-                          (expr_atom
-                            (string_literal)))
-                        (dollar_func_pos
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (string_literal))))
+                        (method_arg
                           (expression
                             (expr_atom
                               (numeric_literal)))))))
@@ -586,31 +608,34 @@ Trap
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (system_defined_function
               (dollar_method
                 (bracket)
-                (expression
-                  (expr_atom
-                    (class_method_call
-                      (class_ref
-                        (keyword_pound_pound_class)
-                        (bracket)
-                        (class_name)
-                        (bracket))
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args
-                        (bracket)
-                        (bracket)))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (class_method_call
+                        (class_ref
+                          (keyword_pound_pound_class)
+                          (bracket)
+                          (class_name)
+                          (bracket))
+                        (method_name
+                          (identifier_segment_immediate))
+                        (method_args
+                          (bracket)
+                          (bracket))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (method_arg
                   (expression
                     (expr_atom
@@ -623,3 +648,30 @@ Trap
         (expr_atom
           (lvn
             (objectscript_identifier)))))))
+
+====
+Valid set instance var
+====
+ Set m%images=0,M%images=0
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (instance_variable
+            (member_name
+              (identifier_segment_immediate))))
+        (expression
+          (expr_atom
+            (numeric_literal))))
+      (set_argument
+        (set_target
+          (instance_variable
+            (member_name
+              (identifier_segment_immediate))))
+        (expression
+          (expr_atom
+            (numeric_literal)))))))

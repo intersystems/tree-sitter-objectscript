@@ -34,9 +34,10 @@ try catch tests
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (string_literal))))))
@@ -44,9 +45,10 @@ try catch tests
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (class_method_call
@@ -64,9 +66,10 @@ try catch tests
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (oref_chain_expr
@@ -208,7 +211,7 @@ try catch tests
                 (expression
                   (expr_atom
                     (system_defined_function
-                      (dollar_listget
+                      (built_in_func_with_pos_options
                         (expression
                           (expr_atom
                             (oref_chain_expr
@@ -218,7 +221,7 @@ try catch tests
                                 (oref_property
                                   (property_name
                                     (identifier_segment_immediate)))))))
-                        (dollar_func_pos
+                        (method_arg
                           (expression
                             (expr_atom
                               (numeric_literal)))))))))

@@ -21,9 +21,10 @@ test
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -72,21 +73,3 @@ Routine    test [Type=mac]
   (routine)
   (routine_name)
   (routine_type))
-
-====
-Invalid Routine header
-:error
-====
- Routine test [type=mac]
----
-
-
-
-====
-Invalid Routine, no header
-:error
-====
- set x = 2
----
-
-

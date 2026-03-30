@@ -39,10 +39,9 @@ Class test {
               (bracket)
               (argument
                 (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -50,10 +49,9 @@ Class test {
               (argument
                 (keyword_byref)
                 (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
               (bracket))
             (return_type
               (keyword_as)
@@ -88,20 +86,23 @@ Class test {
                   (command_set
                     (keyword_set)
                     (set_argument
-                      (glvn
-                        (lvn
-                          (objectscript_identifier)))
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
                       (expression
                         (expr_atom
                           (system_defined_function
                             (dollar_function
-                              (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier))))
-                              (expression
-                                (expr_atom
-                                  (string_literal))))))))))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))))))))))
             (statement
               (command_if
                 (keyword_if)
@@ -192,9 +193,10 @@ Class test {
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (macro

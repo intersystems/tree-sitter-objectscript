@@ -9,18 +9,20 @@ $QUERY with indirection
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
-                (subscripts
-                  (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (indirection
                   (expression
                     (expr_atom
-                      (string_literal)))
-                  (bracket))))))))))
+                      (lvn
+                        (objectscript_identifier))))
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (string_literal)))
+                    (bracket)))))))))))
 
 =======================
 $QUERY with direction and target
@@ -33,25 +35,29 @@ $QUERY with direction and target
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
-                (subscripts
-                  (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (indirection
                   (expression
                     (expr_atom
-                      (string_literal)))
-                  (bracket)))))
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+                      (lvn
+                        (objectscript_identifier))))
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (string_literal)))
+                    (bracket))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ===================================
 $QUERY shorthand with target and no direction
@@ -64,25 +70,29 @@ $QUERY shorthand with target and no direction
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
-                (subscripts
-                  (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (indirection
                   (expression
                     (expr_atom
-                      (string_literal)))
-                  (bracket)))))
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+                      (lvn
+                        (objectscript_identifier))))
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (string_literal)))
+                    (bracket))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ================
 $QUERY shorthand
@@ -95,18 +105,20 @@ $QUERY shorthand
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (unary_expression
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
-                (subscripts
-                  (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (indirection
                   (expression
                     (expr_atom
-                      (string_literal)))
-                  (bracket))))))))))
+                      (lvn
+                        (objectscript_identifier))))
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (string_literal)))
+                    (bracket)))))))))))
 
 ===================================
 $Q with target and no direction
@@ -139,21 +151,22 @@ QUERY with global
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (gvn
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (bracket))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (gvn
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (bracket)))))))))))
 
 =================
 QUIT

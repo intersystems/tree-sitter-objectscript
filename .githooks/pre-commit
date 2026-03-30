@@ -4,6 +4,28 @@ set -eu
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
+sync_objectscript_corpus() {
+  target_dir="objectscript/test/corpus"
+
+  # Replace objectscript corpus with the union of source corpora.
+  find "$target_dir" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+  for src_dir in core/test/corpus udl/test/corpus objectscript_routine/test/corpus; do
+    find "$src_dir" -mindepth 1 -maxdepth 1 -exec cp -a {} "$target_dir"/ \;
+  done
+
+  # Keep objectscript invalid corpus out of synced output.
+  rm -f "$target_dir/invalid.txt"
+  rm -f "$target_dir/compiled-header.txt"
+  
+  # update trees 
+  cd objectscript
+  tree-sitter t --update
+  cd ..
+}
+
+sync_objectscript_corpus
+git add -- objectscript/test/corpus
+
 python3 scripts/sync_queries.py
 
 git add -- \

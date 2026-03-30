@@ -1,17 +1,24 @@
 # tree-sitter-objectscript
 
-ObjectScript UDL grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter).
+ObjectScript UDL + routine grammars for [tree-sitter](https://github.com/tree-sitter/tree-sitter).
 
-This crate publishes the `objectscript_udl` grammar, intended for `.cls` files.
-It includes:
+This crate publishes:
 
+For UDL (`objectscript_udl`, intended for `.cls`):
 - `LANGUAGE_OBJECTSCRIPT_UDL`
-- `NODE_TYPES`
-- `HIGHLIGHTS_QUERY`
-- `INJECTIONS_QUERY`
-- `INDENTS_QUERY`
+- `UDL_NODE_TYPES`
+- `UDL_HIGHLIGHTS_QUERY`
+- `UDL_INJECTIONS_QUERY`
+- `UDL_INDENTS_QUERY`
 
-If you want the playground/snippet grammar instead, use:
+For routine headers/files (`objectscript_routine`, for `.mac`, `.inc`, `.int`, `.rtn`):
+- `LANGUAGE_OBJECTSCRIPT_ROUTINE`
+- `ROUTINE_NODE_TYPES`
+- `ROUTINE_HIGHLIGHTS_QUERY`
+- `ROUTINE_INJECTIONS_QUERY`
+- `ROUTINE_INDENTS_QUERY`
+
+If you want the playground/snippet grammar (`objectscript`), use
 `tree-sitter-objectscript-playground`.
 
 See [docs.rs/tree-sitter-objectscript](https://docs.rs/tree-sitter-objectscript/latest/tree_sitter_objectscript/)

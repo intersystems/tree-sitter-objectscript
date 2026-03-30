@@ -16,7 +16,7 @@ Thanks for contributing to `tree-sitter-objectscript`.
 - `udl/`: `.cls` grammar
 - `core/`: routine/statement grammar
 - `expr/`: expression grammar
-- `objectscript_routine/`: routine-header grammar for `.mac`, `.inc`, `.int`
+- `objectscript_routine/`: routine-header grammar for `.mac`,`.rtn`, `.inc`, `.int`
 
 Grammar graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
@@ -69,6 +69,8 @@ Expected:
 Hook behavior:
 
 - On commit, the `pre-commit` hook:
+  - Replaces `objectscript/test/corpus` with files from `core/test/corpus`, `udl/test/corpus`, and `objectscript_routine/test/corpus`.
+  - Removes `objectscript/test/corpus/invalid.txt`.
   - Runs `python3 scripts/sync_queries.py` and stages synchronized query files.
   - Runs `npm run lint -- --fix`, then `npm run lint`.
   - Runs `tree-sitter test` in `objectscript`, `udl`, `core`, `expr`, and `objectscript_routine`.

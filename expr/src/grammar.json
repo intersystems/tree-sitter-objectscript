@@ -39,10 +39,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "unary_expression"
-        },
-        {
-          "type": "SYMBOL",
           "name": "macro"
         },
         {
@@ -116,6 +112,14 @@
         {
           "type": "SYMBOL",
           "name": "superclass_method_call"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "unary_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "indirection"
         }
       ]
     },
@@ -169,74 +173,6 @@
           },
           "named": true,
           "value": "bracket"
-        }
-      ]
-    },
-    "unary_expression": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "unary_operator"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "expression"
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "@"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "glvn"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "system_defined_function"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "system_defined_variable"
-                }
-              ]
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "IMMEDIATE_TOKEN",
-                      "content": {
-                        "type": "STRING",
-                        "value": "@"
-                      }
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "subscripts"
-                    }
-                  ]
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            }
-          ]
         }
       ]
     },
@@ -398,32 +334,14 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "indirection"
-              },
-              "named": true,
-              "value": "unary_expression"
+              "type": "SYMBOL",
+              "name": "indirection"
             },
             {
               "type": "SYMBOL",
               "name": "pattern_expression"
             }
           ]
-        }
-      ]
-    },
-    "indirection": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "@"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
         }
       ]
     },
@@ -720,12 +638,37 @@
               "type": "CHOICE",
               "members": [
                 {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "+"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "-"
+                    }
+                  ]
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
                   "type": "SYMBOL",
                   "name": "objectscript_identifier"
                 },
                 {
                   "type": "SYMBOL",
                   "name": "objectscript_identifier_special"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "numeric_literal"
                 }
               ]
             },
@@ -847,6 +790,13 @@
                   }
                 },
                 {
+                  "type": "IMMEDIATE_TOKEN",
+                  "content": {
+                    "type": "STRING",
+                    "value": "@"
+                  }
+                },
+                {
                   "type": "SEQ",
                   "members": [
                     {
@@ -854,6 +804,26 @@
                       "content": {
                         "type": "STRING",
                         "value": "|"
+                      }
+                    },
+                    {
+                      "type": "REPEAT",
+                      "content": {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "+"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "-"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "'"
+                          }
+                        ]
                       }
                     },
                     {
@@ -895,13 +865,22 @@
           ]
         },
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "dotted_identifier_relaxed_token"
-          },
-          "named": true,
-          "value": "routine_name"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "system_defined_function"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "dotted_identifier_relaxed_token"
+              },
+              "named": true,
+              "value": "routine_name"
+            }
+          ]
         }
       ]
     },
@@ -1088,48 +1067,6 @@
         }
       ]
     },
-    "indirected_glvn": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "@"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "lvn"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "gvn"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "ssvn"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "relative_dot_parameter"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "class_parameter_ref"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "@"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "subscripts"
-        }
-      ]
-    },
     "glvn": {
       "type": "CHOICE",
       "members": [
@@ -1156,10 +1093,6 @@
             "type": "SYMBOL",
             "name": "macro"
           }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "indirected_glvn"
         }
       ]
     },
@@ -1197,6 +1130,26 @@
                         }
                       },
                       {
+                        "type": "REPEAT",
+                        "content": {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "+"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "-"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "'"
+                            }
+                          ]
+                        }
+                      },
+                      {
                         "type": "CHOICE",
                         "members": [
                           {
@@ -1222,6 +1175,26 @@
                               {
                                 "type": "STRING",
                                 "value": ","
+                              },
+                              {
+                                "type": "REPEAT",
+                                "content": {
+                                  "type": "CHOICE",
+                                  "members": [
+                                    {
+                                      "type": "STRING",
+                                      "value": "+"
+                                    },
+                                    {
+                                      "type": "STRING",
+                                      "value": "-"
+                                    },
+                                    {
+                                      "type": "STRING",
+                                      "value": "'"
+                                    }
+                                  ]
+                                }
                               },
                               {
                                 "type": "CHOICE",
@@ -1260,6 +1233,26 @@
                         }
                       },
                       {
+                        "type": "REPEAT",
+                        "content": {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "+"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "-"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "'"
+                            }
+                          ]
+                        }
+                      },
+                      {
                         "type": "CHOICE",
                         "members": [
                           {
@@ -1285,6 +1278,26 @@
                               {
                                 "type": "STRING",
                                 "value": ","
+                              },
+                              {
+                                "type": "REPEAT",
+                                "content": {
+                                  "type": "CHOICE",
+                                  "members": [
+                                    {
+                                      "type": "STRING",
+                                      "value": "+"
+                                    },
+                                    {
+                                      "type": "STRING",
+                                      "value": "-"
+                                    },
+                                    {
+                                      "type": "STRING",
+                                      "value": "'"
+                                    }
+                                  ]
+                                }
                               },
                               {
                                 "type": "CHOICE",
@@ -1326,7 +1339,7 @@
                 "type": "IMMEDIATE_TOKEN",
                 "content": {
                   "type": "PATTERN",
-                  "value": "[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
+                  "value": "(?:\\$\\$\\$)?[%A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
                 }
               },
               {
@@ -1569,6 +1582,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "macro"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "instance_variable"
               },
               {
@@ -1582,6 +1599,10 @@
               {
                 "type": "SYMBOL",
                 "name": "system_defined_function"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "system_defined_variable"
               },
               {
                 "type": "SYMBOL",
@@ -1722,7 +1743,8 @@
             "type": "IMMEDIATE_TOKEN",
             "content": {
               "type": "PATTERN",
-              "value": "[irm]\\%"
+              "value": "[irm]\\%",
+              "flags": "i"
             }
           },
           {
@@ -1943,250 +1965,512 @@
       "type": "PREC",
       "value": -1,
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "PATTERN",
-            "value": "\\$D(EVICE)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$EC(ODE)?",
-            "flags": "i"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "estack_token"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "etrap_token"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$HALT",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$H(OROLOG)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$I(O)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$J(OB)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$K(EY)?",
-            "flags": "i"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "namespace_token"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$P(RINCIPAL)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$Q(UIT)?",
-            "flags": "i"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "roles_token"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ST(ACK)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$S(TORAGE)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$SY(STEM)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$T(EST)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$THIS",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$THROWOBJ",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$TL(EVEL)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$USERNAME",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$X",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$Y",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZA",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZB",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZC(HILD)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZEOF",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZEOS",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZE(RROR)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZH(OROLOG)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZI(O)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZJ(OB)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZM(ODE)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZN(AME)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZNSPACE",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZO(RDER)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZP(ARENT)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZPI",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZPOS(ITION)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZR(EFERENCE)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZS(TORAGE)?",
-            "flags": "i"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$ZTIMESTAMP",
-                "flags": "i"
-              },
-              {
-                "type": "PATTERN",
-                "value": "\\$ZTS",
-                "flags": "i"
-              }
-            ]
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$ZTIMEZONE",
-                "flags": "i"
-              },
-              {
-                "type": "PATTERN",
-                "value": "\\$ZTZ",
-                "flags": "i"
-              }
-            ]
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZT(RAP)?",
-            "flags": "i"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\$ZV(ERSION)?",
-            "flags": "i"
-          }
-        ]
+        "type": "TOKEN",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "\\$D(EVICE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$EC(ODE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$edetail",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ES(TACK)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ET(RAP)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$HALT",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$H(OROLOG)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$I(O)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$J(OB)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$K(EY)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$NAMESPACE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$P(RINCIPAL)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$Q(UIT)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ROLES",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ST(ACK)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$S(TORAGE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$SY(STEM)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$T(EST)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$THIS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$mvam",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVANS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVCOMMAND",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVCONV",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVDATE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVDAY",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVDICT",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVERRORS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVFILENAME",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVFM",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVFOOTER",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVFORMAT",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVHEADER",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVID",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVLEVEL",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVMONTH",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVMORESUBVALUES",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVMOREVALUES",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVNB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVND",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVNI",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVNS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVNV",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVOPTIONS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCERRORS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPARASENTENCE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCPIB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCPIBOFF",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCPOB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCSIB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCSIBOFF",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVPROCSOB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVRECORD",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSELECTED",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSENTENCE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSM",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSTDFIL",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSVM",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVSYSRETCODE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVTIME",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVTM",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVTTY",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVUSERRETCODE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVVM",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$MVYEAR",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$TID",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$TRESTART",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$TRS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZL",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZLS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZNODE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZPIECE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$THROWOBJ",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$TL(EVEL)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$USERNAME",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$X",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$Y",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZA",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZB",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZC(HILD)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZEOF",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZEOS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZE(RROR)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZH(OROLOG)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZI(O)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZJ(OB)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZM(ODE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZN(AME)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZNSPACE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZO(RDER)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZP(ARENT)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZPI",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZPOS(ITION)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZR(EFERENCE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZS(TORAGE)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZTIMESTAMP",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZTS",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZTIMEZONE",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZTZ",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZT(RAP)?",
+              "flags": "i"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\$ZV(ERSION)?",
+              "flags": "i"
+            }
+          ]
+        }
       }
     },
     "system_defined_function": {
@@ -2194,19 +2478,11 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "dollar_piece"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "dollar_extract"
-        },
-        {
-          "type": "SYMBOL",
           "name": "dollar_list"
         },
         {
           "type": "SYMBOL",
-          "name": "dollar_listget"
+          "name": "built_in_func_with_pos_options"
         },
         {
           "type": "SYMBOL",
@@ -2215,10 +2491,6 @@
         {
           "type": "SYMBOL",
           "name": "dollar_select"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "dollar_classmethod"
         },
         {
           "type": "SYMBOL",
@@ -2235,10 +2507,6 @@
         {
           "type": "SYMBOL",
           "name": "dollar_function"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "built_in_functions_with_optional_args"
         }
       ]
     },
@@ -2286,6 +2554,176 @@
               {
                 "type": "CHOICE",
                 "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjoid",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjval",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zu(til)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zli(st)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjmod(s)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDATETIMEH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDTH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDATEH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDATETIME",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDATE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZD",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZTIMEH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZTH",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$NUM(BER)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$FN(UMBER)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LISTBUILD",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LB",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LISTTOSTRING",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LTS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LISTFROMSTRING",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LFS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$V(IEW)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LISTDATA",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LD",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZT(IME)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjcnt",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjref",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zel(ement)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zlts",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zle(NGTH)",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zlp",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zobjexport",
+                    "flags": "i"
+                  },
                   {
                     "type": "PATTERN",
                     "value": "\\$BIT",
@@ -2368,17 +2806,382 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ZU(TIL)?",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
                     "value": "\\$XECUTE",
                     "flags": "i"
                   },
                   {
                     "type": "PATTERN",
                     "value": "\\$A(SCII)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZO(RDER)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$BP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$CE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZR",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZVD(ATA)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZVO(RDER)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZVQ(UERY)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZUNION",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZRV",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$CHANGE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPD",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$CL",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPI",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$EL",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$EP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPL",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPFV",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$EPI",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEX",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPF",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXNUM",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJNEW",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXNEW",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXPASS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJNEXT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJINT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJID",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJKILLOID",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJPARAM",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJINCREF",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJGETOID",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXREF",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJSTATE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXSAVE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXSORT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXSTART",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$INDEXVAL",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MV(AT)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVCVTNUM",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVFMT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVICONV",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVICONVS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPM",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVINMAT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVLOWER",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVOCONV(s)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVRAISE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVTRANS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJPURGE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$MVV",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$N(ext)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$U2NULL",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZCOMP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDIFF",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZDSWAP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZEXTRACT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZSR",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZGROUP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZINCR(EMENT)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZISECT",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZISWIDE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZJOB",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZLCHK",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZLSWAP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$zne(xt)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZNS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZOBJDECREF",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZPREVIOUS",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZQSWAP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZWSWAP",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZSET",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZS(ORT)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$ZSU(BLIST)?",
                     "flags": "i"
                   },
                   {
@@ -2473,7 +3276,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ISOBJECT",
+                    "value": "\\$ISO(BJECT)?",
                     "flags": "i"
                   },
                   {
@@ -2603,7 +3406,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ZISWIDE",
+                    "value": "\\$ZI(SWIDE)",
                     "flags": "i"
                   },
                   {
@@ -2638,7 +3441,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ZSIN",
+                    "value": "\\$ZSI(N)?",
                     "flags": "i"
                   },
                   {
@@ -2648,12 +3451,12 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ZTAN",
+                    "value": "\\$zstl",
                     "flags": "i"
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$ZVERSION",
+                    "value": "\\$ZTAN",
                     "flags": "i"
                   },
                   {
@@ -2800,21 +3603,6 @@
                     "type": "PATTERN",
                     "value": "\\$ZB(OOLEAN)?",
                     "flags": "i"
-                  },
-                  {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "PATTERN",
-                        "value": "\\$LISTUPDATE",
-                        "flags": "i"
-                      },
-                      {
-                        "type": "PATTERN",
-                        "value": "\\$LU",
-                        "flags": "i"
-                      }
-                    ]
                   },
                   {
                     "type": "PATTERN",
@@ -2980,8 +3768,16 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "expression"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "method_arg"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 },
                 {
                   "type": "REPEAT",
@@ -2993,8 +3789,16 @@
                         "value": ","
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "expression"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "method_arg"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
                       }
                     ]
                   }
@@ -3067,194 +3871,6 @@
                   }
                 ]
               }
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "built_in_functions_with_optional_args": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDATETIMEH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDTH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDATEH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDATETIME",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDT",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZDATE",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZD",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZTIMEH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZTH",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$NUM(BER)?",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$FN(UMBER)?",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LISTBUILD",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LB",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LISTTOSTRING",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LTS",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LISTFROMSTRING",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LFS",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$V(IEW)?",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LISTDATA",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$LD",
-                    "flags": "i"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "\\$ZT(IME)?",
-                    "flags": "i"
-                  }
-                ]
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "expression"
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": ","
-                      },
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "SYMBOL",
-                            "name": "expression"
-                          },
-                          {
-                            "type": "BLANK"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
             }
           ]
         },
@@ -3365,90 +3981,7 @@
         }
       ]
     },
-    "dollar_piece": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$P(IECE)?",
-                "flags": "i"
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "STRING",
-          "value": ","
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ","
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "dollar_func_pos"
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": ","
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "dollar_func_pos"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "dollar_extract": {
+    "dollar_list": {
       "type": "SEQ",
       "members": [
         {
@@ -3461,90 +3994,20 @@
                 "members": [
                   {
                     "type": "PATTERN",
-                    "value": "\\$E(XTRACT)?",
+                    "value": "\\$LI(ST)?",
                     "flags": "i"
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\$WE(XTRACT)?",
+                    "value": "\\$LISTUPDATE",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$LU",
                     "flags": "i"
                   }
                 ]
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ","
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "dollar_func_pos"
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": ","
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "dollar_func_pos"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "dollar_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "TOKEN",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$LI(ST)?",
-                "flags": "i"
               },
               {
                 "type": "IMMEDIATE_TOKEN",
@@ -3578,6 +4041,10 @@
                       "members": [
                         {
                           "type": "SYMBOL",
+                          "name": "method_arg"
+                        },
+                        {
+                          "type": "SYMBOL",
                           "name": "dollar_func_pos"
                         },
                         {
@@ -3598,6 +4065,10 @@
                           {
                             "type": "CHOICE",
                             "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "method_arg"
+                              },
                               {
                                 "type": "SYMBOL",
                                 "name": "dollar_func_pos"
@@ -3626,7 +4097,7 @@
         }
       ]
     },
-    "dollar_listget": {
+    "built_in_func_with_pos_options": {
       "type": "SEQ",
       "members": [
         {
@@ -3646,6 +4117,21 @@
                     "type": "PATTERN",
                     "value": "\\$LG",
                     "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$P(IECE)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$E(XTRACT)?",
+                    "flags": "i"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$WE(XTRACT)?",
+                    "flags": "i"
                   }
                 ]
               },
@@ -3664,102 +4150,6 @@
           "name": "expression"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ","
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "dollar_func_pos"
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": ","
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "expression"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "dollar_classmethod": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "\\$(ZOBJ)?CLASSMETHOD",
-          "flags": "i"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "("
-            }
-          },
-          "named": true,
-          "value": "bracket"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "expression"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ","
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SEQ",
@@ -3769,8 +4159,25 @@
                 "value": ","
               },
               {
-                "type": "SYMBOL",
-                "name": "method_arg"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "method_arg"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "dollar_func_pos"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               }
             ]
           }
@@ -3785,9 +4192,22 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "PATTERN",
-          "value": "\\$(ZOBJ)?METHOD",
-          "flags": "i"
+          "type": "TOKEN",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "\\$(ZOBJ)?METHOD",
+                "flags": "i"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\\$(ZOBJ)?CLASSMETHOD",
+                "flags": "i"
+              }
+            ]
+          }
         },
         {
           "type": "ALIAS",
@@ -3805,37 +4225,50 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "expression"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "method_arg"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "method_arg"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
               "type": "BLANK"
             }
           ]
-        },
-        {
-          "type": "STRING",
-          "value": ","
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "method_arg"
-              }
-            ]
-          }
         },
         {
           "type": "ALIAS",
@@ -3866,56 +4299,97 @@
       ]
     },
     "dollar_func_pos": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "PREC",
-          "value": 1,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "*"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": "-"
-                          },
-                          {
-                            "type": "STRING",
-                            "value": "+"
-                          }
-                        ]
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "expression"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "BLANK"
-                  }
-                ]
-              }
-            ]
-          }
+          "type": "STRING",
+          "value": "*"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "-"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "+"
+                    }
+                  ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "expression"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "unary_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "unary_operator"
         },
         {
           "type": "SYMBOL",
           "name": "expression"
         }
       ]
+    },
+    "indirection": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "@"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "STRING",
+                      "value": "@"
+                    }
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "subscripts"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "dotted_identifier_relaxed_token": {
       "type": "TOKEN",
@@ -4032,29 +4506,45 @@
       "type": "PREC",
       "value": 1,
       "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "TOKEN",
-            "content": {
-              "type": "SEQ",
+        "type": "PREC_RIGHT",
+        "value": 0,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "\\$\\$\\$"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "[%A-Za-z0-9][A-Za-z0-9]*"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "method_args"
+            },
+            {
+              "type": "CHOICE",
               "members": [
                 {
-                  "type": "PATTERN",
-                  "value": "\\$\\$\\$"
+                  "type": "SYMBOL",
+                  "name": "method_args"
                 },
                 {
-                  "type": "PATTERN",
-                  "value": "[%A-Za-z0-9][A-Za-z0-9]*"
+                  "type": "BLANK"
                 }
               ]
             }
-          },
-          {
-            "type": "SYMBOL",
-            "name": "method_args"
-          }
-        ]
+          ]
+        }
       }
     },
     "json_object_literal": {
