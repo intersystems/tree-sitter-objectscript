@@ -8,7 +8,7 @@ This document contains current, runnable examples for using the grammars and bin
 - `objectscript_udl`: class-file grammar for `.cls`
 - `objectscript_core`: routine/statement grammar
 - `objectscript_expr`: expression grammar
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.int`
+- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.int`, `.rtn`
 
 ## CLI Workflow
 
@@ -40,15 +40,17 @@ This syncs query files, builds parser artifacts, and runs `ts_query_ls check` on
 - `core/queries`
 - `udl/queries`
 - `expr/queries`
+- `objectscript/queries`
 - `objectscript_routine/queries`
 
 ## Neovim Setup
 
-Install both grammars:
+Install the grammar set used in this repository:
 
 ```vim
 :TSInstall objectscript_udl
 :TSInstall objectscript
+:TSInstall objectscript_routine
 ```
 
 Optional filetype mapping for `.cls`:
@@ -57,6 +59,10 @@ Optional filetype mapping for `.cls`:
 vim.filetype.add({
   extension = {
     cls = "objectscript_udl",
+    mac = "objectscript_routine",
+    inc = "objectscript_routine",
+    int = "objectscript_routine",
+    rtn = "objectscript_routine",
   },
 })
 ```
@@ -164,7 +170,7 @@ Run from repo root:
 
 ```bash
 nvm use
-npm install
+npm ci
 npm test
 
 cargo test --lib --package tree-sitter-objectscript

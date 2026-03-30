@@ -595,4 +595,58 @@ LOCK STATEMENTS 3
                 (bracket))))))))
   (statement
     (command_lock
-      (keyword_lock))))
+      (keyword_lock)))
+  (block_comment))
+
+===
+Valid Lock Statement, with Global
+===
+ lock +^User.TestD(%d(1))#s:$zu(115,4) set gotlock=$t
+---
+
+(source_file
+  (statement
+    (command_lock
+      (keyword_lock)
+      (command_lock_argument
+        (command_lock_arguments_variant_1
+          (glvn
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier_special)
+                      (subscripts
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))
+                        (bracket)))))
+                (bracket))))
+          (locktype)
+          (timeout
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal)))))))))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (system_defined_variable)))))))

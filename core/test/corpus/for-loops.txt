@@ -65,9 +65,10 @@ For Loop var=start:increment:end
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (string_literal))))))
@@ -75,17 +76,19 @@ For Loop var=start:increment:end
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_for
         (keyword_for)
@@ -116,12 +119,12 @@ For Loop var=start:increment:end
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_extract
+                    (built_in_func_with_pos_options
                       (expression
                         (expr_atom
                           (lvn
                             (objectscript_identifier))))
-                      (dollar_func_pos
+                      (method_arg
                         (expression
                           (expr_atom
                             (lvn
@@ -165,16 +168,17 @@ For Loop var=start:increment
                 (expr_atom
                   (system_defined_function
                     (dollar_function
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)
-                            (subscripts
-                              (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
-                              (bracket))))))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)
+                              (subscripts
+                                (bracket)
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (bracket)))))))))
                 (expr_tail
                   (binary_operator)
                   (expression
@@ -280,23 +284,26 @@ For Loop with New
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (numeric_literal))))
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -461,22 +468,22 @@ Old Style For Loop Argumentless
                   (binary_operator)
                   (expression
                     (expr_atom
-                      (string_literal))))))
-            (statement
-              (command_do
-                (keyword_do)
-                (do_parameter
-                  (routine_tag_call
-                    (line_ref
-                      (objectscript_identifier))
-                    (method_args
-                      (bracket)
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier)))))
-                      (bracket))))))))))))
+                      (string_literal))))))))
+        (statement
+          (command_do
+            (keyword_do)
+            (do_parameter
+              (routine_tag_call
+                (line_ref
+                  (objectscript_identifier))
+                (method_args
+                  (bracket)
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (bracket))))))))))
 
 ==========================================
 Old Style For Loop var=start:increment:end
@@ -491,17 +498,19 @@ Old Style For Loop var=start:increment:end
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))
     (statement
       (command_for
         (keyword_for)
@@ -532,12 +541,12 @@ Old Style For Loop var=start:increment:end
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_extract
+                    (built_in_func_with_pos_options
                       (expression
                         (expr_atom
                           (lvn
                             (objectscript_identifier))))
-                      (dollar_func_pos
+                      (method_arg
                         (expression
                           (expr_atom
                             (lvn
@@ -557,9 +566,10 @@ Old Style For Loop var=start:increment
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -588,9 +598,10 @@ Old Style For Loop var=start:increment
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (lvn
@@ -616,9 +627,10 @@ Old Style For Loop var=expr
       (command_set
         (keyword_set)
         (set_argument
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
           (expression
             (expr_atom
               (numeric_literal))))))

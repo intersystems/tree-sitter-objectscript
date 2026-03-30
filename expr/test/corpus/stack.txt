@@ -31,9 +31,10 @@ $STACK with level 0
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $STACK with level -1 (error level)
@@ -46,9 +47,10 @@ $STACK with level -1 (error level)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $STACK with positive level
@@ -61,9 +63,10 @@ $STACK with positive level
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $STACK with larger level number
@@ -76,9 +79,10 @@ $STACK with larger level number
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $STACK with PLACE keyword
@@ -91,12 +95,14 @@ $STACK with PLACE keyword
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $STACK with MCODE keyword
@@ -109,12 +115,14 @@ $STACK with MCODE keyword
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $STACK with ECODE keyword
@@ -127,12 +135,14 @@ $STACK with ECODE keyword
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $STACK with lowercase keyword
@@ -145,12 +155,14 @@ $STACK with lowercase keyword
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $STACK with glvn as second argument
@@ -163,13 +175,15 @@ $STACK with glvn as second argument
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $STACK with global variable as second argument
@@ -182,12 +196,14 @@ $STACK with global variable as second argument
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (gvn))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (gvn)))))))))
 
 ==================================
 $ST shorthand with arguments
@@ -200,12 +216,14 @@ $ST shorthand with arguments
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $STACK case insensitive
@@ -218,9 +236,10 @@ $STACK case insensitive
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $STACK in expression
@@ -249,19 +268,21 @@ $STACK with subscripted glvn
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (bracket))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (bracket)))))))))))
 
 ==================================
 Nested $STACK calls
@@ -274,14 +295,16 @@ Nested $STACK calls
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (system_defined_variable))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_variable))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))

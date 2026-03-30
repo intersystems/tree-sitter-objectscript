@@ -6,7 +6,7 @@
 |--------|--------|---------|
 | **Overall Health** | Good | Well-structured, maintainable codebase |
 | **Technical Debt** | Low-Medium | Some unimplemented features, minor style issues |
-| **Test Coverage** | Good | 170 corpus test files across 5 grammars |
+| **Test Coverage** | Good | 186 corpus test files across 5 grammar corpus directories (109 source-corpus files before playground sync) |
 | **Documentation** | Good | Comprehensive README, inline comments |
 | **Code Quality** | Good | Consistent patterns, type annotations |
 
@@ -24,7 +24,7 @@
 
 #### H1: Unimplemented Preprocessor Directives
 
-**Location**: `core/grammar.js:420-423`
+**Location**: `core/grammar.js:433-436`
 
 **Evidence**:
 ```javascript
@@ -48,7 +48,7 @@
 
 **Location**: 
 - `expr/grammar.js:14-17`
-- `core/grammar.js:17-20` (imported from utils)
+- `core/utils.js:47`
 - `udl/grammar.js:19-22`
 - `common/keywords.js:15-17`
 
@@ -72,7 +72,7 @@ const repeat_with_commas = function (rule) {
 
 #### M2: Large File Size - `core/grammar.js`
 
-**Location**: `core/grammar.js` (1,728 lines)
+**Location**: `core/grammar.js` (1,672 lines)
 
 **Evidence**: File contains 50+ command definitions, each with complex argument handling.
 
@@ -90,7 +90,7 @@ const repeat_with_commas = function (rule) {
 
 #### M3: Large File Size - `common/keywords.js`
 
-**Location**: `common/keywords.js` (947 lines)
+**Location**: `common/keywords.js` (932 lines)
 
 **Evidence**: All keyword definitions in single file.
 
@@ -112,9 +112,8 @@ const repeat_with_commas = function (rule) {
 
 **Evidence**:
 ```javascript
-// Found in: expr/grammar.js, core/grammar.js, udl/grammar.js, common/keywords.js
+// Found in: core/grammar.js, udl/grammar.js, common/keywords.js
 /* eslint-disable indent */
-/* eslint-disable camelcase */
 ```
 
 **Impact**: Inconsistent code style; potential for style drift.
@@ -127,7 +126,7 @@ const repeat_with_commas = function (rule) {
 
 #### M5: Hardcoded Exclusion List in `utils.js`
 
-**Location**: `core/utils.js:53-56`
+**Location**: `core/utils.js:52-55`
 
 **Evidence**:
 ```javascript
@@ -162,39 +161,18 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 ---
 
-#### L2: Duplicate `open_keyword_translate` Entry
+#### L2: Stale Regeneration Note in `common/keywords.js`
 
-**Location**: `core/grammar.js:839`
+**Location**: `common/keywords.js:3`
 
 **Evidence**:
 ```javascript
-open_keywords: ($) =>
-    choice(
-        // ...
-        $.open_keyword_translate,
-        $.open_keyword_translate,  // <-- DUPLICATE
-        $.open_keyword_xytable,
-        // ...
-    )
+// NOTE: A file somewhat resembling this can be regenerated in by invoking the appropriate file in scripts/
 ```
 
-**Impact**: No functional impact (tree-sitter deduplicates), but confusing.
+**Impact**: Contributors may spend time searching for a non-existent regeneration script.
 
-**Suggested Fix**: Remove duplicate entry.
-
-**Validation**: Grammar still parses correctly.
-
----
-
-#### L3: Missing Type Annotations in Some Functions
-
-**Location**: `core/utils.js:53-56`, `common/define_grammar.js`
-
-**Evidence**: Some helper functions lack JSDoc type annotations.
-
-**Impact**: IDE support degraded; potential for type errors.
-
-**Suggested Fix**: Add `@param` and `@return` JSDoc annotations to all exported functions.
+**Suggested Fix**: Update or remove this note, and point to an existing script if regeneration is reintroduced.
 
 ---
 
@@ -202,7 +180,7 @@ open_keywords: ($) =>
 
 | Location | Comment | Action |
 |----------|---------|--------|
-| `core/grammar.js:420-423` | TODO for unimplemented directives | Keep - still valid |
+| `core/grammar.js:433-436` | TODO for unimplemented directives | Keep - still valid |
 | `common/keywords.js:3` | "NOTE: A file somewhat resembling this can be regenerated" | Update or remove if script no longer exists |
 
 ---
@@ -221,9 +199,11 @@ open_keywords: ($) =>
 
 | Grammar | Test Files | Estimated Rules Covered | Gap |
 |---------|------------|------------------------|-----|
-| expr | 22 | ~80% of expression rules | Pattern edge cases |
-| core | 54 | ~70% of command rules | I/O commands, ZBREAK variants |
-| udl | 18 | ~60% of UDL rules | Keyword combinations |
+| expr | 30 | ~80% of expression rules | Pattern edge cases |
+| core | 57 | ~70% of command rules | I/O commands, ZBREAK variants |
+| udl | 19 | ~60% of UDL rules | Keyword combinations |
+| objectscript_routine | 3 | ~50% of routine-header rules | Header/comment edge cases |
+| objectscript (playground) | 77 | Broad integration coverage | Sync drift if hook is bypassed |
 
 ### Suggested Additional Tests
 
@@ -238,8 +218,8 @@ open_keywords: ($) =>
 ### Short-term (1-2 weeks)
 
 1. Remove duplicate `repeat_with_commas` definitions
-2. Fix duplicate `open_keyword_translate` entry
-3. Add JSDoc to undocumented functions
+2. Update/remove stale regeneration note in `common/keywords.js`
+3. Add targeted comments where scanner behavior is not obvious
 
 ### Medium-term (1-2 months)
 
@@ -259,9 +239,9 @@ open_keywords: ($) =>
 
 ### Strengths
 
-1. **Well-layered architecture**: expr → core → udl inheritance is clean and enables reuse
+1. **Well-layered architecture**: expr → core with two downstream paths (udl/playground and routine) is clean and enables reuse
 2. **Comprehensive keyword handling**: UDL keywords are exhaustively defined
-3. **Good test coverage**: 168 corpus tests provide confidence in parsing accuracy
+3. **Good test coverage**: 186 corpus tests provide confidence in parsing accuracy
 4. **Consistent patterns**: Command builder functions reduce duplication
 5. **Type annotations**: JSDoc types improve IDE support
 6. **External scanner**: Complex tokenization handled efficiently in C
@@ -280,12 +260,12 @@ open_keywords: ($) =>
 
 | Metric | Value | Assessment |
 |--------|-------|------------|
-| Total Grammar LOC | ~4,400 | Reasonable for language complexity |
-| Scanner LOC (C) | 827 | Acceptable |
-| Test Files | 168 | Good coverage |
+| Total Grammar LOC | 3,401 | Reasonable for language complexity |
+| Scanner LOC (C) | 1,009 | Acceptable |
+| Test Files | 186 | Good coverage |
 | Language Bindings | 6 | Excellent portability |
 | TODO Comments | 1 | Low debt indicator |
-| ESLint Disables | 18 | Moderate - consider cleanup |
+| ESLint Disables | 7 | Low-Moderate - consider cleanup |
 
 ---
 
@@ -303,8 +283,8 @@ open_keywords: ($) =>
 
 ## Evidence
 
-- `core/grammar.js:420-423` — TODO for unimplemented directives
-- `expr/grammar.js:14-17`, `common/keywords.js:15-17` — Duplicated utility functions
-- `core/grammar.js:839` — Duplicate `open_keyword_translate`
-- `core/utils.js:53-56` — Hardcoded exclusion list
+- `core/grammar.js:433-436` — TODO for unimplemented directives
+- `expr/grammar.js:15`, `core/utils.js:47`, `udl/grammar.js:22`, `common/keywords.js:15` — Duplicated `repeat_with_commas` utility
+- `core/utils.js:52-55` — Hardcoded exclusion list
+- `find expr/test/corpus core/test/corpus udl/test/corpus objectscript_routine/test/corpus objectscript/test/corpus -type f -name '*.txt' | wc -l` — 186 corpus files across grammar directories
 - File line counts from `wc -l` command

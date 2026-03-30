@@ -67,9 +67,10 @@ While Statements
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -83,49 +84,58 @@ While Statements
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (system_defined_function
-              (built_in_functions_with_optional_args
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal))))))))))
+              (dollar_function
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))))))
   (statement
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -141,18 +151,21 @@ While Statements
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))))))
       (expression
         (expr_atom
           (lvn
@@ -187,9 +200,10 @@ While Statements
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -243,9 +257,10 @@ While Statements
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -259,16 +274,18 @@ While Statements
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -345,9 +362,10 @@ While Statements
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+                (set_target
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expression
                   (expr_atom
                     (lvn
@@ -376,9 +394,10 @@ While Statements
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -395,3 +414,49 @@ While Statements
         (expression
           (expr_atom
             (string_literal)))))))
+
+===
+Valid While with parens
+===
+ while(x<2) { w 1 s x=x+1}
+---
+
+(source_file
+  (statement
+    (command_while
+      (keyword_while)
+      (bracket)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (bracket)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))

@@ -456,7 +456,7 @@ module.exports = define_grammar(objectscript_core, {
     argument: ($) =>
       seq(
         optional( choice($.keyword_byref, $.keyword_output)),
-        $.method_arg,
+        alias(choice($.variadic_arg, $.expression), $.method_arg),
         optional($.return_type),
         optional(seq('=', $.default_argument_value)),
       ),

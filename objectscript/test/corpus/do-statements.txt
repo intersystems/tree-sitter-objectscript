@@ -60,8 +60,8 @@ Do Statement No Param Passing
     (command_set
       (keyword_set)
       (set_argument
-        (system_defined_variable
-          (namespace_token))
+        (set_target
+          (system_defined_variable))
         (expression
           (expr_atom
             (string_literal))))))
@@ -101,23 +101,26 @@ Do Statement With Param Passing
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -203,23 +206,26 @@ Do Statement With Param Passing
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -300,48 +306,52 @@ Do Statement With Param Passing
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)
-            (subscripts
-              (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (bracket))))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket)))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)
-            (subscripts
-              (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (bracket))))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket)))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)
-            (subscripts
-              (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (bracket))))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket)))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -366,23 +376,26 @@ Do Statement With Param Passing
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -590,9 +603,10 @@ Do Statement with Indirection
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (string_literal))
@@ -837,10 +851,11 @@ Do Statement with Argument Postconditionals
                     (expr_atom
                       (system_defined_function
                         (dollar_function
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))))))
                   (bracket)))))
           (bracket))
         (post_conditional
@@ -869,10 +884,11 @@ Do Statement with Argument Postconditionals
                     (expr_atom
                       (system_defined_function
                         (dollar_function
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))))))
                   (bracket)))))
           (bracket))
         (post_conditional
@@ -895,9 +911,10 @@ Do While Statement and Continue
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -976,16 +993,18 @@ Do While Statement and Quit
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal))))))
@@ -1044,9 +1063,10 @@ Do While Statement and Quit
             (command_set
               (keyword_set)
               (set_argument
-                (glvn
-                  (lvn
-                    (objectscript_identifier)))
+                (set_target
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
                 (expression
                   (expr_atom
                     (lvn
@@ -1085,9 +1105,10 @@ Do While Statement and Quit
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -1393,9 +1414,10 @@ Do Statement Dot Syntax
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn
@@ -1405,8 +1427,8 @@ Do Statement Dot Syntax
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))))))))
-  (line_comment_3)
+                            (objectscript_identifier))))))))))))
+      (line_comment_3)))
   (statement
     (command_write
       (keyword_write)
@@ -1433,9 +1455,10 @@ Do Statement Dot Syntax
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn
@@ -1451,8 +1474,8 @@ Do Statement Dot Syntax
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))))))))
-  (line_comment_3)
+                            (objectscript_identifier))))))))))))
+      (line_comment_3)))
   (statement
     (command_write
       (keyword_write)
@@ -1503,9 +1526,10 @@ Do Statement Dot Syntax
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (lvn
-                      (objectscript_identifier)))
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
                   (expression
                     (expr_atom
                       (lvn

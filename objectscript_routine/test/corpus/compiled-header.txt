@@ -1,0 +1,62 @@
+====
+Valid Compiled Header, MAC type
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+hey^MAC^^^4
+
+hey
+ set x =2
+---
+
+(source_file
+  (compiled_header)
+  (statement
+    (tag))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
+
+====
+RTN Dot for blank line
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+hey^MAC^^^4
+
+hey() methodimpl
+ {
+        set x =2
+    }
+.
+---
+
+(source_file
+  (compiled_header)
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (bracket)
+          (bracket))
+        (keyword_methodimpl))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))

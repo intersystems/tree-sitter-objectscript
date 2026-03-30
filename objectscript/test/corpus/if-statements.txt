@@ -2,7 +2,7 @@
 If Statements 0
 ================
   if 1 set x = 3 set set = 3
-  if 1 { set x = 3 } else { w 2 }
+  if 1 { set x = 3 } elseif  x=2 {w 1} else { w 2 }
   set x = 3
 ---
 
@@ -17,9 +17,10 @@ If Statements 0
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -27,9 +28,10 @@ If Statements 0
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))))
@@ -43,12 +45,31 @@ If Statements 0
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
+      (elseif_block
+        (keyword_elseif)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
       (else_block
         (keyword_else)
         (statement
@@ -62,9 +83,10 @@ If Statements 0
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (numeric_literal)))))))
@@ -100,20 +122,23 @@ If Statements 1
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (system_defined_function
                   (dollar_function
-                    (expression
-                      (expr_atom
-                        (macro
-                          (macro_constant))))
-                    (expression
-                      (expr_atom
-                        (string_literal))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal)))))))))))
       (elseif_block
         (keyword_elseif)
         (expression
@@ -142,15 +167,16 @@ If Statements 1
               (command_set
                 (keyword_set)
                 (set_argument
-                  (glvn
-                    (gvn
-                      (subscripts
-                        (bracket)
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier))))
-                        (bracket))))
+                  (set_target
+                    (glvn
+                      (gvn
+                        (subscripts
+                          (bracket)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (bracket)))))
                   (expression
                     (expr_atom
                       (string_literal))))))
@@ -202,13 +228,14 @@ If Statements 2
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
-                (numeric_literal))))))))
-  (line_comment_3)
+                (numeric_literal))))))
+      (line_comment_3)))
   (statement
     (command_else
       (keyword_oldelse)
@@ -216,9 +243,10 @@ If Statements 2
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))))
@@ -229,13 +257,14 @@ If Statements 2
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
-                (numeric_literal))))))))
-  (line_comment_3)
+                (numeric_literal))))))
+      (line_comment_3)))
   (statement
     (command_else
       (keyword_oldelse)
@@ -243,9 +272,10 @@ If Statements 2
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))))
@@ -266,9 +296,10 @@ If Statements 2
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -278,9 +309,10 @@ If Statements 2
           (command_set
             (keyword_set)
             (set_argument
-              (glvn
-                (lvn
-                  (objectscript_identifier)))
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
               (expression
                 (expr_atom
                   (numeric_literal))))))
@@ -315,12 +347,12 @@ If Statements 3
             (expression
               (expr_atom
                 (system_defined_function
-                  (dollar_extract
+                  (built_in_func_with_pos_options
                     (expression
                       (expr_atom
                         (lvn
                           (objectscript_identifier))))
-                    (dollar_func_pos
+                    (method_arg
                       (expression
                         (expr_atom
                           (numeric_literal)))))))
@@ -367,9 +399,10 @@ If Statements 3
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (macro
@@ -414,9 +447,10 @@ If Statements 3
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -556,9 +590,10 @@ If Block to Old Else Valid
     (command_set
       (keyword_set)
       (set_argument
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
         (expression
           (expr_atom
             (string_literal))))))
@@ -628,7 +663,7 @@ If Expression Indirection
             (objectscript_identifier)))
         (expr_tail
           (pattern_operator
-            (unary_expression
+            (indirection
               (expression
                 (expr_atom
                   (lvn
@@ -670,6 +705,86 @@ If with Expression, Block on newline
           (lvn
             (objectscript_identifier)))))))
 
+=========================================
+If with // comment before newline block
+=========================================
+ i pos'=idbase // test
+ {
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))
+      (line_comment_1))))
+
+========================================
+If with ; comment before newline block
+========================================
+ i pos'=idbase ; test
+ {
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))
+      (line_comment_3))))
+
+==================================================
+If with multiline && and no trailing whitespace
+==================================================
+ if (x)
+ && (y) {}
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (parenthetical_expression
+            (bracket)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (bracket)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (parenthetical_expression
+                (bracket)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (bracket)))))))))
+
 ====
 Valid If
 ====
@@ -700,3 +815,567 @@ Valid If
       (else_block
         (keyword_else)
         (line_comment_1)))))
+
+=====
+If statements, valid
+=====
+  if iristype = "" Return {"type": "string"} 
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (statement
+        (command_return
+          (keyword_return)
+          (expression
+            (expr_atom
+              (json_object_literal
+                (json_object_literal_pair
+                  (json_string_literal)
+                  (json_literal
+                    (json_string_literal)))))))))))
+
+=====
+Valid If Statement testing
+=====
+ If AllowedCapacity>0 Set AllowedCapacity = AllowedCapacity - 1/1
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
+
+====
+If statements, built in funcs, byref
+====
+	If 'reset { Set gbl=..#DATALOCATIONGLOBAL If gbl="" { Set oref=$zobjoid("",$listget(oid)),sfn=$zu(40,0,41) } Else { Set oref=$zobjoid("",$listget(oid),@gbl,.sfn) } Set $zobjoid("",$listget(oid),,sfn)=$this,i%"%%OID"=oid }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (unary_expression
+            (unary_operator)
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (relative_dot_parameter
+                  (oref_parameter
+                    (parameter_name
+                      (member_name
+                        (identifier_segment_immediate))))))))))
+      (statement
+        (command_if
+          (keyword_if)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal)))))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (string_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (built_in_func_with_pos_options
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))))))))))
+              (set_argument
+                (set_target
+                  (glvn
+                    (lvn
+                      (objectscript_identifier))))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))))))))
+          (else_block
+            (keyword_else)
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (system_defined_function
+                                  (built_in_func_with_pos_options
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (indirection
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))))
+                          (method_arg
+                            (byref_arg
+                              (lvn
+                                (objectscript_identifier))))))))))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (system_defined_function
+                (dollar_function
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (built_in_func_with_pos_options
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))
+            (expression
+              (expr_atom
+                (system_defined_variable))))
+          (set_argument
+            (set_target
+              (instance_variable
+                (member_name)))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+====
+If + built in + set, valid
+====
+ if $s($a(%e,2):1,$a(%e,3):1,$a(%e,4):1,$a(%e,5):1,1:$a(%e,6)) {
+		set ^User.TestD(%d(1))=$listupdate($g(^User.TestD(%d(1))),1,$a(%e,6):%d(6),$a(%e,2):%d(2),$a(%e,4):%d(4),$a(%e,3):%d(3),$a(%e,5):%d(5))
+  }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (dollar_select
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier_special)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier_special)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier_special)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier_special)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier_special)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal)))))))))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (gvn
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier_special)
+                          (subscripts
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (numeric_literal)))
+                            (bracket)))))
+                    (bracket)))))
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_list
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (dollar_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (gvn
+                                    (subscripts
+                                      (bracket)
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier_special)
+                                            (subscripts
+                                              (bracket)
+                                              (expression
+                                                (expr_atom
+                                                  (numeric_literal)))
+                                              (bracket)))))
+                                      (bracket))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier_special)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (subscripts
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (bracket))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier_special)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (subscripts
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (bracket))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier_special)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (subscripts
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (bracket))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier_special)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (subscripts
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (bracket))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier_special)))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (subscripts
+                              (bracket)
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (bracket))))))))))))))))
+
+====
+If, no space before newline, block
+====
+ if x
+ {}
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))))))
+
+====
+Comment before newline, block
+====
+ if x // allowed comment
+ {
+
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))
+      (line_comment_1))))
+
+====
+Comment type 3 before newline, block
+====
+ if x ; allowed comment
+ {
+
+ }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))
+      (line_comment_3))))

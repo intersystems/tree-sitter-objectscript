@@ -132,18 +132,20 @@ Valid Ztrap Statements
         (expr_atom
           (system_defined_function
             (dollar_function
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
         (expr_tail
           (binary_operator)
           (expression
             (expr_atom
               (system_defined_function
                 (dollar_function
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))))))
   (line_comment_3)
   (statement
     (command_ztrap
@@ -180,15 +182,17 @@ Valid Ztrap Statements
       (keyword_ztrap)
       (expression
         (expr_atom
-          (unary_expression
-            (glvn
-              (lvn
-                (objectscript_identifier))))))))
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))))
   (statement
     (command_set
       (keyword_set)
       (set_argument
-        (system_defined_variable)
+        (set_target
+          (system_defined_variable))
         (expression
           (expr_atom
             (string_literal))))))
@@ -196,7 +200,8 @@ Valid Ztrap Statements
     (command_set
       (keyword_set)
       (set_argument
-        (system_defined_variable)
+        (set_target
+          (system_defined_variable))
         (expression
           (expr_atom
             (string_literal)))))))

@@ -14,7 +14,7 @@ const define_grammar = require('../common/define_grammar');
 
 module.exports = define_grammar(objectscript_core, {
   name: 'objectscript_routine',
-  externals: ($, previous) => previous.concat([$.routine]),
+  externals: ($, previous) => previous.concat([$.compiled_header, $.routine, $.rtn_dot]),
   extras: ($, previous) =>
     previous.concat([
       /\s/,
@@ -23,11 +23,19 @@ module.exports = define_grammar(objectscript_core, {
   rules: {
     source_file: ($) =>
       seq(
-        $.routine,
-        alias($.identifier, $.routine_name),
-        optional($.routine_type),
+        choice(
+          $.compiled_header,
+          seq(
+            $.routine,
+            alias($.identifier, $.routine_name),
+            optional($.routine_type),
+          ),
+        ),
         repeat(
-          $.statement,
+          choice(
+            $.rtn_dot,
+            $.statement,
+          ),
         ),
       ),
 

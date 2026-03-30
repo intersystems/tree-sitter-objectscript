@@ -1,6 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
+#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -116,6 +117,17 @@ static inline bool is_valid_sql_marker_char(int32_t c) {
   }
 }
 
+static inline bool is_short_circuit_continuation_operator(TSLexer *lexer) {
+  if (lexer->lookahead != '&' && lexer->lookahead != '|') {
+    return false;
+  }
+  int32_t first = lexer->lookahead;
+  // Keep token end at the newline/indent boundary while peeking ahead.
+  lexer->mark_end(lexer);
+  advance(lexer);
+  return lexer->lookahead == first;
+}
+
 static inline void skip   (TSLexer *lexer) { lexer->advance(lexer, true ); }
 
 #define MARKER_BUFFER_MAX_LEN 30
@@ -126,6 +138,7 @@ struct ObjectScript_Core_Scanner {
   // When true, column-1 identifiers are treated as statements unless they
   // are clearly labels/tags.
   bool column1_statement_mode;
+  bool just_terminated;
   int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
   int html_marker_buffer_len;
   int32_t sql_marker_buffer[MARKER_BUFFER_MAX_LEN];
@@ -307,6 +320,13 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
 
+
+  if (scanner->terminated_newline && lexer->lookahead == '.' && valid_symbols[_BOL]) {
+    lexer->result_symbol = _BOL;
+    scanner->terminated_newline = false;
+    return true;
+  }
+
   if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE_COMPLETE]) {
     int i = 0;
     // we already know marker is valid, now we want to consume it
@@ -329,27 +349,7 @@ if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE]) {
       '>');
 }
 
-if (valid_symbols[_TERMINATION] && valid_symbols[_ARGUMENTLESS_LOOP] && lexer->lookahead=='\n') {
-    // normally this would be a termination, but we need to make sure that it isn't a block.
-    while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
-        lexer->advance(lexer,false);
-    }
-    bool is_block = (lexer->lookahead == '{');
-    if (is_block) {
-        lexer->result_symbol = _ARGUMENTLESS_LOOP;
-        scanner->terminated_newline = false;
-        return true;
-    }
-    else {
-        scanner->terminated_newline = true;
-        lexer->result_symbol = _TERMINATION;
-        return true;
-
-    }
-}
-
 if (valid_symbols[HTML_MARKER_REVERSED]) {
-  // lexer->mark_end(lexer);
   while (scanner->html_marker_buffer_len >0 && !lexer->eof(lexer)) {
     int32_t expected = scanner->html_marker_buffer[scanner->html_marker_buffer_len - 1];
 
@@ -362,7 +362,6 @@ if (valid_symbols[HTML_MARKER_REVERSED]) {
     }
 
     advance(lexer);
-    // lexer->mark_end(lexer);
     scanner->html_marker_buffer_len -= 1;
   }
 
@@ -468,9 +467,39 @@ if (valid_symbols[EMBEDDED_SQL_MARKER]) {
 }
 
 if (valid_symbols[_TERMINATION]) {
+        // Let line-comment tokens be consumed as extras first; the following
+        // newline will decide whether this is a real termination or a block/
+        // operator continuation.
+        if (valid_symbols[_WHITESPACE] &&
+            (lexer->lookahead == ';' || lexer->lookahead == '/' || lexer->lookahead == '#')) {
+            return false;
+        }
+        if (lexer->lookahead == '\n' && valid_symbols[_WHITESPACE]) {
+            // If the next line starts with && or ||, treat newline as whitespace
+            // so multiline IF/WHILE conditions continue.
+            lexer->mark_end(lexer);
+            advance(lexer);
+            while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
+              advance(lexer);
+            }
+            // Also treat newline as whitespace when a block opens on the next line.
+            if (lexer->lookahead == '{') {
+              lexer->mark_end(lexer);
+              lexer->result_symbol = _WHITESPACE;
+              scanner->terminated_newline = false;
+              return true;
+            }
+            if (is_short_circuit_continuation_operator(lexer)) {
+              lexer->result_symbol = _WHITESPACE;
+              scanner->terminated_newline = false;
+              return true;
+            }
+            scanner->terminated_newline = true;
+            lexer->result_symbol = _TERMINATION;
+            return true;
+        }
         bool is_termination = (lexer->lookahead == '\n' ||
                                       lexer->lookahead == '}' ||
-                                      lexer->lookahead == '/' ||
                                       lexer->lookahead == ';' ||
                                       lexer->eof(lexer));
         if (is_termination) {
@@ -482,6 +511,15 @@ if (valid_symbols[_TERMINATION]) {
             }
             lexer->result_symbol = _TERMINATION;
             return true;
+        }
+        if (lexer->lookahead == '/') {
+          lexer->mark_end(lexer); // check if it is a comment 
+          advance(lexer);
+          if (lexer->lookahead == '/') {
+            scanner->terminated_newline = false;
+            lexer->result_symbol = _TERMINATION;
+            return true;
+          }
         }
         if (lexer->lookahead=='#') {
           lexer->mark_end(lexer); // check if it is a comment 
@@ -536,12 +574,13 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             lexer->advance(lexer, false);
          }
         bool is_termination = (lexer->lookahead == '\n' ||
+                              lexer->lookahead == '\r' ||
                               lexer->lookahead == '}' ||
                               lexer->lookahead == '/' ||
                               lexer->lookahead == ';' ||
                               lexer->eof(lexer));
 
-        bool termination_new_line = (lexer->lookahead == '\n');
+        bool termination_new_line = (lexer->lookahead == '\n' || lexer->lookahead == '\r' || scanner->terminated_newline);
 
         bool is_block = (lexer->lookahead == '{');
 
@@ -589,7 +628,13 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             return true;
         }
 
-        if (count == 2 && valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block && !is_termination) {
+        if (count >= 2 && valid_symbols[_ARGUMENTLESS_COMMAND_END] && !is_block && !is_termination) {
+            lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
+            scanner->terminated_newline = false;
+            return true;
+        }
+
+        if (count >= 2 && !valid_symbols[_ARGUMENTLESS_LOOP] && valid_symbols[_ARGUMENTLESS_COMMAND_END]) {
             lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
             scanner->terminated_newline = false;
             return true;
@@ -667,6 +712,10 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             bool new_line = false;
             while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
                 if (lexer->lookahead == '\n') {
+                  if(!valid_symbols[_ARGUMENTLESS_LOOP] && valid_symbols[_TERMINATION]) {
+                    lexer->result_symbol = _TERMINATION;
+                    return true;
+                  }
                     new_line=true;
                 }
                 lexer->advance(lexer, false);
@@ -675,6 +724,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             if (new_line) {
                 scanner->terminated_newline=true;
             }
+
             bool is_block = (lexer->lookahead == '{');
             bool is_dot = (lexer->lookahead == '.');
 
@@ -686,6 +736,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             }
 
             if(valid_symbols[_TERMINATION] && (is_termination || new_line) && !is_block) {
+
                 lexer->result_symbol = _TERMINATION;
                 if (termination_new_line || new_line) {
                     scanner->terminated_newline = true;
@@ -730,7 +781,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             bool is_dot = (lexer->lookahead == '.');
             if (valid_symbols[_TERMINATION] && !is_block && (new_line || is_termination)) {
                 lexer->result_symbol = _TERMINATION;
-                scanner->terminated_newline = false;
+                scanner->terminated_newline = new_line;
                 return true;
             }
 
@@ -954,4 +1005,5 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->html_marker_buffer_len = 0;
   scanner->terminated_newline = false;
   scanner->column1_statement_mode = false;
+  scanner->just_terminated=false;
 }

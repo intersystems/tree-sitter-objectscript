@@ -30,8 +30,7 @@ Valid Znspace commands
         (write_argument
           (expression
             (expr_atom
-              (system_defined_variable
-                (namespace_token)))))))
+              (system_defined_variable))))))
     (statement
       (command_zn
         (keyword_zn)
@@ -57,9 +56,10 @@ Valid Znspace commands
                   (expr_atom
                     (system_defined_function
                       (dollar_function
-                        (expression
-                          (expr_atom
-                            (gvn)))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (gvn))))))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -114,7 +114,8 @@ Valid $ZNSPACE
       (command_set
         (keyword_set)
         (set_argument
-          (system_defined_variable)
+          (set_target
+            (system_defined_variable))
           (expression
             (expr_atom
               (lvn

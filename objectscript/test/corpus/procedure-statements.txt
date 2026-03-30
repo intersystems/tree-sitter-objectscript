@@ -36,9 +36,10 @@ proc1() [a, b]
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -56,9 +57,10 @@ proc1() [a, b]
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -76,9 +78,10 @@ proc1() [a, b]
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (numeric_literal))))))
@@ -86,9 +89,10 @@ proc1() [a, b]
         (command_set
           (keyword_set)
           (set_argument
-            (glvn
-              (lvn
-                (objectscript_identifier)))
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
             (expression
               (expr_atom
                 (lvn
@@ -146,8 +150,8 @@ MyProc(x,y) PUBLIC { }
                 (expr_atom
                   (lvn
                     (objectscript_identifier))))))
-          (bracket)))
-      (keyword_public))))
+          (bracket))
+        (keyword_public)))))
 
 ========================
 Valid Private Procedures
@@ -176,8 +180,8 @@ MyProc2(x,y) { }
                 (expr_atom
                   (lvn
                     (objectscript_identifier))))))
-          (bracket)))
-      (keyword_private)))
+          (bracket))
+        (keyword_private))))
   (statement
     (procedure
       (tag_with_params
@@ -404,3 +408,76 @@ PROC1() [x] HELLO {
 ---
 
 
+
+====
+Valid part of routine, no procedure
+====
+%InitExtentData() methodimpl
+	try {
+		set:'$d(^User.TestD) ^User.TestD=""
+	} catch { RETURN $$Error^%apiOBJ(5001,$ze) }
+	RETURN 1
+---
+
+(source_file
+  (statement
+    (tag_with_params
+      (tag)
+      (parameter_list
+        (bracket)
+        (bracket))
+      (keyword_methodimpl)))
+  (statement
+    (command_trycatch
+      (keyword_try)
+      (statement
+        (command_set
+          (keyword_set)
+          (post_conditional
+            (expression
+              (expr_atom
+                (unary_expression
+                  (unary_operator)
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (gvn))))))))))))
+          (set_argument
+            (set_target
+              (glvn
+                (gvn)))
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (catch_block
+        (keyword_catch)
+        (statement
+          (command_return
+            (keyword_return)
+            (expression
+              (expr_atom
+                (extrinsic_function
+                  (objectscript_identifier)
+                  (routine_ref
+                    (routine_name))
+                  (method_args
+                    (bracket)
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (system_defined_variable))))
+                    (bracket))))))))))
+  (statement
+    (command_return
+      (keyword_return)
+      (expression
+        (expr_atom
+          (numeric_literal))))))

@@ -144,18 +144,19 @@ READ STATEMENT WITH INDIRECTION
       (read_argument
         (read_fchar))
       (read_argument
-        (indirection
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (bracket)))))))
+        (read_variable
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))
+                    (bracket))))))))
       (read_argument
         (read_variable
           (glvn

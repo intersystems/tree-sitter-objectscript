@@ -58,9 +58,10 @@ $ZHEX(255)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX shorthand with decimal number
@@ -74,9 +75,10 @@ $ZH(255)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with hexadecimal string
@@ -90,9 +92,10 @@ $ZHEX("FF")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZH with hexadecimal string
@@ -106,9 +109,10 @@ $ZH("FF")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX lowercase
@@ -122,9 +126,10 @@ $zhex(255)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZH function lowercase
@@ -138,9 +143,10 @@ $zh(255)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with zero
@@ -154,9 +160,10 @@ $ZHEX(0)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with hex zero
@@ -170,9 +177,10 @@ $ZHEX("0")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with variable
@@ -186,10 +194,11 @@ $ZHEX(num)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $ZHEX with large decimal
@@ -203,9 +212,10 @@ $ZHEX(4294967295)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with lowercase hex string
@@ -219,9 +229,10 @@ $ZHEX("ff")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with uppercase hex string
@@ -235,9 +246,10 @@ $ZHEX("FF")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with mixed case hex string
@@ -251,9 +263,10 @@ $ZHEX("FfAaBb")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with long hex string
@@ -267,9 +280,10 @@ $ZHEX("DEADBEEF")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with expression
@@ -283,15 +297,16 @@ $ZHEX(x+1)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
 
 ==================================
 $ZHEX with function result
@@ -305,13 +320,15 @@ $ZHEX($ASCII("A"))
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (system_defined_function
-                (dollar_function
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal))))))))))))))
 
 ==================================
 $ZHEX in expression
@@ -325,9 +342,10 @@ $ZHEX(255)+1
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))
     (expr_tail
       (binary_operator)
       (expression
@@ -346,13 +364,15 @@ $ZHEX($ZHEX("FF"))
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (system_defined_function
-                (dollar_function
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal))))))))))))))
 
 ==================================
 $ZHEX with subscripted variable
@@ -366,16 +386,17 @@ $ZHEX(arr(1))
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (bracket))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (bracket)))))))))))
 
 ==================================
 $ZHEX with global variable
@@ -389,9 +410,10 @@ $ZHEX(^hexValue)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (gvn))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (gvn)))))))))
 
 ==================================
 $ZHOROLOG in expression
@@ -439,9 +461,10 @@ $ZHex(128)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHOROLOG mixed case
@@ -467,9 +490,10 @@ $ZHEX(-1)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with single hex digit
@@ -483,9 +507,10 @@ $ZHEX("F")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with object property
@@ -499,15 +524,16 @@ $ZHEX(obj.Value)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (identifier_segment_immediate))))))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (oref_chain_expr
+                  (lvn
+                    (objectscript_identifier))
+                  (oref_chain_segment
+                    (oref_property
+                      (property_name
+                        (identifier_segment_immediate)))))))))))))
 
 ==================================
 $ZHEX comparison
@@ -521,10 +547,11 @@ $ZHEX(value)="FF"
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
       (expression
@@ -543,23 +570,28 @@ $ZBOOLEAN($ZHEX("FF"),$ZHEX("0F"),1)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (system_defined_function
-                (dollar_function
-                  (expression
-                    (expr_atom
-                      (string_literal)))))))
-          (expression
-            (expr_atom
-              (system_defined_function
-                (dollar_function
-                  (expression
-                    (expr_atom
-                      (string_literal)))))))
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal)))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal)))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with 16-bit value
@@ -573,9 +605,10 @@ $ZHEX(65535)
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $ZHEX with hex string 16-bit
@@ -589,9 +622,10 @@ $ZHEX("FFFF")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX empty hex string
@@ -605,9 +639,10 @@ $ZHEX("")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $ZHEX with numeric string
@@ -621,6 +656,7 @@ $ZHEX("10")
     (expr_atom
       (system_defined_function
         (dollar_function
-          (expression
-            (expr_atom
-              (string_literal))))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))

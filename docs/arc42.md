@@ -1,6 +1,6 @@
 # Arc42 Architecture Documentation - tree-sitter-objectscript
 
-> Update note (2026): The repository now includes an additional `objectscript_routine` grammar (`expr -> core -> objectscript_routine`) and expanded pre-commit checks (query sync, lint auto-fix, parser/query validation). Use `README.md` and `CONTRIBUTING.md` as the canonical operational docs.
+> Update note (2026): The repository now includes an additional `objectscript_routine` grammar (`expr -> core -> objectscript_routine`) and expanded pre-commit checks (corpus sync, query sync, lint auto-fix, parser/query validation). Use `README.md` and `CONTRIBUTING.md` as the canonical operational docs.
 
 ## 1. Introduction and Goals
 
@@ -20,7 +20,7 @@
 | 1 | **Correctness** | Parse valid ObjectScript without errors; produce accurate ASTs |
 | 2 | **Performance** | Sub-millisecond incremental parsing for editor responsiveness |
 | 3 | **Completeness** | Cover the full ObjectScript language including UDL class syntax |
-| 4 | **Maintainability** | Modular grammar structure for independent evolution of expr/core/objectscript_udl/objectscript |
+| 4 | **Maintainability** | Modular grammar structure for independent evolution of expr/core/objectscript_udl/objectscript/objectscript_routine |
 | 5 | **Portability** | Language bindings for Rust, Python, Node.js, Go, Swift, C |
 
 ### 1.3 Stakeholders
@@ -59,8 +59,8 @@
 |------------|-------------|
 | Grammar Layering | expr → core with two downstream paths: objectscript_udl → objectscript, and objectscript_routine |
 | Keyword Fields | Keywords attached at usage sites via `field('keyword', ...)` |
-| Layered Query Composition | `scripts/sync_queries.py` composes EXPR/CORE/LOCAL sections for `core/queries` and `udl/queries` |
-| Query Sync Automation | `.githooks/pre-commit` runs `scripts/sync_queries.py` when query-related files are staged; CI verifies Python query copies via `.github/workflows/sync-queries.yml` |
+| Layered Query Composition | `scripts/sync_queries.py` composes layered queries for `core`, `udl`, `objectscript`, and `objectscript_routine` (from EXPR/CORE/UDL/LOCAL sections per target) |
+| Hook Automation | `.githooks/pre-commit` runs corpus sync for `objectscript/test/corpus`, runs `scripts/sync_queries.py`, and stages generated outputs; CI verifies Python query copies via `.github/workflows/sync-queries.yml` |
 | Deterministic Node Installs | `package-lock.json` is committed and workflows use `npm ci` |
 | ESLint Configuration | Linting uses flat config in `eslint.config.mjs` |
 
@@ -109,7 +109,7 @@ The grammar is split into five related targets to enable reuse and independent i
 1. **expr**: Pure expressions (can be injected into SQL extensions, CSP templates)
 2. **core**: Full routine syntax (lines of ObjectScript code)
 3. **objectscript_udl**: Class definition syntax (`.cls` files)
-4. **objectscript_routine**: Routine-header grammar for `.mac`, `.inc`, and `.int` files
+4. **objectscript_routine**: Routine-header grammar for `.mac`, `.inc`, `.int`, and `.rtn` files
 5. **objectscript**: Playground grammar for mixed snippets (top-level statements and class members)
 
 Each layer extends the previous using tree-sitter's `grammar()` inheritance mechanism.
@@ -145,9 +145,13 @@ Polyglot support is achieved through injection queries that detect:
 │  │   expr   │◀──│   core   │◀──│objectscript_udl│◀──│objectscript│ │
 │  │ grammar  │   │ grammar  │   │    grammar     │   │  grammar  │ │
 │  └──────────┘   └──────────┘   └────────────────┘   └──────────┘ │
-│       │              │                 │                 │         │
-│       └──────────────┴─────────────────┴─────────────────┘         │
-│                      │                                          │
+│                      ▲                                             │
+│                      │                                             │
+│              ┌───────────────────┐                                │
+│              │objectscript_      │                                │
+│              │routine grammar    │                                │
+│              └───────────────────┘                                │
+│                      │                                             │
 │              ┌───────┴───────┐                                 │
 │              │    common     │                                 │
 │              │ (scanner.h,   │                                 │
@@ -238,7 +242,7 @@ Polyglot support is achieved through injection queries that detect:
 | Editor | Integration Method | Installation |
 |--------|-------------------|--------------|
 | Zed | Zed Extension | Extensions panel → ObjectScript |
-| Neovim | nvim-treesitter | `:TSInstall objectscript_udl` for `.cls`; `:TSInstall objectscript` for playground snippets |
+| Neovim | nvim-treesitter | `:TSInstall objectscript_udl` for `.cls`; `:TSInstall objectscript` for snippets; `:TSInstall objectscript_routine` for routine files |
 | Emacs | emacs-objectscript-ts-mode | Package installation from GitHub |
 
 ### 7.2 Build Artifacts
@@ -281,6 +285,11 @@ Query layering is generated by `scripts/sync_queries.py`:
 - `expr/queries` is the source layer
 - `core/queries` is composed as EXPR + CORE LOCAL
 - `udl/queries` is composed as EXPR + CORE + UDL LOCAL
+- `objectscript/queries` is composed as:
+  - `highlights`: EXPR + CORE + UDL + OBJECTSCRIPT LOCAL
+  - `injections`: CORE + UDL + OBJECTSCRIPT LOCAL
+  - `indents`: CORE + OBJECTSCRIPT LOCAL
+- `objectscript_routine/queries` is composed as EXPR + CORE + ROUTINE LOCAL
 
 Generated files include explicit section markers:
 
@@ -309,7 +318,7 @@ Generated files include explicit section markers:
 - (+) expr can be injected into SQL extensions independently
 - (+) core can be used for routine files without UDL overhead
 - (+) objectscript_udl remains strict for `.cls` while objectscript supports playground snippets
-- (+) objectscript_routine provides a dedicated routine-header profile for `.mac/.inc/.int`
+- (+) objectscript_routine provides a dedicated routine-header profile for `.mac/.inc/.int/.rtn`
 - (-) Changes to expr require regenerating downstream grammars
 
 ### ADR-2: External Scanner for Whitespace
@@ -350,7 +359,7 @@ Quality
 │   └── Full parse < 100ms for typical files
 ├── Maintainability
 │   ├── Modular grammar structure
-│   └── Test coverage (166 corpus files)
+│   └── Test coverage (186 corpus files)
 └── Compatibility
     ├── tree-sitter 0.26+ support (Rust crate floor: 0.26.6)
     └── Multi-platform bindings
@@ -439,4 +448,4 @@ The following data structures are central to the grammar:
 - `common/scanner.h` — External scanner implementation
 - `tree-sitter.json:1-80` — Grammar configuration
 - `README.md:1-111` — Project documentation and usage
-- `*/test/corpus/*.txt` — 166 test corpus files
+- `*/test/corpus/*.txt` — 186 test corpus files
