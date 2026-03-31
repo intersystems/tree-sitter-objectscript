@@ -50,3 +50,19 @@ jobs:
         run: ./scripts/rust_playground_crate.sh publish
         env:
           CARGO_REGISTRY_TOKEN: ${{secrets.CARGO_REGISTRY_TOKEN}}
+
+  crates_routine:
+    name: Publish Rust routine package
+    runs-on: ubuntu-latest
+    environment:
+      name: crates
+      url: https://crates.io/crates/tree-sitter-objectscript-routine
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Publish to crates.io
+        run: ./scripts/rust_routine_crate.sh publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{secrets.CARGO_REGISTRY_TOKEN}}

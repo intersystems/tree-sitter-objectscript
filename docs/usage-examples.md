@@ -102,7 +102,7 @@ tree_sitter.Query(lang_playground, tree_sitter_objectscript.HIGHLIGHTS_QUERY)
 tree_sitter.Query(lang_routine, tree_sitter_objectscript_routine.HIGHLIGHTS_QUERY)
 ```
 
-## Rust Example (UDL + routine crate)
+## Rust Example (UDL crate)
 
 ```rust
 use tree_sitter::Parser;
@@ -116,11 +116,11 @@ fn main() {
 }
 ```
 
-Routine grammar from the same crate:
+## Rust Example (Routine crate)
 
 ```rust
 use tree_sitter::Parser;
-use tree_sitter_objectscript::LANGUAGE_OBJECTSCRIPT_ROUTINE;
+use tree_sitter_objectscript_routine::LANGUAGE_OBJECTSCRIPT_ROUTINE;
 
 fn main() {
     let mut parser = Parser::new();

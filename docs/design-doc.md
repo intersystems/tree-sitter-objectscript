@@ -299,7 +299,8 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 - [x] C binding (headers and library)
 - [x] Expose `objectscript`, `objectscript_udl`, and `objectscript_routine` entry points across bindings (plus `core`/`expr` where supported)
 - [x] Rust crates expose current constants:
-  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`, `LANGUAGE_OBJECTSCRIPT_ROUTINE`
+  - `tree-sitter-objectscript`: `LANGUAGE_OBJECTSCRIPT_UDL`
+  - `tree-sitter-objectscript-routine`: `LANGUAGE_OBJECTSCRIPT_ROUTINE`
   - `tree-sitter-objectscript-playground`: `LANGUAGE_OBJECTSCRIPT`
 
 ### Phase 6: Editor Integrations

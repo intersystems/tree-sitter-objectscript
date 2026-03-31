@@ -95,10 +95,11 @@ make query
 
 Run from repository root.
 
-- Rust (UDL + routine crate):
+- Rust (UDL crate + staged routine/playground crates):
 
 ```bash
 cargo test --lib --package tree-sitter-objectscript
+./scripts/rust_routine_crate.sh package --allow-dirty --no-verify
 ./scripts/rust_playground_crate.sh package --allow-dirty --no-verify
 ```
 
