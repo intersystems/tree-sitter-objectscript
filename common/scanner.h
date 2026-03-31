@@ -1,7 +1,6 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-#include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,

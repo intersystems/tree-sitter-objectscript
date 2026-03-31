@@ -1,6 +1,5 @@
 #include "../../common/scanner.h"
 #include "tree_sitter/parser.h"
-#include <stdlib.h>
 #include <string.h>
 
 // There is no way to extend enums, so keep this in sync with base.h
