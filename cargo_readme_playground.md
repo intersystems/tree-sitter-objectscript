@@ -18,5 +18,5 @@ It includes:
 For full class-file parsing (`objectscript_udl`), use the 
 `tree-sitter-objectscript` crate.
 
-For full routine parsing (with routine header or compiled version) (`objectscript_routine`), also use the
-`tree-sitter-objectscript` crate.
+For full routine parsing (`objectscript_routine`), use the
+`tree-sitter-objectscript-routine` crate.

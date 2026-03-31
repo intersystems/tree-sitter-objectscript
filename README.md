@@ -3,6 +3,7 @@
 [![CI][ci]](https://github.com/intersystems/tree-sitter-objectscript/actions/workflows/ci.yml)
 [![npm][npm]](https://www.npmjs.com/package/tree-sitter-objectscript)
 [![crates-udl][crates-udl]](https://crates.io/crates/tree-sitter-objectscript)
+[![crates-routine][crates-routine]](https://crates.io/crates/tree-sitter-objectscript-routine)
 [![crates-playground][crates-playground]](https://crates.io/crates/tree-sitter-objectscript-playground)
 [![pypi][pypi]](https://pypi.org/project/tree-sitter-objectscript/)
 
@@ -27,7 +28,8 @@ Grammar extension graph:
 - npm: `tree-sitter-objectscript`
 - PyPI: `tree-sitter-objectscript` (ships `tree_sitter_objectscript`, `tree_sitter_objectscript_udl`, and `tree_sitter_objectscript_routine`)
 - Rust crates:
-  - `tree-sitter-objectscript` (UDL + routine grammars)
+  - `tree-sitter-objectscript` (UDL grammar)
+  - `tree-sitter-objectscript-routine` (routine grammar)
   - `tree-sitter-objectscript-playground` (playground grammar)
 
 ## Bindings
@@ -38,7 +40,7 @@ Language bindings are available under `bindings/`:
 - Go: `bindings/go`
 - Node.js: `bindings/node`
 - Python: `bindings/python`
-- Rust: `bindings/rust` and `bindings/rust-playground`
+- Rust: `bindings/rust`, `bindings/rust-routine`, and `bindings/rust-playground`
 - Swift: `bindings/swift`
 
 Quick binding checks from repo root:
@@ -127,5 +129,6 @@ MIT. See [LICENSE](LICENSE).
 [ci]: https://img.shields.io/github/actions/workflow/status/intersystems/tree-sitter-objectscript/ci.yml?logo=github&label=CI
 [npm]: https://img.shields.io/npm/v/tree-sitter-objectscript?logo=npm
 [crates-udl]: https://img.shields.io/crates/v/tree-sitter-objectscript?logo=rust
+[crates-routine]: https://img.shields.io/crates/v/tree-sitter-objectscript-routine?logo=rust
 [crates-playground]: https://img.shields.io/crates/v/tree-sitter-objectscript-playground?logo=rust
 [pypi]: https://img.shields.io/pypi/v/tree-sitter-objectscript?logo=pypi&logoColor=ffd242
