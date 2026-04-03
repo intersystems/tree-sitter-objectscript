@@ -75,7 +75,6 @@ module.exports = grammar({
 
         // Other special keywords
         $.class_method_call,
-        $.class_parameter_ref,
         $.superclass_method_call,
         $.unary_expression,
         $.indirection,
@@ -170,12 +169,6 @@ module.exports = grammar({
         token.immediate('.'),
         alias($.member_name, $.method_name),
         $.method_args,
-      ),
-    class_parameter_ref: ($) =>
-      seq(
-        $.class_ref,
-        token.immediate('.'),
-        $.parameter_name,
       ),
     class_ref: ($) =>
       seq(
@@ -287,7 +280,7 @@ module.exports = grammar({
 
 
     dollarsf: ($) =>
-      seq(
+      prec.right(seq(
         token(seq(
           /\$SYSTEM/i,
           token.immediate('.'),
@@ -301,8 +294,11 @@ module.exports = grammar({
           $.objectscript_identifier,
           $.objectscript_identifier_special,
         ),
-        $.method_args,
-      ),
+        choice(
+          $.method_args,
+          repeat1($.oref_chain_segment)
+        )
+      )),
 
 
     method_args: ($) =>
@@ -437,12 +433,6 @@ module.exports = grammar({
             $.class_ref,
           ),
           repeat1($.oref_chain_segment),
-          optional(
-            seq(
-              token.immediate('.'),
-              $.oref_parameter,
-            ),
-          ),
         ),
       ),
 
@@ -452,6 +442,7 @@ module.exports = grammar({
         choice(
           $.oref_property,
           $.oref_method,
+          $.oref_parameter,
         ),
       ),
 
@@ -468,8 +459,7 @@ module.exports = grammar({
         alias($.member_name, $.property_name),
         optional($.subscripts),
       ),
-    oref_parameter: ($) =>
-      $.parameter_name,
+    
 
 
     instance_variable: ($) =>
@@ -488,7 +478,7 @@ module.exports = grammar({
           $.identifier_segment_immediate_special,
         ),
       ),
-    parameter_name: ($) =>
+    oref_parameter: ($) =>
       seq(
         token.immediate('#'),
         $.member_name,
@@ -632,7 +622,7 @@ module.exports = grammar({
         $.built_in_func_with_pos_options,
         $.dollar_case,
         $.dollar_select,
-        // $.dollar_classmethod,
+        $.dollar_bitlogic,
         $.dollar_method,
         $.dollar_text,
         $.dollarsf,
@@ -651,7 +641,32 @@ module.exports = grammar({
         $.line_ref,
         ')',
       ),
+    dollar_bitlogic: ($) =>
+  seq(
+    token(seq(/\$BITLOGIC/i, token.immediate('('))),
+    $.bitlogic_expression,
+    optional(seq(',', $.expression)), // length/flags arg
+    ')',
+  ),
 
+bitlogic_expression: ($) =>
+  prec.left(seq(
+    optional('~'),
+    $.bitlogic_atom,
+    repeat(seq(
+      choice('&', '|', '^'),
+      optional('~'),
+      $.bitlogic_atom,
+    )),
+  )),
+
+bitlogic_atom: ($) =>
+  choice(
+    // nested bitlogic parens
+    seq(alias(token.immediate('('), $.bracket), $.bitlogic_expression, alias(')', $.bracket)),
+    // reuse existing atoms (functions, vars, calls, strings, numbers, etc.)
+    $.expr_atom,
+  ),
     dollar_function: ($) =>
       seq(
         token(
@@ -771,7 +786,6 @@ module.exports = grammar({
               /\$ZSET/i,
               /\$ZS(ORT)?/i,
               /\$ZSU(BLIST)?/i,
-              /\$BITLOGIC/i,
               /\$DECIMAL/i,
               /\$FACTOR/i,
               /\$G(ET)?/i,
@@ -890,11 +904,11 @@ module.exports = grammar({
         ')',
       ),
     dollar_select: ($) =>
-      seq(
+      prec.right(seq(
         token(seq(/\$S(ELECT)?/i, token.immediate('('))),
         repeat_with_commas(seq($.dollar_arg_pair)),
         ')',
-      ),
+      )),
     dollar_case: ($) =>
       seq(
         token(seq(/\$CASE/i, token.immediate('('))),
@@ -943,25 +957,19 @@ module.exports = grammar({
             token.immediate('('),
           ),
         ),
-        $.expression,
-        repeat(
+        optional(
           seq(
-            ',',
-            optional(choice($.method_arg, $.dollar_func_pos)),
+            optional($.method_arg),
+            repeat(
+              seq(
+                ',',
+                optional(choice($.method_arg, $.dollar_func_pos)),
+              ),
+            ),
           ),
         ),
         ')',
       ),
-    // dollar_classmethod: ($) =>
-    //   seq(
-    //     /\$(ZOBJ)?CLASSMETHOD/i,
-    //     alias(token.immediate('('), $.bracket),
-    //     optional($.method_arg),
-    //     ',',
-    //     $.method_arg,
-    //     repeat(seq(',', $.method_arg)),
-    //     ')',
-    //   ),
     dollar_method: ($) =>
       seq(
         token(choice(

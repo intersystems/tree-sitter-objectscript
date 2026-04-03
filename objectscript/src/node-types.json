@@ -55,6 +55,44 @@
     "fields": {}
   },
   {
+    "type": "bitlogic_atom",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bitlogic_expression",
+          "named": true
+        },
+        {
+          "type": "bracket",
+          "named": true
+        },
+        {
+          "type": "expr_atom",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "bitlogic_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bitlogic_atom",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "block_comment",
     "named": true,
     "extra": true,
@@ -66,14 +104,10 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "dollar_func_pos",
-          "named": true
-        },
-        {
-          "type": "expression",
           "named": true
         },
         {
@@ -914,25 +948,6 @@
     }
   },
   {
-    "type": "class_parameter_ref",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "class_ref",
-          "named": true
-        },
-        {
-          "type": "parameter_name",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "class_ref",
     "named": true,
     "fields": {},
@@ -1167,10 +1182,6 @@
         },
         {
           "type": "post_conditional",
-          "named": true
-        },
-        {
-          "type": "statement",
           "named": true
         }
       ]
@@ -1502,6 +1513,29 @@
         },
         {
           "type": "timeout",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "command_macro",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "do_parameter",
+          "named": true
+        },
+        {
+          "type": "macro",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
           "named": true
         }
       ]
@@ -2296,6 +2330,10 @@
           "named": true
         },
         {
+          "type": "command_macro",
+          "named": true
+        },
+        {
           "type": "command_merge",
           "named": true
         },
@@ -2412,10 +2450,6 @@
           "named": true
         },
         {
-          "type": "macro",
-          "named": true
-        },
-        {
           "type": "objectscript_built_in_command",
           "named": true
         },
@@ -2503,6 +2537,25 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollar_bitlogic",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bitlogic_expression",
+          "named": true
+        },
         {
           "type": "expression",
           "named": true
@@ -2653,6 +2706,10 @@
         },
         {
           "type": "objectscript_identifier_special",
+          "named": true
+        },
+        {
+          "type": "oref_chain_segment",
           "named": true
         }
       ]
@@ -2875,10 +2932,6 @@
       "types": [
         {
           "type": "class_method_call",
-          "named": true
-        },
-        {
-          "type": "class_parameter_ref",
           "named": true
         },
         {
@@ -3889,11 +3942,19 @@
       "required": true,
       "types": [
         {
+          "type": "extrinsic_function",
+          "named": true
+        },
+        {
           "type": "instance_variable",
           "named": true
         },
         {
           "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "macro",
           "named": true
         },
         {
@@ -4344,11 +4405,7 @@
       "required": true,
       "types": [
         {
-          "type": "glvn",
-          "named": true
-        },
-        {
-          "type": "indirection",
+          "type": "set_target",
           "named": true
         }
       ]
@@ -5098,10 +5155,6 @@
           "named": true
         },
         {
-          "type": "oref_parameter",
-          "named": true
-        },
-        {
           "type": "parenthetical_expression",
           "named": true
         },
@@ -5134,6 +5187,10 @@
       "types": [
         {
           "type": "oref_method",
+          "named": true
+        },
+        {
+          "type": "oref_parameter",
           "named": true
         },
         {
@@ -5171,7 +5228,7 @@
       "required": true,
       "types": [
         {
-          "type": "parameter_name",
+          "type": "member_name",
           "named": true
         }
       ]
@@ -5210,6 +5267,10 @@
         },
         {
           "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "macro",
           "named": true
         },
         {
@@ -5439,10 +5500,6 @@
       "types": [
         {
           "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "member_name",
           "named": true
         }
       ]
@@ -5707,6 +5764,14 @@
           "named": true
         },
         {
+          "type": "keyword_pound_else",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_elseif",
+          "named": true
+        },
+        {
           "type": "keyword_pound_endif",
           "named": true
         },
@@ -5720,6 +5785,18 @@
         },
         {
           "type": "pound_elseif",
+          "named": true
+        },
+        {
+          "type": "pound_if_special_case",
+          "named": true
+        },
+        {
+          "type": "pound_if_special_case_else",
+          "named": true
+        },
+        {
+          "type": "pound_if_special_case_else_if",
           "named": true
         },
         {
@@ -5926,6 +6003,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "macro",
+          "named": true
+        },
         {
           "type": "objectscript_identifier",
           "named": true
@@ -7356,6 +7437,10 @@
           "named": true
         },
         {
+          "type": "command_macro",
+          "named": true
+        },
+        {
           "type": "command_merge",
           "named": true
         },
@@ -7469,10 +7554,6 @@
         },
         {
           "type": "embedded_xml",
-          "named": true
-        },
-        {
-          "type": "macro",
           "named": true
         },
         {
@@ -7662,6 +7743,10 @@
           "named": true
         },
         {
+          "type": "dollar_bitlogic",
+          "named": true
+        },
+        {
           "type": "dollar_case",
           "named": true
         },
@@ -7715,6 +7800,10 @@
         },
         {
           "type": "objectscript_identifier_special",
+          "named": true
+        },
+        {
+          "type": "oref_chain_segment",
           "named": true
         }
       ]
@@ -9366,6 +9455,18 @@
     "named": true
   },
   {
+    "type": "pound_if_special_case",
+    "named": true
+  },
+  {
+    "type": "pound_if_special_case_else",
+    "named": true
+  },
+  {
+    "type": "pound_if_special_case_else_if",
+    "named": true
+  },
+  {
     "type": "query_body_content",
     "named": true
   },
@@ -9411,6 +9512,10 @@
   },
   {
     "type": "}",
+    "named": false
+  },
+  {
+    "type": "~",
     "named": false
   }
 ]

@@ -1,0 +1,256 @@
+====
+qaqoidx
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqoidx^MAC^^^0
+%qaqoidx    // QO - Index creation algorithms
+	;; COMPONENTS :: SQL/Optimizer
+	#;
+#INCLUDE %msql
+#INCLUDE %qao
+	#;
+#IF 0    ;
+	#;---------------------------------------------------------------------
+	#; Description:   QO - Index creation algorithms
+	#; Author:        Terry Ragon
+	#; Date:          December 17, 1987
+	#; Maintenance History: [ XXXnnn (MM/DD/YY) - Description ]
+	#;
+	#;   PVA177 (05/06/2009) - Fix undesired plan bias for DISTINCT queries when there is no good index for DISTINCT 
+	#;   PVA154 (09/01/2008) - Improve optimizer cost model : distinguish selectivity for complex conditions on map subscripts from that on map data
+	#;   PVA072 (11/10/2004) - Support pseudo conditions implied by TOP... ORDER BY in optimizer
+	#;   DPV702 (01/03/97) - Made $$is^%qaois a local cll via a #INCLUDE
+	#;
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#;
+	#; index creation algorithms
+	#; A variety of internal entry points, whose names correspond to
+	#;     the index creation algorithm #s, is used.
+	#; call: qoorder: map automatically produces an interesting order
+	#;     qojrid: 1 if interesting order is record id
+	#;     form():  input cost formula parameters for map
+	#;     form():  input cost formula parameters for map
+	#; output:
+	#;     value of extrinsic: cost stored as:
+	#;                cost,cd,cgg,cgs
+	#;     array tform() contains cost formula parameters to be used
+	#;                in subsequent join or initial stream algorithm
+	#;                It reflects characteristics of the created index
+	#;     array tchange() equivalent of change() for temp file
+	#;
+	#;  In setting up index, convert form($$$SSOIMUL) to form($$$SSO0MUL)
+	#;
+	#;---------------------------------------------------------------------
+#ENDIF   ;
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic1() n cost d settform(1) s cost=$$sortout("IS12") d change(1),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic2() n cost d settform(0) s cost=$$sortout("IS8") d change(0),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic3() n cost d settform(1) s cost=$$sortout("IS9") d change(1),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic4() n cost d settform(0) s cost=$$sortout("IS10") d change(0),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic5() n cost d settform(1) s cost=$$sortout("IS11") d change(1),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic6() n cost d settform(0) ; init tform array for 1st created index
+	s cost=$$sortout("IS10") ; cost for creating 1st index
+	d fintform ; setup $$$SZB and $$$SL2B for this first index (actual values aren't important)
+		#; now copy tform to a scratch array x
+	n x,y f i=1:1:$$$SUBMAX s x(i)=tform(i)
+		#; act as if we're using the record id as the JA, since
+		#; that is how the first subscript is ordered
+		#; PVA154: new form() components
+	s x=qojrid,qojrid=1 f i=$$$SSJA,$$$SSJASUB,$$$SSJAADD,$$$SSJAADDM,$$$SSOIMUL,$$$SSOIMULD,$$$SSO0MUL s y(i)=tform(i)
+	s x($$$SSJASUB)=1/tform($$$SNitup),x($$$SSJAADD)=1,x($$$SSJAADDM)=1,x($$$SSJA)=x($$$SSJASUB),x($$$SL2B)=tform($$$SNitup),x($$$SZB)=1
+		#; PVA072: Set mul formula entries in x to 1 to ensure not used in ic6sub
+		#;         because  IS algs now potentially use them.
+	s x($$$SSOIMUL)=1,x($$$SSO0MUL)=1,x($$$SSOIMULD)=1   // PVA154  
+	s cost=$$addcost(cost,$$ic6sub(.x))
+		#; now readjust tform to reflect fact that we are really
+		#; ordered on the JA, not on the record id
+		#; PVA154: two new form() components
+	s qojrid=x f i=$$$SSJA,$$$SSJASUB,$$$SSJAADD,$$$SSJAADDM,$$$SSOIMUL,$$$SSOIMULD,$$$SSO0MUL s tform(i)=y(i)
+	d change(1),fintform
+	RETURN cost
+	
+		#; calculate cost of creating 2nd index
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic6sub(form) ; this is a way of renaming 'x' array to be 'form' array
+	d settform(1) ; init tform array for 2nd created index based on 'form'
+		#;              for 1st created index
+	RETURN $$sortout("IS1")
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ic7() n cost d settform(0) s cost=$$seqout("IS6") d change(0),fintform
+	RETURN cost
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+s8sub() ; internal entry point called by s8^%qaqosrt to create initial index
+	n cost d settform(0) ; init tform array
+		#; cost for creating 1st index - doesn't setup $$$SZB & $$$SL2B
+	RETURN $$sortout("IS6") 
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+s13sub() ; internal entry point called by s13^%qaqosrt to create initial index
+	n cost d settform(0) ; init tform array for 1st created index
+		#; cost for creating 1st index - doesn't setup $$$SZB & $$$SL2B
+	RETURN $$sortout("IS10")
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+sortout(%is) ; input variable:
+		#;     is:  initial stream algorithm that can be used to process
+		#;          the stream to produce desired set of tuples
+		#; return extrinsic value: cost of processing initial stream
+		#; return variables:
+		#;      tform($$$SNiblk),tform($$$SNitup)
+		#;     outseq and outsort as described below for 'sortcost'
+	n a,numtup,cost,outseq,outsort
+	s a=$$is^%qaois(%is,qojrid,PBP8),numtup=+$p(a,"^",2),tform($$$SNitup)=numtup,cost=$p(a,"^") ; calculate cost of processing stream
+	d sortcost ; get cost of sorting output and later read and deleting it
+	RETURN $$addcost(cost,outsort)
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+seqout(%is) ; just like $$sortout(is) except output can be stored 
+		#;   in a sequential file
+	n a,numtup,cost,outseq,outsort
+	s a=$$is^%qaois(%is,qojrid,PBP8),numtup=+$p(a,"^",2),tform($$$SNitup)=numtup,cost=$p(a,"^") ; calculate cost of processing stream
+	d sortcost ; get cost of sorting output and later read and deleting it
+	RETURN $$addcost(cost,$s(qoorder:outseq,1:outsort))
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+sortcost ;
+		#; calculate cost to store output of sort, read it, and delete it
+		#;return variables:
+		#;     outseq: cost to output results in a sequential temp file
+		#;             and later read and delete the temp file
+		#;     outsort: cost to output results in a sorted temp file
+		#;             and later read and delete the temp file
+		#;     tform($$$SNiblk) = # blocks in sort file
+	n a,b,c,bytes,baby,cgs,cgg,cd,blocks
+		#; determine amount of data in a temp output file
+		#; count 10 bytes per index tuple
+	s bytes=10
+		#; determine cost to produce and delete a sequential file
+	s blocks=numtup*bytes\$$$DBBlockSize+1 ; # blocks for sequentially created file
+	s cgs=numtup+TEMPCGS,a=blocks,cd=a*2+TEMPCD ; must write block and later garbage collect (write) it
+	s outseq=((cd*CDFACTOR)+(cgs*CGSFACTOR))_","_cd_",0,"_cgs
+		#; determine cost to produce, read, and delete a sort file
+	s blocks=numtup*bytes\($$$DBBlockSize*3\4)+1,cd=blocks*2+TEMPCD
+		#; if need to produce baby files, cost to produce the file increased
+	s cgg=0 
+	If $$$CostBabyFile {
+		i numtup>BABYINDEX s cgg=numtup*2,cgs=cgs*2,cd=cd*2
+	}
+	s outsort=((cd*CDFACTOR)+(cgg*CGGFACTOR)+(cgs*CGSFACTOR))_","_cd_","_cgg_","_cgs
+	s tform($$$SNiblk)=blocks
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+change(map0proc) ;
+		#; change
+		#; When we have created an index file, we convert many of the
+		#; restriction selectivities to be selectivities in $$$SSE1.
+		#; This is because the created index effectively has a high
+		#; level equals that processes all of these restrictions.
+		#; Hence, if a restriction has been replicated and already
+		#; processed, we don't want to count its selectivity twice.
+		#; Thus we must remove its selectivity from $$$SSE1 if we find
+		#; it has already been processed.  To do this, we must convert
+		#; the 'change()' array so that it will properly remove selectivity
+		#; from $$$SSE1.  Selectivities such as $$$SSR, etc., arent considered
+		#; by the low level join on a created index file.
+		#;
+		#; In general, the following are all converted to $$$SSE1:
+		#;         $$$SSE2, $$$SSE3, $$$SSR, $$$SSOI
+		#; The following are left alone:
+		#;         $$$SSE1, $$$SSOIMUL, $$$SSO0MUL, $$$SSOE (shouldn't happen)
+		#; If $$$SSO0 restrictions (i.e. single stream restrictions on map 0)
+		#; have been processed in creating the index, then $$$SSO0 is also
+		#; translated to $$$SSE1.
+		#;
+		#; Also, since we can't process $$$SSOIMUL restrictions when we
+		#; create an index, change $$$SSOIMUL to $$$SSO0MUL
+		#; ***also: consider converting in ressub
+		#;
+		#; Input parameters:
+		#;     map0proc:   We processed $$$SSO0 restrictions as we created
+		#;                 the index, so also translate $$$SSO0 to $$$SSE1
+.
+	n res,a,b,c,other k tchange s other=$s(map0proc:$$$SSO0_":",1:"")
+	s res="" f i=1:1 s res=$o(change(res)) q:res=""  d change1 s tchange(res)=a
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+change1 s a=change(res)
+	f j=2:1:$l(a,"^") s b=$p(a,"^",j),c=":"_$p(b,":")_":" d change2:b]""
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+change2 ; DOESN'T fill in $$$SNitup or $$$SNiblk entries
+		#; ASSUMES that $$$SL2B and $$$SZB entries aren't used
+		#; PVA072: each change entry now has 2 selectivity ":" pieces (for form() and ptform()).
+		#; PVA154: Two new form() entries
+	i ":"_$$$SSE2_":"_$$$SSE3_":"_$$$SSR_":"_$$$SSOI_":"_$$$SSOID_":"_other[c s $p(a,"^",j)=$$$SSE1_":"_$p(b,":",2,3)
+	e  i ":"_$$$SSOIMUL_":"_$$$SSOIMULD_":"[c s $p(a,"^",j)=$$$SSO0MUL_":"_$p(b,":",2,3)
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+settform(map0proc) ;
+		#; init tform array for selectivity and map 0 entries
+		#; $$$SNitup, $$$SNiblk, $$$SL2B, and $$$SZB are 
+		#;    NOT setup by this subroutine
+		#; See comments under change() above
+		#; input paramters:
+		#;     map0proc:  We process $$$SSO0 restrictions as we create
+		#;                the index, so also translate $$$SSO0 restriction
+		#;                selectivities to $$$SSE1
+		#;
+	s tform($$$SSE1)=form($$$SSE1)
+		#; PVA154: Two new form() entries
+	f i=$$$SSE2,$$$SSE3,$$$SSR,$$$SSOI,$$$SSOID s tform($$$SSE1)=tform($$$SSE1)*form(i),tform(i)=1
+	s tform($$$SSO0MUL)=form($$$SSOIMUL)*form($$$SSOIMULD)*form($$$SSO0MUL),tform($$$SSOIMUL)=1,tform($$$SSOIMULD)=1
+		#; PVA072: Now that mul form entries moved to tform, must set form entries
+		#;         to 1 because IS algs now may use mul entries.
+	s form($$$SSOIMUL)=1,form($$$SSOIMULD)=1,form($$$SSO0MUL)=1 // PVA154
+	i map0proc s tform($$$SSE1)=tform($$$SSE1)*form($$$SSO0),tform($$$SSO0)=1
+	e  s tform($$$SSO0)=form($$$SSO0)
+	#; PVA177: don't set SGPb here
+	f i=$$$SSOE,$$$SNbtup,$$$SNbblk,$$$SSJA,$$$SSJAADDM,$$$SSJACOND,$$$SSJAIN s tform(i)=form(i)
+		#;
+		#; calculate additional selectivity if domain of JA in B is small
+		#; than domain of JA in A.  Previously we may have accounted for
+		#; some of this extra selectivity in $$$SSOIMUL or $$$SSO0MUL
+		#;
+	s tform($$$SSJASUB)=form($$$SSJA),tform($$$SSJAADD)=form($$$SSJAADDM)
+	i form($$$SSJAADDM)'=form($$$SSJAADD) s tform($$$SSO0MUL)=tform($$$SSO0MUL)*form($$$SSJAADD)/form($$$SSJAADDM)
+		#;
+		#; Now that we have the join attribue as a subscript, reduce the
+		#; selectivity of the "other" multistream restrictions to which the
+		#; join restriction was previously assigned
+		#;
+		#;PVA072: Since initial stream algorithms may now have MUL selectivity 
+		#;        from top predicates, the following adjustment could apply to
+		#;        them - but its purpose is bogus for initial streams - jother
+		#;        is not used, and does not record join related selectivity
+		#;        in MUL entries. So skip this adjustment if an initials stream:
+		#;        high variable beginning wiht "is". 
+	i form($$$SSJA)<form($$$SSJASUB),$e(high,1,2)'="is" s tform($$$SSO0MUL)=tform($$$SSO0MUL)*form($$$SSJASUB)/form($$$SSJA)
+	i tform($$$SSO0MUL)>.999 s tform($$$SSO0MUL)=1
+	s tform($$$SSE1M)=tform($$$SSE1),tform($$$SSE2M)=1,tform($$$SSE3M)=1,tform($$$SSRM)=1
+		#; PVA177: don't set SGPi here.
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+fintform ; finish setting up tform, setup $$$SZB and $$$SL2B
+	n c s c=tform($$$SNitup)*tform($$$SSJASUB)/form($$$SSJACOND)
+		#;
+		#; i c>1, there is at least one tuple for each JA that passes all
+		#;        high level restrictions (other than restrictions on the JA)
+		#;
+	if c>1 { set tform($$$SZB)=c,tform($$$SL2B)=form($$$SSJACOND)/tform($$$SSJASUB) RETURN }
+	s tform($$$SZB)=1,tform($$$SL2B)=tform($$$SNitup)
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+addcost(a,b)	//
+	RETURN a+b_","_($p(a,",",2)+$p(b,",",2))_","_($p(a,",",3)+$p(b,",",3))_","_($p(a,",",4)+$p(b,",",4))
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+.
+---

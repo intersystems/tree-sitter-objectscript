@@ -1,0 +1,2702 @@
+====
+SYS.BINDSRV
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%SYS.BINDSRV^MAC^^^0
+	#; %SYS.BINDSRV (old %bindserver) ; Cache Language Binding Server
+ 
+#include %SYS.DBSRV
+#include %SYS.BINDSRV
+#include %occInclude
+#include %occMetaInfo
+  
+ //==============
+ 
+ObjectFunctions() 	; Called from %SYS.DBSRV class, now called with a do from %SYS.DBSRV instead of a goto ServerLoop
+		#; return 1 is no error
+		#; return 0 if error (goto Error in DBSRV)
+		#; return -1 if we should disconnect (goto drvDC in DBSRV)
+	goto ServerLoop
+.
+Dispatch ; Main server loop
+	if $$$logging&&(%qfun'="") { do ##class(%SYS.DBSRV).log(%qfun_" END") set %msg="",%ROWCOUNT="" }
+	If $$$srv.LCBmode {        // JMM188+
+		If $g(LCBfinishedBINDSRV)'="" {
+			kill LCBfinishedBINDSRV
+			kill LCBfinishedDBSRV
+			RETURN 1
+		}
+		s LCBfinishedBINDSRV=1
+	} Else { // JMM188-
+		Use $IO::"^%SYS.BINDSRV"
+		do $zu(132)
+	}      // JMM188=
+	s %qrc=0
+	set:$$$srv.ClientMaxIdleTime="" $$$srv.ClientMaxIdleTime=$$$GetClientMaxIdleTime
+	if $$$srv.ClientMaxIdleTime {
+		try {
+			do $SYSTEM.Alarm.Set($$$srv.ClientMaxIdleTime)
+			$$$ReadHeader
+			do $SYSTEM.Alarm.Clear()
+		} catch {
+			If $ze["<ALARM" { 
+				Set %qrc=450 
+				Set %msg = "Client/Server connection was idle for "_$$$srv.ClientMaxIdleTime_" seconds, disconnecting"
+				$$$LOG(%msg)
+				RETURN -1
+			}
+		}
+	} else {
+		$$$ReadHeader
+	}
+ServerLoop
+	If $$$srv.LCBmode {        // JMM188+
+		If $g(LCBfinishedBINDSRV)=2 {
+			kill LCBfinishedBINDSRV
+			kill LCBfinishedDBSRV
+			RETURN 1
+		}
+		s LCBfinishedBINDSRV=2   
+	}                            // JMM188-	
+	Use $IO::"^%SYS.BINDSRV"    	
+	$$$setHeaderId1 $$$setHeaderId2
+	if '$$$srv.LCBmode { $$$StartRedirectEx } // JMM188=
+	
+		#; DPV2293 Single security check for all non-SQL binding messages before checking the message.  
+		#; There will also be one security check for all SQL messages in %SYS.DBSRV
+	if '$SYSTEM.Security.Check($$$ServiceObjectResourceName,$$$PermUseAbrev) {
+		set %qrc=-99,%msg=$$$ERROR($$$OperationRequires1,$$$PermUseName,$$$ServiceObjectResourceName),%msg=$$DecomposeStatus^%apiOBJ(%msg,.%msg) s:%msg %msg=%msg(1)
+		do Audit99^%SYS.SQLSEC(%msg)
+		RETURN 0
+	}
+ 	
+ 	//Set $ZT="Error^%SYS.DBSRV"	// don't clear $ZE here as it prevents $ZE from being available to output method ,$ZE=""
+ 	do:$$$logging ##class(%SYS.DBSRV).log(%qfun_" BEGIN")
+	i %qfun="B0" d start()                                          goto SendMsg
+	i %qfun="B1" d stop(1)                                          goto SendMsg
+	i %qfun="BP" d reset()                                          goto EndMsg
+	i %qfun="B9" d openObj(0)                                       goto SendMsg
+	i %qfun="BG" d openObj(1)                                       goto SendMsg
+	i %qfun="BA" d delObj()                                         goto SendMsg
+	i %qfun="BH" d getProp()                                        goto SendMsg
+	i %qfun="BI" d setProp()                                        goto SendMsg
+	i %qfun="B7" d runMethod(1)                                     goto SendMsg
+	i %qfun="B8" d runMethod(0)                                     goto SendMsg
+	i %qfun="BB" d transaction()                                    goto SendMsg	
+	i %qfun="B5" d incRefCnt()                                      goto SendMsg
+	i %qfun="B6" d decRefCnt(1)                                     goto SendMsg
+	i %qfun="BJ" d getStatusInfo()                                  goto SendMsg
+	i %qfun="BL" goto return
+	i %qfun="BM" d sync()                                           goto SendMsg
+ 
+	// C++ collections	
+	i %qfun="BC" d CPPinitPrimColn(0)                               goto SendMsg
+	i %qfun="BD" d CPPinitPrimColn(1)                               goto SendMsg
+	i %qfun="BE" d CPPinitObjColn(0)                                goto SendMsg	
+	i %qfun="BF" d CPPinitObjColn(1)                                goto SendMsg
+	i %qfun="BQ" d OpenAllObjects()                                 goto SendMsg
+	
+	// Java collections
+	i %qfun="M1" d JavaGetPrimList()                                goto SendMsg
+	i %qfun="M2" d JavaGetPrimArr()                                 goto SendMsg
+	i %qfun="M3" d JavaGetObjList()                                 goto SendMsg
+	i %qfun="M4" d JavaGetObjArr()                                  goto SendMsg
+	i %qfun="M5" d JavaPutPrimList()                                goto SendMsg
+	i %qfun="M6" d JavaPutPrimArr()                                 goto SendMsg
+	i %qfun="M7" d JavaPutObjList()                                 goto SendMsg
+	i %qfun="M8" d JavaPutObjArr()                                  goto SendMsg
+	i %qfun="M9" d JavaBulkLoad()                                   goto SendMsg
+ 
+	// class information
+	i %qfun="B2" d DynObjMetaInfo("ClassProperties")                goto SendMsg
+	i %qfun="B3" d DynObjMetaInfo("ClassMethods")                   goto SendMsg
+	i %qfun="B4" d DynObjMetaInfo("ClassQueries")                   goto SendMsg
+	i %qfun="BK" d getClassInfo()                                   goto SendMsg
+	i %qfun="BN" d getClassesDependencies()                         goto SendMsg
+	i %qfun="MI" d getClassesInfo()                                 goto SendMsg
+	i %qfun="MX" d getIndexesInfo()                                 goto SendMsg ; JMM031
+	i %qfun="MT" d getLCClassesInfo()                                 goto SendMsg ; JMM0174, JMM246
+	i %qfun="MP" d getParametersInfo()								goto SendMsg ; JMM598
+	i %qfun="SE" d getSerializationInfo()                           goto SendMsg ; JMM031
+	i %qfun="MG" d getClassGlobalInfo()								goto SendMsg ; JMM082
+	i %qfun="PS" d getColnPropStorageInfo()                         goto SendMsg ; JMM225
+	i %qfun="CT" d getPropTypeCategoryInfo()						goto SendMsg ; JMM226
+	i %qfun="SV" d setClientVersion()								goto SendMsg ; JMM292, JMM301
+	
+	// Read-Only Load
+	i %qfun="LI" d LoadReadOnlyById()                               goto EndMsg
+	i %qfun="LO" d LoadReadOnlyByOid()                              goto EndMsg
+	i %qfun="LQ" d LoadReadOnlyByQuery()                            goto EndMsg
+	i %qfun="LE" d LoadReadOnlyByExec()                             goto EndMsg
+ 
+	i %qfun="MZ" d SendZobjVal()									goto EndMsg
+	
+	// DeepSee
+	i %qfun="D1" d DSPrepareAndExecuteQuery()                       goto SendMsg
+	i %qfun="D2" d DSPrepareAndExecuteQueryInBatch()                goto EndMsg
+	i %qfun="D3" d DSQuerySendNextBatch()                           goto EndMsg
+	i %qfun="D4" d DSCloseQuery()                                   goto SendMsg	
+	
+	// TCP Provider
+	i %qfun="WS" d TCPProvider()                                    goto SendMsg	
+	
+	$$$StopRedirect
+return
+	if $$$logging&&(%qfun'="") { do ##class(%SYS.DBSRV).log(%qfun_" END") set %msg="" }
+	RETURN 1
+ 
+SendMsg
+	$$$flushOutput
+	u $$$qdev if $zobjexport(51) {} // this turns on JLC1370
+EndMsg
+	$$$StopRedirect
+	goto Dispatch
+ 
+ //==============
+ 
+orefClientRep(obj)
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("orefClientRep: obj = "_obj)
+	if ($isObject(obj)) { s className=$zobjclass(obj) }
+	else { s className="" }
+	q $$$objToOref(obj)_"@"_className
+}
+ 
+toClientObjChecked(oref)
+{
+	;;$$$LOG("toClientObjChecked: "_oref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("toClientObjCheck: oref = "_oref)
+	q:(oref = "") ""
+	s oref = +oref
+	if ($$$isClientOref(oref)) {
+		q $$$orefToObj(oref)
+	}
+	
+	s err = $$$makeErr($$$openOrefErr,"could not open oref "_oref, $lb(oref))
+	// JMM718+
+	// Return single, un-nested ref count error rather than
+	// nested list of multiple ref count errors, for compatibility with .NET and C++
+	// binding client code
+	//s %refCntErrs=%refCntErrs_$lb(err)
+	s:$g(%refCntErrs)="" %refCntErrs=err // JMM718-
+	q ""
+}
+ 
+incRefCnt(obj)
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("incRefCnt: obj = "_obj)
+	s oref = $$$toInt(obj)
+	q:(oref = 0)
+	
+	if '$d(%sysOrefs(oref)) { $$$addNewObj(oref) }
+	s %sysOrefs(oref) = obj 
+	if (%javaClient) { s %sysOrefs(oref, 1) = $g(%sysOrefs(oref, 1)) + 1 }
+}
+ 
+decRefCnt(asMsg)
+{
+try $$$setupTry
+.
+	$$$getNext(oref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("decRefCnt: oref = "_oref)
+	if (%javaClient) { $$$getNext(numRefs) }
+ 
+	if ('%javaClient) 
+	{
+		if $d(%relationshipReferences(oref)) {
+			Set referencingOref = $o(%relationshipReferences(oref,"")) 
+			// go through everyone who is pointing back at the object to be closed
+			while referencingOref '= ""
+			{
+				Set relatedProperty = $o(%relationshipReferences(oref,referencingOref,""))
+				Set swizzleKey = $o(%relationshipReferences(oref,referencingOref,relatedProperty,""))
+				if $d(%sysOrefs(referencingOref)) {
+					Set relatedObject = $$$orefToObj(referencingOref)
+					// if a bad entry (i.e., original referencer was closed and a different object has taken
+					// its place) just remove the entry
+					try {
+						Set relationshipObject = $property(relatedObject,relatedProperty)
+						if $IsObject(relatedObject) && $isObject(relationshipObject) {
+							D relationshipObject.%UnSwizzleAt(swizzleKey)
+							K %relationshipReferences(oref,referencingOref,relatedProperty,swizzleKey)
+						}
+					}
+					catch propertyAccessException {
+						K %relationshipReferences(oref,referencingOref,relatedProperty,swizzleKey)
+					}
+				}
+				else {
+					// clean up if referencer is not an object at this point
+					Kill %relationshipReferences(oref,referencingOref)
+				}
+				Set referencingOref = $o(%relationshipReferences(oref,referencingOref))
+			}
+		}
+		$$$killObjVar(oref)
+		if (asMsg) { $$$putNext("") }
+		q
+	}
+	
+	if ('$d(%sysOrefs(oref, 1))) { zt "U"_oref }
+	s obj = $$$toClientObj(oref)
+	s %sysOrefs(oref, 1) = %sysOrefs(oref, 1) - numRefs
+	if (%sysOrefs(oref, 1) < 0) { zt "RefCntErr" }
+	if (%sysOrefs(oref, 1) = 0) $$$killObjVar(oref)
+	if (asMsg) { $$$putNext("") }
+	q
+	
+catch $$$setupCatch
+	s err = $$$makeErr($$$closeObjErr,"could not close oref "_oref, $lb(oref, numRefs, $ZE))
+	if (asMsg)
+	{
+		s %refCntErrs = err 
+		$$$putErr(%refCntErrs)
+	}
+	// JMM718+
+	// Return single, un-nested ref count error rather than
+	// nested list of multiple ref count errors, for compatibility with .NET and C++
+	// binding client code
+	// else { s %refCntErrs=%refCntErrs_$lb(err) }
+	else { s:$g(%refCntErrs)="" %refCntErrs=err } // JMM718-
+}
+  
+ //==============
+ 
+putCommon()
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("putCommon")
+	$$$putRes
+	$$$putErr(%err)
+	$$$putErr(%refCntErrs)
+	if (%clientVersion < $$$srvOutputBranch1) { d sendBufferedOutput() }
+ 
+	q:'%useCache
+	d cachePutData() 
+}
+ 
+cachePutData()
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("cachePutData")
+	d $zu(177,2) 
+	s cacheData = $zu(177,3)
+	
+	if ((cacheData = "") && '$d(%changedObjs))
+	{
+		$$$putNext(0)
+		d $zu(177,1)
+		q
+	}
+	
+	if ('$d(%changedObjs)) { $$$resetChangedObjs }
+	
+	for idx = 1:4 
+	{
+		s oref = $zla(cacheData,idx) 
+		q:(oref = -1)
+		if ($$$isClientOref(oref)) { $$$addChangedObj(oref) }
+	}
+	
+	$$$putNext(%changedObjs)
+	s oref = $o(%changedObjs(""))
+	while (oref '= "") 
+	{
+		d zobjvalPutWire(oref)
+		s oref = $o(%changedObjs(oref))
+	}
+	
+	$$$resetChangedObjs
+	$$$resetNewObjs
+	
+	d $zu(177,1)
+}
+ 
+zobjvalPutWire(oref)
+{
+	$$$putNext(oref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("zobjvalPutWire: oref = "_oref)
+	s obj = $$$toClientObj(oref)
+	if (%clientVersion '< $$$sendOidBranch) { $$$putNext($$$objOID(obj)) }
+	if ($$$isNonCacheableObj(obj)) { $$$putNext(0) }
+	else 
+	{
+		if (%clientVersion < $$$sendZobjvalDiffsBranch) 
+		{
+			$$$putNext(obj)
+			q
+		}
+		else
+		{
+			if ($$$isNewObj(oref)) { 
+				$$$putNextWholeObj(obj) 
+			}
+			else { 
+				$$$putNextDiffs(obj) 
+			}
+		}
+	}
+}	
+ 
+ //==============
+ 
+getCommon()
+{
+	q:'%useCache
+	d cacheGetData()
+	
+	$$$getNext(numObjs)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getCommon: numObjs = "_numObjs)
+	for idx = 1:1:numObjs { d decRefCnt(0) }	
+}
+ 
+cacheGetData() // cannot be a procedure (indirect execution)
+	new numProps, idx, oref, ii, jj, modFlag, val, obj, propName, mtdName
+	d $zu(177,0)
+	
+	$$$getNext(numProps)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getCacheData: numProps: "_numProps)
+	for idx = 1:1:numProps 
+	{
+		$$$getNext(oref)
+		$$$getNext(ii)
+		$$$getNext(jj)
+		$$$getNext(modFlag)
+		$$$getNext(val)
+		
+		s obj = $$$toClientObj(oref)
+		s slot = ii + 16384
+		
+		s change = 0
+		if ('$d($zobjval(obj,slot,0,3,slot))) { s change = 1 }
+		else { if ($zobjval(obj,slot,0,3,slot) '= val) { s change = 1 } }
+ 
+		if (change) { s $zobjval(obj,slot,0,3,slot) = val }
+	}
+	
+	$$$getNext(numProps)
+	for idx = 1:1:numProps 
+	{
+		$$$getNext(oref)
+		$$$getNext(propName)
+		$$$getNext(val)
+		
+		s obj = $$$toClientObj(oref)
+		s val = $$$toClientObj(val)
+		s mtdName = propName_"Set"
+		d $zobjmethod(obj, mtdName, val)
+	}	
+	q
+ 
+ //==============
+ 
+setClientVersion() // JMM292+
+{
+	// setClientVersion() is called when LCB uses a device-only connection, on behalf of
+	// JNI-based Java object API, because start() is not called in that case, but
+	// %clientVersion is still needed.
+	$$$getNext(%clientVersion)
+	s okVer = (%clientVersion '< $$$srvVerCutOff)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("setClientVersion: %clientVersion = "_%clientVersion_", okVer = "_okVer)
+	$$$putNext(okVer) 
+}                  // JMM292-
+ 
+start()
+{
+ 	d initServer(1)
+ 
+	s okVer = (%clientVersion '< $$$srvVerCutOff)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("start: okVer = "_okVer)
+	$$$putNext(okVer) 
+	$$$putNext($$$serverVersion) 
+	$$$putNext($zbitget($zversion(0),1)) 
+	$$$putNext($namespace) 
+	$$$putNext($zv) 
+	$$$putNext($$$PRODUCTVERSIONSTR) 
+	$$$putNext(+$J)
+	
+	// connection properties
+	$$$putNext(2) // count
+	$$$putNext("IYB638") // support message BP (reset)
+	$$$putNext(1)
+	$$$putNext("IYB647") // support message BQ (open all objects from a collection)
+	$$$putNext(1)
+}
+ 
+initServer(rwMode)
+{
+	
+	if ('$d(%jobBufferDefined)) 
+	{ 
+		$$$initjobbuffer 
+		s %jobBufferDefined = 1
+	}
+	$$$getNext(%clientVersion) 
+	if (rwMode) { $$$getNext(cacheType) }
+	$$$getNext(%javaClient)
+	$$$getNext(%debug)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("initServer: rwMode = "_$g(rwMode)_", %clientVersion = "_$g(%clientVersion)_", %javaClient = "_$g(javaClient)_", %debug = "_$g(debug))
+	
+	if (%javaClient) { s %langType = 2 }
+	else { s %langType = 1 }	
+	
+	if (rwMode)
+	{
+		s %connections = $g(%connections) + 1
+		if (%connections=1){
+			
+			s %useCache = (cacheType '= 0)
+			s $$$useCacheVar = %useCache
+			s %refCntErrs = ""
+		}
+	}
+	if ($g(%connections)<2){
+		s %res = ""
+		s %err = ""
+		s $$$outCountVar = ""
+		$$$setBufferSrvOutput(1)
+	
+		if ('$d(%mtdInfo))
+		{
+			s %mtdInfo = 0 $$$initMtdInfo
+			$$$resetMtdInfo
+		}
+	
+		$$$resetBufferedOutput
+		if (rwMode) { $$$resetChangedObjs }
+	
+		$$$setMaxMDPropLen(0)
+	}
+	
+	s %allowNestedCalls = 1
+	$$$setJobInfo($$$bldJobInfo)
+}
+ 
+stop(sendResponse)
+{
+try $$$setupTry
+	d getCommon()
+	do:$$$logging ##class(%SYS.DBSRV).logappend("stop: sendResponse = "_sendResponse)
+	
+	s errData = ""
+	s %connections = %connections - 1
+	i %connections>0 goto return
+	s node = $o(%sysOrefs(""), 1, oref)
+	while (node '= "")
+	{
+		if (node '= 0) { s errData = errData_$lb(node, $zobjclass(oref)) }
+		s node = $o(%sysOrefs(node), 1, oref)
+	}	
+	goto finally 
+ 
+catch $$$setupCatch
+	s %err = ""
+ 
+finally 
+	$$$closeServer
+return	
+	if (errData '= "") { s %err = $$$makeErr($$$closeObjsErr, "forcefully closed some objects", errData) }
+	
+	if (sendResponse)
+	{
+		$$$putErr(%refCntErrs) 
+		$$$putErr(%err)
+	}
+}
+ 
+reset()
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("reset")
+	do ##class(%SYS.DBSRV).ResetConnection()
+	do stop(0)
+	do initServer(1)
+	RETURN
+}
+ 
+	/// Called from %Net.Remote.Java.JDBCGateway.%ProcessError()
+pushFrame(cacheType="") PUBLIC
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("pushFrame: cacheType = "_cacheType)
+	set %bindserverFrame = $g(%bindserverFrame) + 1
+	Merge:$d(%mtdInfo) %bindserverFrame(%bindserverFrame,1)=%mtdInfo
+	Set %bindserverFrame(%bindserverFrame,2)=$g(%qacn)
+	Set %bindserverFrame(%bindserverFrame,3)=$g(%qmsgid)
+	if ($$$qdev'="") Set %bindserverFrame(%bindserverFrame,4)=$$$qdev
+	else  k %bindserverFrame(%bindserverFrame,4)
+	Set %bindserverFrame(%bindserverFrame,14)=$g(%useCache)
+	set:cacheType'="" %useCache = (cacheType '= 0)
+	Set %bindserverFrame(%bindserverFrame,15)=$g(%refCntErrs)
+	s %refCntErrs = ""
+	Set %bindserverFrame(%bindserverFrame,16)=$g(%res)
+	s %res = ""
+	Set %bindserverFrame(%bindserverFrame,17)=$g(%err)
+	s %err = ""
+	s:$d($$$outCountVar) %bindserverFrame(%bindserverFrame,18)= $$$outCountVar
+	Merge:$d(^||BindSrvOutPieceVar) %bindserverFrame(%bindserverFrame,19)= ^||BindSrvOutPieceVar
+	$$$resetBufferedOutput
+	Quit $$$OK
+}
+ 
+	/// Called from %Net.Remote.Java.JDBCGateway.%ProcessError()
+popFrame() PUBLIC
+{
+	do:$$$logging ##class(%SYS.DBSRV).logappend("popFrame")
+	Set %qacn = %bindserverFrame(%bindserverFrame,2)
+	Set %qmsgid = %bindserverFrame(%bindserverFrame,3)
+	Set oldQdev = $d(%bindserverFrame(%bindserverFrame,4))
+	if (oldQdev) { Set $$$qdev = %bindserverFrame(%bindserverFrame,4) }
+	else  { set $$$qdev="" }
+	//Set %useCache = %bindserverFrame(%bindserverFrame,14)
+	Set %refCntErrs = %bindserverFrame(%bindserverFrame,15)
+	Set %res = %bindserverFrame(%bindserverFrame,16)
+	Set %err = %bindserverFrame(%bindserverFrame,17)
+	If ($d(%bindserverFrame(%bindserverFrame,1))) {
+		Merge %mtdInfo=%bindserverFrame(%bindserverFrame,1)
+		if (oldQdev) $$$setHeaderId1 $$$setHeaderId2
+	}
+	$$$resetBufferedOutput
+	s:$d(%bindserverFrame(%bindserverFrame,18)) $$$outCountVar = %bindserverFrame(%bindserverFrame,18)
+	Merge:$d(%bindserverFrame(%bindserverFrame,19)) ^||BindSrvOutPieceVar = %bindserverFrame(%bindserverFrame,19)
+	k %bindserverFrame(%bindserverFrame)
+	set %bindserverFrame = %bindserverFrame - 1
+	Quit $$$OK
+}
+ 
+ //==============
+ 
+openObj(openid)
+{
+try $$$setupTry
+	d getCommon()
+	if (openid) { $$$getNext(className) }
+	$$$getNext(id)
+	$$$getNext(concurrency)
+	$$$getNext(timeout)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("openObj: id = "_id_", concurrency = "_concurrency_", timeout = "_timeout)
+	
+	set numPropertyPaths = 0
+	if (%clientVersion '< $$$propertyPathsBranch) {
+		$$$getNext(openObjExtKind)
+		if (openObjExtKind = $$$openObjPropertyPathsSimpleList) {
+			$$$getNext(propertyPath)
+			while (propertyPath '= "") {
+				i $i(numPropertyPaths)
+				set propertyPaths(numPropertyPaths) = propertyPath
+				$$$getNext(propertyPath)
+			}
+		}
+	}
+	
+	if (openid) { s mtdName = "%OpenId" }
+	else 
+	{
+		s mtdName = "%Open"
+		s className = $$$getClassName(id)
+	}
+ 
+	s curTimeout = $zu(115,4)
+	s status = 1
+	if (timeout '= -1) d $zu(115, 4, timeout)
+	if (concurrency = -1) { s %res = $zobjclassmethod(className, mtdName, id, , .status) }
+	else { s %res = $zobjclassmethod(className, mtdName, id, concurrency, .status) }
+	d $zu(115, 4, curTimeout)
+	
+	$$$initObjVar(%res)
+	s obj = %res
+	s %res = $lb($$orefClientRep(%res))
+	
+	if (%clientVersion '< $$$propertyPathsBranch) {
+		if ($$$ISOK(status)) {
+			for ii=1:1:numPropertyPaths {
+				s propertyPath = propertyPaths(ii)
+				d openObjectProperties(obj, propertyPath, .swizzledObjects)
+			}
+		}
+		d putAllSwizzledObjects(.swizzledObjects)
+	}
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	s status = $$$ERROR($$$ObjectScriptError, $ZE)
+	
+finally
+	if $$$ISERR(status) 
+	{
+		if (openid) { s msg = "couldn't open object (%OpenId)" }
+		else { s msg = "couldn't open object (%Open)" }
+		s %err = $$$makeErr($$$openObjErr, msg, $lb($$$GETERRORCODE(status), status))
+	}
+	d putCommon()
+}
+ 
+openObjectProperties(obj, propertyPath, swizzledObjects)
+{
+	s numProps = $length(propertyPath,".")
+	s propObj = obj
+	for jj=1:1:numProps {
+		s property = $piece(propertyPath,".",jj)
+		s propObj = $zobjproperty(propObj,property)
+		q:propObj=""
+		$$$initObjVar(propObj)
+		s swizzledObjects($$$objToOref(propObj)) = propObj
+	}
+}
+ 
+putAllSwizzledObjects(swizzledObjects) 
+{
+	s propObjOref = $order(swizzledObjects(""))
+	while (propObjOref '= "") {
+		$$$putNext($$orefClientRep(swizzledObjects(propObjOref)))
+		s propObjOref = $order(swizzledObjects(propObjOref))
+	}
+	$$$putNext("")	
+}
+ 
+delObj()
+{
+try $$$setupTry
+	$$$getNext(oid)
+	$$$getNext(concurrency)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("delObj: oid = "_oid_", concurrency = "_concurrency)
+	
+	s %res = $zobjclassmethod($$$getClassName(oid),"%Delete", oid, concurrency)
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	$$$putErr(%err)
+	$$$putRes
+}
+ 
+ //==============
+ 
+getProp()
+{
+	if (%clientVersion < $$$streamPropBranch)
+	{
+		d getPropBranch()
+		q
+	}
+	
+try $$$setupTry
+	d getCommon()
+	$$$getNext(oref)
+	$$$getNext(propName)
+	$$$getNext(typeId)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getProp: oref = "_oref_", propName = "_propName_", typeId = "_typeId)
+ 
+ 	s obj = $$$toClientObj(oref)
+ 	
+	Set class = $classname(obj)
+	$$$comMemberKeyGetLvar(relationship,class,$$$cCLASSproperty,propName,$$$cPROPrelationship)
+	$$$comMemberKeyGetLvar(cardinality,class,$$$cCLASSproperty,propName,$$$cPROPcardinality)
+	$$$comMemberKeyGetLvar(relatedType,class,$$$cCLASSproperty,propName,$$$cPROPtype)
+	$$$comMemberKeyGetLvar(inverse,class,$$$cCLASSproperty,propName,$$$cPROPinverse)
+	
+	s val = $zobjproperty(obj, propName)
+.
+	if $IsObject(val) && relationship=1 && $$$classIsPersistent(relatedType) {
+		if ($G(cardinality)="one")||($G(cardinality)="parent") {
+			 Set inverseProperty = $property(val,inverse)
+			 Set currentObjId = obj.%Id()
+			 Do {
+				Set item = inverseProperty.GetObjectIdNext(.key)
+				If (item '= "") {
+					if item=currentObjId {
+						Set %relationshipReferences(+obj,+val,inverse,key) = ""
+					}
+				}
+			 } While (key '= "")
+		}
+	}
+	
+	if (typeId = $$$clientTypeObjId) { $$$initObjVar(val) }	
+.
+	goto finally
+	
+catch $$$setupCatchCmn
+	
+finally
+	d putCommon()
+ 
+	if ((typeId = $$$clientTypeLongStrId) || (typeId = $$$clientTypeLongBinId)) { d putStreamWire(val) }
+	elseif (typeId = $$$clientTypeObjId) { $$$putNext($$orefClientRep(val)) }
+	else { $$$putNext(val) }
+}
+ 
+getPropBranch()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(oref)
+	$$$getNext(propName)
+	$$$getNext(isObj)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getPropBranch: oref = "_oref_", propName = "_propName_", isObj = "_isObj)
+ 
+	s obj = $$$toClientObj(oref)
+	s %res = $zobjproperty(obj, propName)
+	if (isObj) 
+	{
+		$$$initObjVar(%res)
+		s %res = $$orefClientRep(%res)
+	}
+		
+	s %res = $lb(%res)
+	goto finally
+	
+catch $$$setupCatchCmn
+	
+finally
+	d putCommon()
+}
+ 
+setProp()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(oref)
+	$$$getNext(propName)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("setProp: oref = "_oref_", propName = "_propName)
+ 
+	s obj = $$$toClientObj(oref)
+	
+	if (%clientVersion < $$$streamPropBranch) 
+	{
+		$$$getNext(isObj)
+		$$$getNext(val)
+		if isObj { s val = $$$toClientObj(val) }
+	}
+	else 
+	{
+		$$$getNext(typeId)
+		if ((typeId = $$$clientTypeLongStrId) || (typeId = $$$clientTypeLongBinId))
+		{
+			s val = $zobjproperty(obj, propName)
+			d getStreamWire(val)
+			goto finally
+		}
+		else
+		{
+			$$$getNext(val)
+			if (typeId = $$$clientTypeObjId) { s val = $$$toClientObj(val) }
+		}
+	}
+ 
+	s $zobjproperty(obj, propName) = val
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	d putCommon()
+}
+ 
+ //==============
+ 
+runMethod(isFunc)
+{
+	$$$initMtdInfo
+	d getCommon()
+	if (%clientVersion < $$$descrArgsBranch) { d setupMethodInfoBranch() }
+	else { d setupMethodInfo() }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("runMethod: isFunc = "_isFunc)
+	
+	$$$setBufferSrvOutput(0)
+	
+try $$$setupTry
+	d runMtdLow(isFunc)
+	if (%clientVersion < $$$descrArgsBranch) { d setupMtdRetValBranch() }
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	if ((%clientVersion '< $$$srvOutputBranch1)) 
+	{ 
+		if (($$$outCountVar > 1) || ($length($$$outLastPieceVar) > 0)) { d addToOutput("", "", "") }
+		$$$putNextEndElem
+	}
+	$$$setBufferSrvOutput(1)
+	
+	if (%clientVersion '< $$$mtdExceptions)
+	{
+		s e = $g($$$getExceptionInfo)
+		if (e = "") { $$$putNext(0) }
+		else
+		{
+			$$$putNext(6)
+			$$$putNext($classname(e))
+			$$$putNext(e.Name)
+			$$$putNext(e.Code)
+			$$$putNext(e.Location)
+			$$$putNext(e.Data)
+			$$$putNext(e.DisplayString())
+		}
+	}
+	d putCommon()
+	
+	if (%clientVersion '< $$$descrArgsBranch)
+	{
+		s ii = $$$getNextArgByRef("")
+		while (ii '= "")
+		{
+			d putArgWire(ii)	
+			s ii = $$$getNextArgByRef(ii)
+		}
+		if ($$$getMtdRetType '= $$$clientTypeVoidId) { $$$putResWire }
+	}
+	$$$resetMtdInfo	
+}
+ 
+runMtdLow(isFunc) // cannot be a procedure (indirect execution)
+	n ii,mtdObj,runMtd,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24
+	
+	$$$LOG("message: runMethod("_isFunc_"):")
+	do:$$$logging ##class(%SYS.DBSRV).logappend("runMtdLow: isFunc = "_isFunc)
+	
+	for ii = 1:1:$$$getMtdNumArgs { xecute "s r"_ii_" = "_$$$getArgStr(ii) }
+	
+	if (isFunc) { s runMtd = "s "_$$$getMtdRetValStr_" = $zobj" }
+	else { s runMtd = "d $zobj" }
+	if ($$$getMtdOref '= -1) 
+	{
+		s mtdObj = $$$toClientObj($$$getMtdOref)
+		s runMtd = runMtd_"method(mtdObj, "_$$$getMtdNameStr
+		$$$LOG("object: "_mtdObj)
+	}
+	else 
+	{
+		s runMtd = runMtd_"classmethod("_$$$getMtdClassNameStr_", "_$$$getMtdNameStr
+		$$$LOG("class: "_$$$getMtdClassName)
+	}
+	$$$LOG("method: "_$$$getMtdName)
+	
+	for ii = 1:1:$$$getMtdNumArgs { s runMtd = runMtd_", .r"_ii $$$LOG("arg"_ii_": "_$g($$$getArg(ii))) }
+	s runMtd = runMtd_")"
+	if (%clientVersion '< $$$mtdExceptions) 
+	{
+		try { xecute runMtd }
+		catch exception { $$$setExceptionInfo(exception) }	
+	}
+	else { xecute runMtd }
+	 
+	$$$LOG("output args:")
+	for ii = 1:1:$$$getMtdNumArgs 
+	{
+		if ($$$isArgByRef(ii)) 
+		{ 
+			xecute "s "_$$$getArgStr(ii)_" = $g(r"_ii_")"
+			$$$LOG("arg"_ii_": "_$g($$$getArg(ii)))
+			if ($$$getArgType(ii) = $$$clientTypeObjId) { $$$initObjVar($g($$$getArg(ii))) }
+		}
+	}
+	if ($$$getMtdRetType = $$$clientTypeObjId) { $$$initObjVar($g($$$getMtdRetVal)) }
+	if ($$$getMtdRetType = $$$clientTypeVoidId) { s $$$getMtdRetVal = "" }
+	$$$LOG("return value: "_$g($$$getMtdRetVal))
+	q
+ 
+setupMethodInfoBranch()
+{
+	$$$getNext($$$getMtdOref)
+	$$$getNext($$$getMtdClassName)
+	$$$getNext($$$getMtdName)
+	$$$getNext($$$getMtdRetType)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("setupMethodInfo: oref = "_$$$getMtdOref_", mtdName = "_$$$getMtdName_", className = "_$$$getMtdClassName_", mtdRetType = "_$$$getMtdRetType)
+.
+	if ($$$getMtdRetType = 0) { s $$$getMtdRetType = $$$clientTypeStrId }
+	elseif ($$$getMtdRetType = 1) { s $$$getMtdRetType = $$$clientTypeObjId }
+	else { s $$$getMtdRetType = $$$clientTypeVoidId }
+ 
+	$$$getNext($$$getMtdNumArgs)
+	for ii = 1:1:$$$getMtdNumArgs
+	{
+		$$$getNext($$$getArg(ii))
+		$$$setArgType(ii, $$$clientTypeStrId)
+	}
+	
+	$$$getNext($$$getMtdNumRefs)
+	for ii = 1:1:$$$getMtdNumRefs
+	{
+		$$$getNext(idx)
+		$$$makeArgByRef(idx)
+	}
+	
+	$$$getNext(numObjs)
+	for ii = 1:1:numObjs 
+	{  
+		$$$getNext(idx)
+		$$$setArgType(idx, $$$clientTypeObjId)
+		$$$setArg(idx, $$$toClientObj($$$getArg(idx)))
+	}
+}
+ 
+setupMethodInfo()
+{
+	$$$getNext($$$getMtdOref)
+	$$$getNext($$$getMtdClassName)
+	$$$getNext($$$getMtdName)
+	$$$getNext($$$getMtdRetType)
+	
+	$$$getNext($$$getMtdNumArgs)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("setupMethodInfo: oref = "_$$$getMtdOref_", mtdName = "_$$$getMtdName_", className = "_$$$getMtdClassName_", mtdRetType = "_$$$getMtdRetType)
+	for ii = 1:1:$$$getMtdNumArgs { d getArgWire(ii) }
+	
+	$$$getNext($$$getMtdNumRefs)
+	for ii = 1:1:$$$getMtdNumRefs
+	{
+		$$$getNext(idx)
+		$$$makeArgByRef(idx)
+	}
+	
+	if (%clientVersion '< $$$optionalNestedCalls)
+	{
+		$$$getNext(%allowNestedCalls)
+		if ($$$allowNestedCalls($$$getJobInfo) '= %allowNestedCalls) { $$$setJobInfo($$$bldJobInfo) }
+	}
+}
+ 
+getArgWire(idx)
+{
+	$$$getNext($$$getArgType(idx))
+	if (($$$getArgType(idx) = $$$clientTypeLongStrId) || ($$$getArgType(idx) = $$$clientTypeLongBinId))
+	{
+		if ($$$getArgType(idx) = $$$clientTypeLongStrId) { s stream = ##class(%GlobalCharacterStream).%New() }
+		else { s stream = ##class(%GlobalBinaryStream).%New() }
+		$$$setArg(idx, stream)
+		d getStreamWire(stream)
+		q
+	}
+	
+	$$$getNext($$$getArg(idx))
+	if ($$$getArgType(idx) = $$$clientTypeObjId) { $$$setArg(idx, $$$toClientObj($$$getArg(idx))) }	
+}
+ 
+getStreamWire(stream)
+{
+	d stream.Rewind()
+	
+	$$$getNext(numPieces)
+	for ii = 1:1:numPieces 
+	{ 
+		$$$getNext(piece) 
+		s status = stream.Write(piece)
+		if ($$$ISERR(status)) 
+		{
+			s code = $$$GETERRORCODE(status)
+			s msg = $$getStatusMessage(status)
+			s %err = $$$makeErr(code,msg,"")
+			q
+		}
+	}
+	d stream.Rewind()
+}
+ 
+putArgWire(idx)
+{
+	if (($$$getArgType(idx) = $$$clientTypeLongStrId) || ($$$getArgType(idx) = $$$clientTypeLongBinId))
+	{
+		s stream = $g($$$getArg(idx))
+		d putStreamWire(stream)
+		q
+	}
+	
+	s val = $g($$$getArg(idx))
+	if ($$$getArgType(idx) = $$$clientTypeObjId) { s val = $$orefClientRep(val) }
+	$$$putNext(val)
+}
+ 
+putStreamWire(stream)
+{
+	if (stream = "")
+	{
+		$$$putNext(0)
+		q
+	}
+			
+	d stream.Rewind()
+	$$$putNext(stream.Size)
+	while ('stream.AtEnd) { $$$putNext(stream.Read()) }
+}
+ 
+setupMtdRetValBranch()
+{
+	if ($$$getMtdRetType = $$$clientTypeObjId) { s %res = $lb($$orefClientRep($$$getMtdRetVal)) }
+	else { s %res = $lb($$$getMtdRetVal) }
+	
+	s ii = $$$getNextArgByRef("")
+	while (ii '= "")
+	{
+		if ($$$getArgType(ii) = $$$clientTypeObjId) { s %res = %res_$lb($$orefClientRep($$$getArg(ii))) }
+		else { s %res = %res_$lb($$$getArg(ii)) }
+		s ii = $$$getNextArgByRef(ii)
+	}
+}
+ 
+ //==============
+ 
+transaction()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(id)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("transaction: id = "_id)
+	
+	if (id = 1) { tstart  goto finally }
+	if (id = 2) { tcommit  goto finally }
+	if (id = 3) { trollback  goto finally }
+	if (id = 4) { s %res = $lb($tlevel) goto finally } 
+ 
+catch $$$setupCatchCmn
+	
+finally
+	d putCommon()
+}
+ 
+ //==============
+ 
+getStatusMessage(status, lang)
+{
+	d DecomposeStatus^%apiOBJ(status, .elst, "", .lang)
+	s msg = ""
+	for ii=1:1:($g(elst)-1) { s msg=msg_elst(ii)_$c(13,10) }
+	if ($g(elst) > 0) { s msg=msg_elst(elst) }
+	q msg
+}
+ 
+getStatusInfo()
+{
+try $$$setupTry
+	$$$getNext(status)
+	$$$getNext(lang)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getStatusInfo: status = "_status_", lang = "_lang)
+	
+	s code = $$$GETERRORCODE(status)
+	s msg = $$getStatusMessage(status, lang)
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	$$$putErr(%err)
+	$$$putNext($g(code))
+	$$$putNext($g(msg))
+}
+ 
+ //==============
+ 
+sync()
+{
+try $$$setupTry
+	d getCommon()
+	goto finally
+ 
+catch $$$setupCatchCmn
+	
+finally
+	d putCommon()	
+}
+ 
+ //==============
+ 
+DynObjMetaInfoBranch(mtdName)
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("DynObjMetaInfoBranch: mtdName = "_mtdName_", className = "_className)
+	
+	s %res = $zobjclassmethod("%CPPStoredProc", mtdName, 1, className)
+	goto finally
+	
+catch $$$setupCatchCmn
+	
+finally
+	$$$putErr(%err)
+	$$$putResBin
+}
+ 
+DynObjMetaInfo(mtdName)
+{
+	if (%clientVersion < $$$metaInfoBranch) { q DynObjMetaInfoBranch("get"_mtdName) }
+	s mtdName = "getNew"_mtdName
+		
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("DynObjMetaInfo: mtdName = "_mtdName_", className = "_className)
+	
+	s status = $zobjclassmethod("%CPPStoredProc", mtdName, className, .res)
+	goto done
+	
+catch $$$setupCatchCmn
+	$$$putErr(%err)
+	q
+	
+done
+	$$$putErr(%err)
+	$$$putNext(status)
+	if ($$$ISOK(status)) { f idx=1:1:res $$$putNextBin(res(idx)) }
+}
+ 
+getClassLGInfo()
+{
+	// JMM192+ Continue supporting old metadata interface for Light C++ Binding
+	// until LCB is modified to use the new inteface
+	// if (%clientVersion '< $$$metaInfoBranch4)
+	// {
+	// 	s %err=$$$makeErr(-1, "getClassLGInfo() is deprecated", "")
+	// 	$$$putErr(%err)
+	// 	$$$putNext($$$OK)
+	// }
+	// JMM192-
+ 
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getClassLGInfo: className = "_className)
+	s sendDefs = 1
+	
+	s status = ##class(%CPPStoredProc).getClassDependencies(className, .dep)
+	if ($$$ISERR(status)) { goto catch }
+	
+	s status = ##class(%CPPStoredProc).getWrapperClassDef(className, .clientDef)
+	if ($$$ISERR(status)) { goto catch }	
+	if ($i(classes)) { s classes(className) = clientDef }
+ 
+	for idx = 1:1:$listLength(dep) 
+	{
+		s className = $list(dep, idx)
+		s status = ##class(%CPPStoredProc).getWrapperClassDef(className, .clientDef)
+		if ($$$ISERR(status)) { goto catch }	
+		if ('$d(classes(className))) { if ($i(classes)) { s classes(className) = clientDef } }
+	}
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	$$$putNext(classes)
+	s idx = $o(classes(""))
+	while (idx '= "")
+	{
+		d classes(idx).send()
+		s idx = $o(classes(idx))
+	}
+}
+ 
+getIndexesLGInfo() // JMM031+
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getIndexesLGInfo: className = "_className)
+	s sendDefs = 1
+	
+	s status = $$listIndexes^%SYS.LCBINDSRV(className,.res)
+ 
+	if ($$$ISERR(status)) { goto catch }
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	for i=1:1:$ll(res) $$$putNext($lg(res,i))
+} // JMM031-
+ 
+getParametersLGInfo() // JMM598+
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getParametersLGInfo: className = "_className)
+	s sendDefs = 1
+	
+	s status = $$listParameters^%SYS.LCBINDSRV(className,.res)
+ 
+	if ($$$ISERR(status)) { goto catch }
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	for i=1:1:$ll(res) $$$putNext($lg(res,i))
+} // JMM598-
+.
+getColnPropStorageLGInfo() // JMM225+
+{
+try $$$setupTry
+	$$$getNext(className)
+	$$$getNext(propName)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getColnPropStorageLGInfo: className = "_className_", propName = "_propName)
+	s sendDefs = 1
+	
+	Set status = $$getColnPropStorageType^%SYS.LCBINDSRV(className,propName,.res)
+	
+	if ($$$ISERR(status)) { goto catch }
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	$$$putNext(res)
+} // JMM225-
+  
+getPropTypeCategoryLGInfo() // JMM226+
+{
+try $$$setupTry
+	$$$getNext(className)
+	$$$getNext(propName)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getPropTypeCategoryLGInfo: className = "_className_", propName = "_propName)
+	s sendDefs = 1
+	
+	Set status = $$getPropTypeCategory^%SYS.LCBINDSRV(className,propName,.res)
+	
+	if ($$$ISERR(status)) { goto catch }
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	$$$putNext(res)
+} // JMM225-
+  
+getTriggersLGInfo() // JMM031+
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getTriggersLGInfo: className = "_className)
+	s sendDefs = 1
+	
+	s status = $$listTriggers^%SYS.LCBINDSRV(className,.res)
+ 
+	if ($$$ISERR(status)) { goto catch }
+	
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	for i=1:1:$ll(res) $$$putNext($lg(res,i))
+} // JMM031- 
+ 
+getSerializationLGInfo() // JMM031+
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getSerializationLGInfo: className = "_className)
+	s sendDefs = 1
+	
+	s status = $$NodeMetadata^%SYS.LCBINDSRV(className,.res)
+ 
+	if ($$$ISERR(status)) { goto catch }
+	if ('$d(res))
+  	{
+	  	s %err = $$$makeErr($$$ERRORCODE($$$GeneralError),"Class "_$g(className)_" has features not supported by Light C++ Binding","")
+  	}
+	else
+	{
+		s res = $g(res($O(res(""))))
+		s res = $lb($ll($g(res)))_$g(res)
+	}
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	for i=1:1:$ll(res) $$$putNext($lg(res,i))
+} // JMM031- 
+ 
+getClassGlobalLGInfo() // JMM082+
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getClassGlobalLGInfo: className = "_className)
+	s sendDefs = 1
+	s res = $$getClassGlobalName^%SYS.LCBINDSRV(className)
+ 
+	;if ($$$ISERR(status)) { goto catch }
+ 
+	goto finally
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	s sendDefs = 0
+	
+finally	
+	$$$putErr(%err) 
+	$$$putNext(status)
+	if ('sendDefs) { q }
+	
+	$$$putNext(res)
+} // JMM082- 
+ 
+getClassEBInfo()
+{
+try $$$setupTry
+	$$$getNext(className)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getClassEBInfo: className = "_className)
+ 
+	s status = ##class(%CPPStoredProc).getWrapperClassDef(className, .clientDef, %langType, 1)
+	if ($$$ISERR(status)) { goto catch }
+	else
+	{
+		$$$putErr(%err)
+		$$$putNext($$$OK)
+	}	
+ 
+	s count = clientDef.properties.Count()
+	$$$putNext(count)
+	for idx = 1:1:count
+	{
+		s propDef = clientDef.properties.GetAt(idx)
+		d propDef.send()
+	}
+	q
+	
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }
+	$$$putErr(%err)
+	$$$putNext(status)	
+}
+ 
+getClassLBInfo()
+{
+try $$$setupTry
+	$$$getNext(className)
+ 
+	s status = ##class(%CPPStoredProc).getCountProperties(1, className, .count, %langType, 0)
+	if ($$$ISERR(status)) { goto catch }
+	s status = $zobjclassmethod("%CPPStoredProc", "getNewClassProperties", className, .res, %langType)
+	if ($$$ISERR(status)) { goto catch }
+	
+	$$$putErr(%err) 
+	$$$putNext($$$OK) 		
+	$$$putNext(count)
+	f idx=1:1:res $$$putNextBin(res(idx))
+	k res
+	
+	s status = ##class(%CPPStoredProc).getCountMethods(1, className, .count, %langType, 0)
+	if ($$$ISERR(status)) { goto catch }
+	s status = $zobjclassmethod("%CPPStoredProc", "getNewClassMethods", className, .res, %langType)
+	if ($$$ISERR(status)) { goto catch }
+	
+	if (%clientVersion '< $$$DynObjMetaInfoBranch2)
+	{
+		$$$putErr(%err) 
+		$$$putNext($$$OK)
+	}
+	$$$putNext(count)
+	f idx=1:1:res $$$putNextBin(res(idx))
+	k res
+	
+	s status = ##class(%CPPStoredProc).getCountQueries(1, className, .count, %langType)
+	if ($$$ISERR(status)) { goto catch }
+	s status = $zobjclassmethod("%CPPStoredProc", "getNewClassQueries", className, .res, %langType)
+	if ($$$ISERR(status)) { goto catch }
+	
+	if (%clientVersion '< $$$DynObjMetaInfoBranch2)
+	{
+		$$$putErr(%err) 
+		$$$putNext($$$OK)
+	}
+	$$$putNext(count)
+	f idx=1:1:res $$$putNextBin(res(idx))
+	k res
+	q	
+ 
+catch $$$setupCatchCmn
+	if ('$d(status)) { s status = "" }	
+	$$$putErr(%err)
+	$$$putNext(status)		
+}
+ 
+getIndexesInfo() // JMM031+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getIndexesInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getIndexesLGInfo() }
+} // JMM031-
+ 
+getColnPropStorageInfo() // JMM225+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getColnPropStorageInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getColnPropStorageLGInfo() }
+} // JMM225-
+  
+getPropTypeCategoryInfo() // JMM226+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getPropTypeCategoryInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getPropTypeCategoryLGInfo() }
+} // JMM226-
+  
+getTriggersInfo() // JMM031+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getTriggersInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getTriggersLGInfo() }
+} // JMM031-
+ 
+getSerializationInfo() // JMM031+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getSerializationInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getSerializationLGInfo() }
+} // JMM031-
+ 
+getParametersInfo() // JMM598+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getParametersInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getParametersLGInfo() }
+} // JMM598-
+.
+getClassGlobalInfo() // JMM082+
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getClassGlobalInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoLG) { d getClassGlobalLGInfo() }
+} // JMM082-
+ 
+getClassInfo()
+{
+	if (%clientVersion < $$$metaInfoBranch2) { s infoKind = $$$MetaInfoLG }
+	else { $$$getNext(infoKind) }
+	do:$$$logging ##class(%SYS.DBSRV).logappend("getClassInfo: infoKind = "_infoKind)
+	
+	if (infoKind = $$$MetaInfoEB) { d getClassEBInfo() }
+	elseif (infoKind = $$$MetaInfoLB) { d getClassLBInfo() }
+	else { d getClassLGInfo() }
+}
+ 
+getLCClassInfo() // JMM174+
+{
+	s %DistinguishFloatFromDouble=1
+	d getClassInfo()
+} // JMM174-
+ 
+getClassesDependencies()
+{
+	$$$getNext(numClasses)
+	for ii = 1:1:numClasses 
+	{
+		$$$getNext(name)
+		do:$$$logging ##class(%SYS.DBSRV).logappend("getClassesDependencies: name = "_name)
+		s node(name) = ""
+	}
+	if (%clientVersion '< $$$metaInfoBranch3) { $$$getNext(inclSubCls) }
+	else { s inclSubCls = 0 }
+	
+	s status = $$IncludeClasses^%occLGUtil(.node, .classes, %langType, 1, inclSubCls)
+	$$$putNext(status)
+	q:$$$ISERR(status)
+ 
+ 	s name = $o(classes(""))
+ 	while (name '= "")
+ 	{
+	 	$$$putNext(name)
+	 	$$$putNext("")
+	 	s name = $o(classes(name))
+ 	}
+}
+ 
+getClassesInfo()
+{
+	if (%clientVersion < $$$metaInfoBranch4)
+	{
+		$$$getNext(numClasses)
+		for ii = 1:1:numClasses 
+		{
+			$$$getNext(name)
+			do:$$$logging ##class(%SYS.DBSRV).logappend("getClassInfo: name = "_name)
+			s clientDef = ""
+			k clientDef
+			s status = ##class(%CPPStoredProc).getWrapperClassDef(name, .clientDef, %langType, 1)
+			$$$putNext(status)
+			if $$$ISOK(status) { d clientDef.send() }
+		}
+		
+		q
+	}
+	
+	$$$getNext(numClasses)
+	k classes
+	for ii=1:1:numClasses { $$$getNext(class) s classes(class)="" }
+	
+	if (%clientVersion '< $$$metaInfoBranch6) 
+	{ 
+		$$$getNext(qspec)
+		$$$getNext(mode)
+	}
+	else 
+	{ s qspec = "", mode = $$$modeCppCodeGen }
+	
+	d OutputMetaInfo^%occMetaInfo($$$qdev, .classes, qspec,, mode)	
+}
+ 
+getLCClassesInfo() // JMM246+
+{
+	if (%clientVersion < $$$metaInfoBranch4)
+	{
+		$$$getNext(numClasses)
+		for ii = 1:1:numClasses 
+		{
+			$$$getNext(name)
+			do:$$$logging ##class(%SYS.DBSRV).logappend("getLCClassInfo: name = "_name)
+			s clientDef = ""
+			k clientDef
+			s status = ##class(%CPPStoredProc).getWrapperClassDef(name, .clientDef, %langType, 1)
+			$$$putNext(status)
+			if $$$ISOK(status) { d clientDef.send() }
+		}
+		
+		q
+	}
+	
+	$$$getNext(numClasses)
+	k classes
+	for ii=1:1:numClasses { $$$getNext(class) s classes(class)="" }
+	d OutputMetaInfo^%occMetaInfo($$$qdev, .classes, "", "cpp", "lcb")
+}	// JMM246-
+ 
+ //==============
+ 
+CPPinitPrimColn(isArr)
+{
+	$$$getNext(oref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("CPPinitPrimColn: oref = "_oref)
+	s coln = $$$toClientObj(oref)
+	
+	$$$putNext(coln.Count())
+	s key = ""
+	s val = coln.GetNext(.key)
+	while (key '= "")
+	{
+		if (isArr) { $$$putNext(key) }
+		$$$putNext(val)
+		s val = coln.GetNext(.key)
+	}
+}		
+ 
+CPPinitObjColn(isArr)
+{
+	$$$getNext(oref)	
+	do:$$$logging ##class(%SYS.DBSRV).logappend("CPPinitObjColn: oref = "_oref)
+	s coln = $$$toClientObj(oref)	
+	
+	$$$putNext(coln.Count())
+	q:(isArr = 0)
+	
+	s key = ""
+	d coln.GetNext(.key)
+	while (key '= "")
+	{
+		$$$putNext(key)
+		d coln.GetNext(.key)
+	}	
+}
+ 
+OpenAllObjects()
+{
+try $$$setupTry
+	d getCommon()
+	
+	$$$getNext(oref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("OpenAllObjects: oref = "_oref)
+	s coln = $$$toClientObj(oref)
+	
+	if (%clientVersion < $$$propertyPathsColnBranch) {
+		d OpenAllObjectsList(coln)
+	}
+	else {
+		$$$getNext(msgKind)
+		if (msgKind = $$$openAllObjectsListRecursive) {
+			d OpenAllObjectsList(coln)
+		}
+		elseIf (msgKind = $$$openAllObjectsListWithPropertyPaths) {
+			d OpenAllObjectsListWithPropertyPaths(coln)			
+		}
+		elseIf (msgKind = $$$openAllObjectsArrayWithPropertyPaths) {
+			d OpenAllObjectsArrayWithPropertyPaths(coln)			
+		}
+	}	
+	
+catch $$$setupCatchCmn
+ 
+finally
+	d putCommon()
+}
+ 
+OpenAllObjectsListWithPropertyPaths(coln)
+{
+	d OpenAllObjectsGetPropertyPaths(.propertyPaths)
+	s count = coln.Count()
+	$$$putNext(count)
+	for idx = 1:1:count {
+		s elem = coln.GetAt(idx)
+		$$$initObjVar(elem)
+		$$$putNext($$orefClientRep(elem))
+		d OpenAllObjectsElemWithPropertyPaths(elem, .propertyPaths, .swizzledObjects)
+	}
+	d putAllSwizzledObjects(.swizzledObjects)
+}
+ 
+OpenAllObjectsArrayWithPropertyPaths(coln)
+{
+	d OpenAllObjectsGetPropertyPaths(.propertyPaths)
+	s count = coln.Count()
+	$$$putNext(count)
+	s key = ""
+	d coln.GetNext(.key)
+	while (key '= "")
+	{
+		$$$putNext(key)
+		s elem = coln.GetAt(key)
+		$$$initObjVar(elem)
+		$$$putNext($$orefClientRep(elem))
+		d OpenAllObjectsElemWithPropertyPaths(elem, .propertyPaths, .swizzledObjects)
+		d coln.GetNext(.key)
+	}	
+	d putAllSwizzledObjects(.swizzledObjects)
+}
+ 
+OpenAllObjectsGetPropertyPaths(propertyPaths)
+{
+	$$$getNext(className)
+	while (className '= "") {
+		$$$getNext(propName)
+		while (propName '= "") {
+			set propertyPaths(className, propName) = ""
+			$$$getNext(propName)
+		}
+		$$$getNext(className)	
+	}
+}
+ 
+OpenAllObjectsElemWithPropertyPaths(obj, propertyPaths, swizzledObjects)
+{
+	set className = $order(propertyPaths(""))
+	while (className '= "") {
+		if (obj.%Extends(className)) {
+			set propertyPath = $order(propertyPaths(className, ""))
+			while (propertyPath '= "") {
+				d openObjectProperties(obj, propertyPath, .swizzledObjects)
+				set propertyPath = $order(propertyPaths(className, propertyPath))
+			}
+		}
+		set className = $order(propertyPaths(className))
+	}
+}
+ 
+OpenAllObjectsList(coln)
+{
+	s count = coln.Count()
+	$$$putNext(count)
+	for idx = 1:1:count {
+		s elem = coln.GetAt(idx)
+		$$$initObjVar(elem)
+		d OpenAllObjectsElem(elem)
+	}
+}
+ 
+OpenAllObjectsArray(coln)
+{
+	s count = coln.Count()
+	$$$putNext(count)
+	s key = ""
+	d coln.GetNext(.key)
+	while (key '= "")
+	{
+		$$$putNext(key)
+		s elem = coln.GetAt(key)
+		$$$initObjVar(elem)
+		d OpenAllObjectsElem(elem)
+		d coln.GetNext(.key)
+	}	
+}
+ 
+OpenAllObjectsElem(elem)
+{
+	$$$putNext($$orefClientRep(elem))
+	if (elem.%IsA("%Collection.ListOfObj") || elem.%IsA("%Library.ListOfObjects")) { d OpenAllObjectsList(elem) }
+	elseIf (elem.%IsA("%Collection.ArrayOfObj") || elem.%IsA("%Library.ArrayOfObjects") || elem.%IsA("%Library.RelationshipObject")) 
+	{ d OpenAllObjectsArray(elem) }
+}
+ 
+JavaGetPrimList()
+{
+	$$$getNext(oref)
+	$$$getNext(begin)
+	$$$getNext(numElems)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaGetPrimList: oref = "_oref_", begin = "_begin_", numElems = "_numElems)
+	
+	s coln = $$$toClientObj(oref)
+	s end = begin + numElems
+	s idx = begin
+	while (idx < end)
+	{
+		s elem = $zobjmethod(coln, "GetAt", idx)
+		$$$putNext(elem)
+		i $i(idx)
+	}
+}
+ 
+JavaPutPrimList()
+{
+	$$$getNext(orefn)
+	s oref = $$$toClientObj(orefn)
+	$$$getNext(count)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaPutPrimList: orefn = "_orefn_", count = "_count)
+	s idx = 0
+	while (idx < count)
+	{
+		$$$getNext(elem)
+		d $zobjmethod(oref,"Insert",elem)
+		i $i(idx)
+	}
+}
+	
+JavaGetObjList()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(oref)
+	$$$getNext(begin)
+	$$$getNext(numElems)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaGetObjList: oref = "_oref_", begin = "_begin_", numElems = "_numElems)
+	
+	s coln = $$$toClientObj(oref)
+	s end = begin + numElems
+	s idx = begin
+	s elemList = ""
+	s classNameList = ""
+	while (idx < end)
+	{
+		s elem = $zobjmethod(coln, "GetAt", idx)
+		if (elem="") { s className = "" }
+		else
+		{
+			$$$initObjVar(elem)
+			s className = $zobjclass(elem)
+			s elem = $$$toInt(elem)
+		}
+		
+		if (%clientVersion < $$$colnMsgBranch) 
+		{
+			s elemList = elemList_$lb(elem)
+			s classNameList = classNameList_$lb(className)
+		}
+		else
+		{ 
+			$$$putNext(elem)
+			$$$putNext(className)
+		}		
+		i $i(idx)
+	}
+	
+	if (%clientVersion < $$$colnMsgBranch) { s %res = $lb(elemList, classNameList) }
+	else { s %res = "" }
+	
+	goto finally
+		
+catch $$$setupCatchCmn
+ 
+finally
+	d putCommon()
+}
+ 
+JavaPutObjList()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(orefn)
+	s oref = $$$toClientObj(orefn)
+	$$$getNext(count)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaPutObjList: orefn = "_orefn_", count = "_count)
+	s idx = 0
+	while (idx < count)
+	{
+		$$$getNext(elem)
+		d $zobjmethod(oref,"Insert",$$$toClientObj(elem))
+		i $i(idx)
+	}
+	goto finally
+	
+catch $$$setupCatchCmn
+	
+finally
+	s %res = 1
+	d putCommon()
+}
+	
+JavaGetPrimArr()
+{
+	$$$getNext(oref)
+	$$$getNext(key)
+	$$$getNext(maxNumElems)
+	$$$getNext(dir)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaPutPrimArr: oref = "_oref_", key = "_key_", maxNumElems = "_maxNumElems_", dir = "_dir)
+	
+	s coln = $$$toClientObj(oref)
+	s res = ""
+	s numElems = 0
+	s idx = 0
+	if (dir > 0) { s nextKey = "Next" }
+	else { s nextKey = "Previous" }
+	if (key = "") { s key = $zobjmethod(coln, nextKey, key) }
+	
+	while ((key '= "") && (numElems < maxNumElems))
+	{
+		s elem = $zobjmethod(coln, "GetAt", key)
+		if (dir > 0) { s res=res_$lb(key, elem) }
+		else { s res=$lb(key, elem)_res }
+		
+		i $i(numElems)
+		s key = $zobjmethod(coln, nextKey, key)
+	}
+	
+	s res = $lb(numElems)_res
+	$$$putNext(res)
+}
+ 
+JavaPutPrimArr()
+{
+	$$$getNext(orefn)
+	s oref = $$$toClientObj(orefn)
+	$$$getNext(count)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaPutPrimArr: orefn = "_orefn_", count = "_count)
+	s idx = 0
+	while (idx < count)
+	{
+		$$$getNext(key)
+		$$$getNext(elem)
+		d $zobjmethod(oref,"SetAt",key,elem)
+		i $i(idx)
+	}
+	$$$putNext(1)
+	q 0
+}
+	
+JavaGetObjArr()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(oref)
+	$$$getNext(key)
+	$$$getNext(maxNumElems)
+	$$$getNext(dir)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaGetObjArr: oref = "_oref_", key = "_key_", maxNumElems = "_maxNumElems_", dir = "_dir)
+ 
+	s coln = $$$toClientObj(oref)	
+	s numElems = 0
+	s idx = 0
+	if (dir > 0) { s nextKey = "Next" }
+	else { s nextKey = "Previous" }
+	if (key = "") { s key = $zobjmethod(coln, nextKey, key) }
+	s elemList = ""
+	s classNameList = ""
+	
+	while ((key '= "") && (numElems < maxNumElems))
+	{
+		s elem = $zobjmethod(coln, "GetAt", key)
+		if (elem="") { s className = "" }
+		else
+		{
+			$$$initObjVar(elem)
+			s className = $zobjclass(elem)
+			s elem = $$$toInt(elem)
+		}
+		
+		if (dir > 0) 
+		{
+			if (%clientVersion < $$$colnMsgBranch)
+			{
+				s elemList = elemList_$lb(key, elem)
+				s classNameList = classNameList_$lb(className)
+			}
+			else
+			{
+				$$$putNext(key)				
+				$$$putNext(elem)
+				$$$putNext(className)
+			}
+		}
+		else // don't need to support colnMsgBranch for the reverse direction
+		{
+			s elemList = $lb(key, elem)_elemList
+			s classNameList = $lb(className)_classNameList
+		}
+				
+		i $i(numElems)
+		s key = $zobjmethod(coln, nextKey, key)
+	}
+	
+	if ((%clientVersion < $$$colnMsgBranch)	|| (dir '> 0)) { s %res = $lb($lb(numElems)_elemList, classNameList) }
+	else { s %res = "" }
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	d putCommon()
+}
+ 
+JavaPutObjArr()
+{
+try $$$setupTry
+	d getCommon()
+	$$$getNext(orefn)	
+	s oref = $$$toClientObj(orefn)
+	$$$getNext(count)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaPutObjArr: orefn = "_orefn_", count = "_count)
+	s idx = 0
+	while (idx < count)
+	{
+		$$$getNext(elem)
+		$$$getNext(key)
+		d $zobjmethod(oref,"SetAt",$$$toClientObj(elem),key)
+		i $i(idx)
+	}
+	goto finally
+	
+catch $$$setupCatchCmn
+ 
+finally
+	s %res = 1
+	d putCommon()
+}
+ //==============
+ 
+JavaBulkLoad()
+	s %qrc=0,$ZT="JavaBulkLoadErr"		
+	n query, class, list, rs, obj, args
+	s list = ""
+	d getCommon()
+	s class=$$$ReadNext, query=$$$ReadNext, args=$$$ReadNext
+	do:$$$logging ##class(%SYS.DBSRV).logappend("JavaBulkLoad: class = "_class_", query = "_query_", args = "_args)
+	for i=1:1:args {
+		set args(i)=$$$ReadNext
+		do:$$$logging ##class(%SYS.DBSRV).logappend($c(9,9)_"args("_i_") = "_args(i))
+	}
+	s list = ##class(%Compiler.LG.QueryHelper).Query(class,query,.args)
+	i $ZE'="" goto JavaBulkLoadErr
+	$$$initObjVar(list)
+	s err=""
+	goto JavaBulkLoadFinally
+JavaBulkLoadErr
+	s $ZT=""
+	i $ZE="" s err="" 
+	e  s %err=$$$makeGenErr
+	s $ZE=""
+JavaBulkLoadFinally
+	s $ZT=""
+	i list="" s list=1
+	s %res = $lb(list)
+	d putCommon()
+	q
+ 
+ //==============
+ 
+ /// Called from %Library.RegisteredObject.%BindExport
+InitObjVar(%e) 
+{
+	do incRefCnt(%e) 
+	$$$addChangedObj($$$objToOref(%e)) 
+}
+ 
+LoadReadOnlyById()
+{
+	Set cls = $$$ReadNext
+	Set id = $$$ReadNext
+	do:$$$logging ##class(%SYS.DBSRV).logappend("LoadReadOnlyById: class = "_cls_", id = "_id)
+	Set o = $zobjclassmethod(cls, "%OpenId", id, -1, .%qsc)
+	$$$CheckStatus(%qsc)
+	$$$WriteHeader
+	Set %qsc = ##class(%Library.CPPStoredProc).cobjexport($$$qdev,o)
+	$$$CheckStatus(%qsc)
+	
+	$$$Flush0
+	Quit
+}
+ 
+LoadReadOnlyByOid()
+{
+	Set cls = $$$ReadNext
+	if cls=""  set cls = "%Persistent"
+	Set id = $$$ReadNext
+	do:$$$logging ##class(%SYS.DBSRV).logappend("LoadReadOnlyByOid: class = "_cls_", oid = "_id)
+	Set o = $zobjclassmethod(cls, "%Open", id, -1, .%qsc)
+	$$$CheckStatus(%qsc)
+	$$$WriteHeader
+	Set %qsc = ##class(%Library.CPPStoredProc).cobjexport($$$qdev,o)
+	$$$CheckStatus(%qsc)
+	
+	$$$Flush0
+	Quit
+}
+ 
+LoadReadOnlyByQuery()
+{
+	s class=$$$ReadNext, query=$$$ReadNext, nargs=$$$ReadNext
+	do:$$$logging ##class(%SYS.DBSRV).logappend("LoadReadOnlyByQuery: class = "_class_", query = "_query_", nargs = "_nargs)
+	s list = ##class(%ListOfObjectsWithClassName).%New()
+	s rs=##class(%ResultSet).%New("%DynamicQuery:SQL")
+	s %qsc=rs.Prepare(query)
+	$$$CheckStatus(%qsc)
+	if nargs=0 d rs.Execute() goto LoadReadOnlyExecQuery
+	if nargs=1 d rs.Execute($$$ReadNext) goto LoadReadOnlyExecQuery
+	if nargs=2 d rs.Execute($$$ReadNext,$$$ReadNext) goto LoadReadOnlyExecQuery
+	if nargs=3 d rs.Execute($$$ReadNext,$$$ReadNext,$$$ReadNext) goto LoadReadOnlyExecQuery
+	if nargs=4 d rs.Execute($$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext) goto LoadReadOnlyExecQuery
+	if nargs=5 d rs.Execute($$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext) goto LoadReadOnlyExecQuery
+	if nargs=6 d rs.Execute($$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext,$$$ReadNext) goto LoadReadOnlyExecQuery
+	do ##class(%SYS.DBSRV).FlushError("Too many parameters to Prepare. Maximum is 6")
+	RETURN
+LoadReadOnlyExecQuery
+	d rs.SetIdInfo(1,class)
+	While rs.Next() {
+		s obj = rs.GetObject()
+		if obj=$$$NULLOREF { do ##class(%SYS.DBSRV).FlushError("Error opening object of class "_class_".") quit }
+		d list.Insert(obj)
+	}
+	$$$WriteHeader
+	Set Seen = ""
+	Set %qsc = ##class(%Library.CPPStoredProc).cobjexportCollection($$$qdev,list)
+	$$$CheckStatus(%qsc)
+	
+	$$$Flush0
+	Quit
+}
+ 
+LoadReadOnlyByExec()
+{
+	set %debug=1
+	d initServer(0)
+	d setupMethodInfo()
+	
+	$$$StartRedirect
+	
+	for ii = 1:1:$$$getMtdNumArgs { xecute "s r"_ii_" = "_$$$getArgStr(ii) }
+	s runMtd = "s "_$$$getMtdRetValStr_" = $zobj"
+	s runMtd = runMtd_"classmethod("_$$$getMtdClassNameStr_", "_$$$getMtdNameStr
+	for ii = 1:1:$$$getMtdNumArgs { s runMtd = runMtd_", .r"_ii }
+	s runMtd = runMtd_")"
+ 
+	xecute runMtd
+ 
+	$$$StopRedirect
+	$$$WriteHeader
+	Set Seen=""
+	$$$putNext($$$getMtdRetVal_"")
+	for ii = 1:1:$$$getMtdNumArgs 
+	{
+		if ($$$isArgByRef(ii)) 
+		{ 
+			xecute "s "_$$$getArgStr(ii)_" = $g(r"_ii_")"
+			$$$putNext($$$getArg(ii)_"")
+		}
+	}
+	if $$$getMtdRetType=$$$clientTypeObjId,$IsObject($$$getMtdRetVal)
+	{
+		Set %qsc = ##class(%Library.CPPStoredProc).cobjexport($$$qdev,$$$getMtdRetVal)
+		$$$CheckStatus(%qsc)
+	}
+	Set %qsc=$$$OK
+	for ii = 1:1:$$$getMtdNumArgs 
+	{
+		if $$$isArgByRef(ii),$$$getArgType(ii)=$$$clientTypeObjId,$IsObject($$$getArg(ii))
+		{ 
+			Set %qsc = ##class(%Library.CPPStoredProc).cobjexport($$$qdev,$$$getArg(ii))
+			$$$CheckStatus(%qsc)
+		}
+	}
+	If %qsc'=$$$OK q
+	
+	$$$resetMtdInfo	
+	k Seen
+	$$$Flush0
+	Quit
+}
+ 
+ // THE FOLLOWING CODE IS *ALMOST* THE SAME AS IN %SYS.DBSRV
+ // UPDATES TO THIS MOST LIKELY NEED TO BE MADE IN %SYS.DBSRV AS WELL
+ //==============
+ 
+ // 1 piece at getCommon
+ // 
+ // srv_output_branch:
+ // n pieces at getCommon
+ // 
+ // srv_output_branch1:
+ // 1 piece at real time
+ // 
+ // srv_output_branch2:
+ // 1 piece at real time + cache
+ //
+ // srv_output_branch3:
+ // n pieces at real time + cache
+ 
+addToOutput(str, func, val)      
+{
+	set lastGlobalRef = $$saveLastRef()
+.
+	$$$SysLog(3,"Output Redirection", func, val)
+	
+	if ($d($$$redirectOutput) && '$$$redirectOutput) {
+		do revertLastRef(lastGlobalRef)
+		return
+	}
+ 
+	if '$d($$$srv) { 
+		set $$$srv=##class(%SYS.DBSRV).%New()
+		set $$$srv.Logging=##class(%SYS.DBSRV).setupLogging($namespace)
+		if $$$logging {
+			do ##class(%SYS.DBSRV).logappend("New %SYS.DBSRV object created in addToOutput^%SYS.BINDSRV()")
+		}
+	}
+.
+	s jobInfo = $$$getJobInfo
+	s:($$$qdev'="") %curqdev = $$$qdev
+	s $$$qdev = $$$getDevice(jobInfo)
+	s %clientVersion = $$$getClientVersion(jobInfo)
+	s %useCache = $$$getUseCache(jobInfo)
+	s %allowNestedCalls = $$$allowNestedCalls(jobInfo)
+ 
+	d addToBufferedOutput(str)
+	s:$d(%curqdev) $$$qdev = %curqdev
+	if ($$$bufferSrvOutput) {
+		do revertLastRef(lastGlobalRef)
+		return
+	}
+	if (%clientVersion '< $$$srvOutputBranch1) {d sendBufferedOutput() }
+ 
+	if ((%clientVersion < $$$srvOutputBranch2) || '%allowNestedCalls) { $$$flushOutputBuf }
+	else
+	{
+		if (%useCache) { d cachePutData() }
+		d SendMsg
+		$$$setBufferSrvOutput(0)
+		if (%useCache) { d $zu(177,0) }
+	}
+	do revertLastRef(lastGlobalRef)
+}
+.
+saveLastRef() {
+	$$$AddAllRoleTemporary
+	return $zreference
+}
+.
+revertLastRef(lastGlobalRef) {
+	$$$AddAllRoleTemporary
+	if lastGlobalRef'="" {
+		set old68val=$zutil(68,1,1)
+		try { if $data(@lastGlobalRef) } catch {}
+		do $zutil(68,1,old68val)		
+	}
+}
+ 
+addToBufferedOutput(str)
+{
+	if (($length($$$outLastPieceVar) + $length(str)) '> $$$maxOutputPieceLen) { 
+		s $$$outLastPieceVar =$$$outLastPieceVar_str 
+	}
+	else 
+	{
+		i $i($$$outCountVar) 
+		s $$$outLastPieceVar = str
+	}
+}
+ 
+sendBufferedOutput()
+{
+	if ((%clientVersion < $$$srvOutputBranch) || ((%clientVersion '< $$$srvOutputBranch1) && (%clientVersion < $$$srvOutputBranch3)))
+	{ 
+		$$$putNext($$$outLastPieceVar) 
+	}
+	else
+	{
+		$$$putNext($$$outCountVar)
+		for ii = 1:1:$$$outCountVar { $$$putNext($$$outPieceVar(ii)) }
+	}
+	$$$resetBufferedOutput
+}
+ 
+wstr(str) public
+{
+	// Write str
+	d addToOutput(str, "wstr", str) 
+}
+ 
+wchr(ch) public
+{
+	// Write *a
+	d addToOutput(ch, "wchr", ch) 
+}
+ 
+wtab(num) public
+{
+	// Write ?n 
+	s str = ""
+	for ii = 1:1:num { s str = str_" " }
+	d addToOutput(str, "wtab", num) 
+}
+  
+wnl() public
+{
+	// Write !
+	d addToOutput($c(13,10), "wnl", "") 
+}
+ 
+wff() public
+{
+	// Write #
+	d addToOutput($c(13,10,13,10), "wff", "") 
+}
+ 
+getRedirectedInput(len, time)
+{
+	s jobInfo = $$$getJobInfo
+	s:($$$qdev'="") %curqdev = $$$qdev
+	s $$$qdev = $$$getDevice(jobInfo)
+ 	s %clientVersion = $$$getClientVersion(jobInfo)
+ 
+	if (%clientVersion < $$$inputRedirectionBranch)  { q "" }
+ 
+	$$$putNext(len)
+	$$$putNext(time)
+	
+	$$$Flush($$$InputRedirectionMsgId)
+	$$$ReadHeader
+	$$$setHeaderId1 $$$setHeaderId2
+ 
+	$$$getNext(res)
+	s:$d(%curqdev) $$$qdev = %curqdev
+	q res
+}
+ 
+rstr(len,time) public
+{
+	q $$getRedirectedInput()
+}
+ 
+rchr(time) public
+{
+	q $$getRedirectedInput()
+}
+ 
+SendZobjVal()
+{
+	s oref = $$$ReadNext
+	s obj = $zobjref(oref)
+	s lval = ""
+	s lmods= ""
+	set $zt = "SendZobjValTrap"
+	f i=1:1 Quit:'$d($zobjval(obj,i))  d
+	. if ($d($zobjval(obj,i))=10)  {set val = ""} else {set val = $zobjval(obj,i)}
+	. set lval = lval_$lb(val)
+	. set lmods = lmods_$lb($zobjmods(obj,i))
+SendZobjValTrap
+	
+	set $zt = ""
+	$$$WriteHeader
+	$$$putNext(i-1)
+	$$$putNext(lval)
+	$$$putNext(lmods)
+	$$$Flush0
+}
+ 
+ //==============
+ 
+DSSendResultSetAxes(rs)
+{
+	set axisCount = rs.%GetAxisCount()
+	for axis = 0:1:axisCount {
+		set status=rs.%GetAxisMembers(axis,.key)
+		if ($$$ISERR(status)) {
+			kill ^||DeepSee.AxisMembers			
+			throw ##class(%Exception.StatusException).CreateFromStatus(status)
+		}
+				
+		$$$putNext(axis)
+ 
+		set tupleIdx = 1
+		set memberIdx = 0
+		while ($data(^||DeepSee.AxisMembers(key, axis, tupleIdx, memberIdx))) {
+			while ($data(^||DeepSee.AxisMembers(key, axis, tupleIdx, memberIdx))) {
+				$$$putNext(^||DeepSee.AxisMembers(key, axis, tupleIdx, memberIdx))								
+				set memberIdx = memberIdx + 1
+			}
+			$$$putNextEndElem // tuple
+		
+			set tupleIdx = tupleIdx + 1
+			set memberIdx = 0			
+		}
+		$$$putNextEndElem // axis
+	}
+	$$$putNextEndElem // axes
+ 
+	kill ^||DeepSee.AxisMembers	
+}
+ 
+DSSendResultSetCellsInBatch(rs, ordinal)
+{
+	// ordinal is 0 based
+	set axisCount = rs.%GetAxisCount()
+	for axis = 1:1:axisCount {
+		set axisSize(axis) = rs.%GetAxisSize(axis)
+	}
+	
+	set ordinalOffsets(1) = 1
+	for ii=2:1:axisCount set ordinalOffsets(ii) = ordinalOffsets(ii - 1) * axisSize(ii - 1)
+	set totalCellCount = ordinalOffsets(axisCount) * axisSize(axisCount)
+	
+	set ordinalTemp = ordinal
+	for ii=axisCount:-1:1 {
+		set startIndexes(ii) = (ordinalTemp \ ordinalOffsets(ii)) + 1
+		set ordinalTemp = ordinalTemp # ordinalOffsets(ii)
+	}
+	
+	set flushedBatch = 0
+	set cellCount = 0
+	if (axisCount = 1) {
+		for idx1=startIndexes(1):1:axisSize(1) {
+			set cell = rs.%GetOrdinalValue(idx1)
+			set flushedBatch = $$$putNextInBatch(cell)
+			goto:flushedBatch finish
+			set cellCount = cellCount + 1
+		}
+	}
+	elseif (axisCount = 2) {
+		for idx2=startIndexes(2):1:axisSize(2) {
+			for idx1=startIndexes(1):1:axisSize(1) {
+				set cell = rs.%GetOrdinalValue(idx1, idx2)
+				set flushedBatch = $$$putNextInBatch(cell)
+				goto:flushedBatch finish
+				set cellCount = cellCount + 1
+			}
+		}
+	}
+	elseif (axisCount = 3) {
+		for idx3=startIndexes(3):1:axisSize(3) {
+			for idx2=startIndexes(2):1:axisSize(2) {
+				for idx1=startIndexes(1):1:axisSize(1) {
+					set cell = rs.%GetOrdinalValue(idx1, idx2, idx3)
+					set flushedBatch = $$$putNextInBatch(cell)
+					goto:flushedBatch finish
+					set cellCount = cellCount + 1
+				}
+			}
+		}
+	}
+	elseif (axisCount = 4) {
+		for idx4=startIndexes(4):1:axisSize(4) {
+			for idx3=startIndexes(3):1:axisSize(3) {
+				for idx2=startIndexes(2):1:axisSize(2) {
+					for idx1=startIndexes(1):1:axisSize(1) {
+						set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4)
+						set flushedBatch = $$$putNextInBatch(cell)
+						goto:flushedBatch finish
+						set cellCount = cellCount + 1
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 5) {
+		for idx5=startIndexes(5):1:axisSize(5) {
+			for idx4=startIndexes(4):1:axisSize(4) {
+				for idx3=startIndexes(3):1:axisSize(3) {
+					for idx2=startIndexes(2):1:axisSize(2) {
+						for idx1=startIndexes(1):1:axisSize(1) {
+							set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5)
+							set flushedBatch = $$$putNextInBatch(cell)
+							goto:flushedBatch finish
+							set cellCount = cellCount + 1
+						}
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 6) {
+		for idx6=startIndexes(6):1:axisSize(6) {
+			for idx5=startIndexes(5):1:axisSize(5) {
+				for idx4=startIndexes(4):1:axisSize(4) {
+					for idx3=startIndexes(3):1:axisSize(3) {
+						for idx2=startIndexes(2):1:axisSize(2) {
+							for idx1=startIndexes(1):1:axisSize(1) {
+								set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5, idx6)
+								set flushedBatch = $$$putNextInBatch(cell)
+								goto:flushedBatch finish
+								set cellCount = cellCount + 1
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 7) {
+		for idx7=startIndexes(7):1:axisSize(7) {
+			for idx6=startIndexes(6):1:axisSize(6) {
+				for idx5=startIndexes(5):1:axisSize(5) {
+					for idx4=startIndexes(4):1:axisSize(4) {
+						for idx3=startIndexes(3):1:axisSize(3) {
+							for idx2=startIndexes(2):1:axisSize(2) {
+								for idx1=startIndexes(1):1:axisSize(1) {
+									set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5, idx6, idx7)
+									set flushedBatch = $$$putNextInBatch(cell)
+									goto:flushedBatch finish
+									set cellCount = cellCount + 1
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	if (ordinal + cellCount '< totalCellCount) {
+		$$$killDSRS(rs)
+	}
+	
+finish
+	if ('flushedBatch) {
+		$$$flushOutput
+	}
+}
+ 
+DSSendResultSetCells(rs)
+{
+	set axisCount = rs.%GetAxisCount()		
+	for axis = 1:1:axisCount {
+		set axisSize(axis) = rs.%GetAxisSize(axis)
+	}
+	
+	if (axisCount = 1) {
+		for idx1=1:1:axisSize(1) {
+			set cell = rs.%GetOrdinalValue(idx1)
+			$$$putNext(cell)
+		}
+	}
+	elseif (axisCount = 2) {
+		for idx2=1:1:axisSize(2) {
+			for idx1=1:1:axisSize(1) {
+				set cell = rs.%GetOrdinalValue(idx1, idx2)
+				$$$putNext(cell)
+			}
+		}
+	}
+	elseif (axisCount = 3) {
+		for idx3=1:1:axisSize(3) {
+			for idx2=1:1:axisSize(2) {
+				for idx1=1:1:axisSize(1) {
+					set cell = rs.%GetOrdinalValue(idx1, idx2, idx3)
+					$$$putNext(cell)
+				}
+			}
+		}
+	}
+	elseif (axisCount = 4) {
+		for idx4=1:1:axisSize(4) {
+			for idx3=1:1:axisSize(3) {
+				for idx2=1:1:axisSize(2) {
+					for idx1=1:1:axisSize(1) {
+						set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4)
+						$$$putNext(cell)
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 5) {
+		for idx5=1:1:axisSize(5) {
+			for idx4=1:1:axisSize(4) {
+				for idx3=1:1:axisSize(3) {
+					for idx2=1:1:axisSize(2) {
+						for idx1=1:1:axisSize(1) {
+							set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5)
+							$$$putNext(cell)
+						}
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 6) {
+		for idx6=1:1:axisSize(6) {
+			for idx5=1:1:axisSize(5) {
+				for idx4=1:1:axisSize(4) {
+					for idx3=1:1:axisSize(3) {
+						for idx2=1:1:axisSize(2) {
+							for idx1=1:1:axisSize(1) {
+								set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5, idx6)
+								$$$putNext(cell)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	elseif (axisCount = 7) {
+		for idx7=1:1:axisSize(7) {
+			for idx6=1:1:axisSize(6) {
+				for idx5=1:1:axisSize(5) {
+					for idx4=1:1:axisSize(4) {
+						for idx3=1:1:axisSize(3) {
+							for idx2=1:1:axisSize(2) {
+								for idx1=1:1:axisSize(1) {
+									set cell = rs.%GetOrdinalValue(idx1, idx2, idx3, idx4, idx5, idx6, idx7)
+									$$$putNext(cell)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	$$$putNextEndElem // cells		
+}
+ 
+DSPrepareAndExecuteQueryCmn()
+{
+	$$$getNext(mdx)
+	set args = ""
+	$$$getNext(numArgs)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("DSPrepareAndExecuteQueryCmn: mdx = "_mdx_", numArgs = "_numArgs)
+	for ii=1:1:numArgs {
+		$$$getNext(name)
+		$$$getNext(value)
+		set args(name) = value
+	}
+	
+	set tRS = ##class(%DeepSee.ResultSet).%ExecuteDirect(mdx, args, .pSC)
+	$$$putNext(pSC)
+	if ($$$ISERR(pSC)) { quit "" }
+	
+	d DSSendResultSetAxes(tRS)	
+	
+	quit tRS
+}
+ 
+DSPrepareAndExecuteQuery()
+{
+	set tRS = $$DSPrepareAndExecuteQueryCmn()
+	if (tRS = "") { quit }
+	
+	d DSSendResultSetCells(tRS)		
+}
+ 
+DSPrepareAndExecuteQueryInBatch()
+{
+	try {
+		set tRS = $$DSPrepareAndExecuteQueryCmn()
+		if (tRS = "") { quit }
+	
+		$$$putNext($$$objToOref(tRS))
+	
+		$$$addDSRS(tRS)
+		d DSSendResultSetCellsInBatch(tRS, 0)
+	}
+	catch {
+		$$$flushOutput
+		throw
+	}
+}
+ 
+DSQuerySendNextBatch()
+{
+	try {
+		$$$getNext(rsOref)
+		$$$getNext(ordinal)
+		do:$$$logging ##class(%SYS.DBSRV).logappend("DSQuerySendNextBatch: rsOref = "_rsOref_", ordinal = "_ordinal)
+	
+		set rs = $$$orefToObj(rsOref)
+		d DSSendResultSetCellsInBatch(rs, ordinal)
+	}
+	catch {
+		$$$flushOutput
+		throw
+	}
+}
+ 
+DSCloseQuery()
+{
+	$$$getNext(rsOref)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("DSCloseQuery: rsOref = "_rsOref)
+	set rs = $$$orefToObj(rsOref)	
+	$$$killDSRS(rs)
+}
+ 
+TCPProvider()
+{
+	$$$getNext(srvDelegateClass)
+	do:$$$logging ##class(%SYS.DBSRV).logappend("TCPProvider: srvDelegateClass = "_srvDelegateClass)
+	if (srvDelegateClass '= "") { set %tcpProvider = $zobjclassmethod(srvDelegateClass, "%New") }
+	
+	do %tcpProvider.ProcessMessage()
+ }
+ 
+ //==============
+---

@@ -1,0 +1,1312 @@
+====
+qaqcdt
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqcdt^MAC^^^0
+%qaqcdt	// Get Data part of ASL
+	;; COMPONENTS :: SQL/CodeGeneration
+	#;
+#include %msql
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Get Data Part of ASL
+	; Author:        Aviel Klausner
+	; Date:          March 01, 1992
+	;
+	;  AK1047  (10/06/2021) - Columnar WHERE filter for "onerow"/GROUP BY
+	;  AK1046  (07/30/2021) - Columnar aggregates with GROUP BY
+	;  AK1015  (03/03/2020) - Batch QuickML rows in all cases
+	;  AK970   (10/10/2017) - Do not evaluate subqueries sent to shards
+	;  AK688   (01/24/2008) - Abstract index/filter conditions
+	;  AK858   (05/16/2012) - Add retrieval code for subnode collection
+	;  AK849   (01/18/2012) - Parallel processing for UNION
+	;  AK808   (04/27/2011) - Apply collations to given join values
+	;  AK836   (11/07/2011) - Fix generated command for node retrieval
+	;  AK823   (08/26/2011) - Conditions on baseless computed fields
+	;  AK796   (01/21/2011) - Don't compute collation not needed from map
+	;  DPV3677 (01/06/2011) - Move SQL T* routines into class methods
+	;  AK792   (11/24/2010) - Fix computed field retrieval order opt
+	;  AK732   (04/03/2009) - Compute %EXTERNAL/%ODBCOUT/collations ASAP
+	;  DAD008  (01/25/2010) - Delegate Runtime Type information to type class for stream column
+	;  JLF265  (08/07/2009) - Ignore self-dependencies when creating field to field dependency list
+	;  JLF261  (07/27/2009) - Optimize code gen order when collated or calculated fields are present
+	;  AK733   (04/21/2009) - Don't try to recompute stored computed field
+	;  DPV3365 (03/02/2009) - In code1, just add Quit as a new line
+	;  DPV3211 (03/11/2008) - tag name changes for class compiler performance improvements
+	;  DPV2994 (08/06/2008) - Revert stream oref change.  Implement %OBJECT()
+	;  DPV2908 (04/19/2007) - Support override of datatype methods for a property
+	;  DPV2849 (01/25/2007) - More 999 -> $$$MaxStringLength changes
+	;  DPV2844 (01/22/2007) - Stream oref change
+	;  AK662   (11/07/2006) - Remove duplicate field data in temp-files
+	;  DPV2697 (07/12/2006) - Use $e(...,*) and $e(...,...,*) in SQL code
+	;  DPV2586 (02/09/2006) - Fix code generation of fetching node data when mixed with retrieval code
+	;                         SQL Fix ProdLog 48906:  Code generation missing
+	;  DPV2581 (01/25/2006) - Fix DPV2060, call to fldx()
+	;                         SQL Fix ProdLog 48658:  Bug in DPV2060 causes undefined error for rcode
+	;  DPV2576 (01/20/2006) - Call StorageToLogical for fields only used in SQL Computed code.
+	;  DPV2445 (06/15/2005) - Calculate $$lockref at SQL binding time instead of each time it is needed by a query
+	;  JLF015  (04/20/2004) - Added support for %ANYOF
+	;  DPV2143 (12/11/2003) - Support global reference with a "(" but no subscripts.
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  DPV1987 (05/08/2003) - Implement new GetMethCode function which uses extentnames and field names
+	;  DPV1928 (02/06/2003) - Support $ZList map data node structures
+	;  AK536   (09/30/2002) - Set lockref only when needed
+	;  DPV1828 (09/13/2002) - Optimize code generation of in2ex code
+	;  DPV1709 (05/10/2002) - Fix <UNDEFINED> in nodeloop 
+	;  AK518   (04/18/2002) - Pad collated fields
+	;  DPV1628 (12/10/2001) - Define numright settings at class compile time
+	;  DPV1612 (11/08/2001) - Fix problem finding correct lock reference when locking needed for temp file.
+	;  DPV1550 (06/15/2001) - More READ_COMMITTED work, now we support queries with multiple tables
+	;  DPV1531 (04/26/2001) - Support READ_COMMITTED Isolation level, remove indirection for mt, asl, mts, pti from this routine
+	;  AK464   (02/02/2001) - Salva: conditions for OUTER JOIN
+	;  DPV1441 (11/14/2000) - Support user-defined NULLSubscriptMarker
+	;  MIT091  (11/13/2000) - Introduce $zu(115) in %Runtime mode
+	;  AK446   (05/31/2000) - View stream processing
+	;  DPV1416 (10/12/2000) - Fix storage/retrieval of list fields in temp files
+	;  DPV1397 (09/15/2000) - Fix long asl(...,"fields") nodes
+	;  DPV1277 (03/14/2000) - Fix NULL subscript marker expression swapping with subscript vars
+	;  AK403   (10/28/1999) - Apply collation to equality conditions
+	;  MIT070  (10/25/1999) - RUNTIME compilation mode
+	;  DPV1171 (10/22/1999) - Don't code generate ALPHAUP/UPPER functions
+	;  AK400   (10/12/1999) - CCS: Remove variable XXXn for nodes
+	;  DPV1151 (10/01/1999) - Support SQLUPPER and SQLSTRING Collations
+	;  DPV1095 (06/20/1999) - Support trucation length in %STRING collation
+	;  AK371   (06/04/1999) - Aleks: No extra variable if no method
+	;  DPV1006 (04/07/1999) - String collation support
+	;  AK336   (11/03/1998) - Support method call as v^METH:c.m
+	;  DPV888  (10/20/98)   - Fix append of quit to user code
+	;  DPV849  (07/09/98)   - New ALPHAUP function
+	;  AK320   (06/24/98)   - Logical<->Storage Conversion
+	;  DPV824  (03/09/98)   - Today the name is... LogicalToDisplay!
+	;  DPV803  (01/22/98)   - New ADT method names
+	;  DPV802  (01/20/98)   - Remove ##vendor functions
+	;  AK304   (01/06/98)   - List-fields in the query processor
+	;  DPV786  (10/27/97)   - Support $li structure, no longer use $zlist
+	;  DPV757  (07/31/97)   - Support multi-line fields stored as lists
+	;  MRP703  (07/16/97)   - Split Up Code-Generation Lines Properly
+	;  MRP700  (07/08/97)   - Optimize Complex OR & IN Conditions
+	;  DPV751  (06/23/97)   - Move %aaa* to %qcg*, Cleaned up changes older than 6 months
+	;                         Changed all II's to ",", I's to "^"
+	;  BJB076  (06/17/97)   - Use NULLSubscriptMarkerq instead of " "
+	;  MIT060  (03/18/97)   - Use %Text and %Input method if adt is defined
+	;  MIT064  (02/12/97)   - Use OdbcIn() and OdbcOut in ODBC mode
+	;  AFH244  (01/28/97)   - More duplicate tag stuff
+	;  MIT063  (01/24/97)   - added #sqlcompile statement
+	;  MIT061  (01/17/97)   - Remove $P($C(1)) from field node value in QP
+	;  DLP005  (01/17/97)   - Support $zlist structure nodes
+	;  DPV700  (01/13/97)   - Handle NULL value subscripts in Index maps
+	;  MRP643  (10/02/96)   - Modularize Embedded SQL Code: 'gvar' to '$$$MSQLModuleVariable'
+	;  DPV653  (08/01/96)   - Fix DPV603.  Don't add QUIT to the last line
+	;                         of code if there is no code.
+	;  MRP630  (07/35/96)   - Process Get Date Expression Later for All Given RowIDs
+	;  DPV624  (05/30/96)   - SAIC:  Fix <SUBSCRIPT> error in SQL Query code
+	;  MRP610  (05/23/96)   - Set-Up Extrinsic Functions for Temp Subs
+	;  DPV603  (03/05/96)   - generate code size/performance improvements.
+	;  DPV597  (02/23/96)   - Eliminate duplicate tags
+	;  MRP570  (01/29/96)   - Transaction Processing
+	;  MRP562  (12/18/95)   - Allow LIKE <multiple-choice-field>
+	;  MRP548  (11/12/95)   - Support System Type Templates
+	;  MRP541  (11/07/95)   - Allow LIKE & [ against Multi-Line Fields
+	;  MRP538  (11/01/95)   - COBE: Fix Code-Gen of conditions BUG caused by JC001
+	;  AFH179  (10/03/95)   - if comp produces null return null, not 0
+	;  JC001   (06/21/95)   - Schedule condition code earlier
+	;  JC002   (06/21/95)   - Avoid unnecessary conversions
+	;  MRP508  (06/20/95)   - Add ALPHAUP & UPPER to routine for complex
+	;                         Index Expressions that use them
+	;  MRP507  (06/19/95)   - Allow the removal of some characters before ALPHAUP translation
+	;  DPV486  (06/16/95)   - Remove comments from gen code to decrease
+	;                         routine size and increase performance
+	;  DPV458  (05/24/95)   - Make routine < 14K INT size by cleaning up code
+	;  MRP472  (01/13/95)   - Make WHERE RowID = :p1 OR RowID = :p2 ... work
+	;                         --- cleaned up: old stuff in zaaadat ---
+	;  MRP466  (12/12/94)   - Handle Collation Expressions
+	;                         --- cleaned up: old stuff in zaaadat1 ---
+	;  RLL550  (12/08/94)   - Support {field} in ext-int and int-ext
+	;                         [NOTE: THIS IS AN UNDOCUMENTED FEATURE FOR
+	;                         INTERSYSTEMS' INTERNAL USE ONLY]
+	;  DPV311  (11/28/94)   - Fix MRP447 per MRP himself
+	;  RLL537  (10/14/94)   - Set multiline comp field counter correctly
+	;  MRP447  (09/05/94)   - Compute proper decimal places for Number Fields
+	;  PRT017  (07/22/94)   - deal with Rowid or Par Id based on many fields
+	;  PRT015  (07/18/94)   - Don't use tagchar use as a parameter
+	;  MRP401  (05/13/94)   - Support Multi-Line Field in Map Data - M Code.
+	;  MRP379  (03/04/94)   - Process new prefix extended functions (+, -, " ") for index maps
+	;  MJF006  (09/29/93)   - Replace irep with %irep
+	;                         change ml field instance counter to %irep from irep
+	;  DPV059  (03/01/93)   - Make source smaller by #IF 0'ing some comments
+	;  MRP299  (02/22/93)   - Modularize parsing of ^* COSTAR globals
+	;  AK027;AK031;AK032;AK047;AK048;AK050;AK058;AK061;AK063;AK069
+	;  AK070;AK071;AK088;AK094;AK102;AK103;AK105;AK107;AK115;AK116
+	;  AK134;JH001;AK148;AK152;AK161;ALL001;ALL004;EYT160;EYT167
+	;  JFP026;RGG504;RGG589;RGG614;AK212;RGG649;AK216;MRP254;AK217
+	;  AK218
+#ENDIF  ;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#;  col# for given ifn.  qno, str had better be set.
+#define instream(%ifn) $p($g(mts(qno,str,"ATT",%ifn)),"^",5)
+	#;  $$: get the next entry from asl(mod,funk,ndata,"fields")
+#; #define nextf $p($g(asl(mod,funk,ndata,"fields")),",",$i(if))
+#define nextf $p($g($$$aslPkFlds(mod,funk,ndata)),",",$i(if))
+fields	;  Get the node (MapData) fields from a map/temp-file
+	n based,compute,con2fld,count,dataref,del,fld2con,fld3,globalname,gref,if,irn2,name,node,node2,nwt,parid,peace,piece,recid,trak,var1,var2,wt
+	#; JLF261
+	n fldDependsOnFld,fldIsBaseFldFor
+	#; AK400
+	#;  used so we don't allocate a run-time variable if we don't use it
+	n nodevar s nodevar=""
+	#; AK400-
+	s irn=+$g($$$mtR(+str))
+	d:irn&&($$$smdPartitioned(1,irn))&&($g(mcurs)'="")&&($d(mtc(mcurs,"rid")))&&($g(idval)'="")&&(mtc(mcurs,"rid")=pti(idval))&&($g($$$aslKParQueriesInfo(mod,funk,ndata))="") adnuf(idval)
+	d:(funk=1)||(funk=3) getc0  ;  prepare to get the fields 
+	d fldcon ; set up fld2con,con2fld arrays
+	s:'tempid&&(rtype=1) ref=$e(ref,1,*-1)
+	s compute="",trak="",parid="",recid=""
+	#;  based=NULL, or: physical-LIST(,ifn,) db logical-LIST(,ifn,)
+	If 'irn { s based="" }
+	Else { s based=$S($$$smdRowIDBased(1,irn)="Y":","_$$$smdRowIDPhysicalFields(1,irn)_","_$c(1)_","_$$$smdRowIDLogicalFields(1,irn)_",",1:"") }
+	#;  Now sort what fields are in What nodes, in node(,,)
+	i tempid d  d arrset(.node,.node2) GOTO getc1  ;  temp file, loop thru asl("bd")
+	#;  "outArray" temp-file, with single subscript and single node value  ;  AK1046
+	. i '$p(tempid,"^",2),funk'=2 { s icol=+$$$aslPkKeys(mod,funk,ndata),sublev=1,$$$mtTrefRefSubLev(tempid,sublev)=$$adsub^%qaqcmn(pti(+tempid))_$s($$nullreplace^%qaqcct(icol):$$$getVarName("sub"_icol),1:pti(icol)),icol=+$$$aslPkFlds(mod,funk,ndata),ref="",node=" ",piece="",del="" d nodearay QUIT }  ;  AK1046
+	. s icol="" f  s icol=$o($$$aslBuildActNode(+tempid,$p(tempid,"^",2),icol)) q:icol=""  d tempdata
+	#; AK732
+	#;  for funk=3 on map0, apply unary to rowID+PhysicalBased ("copy" in m0^mod)
+	#;  *** this+actual "copy" from m0^mod could be moved to axes^cky!!!
+	#;  NOTE:  the next line should apply only to master-map  ;  AK1080
+	#;         access using m0^%qaqpmod(given), where we know that the rowid
+	#;  value has been copied from 'given' to 'idval' and is now available;
+	#;  it should not apply to the TRW1591 special bat-map PREKEY access to get idval
+	i funk=3 d vset(idval) f if=2:1:$l($p(based,$c(1)),",")-1 d vset($$$instream($p(based,",",if)))
+	#; AK732-
+	s if=0
+fldloop s icol=$$$nextf i icol="" d arrset(.node,.node2) GOTO getc1
+	GOTO fldloop:$bit(vset,icol)  ;  maybe retrieved from columnar  ;  AK1080
+	#;  get col# from parse tree (types f/i)
+	s ifn=$p($$$mtV(icol),"^",3),irn2=$$$smdGetIrnFromIfn(+ifn)  ;  *** can this be different from irn?
+	#;  check for A Data Dictionary computed field
+	#; AK733
+	s j=$$comptrig(irn2,ifn,icol)  ;  j=1 if computed or in subscript
+	GOTO fldloop:j,subscpt:j=0  ;  maybe rowid/parentref (j=0)
+	#;  j="data" - was found in MapData
+	#; AK733-
+	s node=$p(del,$c(1)),piece=$p(del,$c(1),2),globalname=$p(del,$c(1),4),del=$p(del,$c(1),3),sublev=1
+	s:node="%row" node=""
+	s x=$$$smdMDRetrievalCode(smdmapid,x)  ;  MapData field expression
+	if $$$IsFTStream(str) {
+		// both fake streams and original FT streams will have retrieval code set with the same format
+		new tFTOref 
+		set tFTOref = $$$getVarName($$$FTOrefVar(str))
+		set $list(x,1) = $replace($listget(x), $$$FTOrefPlaceholder, tFTOref)
+	}
+	#;  columnar index value retrieval:  ;  AK1053;AK1074
+	#;	s:$g(chn)'=(id\64000+1) chn=(id\64000+1),vec=$g(^gref([5,"info",]chn))
+	#;  Collated field - convert space to $C(32,0), "undefined" to space:
+	#;	s f=$$$VectorGetCollatedString(vec,id#64000+1,f)  ;  AK1074
+	#;	s f=$s('$vd(vec,id#64000+1,f):" ",f=" ":$c(32,0),1:f)
+	#;  Uncollated string field - convert "" to $C(0), "undefined" to "":
+	#;	s f=$$$VectorGetString(vec,id#64000+1,f)
+	#;	s f=$s('$vd(vec,id#64000+1,f):"",f="":$c(0),1:f)
+	#;  other fields:
+	#;	s f=$$$VectorGet(vec,id#64000+1)
+	#;	s f=$ve(vec,id#64000+1)
+	i j="vector" {
+		n chn,vec s chn=$$$getVarName("sbm"_smdmapid_"v"_icol),vec=$$$getVarName("vecvar"_icol)
+		s x=$p($$$smdMapCompiledTopLevelPieces(smdmapid),$c(1))
+		s x=$s(x'[",":$p(x,"(")_"(",1:$p(x,",",1,*-1)_",")  ;  global name [with constant subs]
+		s x="s:$g("_chn_")'=("_pti(idval)_"\64000+1) "_chn_"=("_pti(idval)_"\64000+1),"_vec_"=$g("_x_chn_")) s "_pti(icol)
+		i ",%SQLUPPER,%SQLSTRING,%STRING,%SPACE,"[(","_$p(ifn,"_",2)_",") {
+			s x=x_"=$$$VectorGetCollatedString("_vec_","_pti(idval)_"#64000+1,"_pti(icol)_")"
+		} elseif $$$smdMapVectorType(smdmapid)="string" {
+			s x=x_"=$$$VectorGetString("_vec_","_pti(idval)_"#64000+1,"_pti(icol)_")"
+		} else { s x=x_"=$$$VectorGet("_vec_","_pti(idval)_"#64000+1)" }
+		s x=$lb(x,";*inline*")
+	}
+	if globalname'="" {	// this field is stored in its own global in the form ^glo(id)=field
+		set x="set "_pti(icol)_"=$g("_globalname_"("_pti(idval)_"))"
+		set x=$lb(x,";*inline*")
+	}
+	If x'="" {
+		d fldx(x),chkcon(icol)
+	#; AK732
+		if line'="" $$$liin(.line)  ;  now chkcon() might append to 'line'
+		GOTO fldloop
+	}
+	d nodearay
+	GOTO fldloop
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+nodearay ;  set the information into the node2() array
+	#; AK304
+	#;  If list-field stored in nodes, go to the ...,0) node
+	#; AK858
+	i 'tempid,$$$VTRgetIsLF(icol)="Y",245[+($$$VTRgetLFStorage(icol)) s node=$s("%row"[node:"*",1:node_",*"),piece=""
+	#; AK304-
+	s:node="" node=" "  ;  no conflict - node is otherwise quoted!
+	i $d(%nsvalex(mod)) n n s n="" f  s n=$o(%nsvalex(mod,n)) q:n=""  s ref=$replace(ref,$c(2)_pti(n)_$c(2),"$s("_pti(n)_"'="""":"_pti(n)_",1:"_%nsvalex(mod,n)_")")
+	s node2(sublev,node,+$g(fld2con(icol)),icol)=$c(1)_piece_$c(1)_del_$c(1)_ref
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+tempdata  ;
+	#; AK732
+	#;  do not recompute coversions/collations later if explicitly stored
+	s x=$$$mtV(icol) s:($e(x)'="f")||(x["_") $bit(vset,icol)=1
+	#; AK732-
+	s x=$$$aslBuildActNode(+tempid,$p(tempid,"^",2),icol)  ;  set in data+6^act
+	s ref=$p(x,$c(1)),sublev=$p(x,$c(1),2),node=$p(x,$c(1),3),piece=$p(x,$c(1),4)
+	s del=""
+	d nodearay
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+fldx(rcode) ;  generate a subroutine for field retrieval code
+		#;  rcode is $ListBuild(retrival code lines)
+		#; For Table Valued Function map data we use retrieval code to call oref.%GetData(i)
+		#; I treat this as a special case of Retrieval Code, I'm going to in-line it rather than generate a tag to set it.
+		#; This code cannot have StorageToLogical, so no need to worry about that.
+	new x
+	if $ll(rcode)=1,$lg(rcode)[$c(1),$g(tvforef(str))'="" {
+		set x=$replace($lg(rcode),$c(1),tvforef(str))
+		set line="set "_pti(icol)_"="_x $$$liin(.line)
+		QUIT
+	}
+	new code, argmap, extref1, useextref // JMM1195=
+	for x=1:1:$ll(rcode) { 
+		set code(x)=$lg(rcode,x)
+		set:$g(tvforef(str))'=""&&(code(x)[$c(1)) code(x)=$replace(code(x),$c(1),tvforef(str))
+	}
+		// If the last line of the code is a comment ";*inline*", this is retrieval code for columnar mapping and we need the retrieval code inline so that updates of other variables are retained
+	if code(x)=";*inline*" { 
+		if $d(%ISCSNRemoteTables) { // JMM1195+
+			// JMM1195 - If this is insert/select for rebalancing, source table is a remote shard-local table,
+			// and we need to use extended references for its globals. 
+			d shref^%qaqcky(.extref1)
+			if $e($g(extref1),*,*)="|" {
+				// extref1 is "^|<shref-variable-name>|"
+				set useextref=1
+			}
+		} // JMM1195-
+		set argmap="inline" kill code(x) set x=x-1
+	}
+.
+	for x=1:1:x {
+		if +$g(useextref) { // JMM1195+
+			// Replace references to shard-local globals (whose names start with ^IS.) with extended references
+			set code(x)=$replace(code(x),"^IS.",extref1_"IS.")
+		} // JMM1195-
+		set (code(x),line)=" "_$$swap^%qaccode(code(x), .argmap)
+		set:code(x)["^*" code(x)=$$starglo^%qaqcasl(code(x))
+	}
+.
+		#;  *** for now, remove packing.
+		#;      maybe reuse this code later, e.g. s var=$$pack(var,del)
+		#; AK304 d:repeat pack(pti(icol),.x)
+	if $g(argmap)="inline" { 
+		if x=1 {
+			set line=$$$StripLeadingWhiteSpace(code(1))
+			$$$liin(.line)
+		} else {
+			set code(x+1)=" q"
+			set line="do "_$$tagnam("d")
+		}
+	}
+	else { 
+		set code(x+1)=" q"
+		set line = $$invokeCode(.argmap, icol)
+	}
+	$$$liin(.line)
+	// FOREIGN TABLES - We need to convert the values returned from a foreign table to logical
+	// Done the same way linked tables does -- note that fldx() called by fldloop which sets some irn2 and only 
+	// says "can this ever be different from irn?", so if irn2 defined use that otherwise irn
+	if $$$IsFTStream(str) {
+		if $$$FTFieldIsNumericType($$$VTRgetdt(icol)) {
+			// if numeric, apply unary + to ensure logical representation, but preserve null
+			$$$liin(" s:($isvalidnum("_pti(icol)_")) "_pti(icol)_" = +"_pti(icol))
+		} else {
+			do GenMethod^%qaqcmx($g(ifn), $g(irn2,$g(irn)), "OdbcToLogical", pti(icol))
+		}
+	}
+	RETURN:ifn["_"  ;  AK1053
+	set x=$$stor2log(icol,pti(icol))  ;  apply StorageToLogical(), if any	// Ak320+
+	if x'=pti(icol) { set line="set "_pti(icol)_"="_x $$$liin(.line) }				// AK320-
+	RETURN
+///Subroutinize code(), and return a line which will call the resulting subroutine
+///passing appropriate arguments via argmap. outVal is the val # of the value to be output.
+///If that value cannot be passed by reference (e.g. if it is an array reference),
+///a temporary %sqlout variable will be created, set with outVal's value, passed by reference,
+///and its resulting value copied back into outVal.
+invokeCode(argmap, outVal) [ code, pti ] PUBLIC {
+	s line = ""
+	s outarg = pti(outVal)
+	//Do we need to use a proxy variable for the output, because
+	//a) it can't be passed by reference AND
+	//b) it's set at all inside code()
+	s find=$$findargmap^%qaccode(outarg,.argmap,.argmapsub)
+	s needsInOut = '$$canPassByRef(outarg)&&(find)
+	i needsInOut {
+		s outarg = "%sqlout"
+		d vNEW^%qaqcasl(outarg)
+		s line = line _ "i $d("_pti(outVal)_","_outarg_"){} "
+		s find2=$$findargmap^%qaccode(outarg,.argmap,.argmapsub2)
+		s argmap(argmapsub2)=$lb(find,outarg)
+		k argmap(argmapsub)
+	}
+	s dolist = "("_$$callArgList^%qaccode(.argmap, $lb(outarg))_")"
+	s arglist = "("_$$paramArgList^%qaccode(.argmap)_")"
+	s code(1) = arglist _ " "_ code(1)
+	set line= line_ "d "_$$tagnam("d")_dolist_" " 
+	i needsInOut {
+		set line = line _ "i $d("_outarg_","_pti(outVal)_"){} "
+	}
+	QUIT line
+}
+///Returns true if the string "ref" corresponds to a value reference
+///(such as an array reference or a variable name) which can be passed by
+///reference.
+canPassByRef(ref) PUBLIC {
+	i ref["(" RETURN 0
+	i $g(%msqlvar)'="i%%",$e(ref,1,2)="i%" RETURN 0   ; If in fast i%var query we can pass i%var by reference
+	RETURN 1
+}
+.
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+code(line) s i=i+1,code(i)=line QUIT  ;  add line to the code
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+subscpt ;  see if its a subscript on this map
+	#;  If its RECORD ID, see if we gotta calculate it
+	#;  If autoget, RowID and its physical-based are set beforehand!
+	i $p(mts(qno,str),"^",5)=ifn d:funk=2 prerec GOTO fldloop
+	GOTO:based="" fldloop  ;  is RowID based on this field?
+	#;  search in 2 lists: $p(1)=physical-list, and $p(2)=logical-list
+	f i=1,2 s x=$l($p($p(based,$c(1),i),","_ifn_","),",") q:x'=$l($p(based,$c(1),i),",")  GOTO:i=2 fldloop
+	#;  found in list i, $Piece x!
+	i i=1,(funk=1||funk=3) GOTO fldloop  ;  if autoget, physical-based are already set
+	#; DPV1628
+	#;  if in logical list - must be parentID, use $p(rowid,range)
+	s:i=1 x=$p($$$smdPhysicalNumright(1,irn),"^",x)
+	s:i=2 x=$p($$$smdLogicalNumright(1,irn),"^",x)
+	#; AK732
+	s parid=parid_$lb(icol,$s(x="1":"",1:","_x))  ;  =$LIST(icol,piece#'s)
+	#; DPV1628-
+	GOTO fldloop
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+getc0	;  if funk=2 we've nexted on the keys, we know they're OK.
+	#;  if funk=3 check for null keys, node defined, "invalid" subs.
+	#;  At this point, if tempid then good=NULL.  If mapid then
+	#;  good=LIST(,<good-cond>)  or good=NULL if there were no real subs.
+	#;  $d(temp) not needed now, may add it in the future
+	i tempid d  QUIT  ;  handle NULL-substitute in subscripts
+	. d chkexp($$$aslPkKeys(mod,3,ndata))  ;  Expand Extrinsic Functions
+	. s line="",rtype=1 
+	. f i=1:1 s icol=$p($$$aslPkKeys(mod,3,ndata),",",i) q:icol=""  d
+	. . i $$nullreplace^%qaqcct(icol) { s line=line_","_$$$getVarName("sub"_icol)_"="_$$tomark^%qaqcpr(pti(icol)) }
+	.. i $l(line)>($$$complength-20) s line="s "_$E(line,2,*) $$$liin(.line)
+	. i line'="" s line="s "_$E(line,2,*) $$$liin(.line)
+	QUIT:good=""  ;  no pending conditions - possible but unlikely
+	if good=",'$t" {
+		s x="i"  ;  "invalid" found, so we're left with "IF bad"
+	} else {
+		$$$liin($s($e(good,1,3)=",1 "&&(good[" i $"):$extract(good,4,*),1:"i "_$extract(good,2,*)))
+		s x="e"
+	}
+	i 'padnext s line=x_"  g "_bottom $$$liin(.line) QUIT
+	s line="",if=0
+	#; Pad all fields to NULL if outer-join found no match, incl. unary(f)
+	n code,i5 s code=1,code(1)=""
+	f  s j=$$$nextf q:j=""  d null^%qaqcky(j)  ;  Spin Through Fields
+	s:code(1)'="" $e(code(1))=" s "  ;  remove that first comma
+	f j=1:1:code $$$liin(x_" "_code(j)_$s(j=code:" g "_tagpre_"p"_ndata,1:""))
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+getc1	s sublev="",node="",line=""  ;  now start generating code to get the fields
+	#; AK823
+	d genExprs(-1)  ;  first compute baseless computed fields with conds
+		#;Nodes in this mod potentially have NULL subscripts
+	i $d(%nsvalex(mod))>1,(funk=2) d  ;!(funk=2&('$d(asl(mod,3)))) d
+	. n l,n s (l,line,n)=""
+	. f  s n=$o(%nsvalex(mod,n)) q:n'=+n  d
+	#; AK732
+	.. d adlin("s:"_pti(n)_"="_%nsvalex(mod,n)_" "_pti(n)_"=""""")  ;  DPV1441
+	. if line'="" $$$liin(.line)
+		#;  loop down thru the levels, spin merrily thru the nodes
+	s wt="",nwt=""
+	f  s sublev=$o(node(sublev)) q:sublev=""  f  s nwt=$o(node(sublev,nwt)) q:nwt=""  f  s node=$o(node(sublev,nwt,node)) q:node=""  d onenode
+	#; AK732
+	#;  *** maybe can find a time to do this much earlier, i.e. ASAP!
+	if recid'="",$e(recid,8,*-1)'="i%xpartitionid1" 
+	{
+		d vset(idval,$e(recid,7,*))  ;  get rowID+conversions/collations
+	}
+	#;  and any based-on fields (as $P() of the rowid), esp. parent-ref
+	#;  parid=$LIST(icol,<piece#'s-within-rowid>)
+	f  QUIT:parid=""  d vset($li(parid),"$p("_pti(idval)_",""||"""_$li(parid,2)_")") s $li(parid,1,2)=""
+	#; AK732-
+	#; AK733
+	d:compute'="" compute  ;  Now the computed fields not already referenced by a condition
+	QUIT  ;--- fields()
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+onenode new allfields,comma,conv,name,olines,rowoutput,stor2log,subval,tdel,tmp,tmpvar
+	s wt="",icol="",count=1
+	#; AK849
+	i havar'="",node=" " s count=0,nodevar=havar,gref=nodevar  ;  see if already set
+wtloop	s wt=$o(node(sublev,nwt,node,wt))
+	if wt="" {
+			#; Generate any extracts that need to be completed and reshuffle any other lines we wrote since olines
+			#; fastSelect=1 means output to client later in fetch output and we don't need to retrieve these field values
+			#; for a fastSelect query that is generating read-committed logic, we are going to come in here twice.  The first time for the uncommitted read, and the second time for the committed read.
+			#; They are likely to be different variables.
+			#; if mt("fastSelect","output") is already defined, I change it to a $select reference, setting the read-committed node data if it exists, and the read-uncommitted node data if it does not.
+			#; Also, in RC mode, we might need to extract values from the node values in order to compare the values properly.  This logic keeps track of how many times we cam through
+			#; for the fastSelect case.  The second time will be the RC node and that one we don't want to skip retrieving values, so we use the allfields setting in the call to genextract
+			#; This is code generated in %qaqcct
+		if $d($$$mtFastSelectOutMod) { set rowoutput=($g($$$mtFastSelectOutMod)=mod) } else { set rowoutput=(($g($$$aslAct(mod,1))="o")||($$$aslActAction($g($$$aslAct(mod,1)))="l2")) }
+		if $g($$$mtFastSelectFlag),rowoutput,$i($$$mtFastSelectExtractCnt)>1 { set allfields=0 } else { set allfields=rowoutput } // Need to extract fields for RC check 
+		do genextract(.name,.subval,.conv,.gref,.olines,allfields)	// 1 (for allFields) to indicate we may not need this extraction for fastSelect
+		if $g($$$mtFastSelectFlag)=1,rowoutput { set $$$mtFastSelectOutvar($i($$$mtFastSelectOutvarCnt))=gref }
+		QUIT
+	}
+nodeloop  ;  loop on individual icol to be retrieved
+	#;  NOTE: fully formed 'line' (or "") grows throughout the iterations
+	#;  check conditions (and compute other fields - JLF261) that needed icol
+	d:icol'="" chkcon(icol)
+	s icol=$o(node(sublev,nwt,node,wt,icol),1,x)
+	GOTO:icol="" wtloop
+	s var1=pti(icol),piece=$p(x,$c(1),2),del=$s(tempid:"",1:$p(x,$c(1),3))  ;  ,numeric=$p(x,$c(1))  ;  AK858
+	if $e(var1)=""""||($e(var1)?1N) goto nodeloop  ; If variable is a constant skip setting this
+	
+		#; mt("setfields") are fields that are set by the query code and do not need to be remembered between fetches.
+		#; They do need to be [possibly] need to be output, but we do not need to copy from subscripted to unsubscripted
+		#; for each fetch call.
+	#; DPV4606 was going to add this, but it is not quite correct - will investigate further...
+	#;         if cflag,'$lf($g(mt("setfields")),icol),'$lf($g(mt("sublev",1)),icol),'$$isNextVal(icol) { set mt("setfields")=$g(mt("setfields"))_$lb(+icol) }
+	
+	if count {
+		set count=0
+		#;  Set the global ref for this node (move to onenode!)
+		if node["D",$p(node,"D")=+node {
+		set gref=pti($$$instream(node))
+		set:$e(gref)="%" gref="$g("_gref_")"
+		if node[0,$e(gref,1,4)="$g(^" { set gref=$e(gref,1,*-1-(gref["))"))_$s(gref["))":",0))",1:"(0))") }  ;** rptnode if in var already?
+		} else {
+			set gref=$p(x,$c(1),4)
+			if rtype=1 {
+				if tempid,havar="",gref="" {
+					If $$$readingSharedGlobalTfInParent(m,mod,tempid) {
+						// Read from the shared global temp-file in parallel aggregation (this mt entry was populated in build^%qaqcct)
+						set gref=$$$mtTrefFieldRef(tempid)
+					} Else {
+						set gref=$$$mtTrefRefSubLev(tempid,sublev)
+					}
+				} ;  for "keys" read
+				if '$$OnlyBalancedParen^%ocsCacheSQLFiler0(gref) {
+			#; for the inssel case, this gref might just be a variable reference like sqldata208d(1) or sqldata209(1), don't add the "," if the previous character of the gref is "("
+		if "+-"'[$e(node) && ($e(gref,*)'="(") { set comma="," } else { set comma="" }
+		set gref="$g("_gref_$s(node'=" ":comma_node_"))",1:"))")
+				} else {
+					set gref="$g("_gref_$S(node'=" ":"("_node_"))",1:")")
+	}
+				if tempid,havar="" set gref=$$hybridsel^%qaqcky(gref,tempid)
+			}
+		}
+	}
+		#;  Insert code to get global node from disc
+		#;  Do the repeating fields -
+		#;  if list/array-field stored in nodes, need to serialize now  ;  AK304
+	if $e(node,*)="*" {
+		if line'="" $$$liin(.line)
+		do serial($$$VTRgetLFStorage(icol),$$$VTRgetLFDel(icol),$$$VTRgetirn(icol),$$$VTRgetifn(icol))
+		GOTO nodeloop
+	}
+	#;  for COUNT(f) GROUP BY g, $VOP("countg") might not  ;  AK1047
+	#;  set the array at all for f=NULL, so we need to set the result to 0
+	#;  *** (maybe should add explicitly to the ASL "id" node???)
+	i $e(gref,1,3)="$g(",$e(gref,*)=")",tempid["^0",$e($$$mtV(icol),1,8)="a^count^" { s $e(gref,*)=",0)" }
+	i piece,nodevar'=gref,$p(gref,$s($$$%msqlvarIsLocalVar:%sqldatavar,%msqlvar="i%%":"i%",1:$$$MakeMSQLModuleVariable("d")))'="" s:nodevar="" nodevar=$$$getVarName("node"_mod_"ntry"_funk_ndata) d adlin("s "_nodevar_"="_gref) s gref=nodevar
+	#;  Do regular fields now.  for non-piece load directly from global
+	if 'piece||(del["$") {
+		s dataref=$$piece(del,gref,piece)
+		s:'tempid dataref=$$stor2log(icol,dataref)  ;  apply StorageToLogical(), if any
+		d adlin("s "_var1_"="_dataref)  ;  ,adlin("s:"_var1_"'="""" "_var1_"=+"_var1):numeric'=""  ;  AK858
+	} else {
+		if line'="" $$$liin(.line)
+		#; Remember location we need extract code if not already set
+		if '$data(olines) set olines=lines
+		set stor2log=$select(tempid:"",1:$$stor2log(icol))
+		set tmp=$piece(piece,","),tdel=$select(del="":-1,1:del)
+		#; If we are already getting this position make sure it does not have any storage to logic conversion
+		if $data(name(tdel,tmp),tmpvar) {
+			if $data(conv(tdel,tmp)) {
+				#; Move the storage to logical to be done at the end
+				set subval(tdel,$select($order(subval(tdel,""),-1)<10000:10000,1:$order(subval(tdel,""),-1)+1))=$lb(tmpvar,tmpvar,"",conv(tdel,tmp))
+				kill conv(tdel,tmp)
+			}
+			#; Defer setting this variable until we have done the extration
+			set subval(tdel,$increment(subval(tdel)))=$lb(var1,tmpvar,piece,stor2log)
+		} else {
+			#; Mark this piece to be obtained
+			set name(tdel,tmp)=var1,conv=""
+			#; If we are getting a subvalue build in the extra piece extration
+			if piece["," {
+				Set conv=$$piece(del,$char(0),piece,2)
+			}
+			if stor2log'="" set conv=$select(conv="":stor2log,1:stor2log_"("_conv_")")
+			set conv(tdel,tmp)=conv
+		}
+	}
+	GOTO nodeloop
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK320
+stor2log(icol,dataref="") //  generate "$$StorageToLogical"
+	new ifn,irn,code,input
+	set ifn=$$$mtV(icol),input=""
+		#; If a field or a scratch field that may need StorageToLogical, get it (DPV2576)
+	if $e(ifn)="f"||($e(ifn)="i"&&($p(ifn,"^",4)="S2L")) {
+		set ifn=$p(ifn,"^",3),irn=$$$smdGetIrnFromIfn(ifn)
+			#;  For stream fields always return the fully formed Oid.
+			#;  Pass the ID to the propertyOid() method to get the fully formed OID for OIDTypes 1 and 2 (CLASSNAME = 0 and 1)
+		if $$GetMethodCode(irn,ifn,.code,"StorageToLogical",1) {
+				#; If this is a collection field, we need to loop over the elements of the collection and apply StorageToLogical to each element.
+				#; There is no StorageToCollection method like there is for the other CollectionToFormat/FormatToCollection methods.
+				#; Since the StorageToLogical code is multiple lines, this would have been more difficult to do in getcode^%qadadt.
+				#; We'll use one $$ call to perform the loop over the elements and another $$ call to perform the conversion for a single element.
+			if $$$smdColArrayCollection(1,irn,ifn) {
+				new xx set xx=$$tagnam("s")_"($li(%ele,2))"		// This code generates the actual S2L code
+				kill code
+				set code=1,code(1)="(%val) new %ele,%ret,%ptr set %ret="""",%ptr=0 while $listnext(%val,%ptr,%ele) { set %ret=%ret_$s($lg($g(%ele),2)="""":$lb(%ele),1:$lb($lb($li(%ele,1),$$"_xx_")))  } quit %ret"
+				set input="$$"_$$tagnam("s")	// This code generates the loop over the elements that calls the S2L code
+			}
+			elseif $$$smdColListCollection(1,irn,ifn)="Y" {
+				new del set del=$$$smdColListDelimiter(1,irn,ifn)
+				if del="" {	// $list format list collection
+					new xx set xx=$$tagnam("s")_"(%ele)"		// This code generates the actual S2L code
+					kill code
+					set code=1,code(1)="(%val) new %ele,%ptr,%ret set %ptr=0,%ret="""" while $listnext(%val,%ptr,%ele) { set %ret=%ret_$s($g(%ele)="""":$lb(%ele),1:$lb($$"_xx_")) } quit %ret"
+				}
+				else {						// delimited format list collection
+					new xx set xx=$$tagnam("s")_"($p(%val,"_del_",%irep))"		// This code generates the actual S2L code
+					kill code
+					set code=1,code(1)="(%val) new %irep if %val'="""" { for %irep=1:1:$l(%val,"_del_") { if $p(%val,"_del_",%irep)'="""" set $p(%val,"_del_",%irep)=$$"_xx_" }} quit %val"
+				}
+				set input="$$"_$$tagnam("s")	// This code generates the loop over the elements that calls the S2L code
+			}
+			else {
+				set input="$$"_$$tagnam("s")
+			}
+		}
+		if '$data(%msqlObjectFiler),$$$smdColStream(1,irn,ifn) { // DAD008= Move logic for converting streamvalue to stream oid into the Oid property method
+			if $$$smdColContainerField(1,irn,ifn)'="" { set input="##class("_$$$smdColContainerType(1,irn,ifn)_")."_$$$QN($$$smdColPropertyName(1,irn,ifn)_"Oid") }
+			elseif $case($$$smdChildTableType(1,irn),"A":1,"L":1,:0) {
+				set input="##class("_$$$smdParentExtent(1,irn)_")."_$$$QN($$$smdColPropertyName(1,irn,ifn)_"Oid")
+			} else {
+				set input="##class("_$$$smdClassname(1,irn)_")."_$$$QN($$$smdColPropertyName(1,irn,ifn)_"Oid")
+			}
+				#; If mt("shref",str) is defined we need to pass the shard extended global reference to the propOid() method call to get the Oid value from the proper location
+				#; This is used for sharded streams when rebalancing a shard cluster, and the data is moved using INSERT/SELECT
+			new tnn
+			if $d(mt("shref",str),tnn) { RETURN input_$select(dataref="":"("_$c(0)_","_$$$getVarName("shref"_tnn)_")",1:"("_dataref_","_$$$getVarName("shref"_tnn)_")") }
+		}
+	}
+	RETURN $select(input="":dataref,1:input_$select(dataref="":"",1:"("_dataref_")"))
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK320-
+	#; AK304
+	#; AK858
+serial(type,del,irn,ifn)  ;  serialize list/array-field when it's a bunch of nodes
+	n tOidCall
+	s gref=$e(gref,4,*-3)  ;  remove the "$g(...*))"
+	d vNEW^%qaqcasl("%sqlup"),vNEW^%qaqcasl("%sqlst"):54[type
+	#;  there are 6 cases - subnode type=2/4/5, without/with delimiter:
+.
+		// If the OIDType for this field is 1, than the %sqlst value will be an Object ID.  We need to convert this into an Object Oid (DPV4174)
+	if $case(type,4:1,5:1,:0),irn,ifn,$$$smdColOIDType(1,irn,ifn)=1 {
+		set tOidCall="set %sqlst=$lb(%sqlst) "
+	}
+	else { set tOidCall="" }
+	if type=2 { $$$liin("s "_var1_"="""" f %sqlup=1:1:$g("_gref_"0)) s "_var1_"="_var1_"_"_$s(del="":"$lb($g(^(%sqlup)))",1:"$s(%sqlup=1:$g(^(%sqlup)),1:"_del_"_$g(^(%sqlup)))")) QUIT }
+	$$$liin("s "_var1_"="""",%sqlup="""" f  s %sqlup=$o("_gref_"%sqlup),1,%sqlst) q:%sqlup=""""  "_tOidCall_"s "_var1_$s(del="":"="_var1_$s(type=4:"_$LB(%sqlst)",1:"_$LB($LB(%sqlup,%sqlst))"),1:"=$S("_var1_"="""":"""",1:"_var1_"_"_del_$s(type=4:")_%sqlup_"":""_%sqlst",1:")_%sqlst")))
+	#; AK858-
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK304-
+	#; DPV1928
+piece(del,gref,piece,start=1) public { ;  $$ FUNC, return the expression in nested pieces
+	QUIT:'piece gref  // not $Piece at all
+	s x=gref  // Go thru the Pieces and build the expression in x
+	f i=1:1:$l(piece,",") {
+		s d=$$del(.del),val=$p(piece,",",i)
+		i i<start continue
+		s x=$s(d="":"$lg("_x_$s(val=1:"",1:","_val)_")",d="$":"$zel("_x_","_val_")",1:"$p("_x_","_d_$s(val=1:"",1:","_val)_")")
+	}
+	QUIT x
+}
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; $$:  Return the next delimiter, which might contain ","!
+del(del) {
+	s out=1
+	f k=1:1 {
+		s exp=$e(del,k)
+		q:exp=""
+		q:exp=","&out
+		s:exp="""" out='out
+	}
+	s exp=$e(del,1,k-1),del=$E(del,k+1,*)
+	QUIT exp
+}
+	#; DPV1928-
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+prerec	;  ep from subscpt+4, only if funk=2!
+	#;  Create rowid as a concatenation of ALL the expressions from
+	#;  MapRowID, with appropriate Col#'s substituted.
+	#;  It may have to get some 'Data', so it'll create the column,
+	#;  and insert that on the "fields" list.
+	#;
+	#; AK732
+	n exp,b s recid="",ilev=""
+	f  s ilev=$o($$$smd(12,smdmapid,8.5,ilev)) q:'ilev  d oneexp
+	#; AK732-
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+oneexp	; Process 1 whole expression
+	s exp=$lg(^(ilev),2)  ;  expression from the GET RID stuff
+	#;  Set the expression to reflect all these wonderful columns
+	f  s b=$p(exp,"{",2,$$$MaxRtnLineLength) q:b=""  d onebrace s exp=$p(exp,"{")_pti(icol)_$p(b,"}",2,$$$MaxRtnLineLength)
+	#; AK732
+	#; JMM1226 Don't include %%BUCKETID in concatenated rowid
+	s:'($$$smdPartitioned(1,irn)&&($$$smdColName(1,irn,$p($$$mtV(icol),"^",3))=$$$BucketIdSqlFieldName)) recid=recid_"_""||""_("_exp_")" // JMM1226=
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+onebrace ; figure just 1 {} expression  *** handle "{"!
+	s fld=$p(b,"}")
+	#;  If its a field in the data, add to "fields"
+	i fld=+fld s icol=$$col(fld) d adnuf(icol) QUIT
+	#;  its gotta be a subscript or a piece
+	#;  IF its complex I may have in the 'autonexter' set up a column
+	#;     with ifn="S1" or "P3",...  If so I'll just grab it here.
+	s icol=$$$instream(fld)  ;  its there
+	#;  It better be just a simple field for sub or piece
+	i icol="" n e s e=70,%msg=" Incorrectly defined RowID" GOTO ep^%qaqperr
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+comptrig(irn2,ifn,icol) ;  $$:  is the given irn2,ifn,icol computed?
+	#; AK733
+	#;  1 if computed or if found in subscript (no more processing needed),
+	#;  "vector" if a columnar index with ifn as the data in the vector chunks,
+	#;  "data" if in map data (sets x,del), else 0 (rowid/parentref?)
+	#;  first see if it's in subscript
+	QUIT:$d($$$smd(1,irn2,2,+ifn,51,smdmapid))&&$$ddinsub(irn2,ifn,smdmapid) 1
+	#;  if columnar on this ifn, need to get it  ;  AK1053
+	i $p(mts(qno,str,"MAP",smdmapid),"^",9)=ifn { s del="",x=-1 RETURN "vector" }
+	s x=$o($$$smd(1,irn2,2,ifn,52,smdmapid,""),1,del)
+	QUIT:x "data"  ;  found in map node data, x and del are set  ; AK733-
+	#;  if it's computed, ADD it to the growing lists, BUT only after all
+	#;  trigger fields have been added, and if its NOT already on the list.
+	#;  add real fields to "fields", computed fields to "compute",
+	#;  in the correct order of triggering  (What a Guy!!!)
+	#;  aup(f) is considered computed  *** make sure wasn't in subs!
+	i ifn'["_",$$$smdColComputed(1,irn2,ifn)_$$$smdColComputedAlways(1,irn2,ifn)'="YY" QUIT 0
+	QUIT:","_trak[(","_icol_",") 1  ;  already in the (circular) recursion
+	QUIT:$lf(compute,icol) 1        ;  icol already in the list
+	s trak=icol_","_trak            ;  mark in case of circular, append to list later
+	n i5,based                      ;  list of fields its based on.
+	s based=$S(ifn["_":+ifn,1:$$$smdColComputedReferencedFields(1,irn2,ifn))
+	#;  add each trigger field (and its triggers) to the lists
+	#;  If computed, it recursively does all the trigger fields
+	#;  If just a normal field, add to "fields" if not already there
+	n icolb,ifnb,irnb  ;  (icol,irn2,ifn) of field used within the code
+	#;                    of this computed field
+	f i5=1:1 s ifnb=$p(based,",",i5) q:ifnb=""  s irnb=$$$smdGetIrnFromIfn(ifnb),icolb=$$col(ifnb) d:'$$comptrig(irnb,ifnb,icolb) adnuf(icolb)
+	s trak=$P(trak,",",2,*)
+	#; AK732
+	#;  don't add to 'compute', vset(f) sets COLL(f) right after the field
+	i ifn["_" s:ifn'["_%ANYOF" mt("unary",icolb,$p(ifn,"_",2))=icol QUIT 1
+	#; AK732-
+	#; DPV1828
+	#;  This structure should allow us over 8200 computed fields assuming a max string length of 32K
+	s compute=compute_$lb(icol)  ;  all done - append to computeds list
+	#; DPV1828-
+	QUIT 1
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK733
+ddinsub(irn,ifn,imp) n ilev,sub s ilev=""  ;  $$: collation(sub) must match
+	f  s ilev=$o($$$smd(1,irn,2,+ifn,51,imp,ilev),1,sub) QUIT:'ilev  QUIT:$p(ifn,"_%",2)=$p(sub,$c(1),2)
+	QUIT ilev
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK733-
+addunary(fval,op,addpti) ; Add node for the unary op(fval), if necessary.
+	#;                IF 'addpti', also add a pti() entry
+	#;                called only from comptrig and from getvalex^asl
+	n icol s icol=$g(mt("unary",fval,op))
+	QUIT:icol icol  ;  Already there
+	#; AK371    enabled by AK662
+	#;  op is either %ODBCOUT/%EXTERNAL/%RUNTIMEOUT
+	n code  ;  try getting the code
+	if $$sameop(fval,op,.code) { QUIT fval } ;  s mt("unary",fval,op)=fval QUIT  ;  use same run-time var
+	m mt("code",fval,op)=code ;  store the code for later use
+	#; AK371    enabled by AK662-
+	set icol=$$$newval("v^"_op_"^^"_fval_"^",0,$g(addpti)),mt("unary",fval,op)=icol
+	QUIT icol
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK662
+sameop(fval,keyword,code) //
+		#;  $$: 1 if keyword(fval)=fval (code is trivial), may load .code()
+	new ifn
+	set ifn=$p($$$mtV(fval),"^",3)  ;  
+	QUIT:$d($$$mtVirf(ifn)) 0  ;  virtual field
+	new irn
+	set irn=$$$smdGetIrnFromIfn(ifn)
+		#;  Determine if this is a collection
+	if $$$smdColArrayCollection(1,irn,ifn) || ($$$smdColListCollection(1,irn,ifn)="Y") {
+		new class
+		if $$$smdColContainerField(1,irn,ifn)'="" { set class=$$$smdColContainerType(1,irn,ifn) } else { set class=$$$smdClassname(1,irn) }
+		if keyword="%RUNTIMEOUT"&&($$runnable^%qadadt(class,$$$smdColPropertyName(1,irn,ifn)_"CollectionToDisplay")||($$runnable^%qadadt(class,$$$smdColPropertyName(1,irn,ifn)_"CollectionToOdbc"))) { QUIT 0 }
+		if keyword="%EXTERNAL",$$runnable^%qadadt(class,$$$smdColPropertyName(1,irn,ifn)_"CollectionToDisplay") { QUIT 0 }
+		if keyword="%ODBCOUT",$$runnable^%qadadt(class,$$$smdColPropertyName(1,irn,ifn)_"CollectionToOdbc") { QUIT 0 }
+	}
+		#;  handle regular methods - Display(), OdbcOut(), etc.
+	QUIT:keyword="%EXTERNAL" '$$GetMethodCode(irn,ifn,,"LogicalToDisplay")
+	QUIT:keyword="%ODBCOUT" '$$GetMethodCode(irn,ifn,,"LogicalToOdbc")
+	QUIT:keyword="%RUNTIMEOUT" '$$GetMethodCode(irn,ifn,,"LogicalToDisplay")&&'$$GetMethodCode(irn,ifn,,"LogicalToOdbc")
+	QUIT:keyword="%FDBMS" '$$GetMethodCode(irn,ifn,,"LogicalToFDBMS")
+	QUIT 0  ;  needed?
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK662-
+col(ifn,s2l=1) ;  $$:  find val# if exists, or create one
+	#;  DPV2576 add s2l - some scatch fields need StorageToLogical called, like filed used in a computation
+	QUIT:$d(mts(qno,str,"ATT",ifn)) $$$instream(ifn)
+	QUIT $$scrcol(ifn,s2l)  ;  ok then create it!
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+adnuf(val) ; append val to asl(mod,funk,ndata,"fields"), but only if not already there
+	s val=val_","    ;  prepare for the "contains" operation
+	QUIT:","_$g($$$aslPkFlds(mod,funk,ndata))[(","_val)  ;found in main node
+	s $$$aslPkFlds(mod,funk,ndata)=$g($$$aslPkFlds(mod,funk,ndata))_val
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+compute ;  now bang thru the computeds not already done for conditions, ep from getc1+48
+	#;  trigger fields already there from comptrig above
+	#; AK732
+	s line=""  ;  code may accumulate in 'line'
+	For piece=1:1:$ll(compute) s icol=$li(compute,piece) d comploop(icol)
+	if line'="" $$$liin(.line)
+	#; AK732-
+	QUIT
+	;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+comploop(icol)  ;  generate the actual compute code for one computed field icol
+	#;  [public: mt,line;irn,tag,sqline,mod,lines]
+	#; AK732
+	#; AK688
+	#;  unless field and its conversions already set, generate the
+	d:'$bit(vset,icol) compu1,vset(icol,,.line)  ;  actual compute code
+	QUIT
+compu1	;  [public: mt,icol,line;irn,tag,sqline,mod,lines] compute 1 computed field
+	#; AK688-
+	#;  it's a real computed field in Data Dict
+	#;  collations must be already set, but must remain included in
+	#;  $$comptrig, to trigger retrieving the field itself!
+	n ifn,code,argmap,first,loop s ifn=$p($$$mtV(icol),"^",3)  ;  should be of type f
+	if ($d($$$mtVecDistFunc(icol))) { ; special computed code gen for vector search fake field
+		$$$liin("s "_pti(icol)_"="_$$davalue^%qaqcpr($$$mtVecDistFunc(icol)))
+		QUIT
+	}
+	d code1(7,"", .argmap)  ;  it's a real computed field
+		#;  see if we can inline the code
+	if code(0)=2,code(2)=" q" {	// A single line of code
+		//inlining, redo without argmapping
+		kill code d code1(7,"","inline")
+		set first=code(0)-1
+			#; If the code does not set $ZT we can generate a try/catch for better error reporting
+		if '$$CodeSetsZTrap(code(first)) {
+			set code(first)=" try { "_code(first)	// code(1) may end in a comment, so can't put closing } here
+			set code(first+1)=" } catch { ztrap:$ze[""<ALARM"" $ze set SQLCODE=-350,%msg=""Unexpected error executing SqlCompute code for field '"_$$$smdGetFieldName(ifn)_"': ""_$ze ztrap ""COMP"" }"
+		}
+		for loop=1:1:first-1 $$$liin(code(loop))
+		d adlin("d") if line'="" $$$liin(.line)
+		$$$liin("."_code(first)) $$$liin("."_code(first+1))
+		QUIT
+	}
+	if code(0)=4,code(4)=" q",code(1)["#classcontext",code(3)["#endclasscontext" {
+		//inlining, redo without argmapping
+		kill code d code1(7,"","inline")
+		#; code1 may have inserted another line so find out first reference
+		set first=code(0)-2
+		if '$$CodeSetsZTrap(code(first)) {
+			set code(first)=" try {"_code(first)	// code(1) may end in a comment, so can't put closing } here
+			set code(first+0.5)=" } catch { set SQLCODE=-350,%msg=""Unexpected error executing SqlCompute code for field '"_$$$smdGetFieldName(ifn)_"': ""_$ze ztrap ""COMP"" }"
+		}
+		for loop=1:1:first-1 $$$liin(code(loop))
+		do adlin("d") if line'="" $$$liin(.line)
+		$$$liin("."_code(first)) $$$liin("."_code(first+0.5)) $$$liin(code(first+1))
+		QUIT
+	}
+	if code(0)=6,code(6)=" q",code(1)["#sqlmethodcode",code(2)["#classcontext",code(4)["#endclasscontext",code(5)["#endsqlmethodcode" {
+		//inlining, redo without argmapping
+		kill code do code1(7,"","inline")
+			#; code1 may have inserted another line so find out first reference
+		set first=3
+		if '$$CodeSetsZTrap(code(first)) {
+			set code(first)=" try {"_code(first)	// code(first) may end in a comment, so can't put closing } here
+			set code(first+0.5)=" } catch { set SQLCODE=-350,%msg=""Unexpected error executing SqlCompute code for field '"_$$$smdGetFieldName(ifn)_"': ""_$ze ztrap ""COMP"" }"
+		}
+		for loop=1:1:first-1 $$$liin(code(loop))
+		do adlin("d") if line'="" $$$liin(.line)
+		$$$liin("."_code(first)) $$$liin("."_code(first+0.5)) $$$liin(code(first+1)) $$$liin(code(first+2))
+		QUIT
+	}
+	#;  if compute code begins with #<something>, like #classcontext, add a comment line the tag can be added to
+	new tCodeHasETrap set tCodeHasETrap=0
+	if $e($tr(code(1),$c(9,32)))="#" {
+		new i
+		for i=code(0)+1:-1:2 { set code(i)=code(i-1) if $$CodeSetsZTrap(code(i)) { set tCodeHasETrap=1 } }
+		set code(0)=code(0)+1,code(1)=" // SQLComputeCode for field "_$$$smdGetFieldName(ifn)
+	}
+	else {
+		for i=1:1:code(0) { if $$CodeSetsZTrap(code(i)) { set tCodeHasETrap=1 quit  } }
+	}
+	if 'tCodeHasETrap {	// put compute code in a try/catch
+		set code(code(0)+2)=" } catch { set SQLCODE=-350,%msg=""Unexpected error executing SqlCompute code for field '"_$$$smdGetFieldName(ifn)_"': ""_$ze ztrap ""COMP"" } quit"
+		for i=code(0)+1:-1:2 { set code(i)=code(i-1) }
+		set code(1)=" try {",code(0)=code(0)+2
+	}
+	d adlin($$invokeCode(.argmap, icol))
+	#; AK732-
+	QUIT
+.
+	// Given a line of code, return 1 if the code sets $ZT[RAP]=<something>, otherwise return 0	
+CodeSetsZTrap(code) [] PUBLIC {
+	set x=$$$UPPER($zstrip(code,"*W"))
+	if x["$ZT=" || (x["$ZTRAP=") { RETURN 1 }
+	RETURN 0
+}
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+tagnam(zchar) ; assigns tag name to subroutine
+	n tagnam k code(0) s zchar=zchar_$g(zchar2),tagnam=$$subroutn^%qacsub("code",tagpre_zchar_(datag+1),,1)	// DPV3122 pass 1 as 4th arg to subroutn
+	i tagnam=(tagpre_zchar_(datag+1)) s datag=datag+1
+	QUIT tagnam
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+copyval ;  There is no method - copy the value of varf into varm
+	s line="s "_varm_"="_varf d %linein	// DPV1828 Call %linein instead on in
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK371
+setmeth(var,code,arg)  ;  SET var=method(arg), .code passed by reference
+	i '$g(code) s line="s "_var_"="_arg d %linein QUIT  				// DPV1828 Call %linein instead on in
+	s line="s "_var_"=$s("_arg_"="""":"""",1:"_$$runmeth(.code,arg)_")" d %linein	// DPV1828 Call %linein instead on in
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+runmeth(code,arg)  ;  method(arg), .code passed by reference
+	;  *** here would come the in-line optimization
+	QUIT "$$"_$$tagnam("s")_"("_arg_")"
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK371-
+GetMethodCode(irn,ifn,code,method,useFieldDT=0) 
+	#; arguments are ifn and irn of a field, .code array (by reference)
+	#; and a method name.  As a result code arraay is set
+	n dt,param
+	kill code
+	set dt=$s('useFieldDT:$$GetType^%qadfld2(irn,ifn),1:$$$smdColDatatype(1,irn,ifn))
+	if dt'="" {
+			// Don't need to call GetParms here.  Hopefully the code has already been harvested.
+			// if it hasn't, we'll get get all the parameters from ^oddCOM on getcode^%qadadt
+			// if $$GetParms^%qadfld2(irn,ifn,.param) {}
+		if $$$smdColContainerField(1,irn,ifn)'="" {
+			#; if this field has a container field, it is from a serial class.  Need to call the method in the correct class
+			do getmeth^%qaqcpr(dt,method,.param,.code,$$$smdColContainerType(1,irn,ifn),$$$smdColPropertyName(1,irn,ifn),irn,ifn)
+		}
+		else {
+			do getmeth^%qaqcpr(dt,method,.param,.code,$$$smdClassname(1,irn),$$$smdColPropertyName(1,irn,ifn),irn,ifn)
+		}
+	}
+	s code=$g(code)
+	QUIT code
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+GetMethCode(extent,field,code,method) [] PUBLIC {	// DPV1987 (New function)
+		#; arguments are extent name and field name, code array (by reference) and a method name.  
+		#; As a result code array is set
+		#;  This is called from the table compiler (%ocsCacheSQLFiler*) and %Library.SQLCatalog.SQLFieldsFetch method.
+		#;  The class is already locked during table/class compilation.  Not going to worry about a lock for catalog query call.
+	  k code
+	  s fldinfo=$g($$$EXTSQLCOLsqlinfo($$$rEXT,extent,field)) QUIT:fldinfo="" ""
+	  //If $$$SQLLocColListType(fldinfo)'="" { s dt=$$$SQLLocColListType(fldinfo) }
+	  //Else { s dt=$$$SQLLocColDatatype(fldinfo) }
+	  s dt=$$$SQLLocColDatatype(fldinfo)
+	  If dt'="" {
+		s parms=$$$SQLLocColTypeParameters(fldinfo)
+		set i=0 while $listnext(parms,i,p) { set param($piece(p,"="))=$piece(p,"=",2,*) }
+	  	do getmeth^%qaqcpr(dt,method,.param,.code,extent,$$$SQLLocColPropertyName(fldinfo),,,extent,field)
+	  }
+	  s code=$g(code)
+	  QUIT code
+	}
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+code1(sub,i,argmap) ; this loads the code array for subroutn^%qacsub
+	#; This module processes the "+" syntax to concatenate lines,
+	#; also - changes {ifn} references to the appropriate local varibles.
+	#;  Currently called only for computed code (sub=7)
+	new hasSQL,last,n,x,lower
+	set hasSQL=0,last=$g($$$smd(1,irn,2,ifn,sub,0)) ; also sets naked
+	for n=1:1:last {
+		set x=^(n)
+		if $e(x)'="+" { set i=i+1,code(i)=x }
+		else {
+			set:i>0 code(i)=code(i)_" "_$e(x,2,*)
+			set:i=0 i=1,code(i)=$e(x,2,*)
+		}
+	}
+	set code(0)=i
+	for n=1:1:code(0) {
+		set x=code(n) 
+		set:x["{" x=$$swap^%qaccode(x,.argmap)
+		set lower=$$$LOWER(x)
+		if lower["##sql(" {
+			set hasSQL=1
+		} elseif lower["&sql" {
+			if $piece($extract(lower,$find(lower,"&sql"),*),")")["(" set hasSQL=1
+		}
+		if $e(x,1,6)="#class"||($e(x,1,4)="#end")||($e(x,1,10)="#sqlmethod") { set code(n)=x } 
+		else { set code(n)=" "_x }
+	}
+	if hasSQL {
+		for n=code(0):-1:1 { set code(n+1)=code(n) }	// Shift all code down one line
+		set code(1)="#sqlcompile select=Logical",code(0)=code(0)+1
+	}
+	set code(0)=code(0)+1
+	set code(code(0))=" q"
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+fldcon	;
+	#; The purpose of fldcon (called before field processing in %aaadat)
+	#; and its slave routine bldcon is to create two arrays based on the
+	#; asl field and condition data structures:
+	#;      fld2con(field number) = weight
+	#;      fld2con(field number,condition number)= ""
+	#;      con2fld(condition number, field number)= ""
+	#;
+	#; JLF261+
+	#; To support collated fields and calculated fields, we store the
+	#; list of fields that a field depends on.  In a way that is closely
+	#; analogous to the fld2con and con2fld relationships, the dependency
+	#; between a base field and a dependent field:
+	#;      fldDependsOnFld(dependent field, base field number) = ""
+	#;      fldIsBaseFldFor(base field number, dependent field) = ""
+	#; When a base field is weighted (scheduled) in the node array, its weight 
+	#; may be influenced by the appearance of a dependent field in a condition, 
+	#; such as a collation of the base field. Each direct or indirect reference
+	#; to a base field contributes equally to its overall weight.
+	#;
+	#; At the point where code is generated for a base field, we can generate
+	#; code for any dependent field that has no other fields that it depends on.
+	#; JLF261-
+	#;
+	#; The weight of a field is meant to be a measure of how the field
+	#; contributes to conditions.  The weights are used to sort the nodes
+	#; array to schedule code generation for fields with the lowest (JLF261)
+	#; weights first. After code is generated for each field, chkcon is
+	#; called. In chkcon the fld2con array is used to look for each
+	#; condition in the con2fld array. con2fld(cond,field) is killed for
+	#; that field. If all fields are available for the condition, code is
+	#; generated for that condition and the condition is removed from the
+	#; asl cond list. After this process the only conditions left on the
+	#; asl cond list (and therefore code generated where they used) to be
+	#; are conditions explicitly requiring %EXTERNAL values and conditions
+	#; based on computed fields.
+	#;  *** with AK732 maybe this logic can now be improved!
+	#;  fix logic for pre-computed PREDICT() in the temp-file  ;  AK1015
+	i tempid,$$$mtTfPredictNode($g($$$mtTempFile(+$$$aslActTfToBuild($g($$$aslAct(+tempid,$p(tempid,"^",2))))))) { RETURN }
+	#; AK464
+	#;  skip optimization if OJ: get all fields, use the padding tag,
+	QUIT:padnext  ;  then test all conditions
+	#; AK464-
+	n c,clist,fl,flist,i,n
+	s flist=$g($$$aslPkFlds(mod,funk,ndata))
+	s flist=$e($$noAny(","_flist),2,*)
+	QUIT:flist=""  ;  no fields to get
+	s clist=$g($$$aslPkConds(mod,$s(funk=2:3,1:funk),$s(funk=2:1,1:ndata+1)))
+	QUIT:clist=""  ;  no conditions to test
+	#;  *** maybe setting fl() in the next line is needed for later??? ***
+	#; JLF261
+	n fld,flds,refFld,v
+	f i=1:1 s fld=$p(flist,",",i) q:fld=""  s fl(fld)=""
+	f i=1:1 s fld=$p(clist,",",i) q:fld=""  d bldcon(fld,fld)	// bldcon may create flds() and implicitly return it
+	s refFld="" 
+	for
+	{	s refFld=$o(fld2con(refFld)) q:refFld=""
+		s v = $$$mtV(refFld)
+		#;  continue:$e(v)'="f"  ;  remove AK970
+		s fld=""
+		for 
+		{	s fld=$o(fldDependsOnFld(refFld,fld))
+			if fld="" { if $p(v,"^",3)'["_" { s fld=refFld } else { quit }}
+			s c="" 
+			for  
+			{	s c=$o(fld2con(refFld,c)) q:c=""  
+				s fld2con(fld)=$g(fld2con(fld))-(1/flds(c))
+			}
+			q:refFld=fld
+		}
+	}
+	#; JLF261-
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+noAny(flist)[mts,mt,qno] PUBLIC {   
+	; Given a list of fields flist=LIST(,v,), replace fields that contains "_%ANY" with its main field
+	Return:(qno="") flist
+	For i=$l(flist,",")-1:-1:2 {
+		Set v=$$$mtV($p(flist,",",i))
+		If v["_%ANY" {
+			Set $p(flist,",",i,i+1)=$p(flist,",",i+1)
+			Set fval=$p(mts(qno,$p(v,"^",2),"ATT",+$p(v,"^",3)),"^",5)
+			Set:flist'[(","_fval_",") flist=flist_fval_","
+		}
+	}
+	Return flist
+}
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+bldcon(cond,cond2)  ;  build condition field arrays con2fld(),fld2con(),flds(),fldIsBaseFldFor(),fldDependsOnFld()
+	n cp,cstr,i,d,fld,len,lis,q,ty,v,vstr
+	n based,fv,j,val  ;  JLF261
+	#; AK792
+	n ifn,irn
+	s cstr=$g($$$mtL(cond2)),ty=$p(cstr,"^")
+	i ty="l" f i=4:1 { s d=$p(cstr,"^",i) q:d=""  d bldcon(cond,d) }
+	i ty="v" d
+	. s q=0 f i=4:1 s v=$p(cstr,"^",i) q:'v  q:q  d
+	.. s vstr=$$$mtV(v) i $p(vstr,"^")="v",$p(vstr,"^",2)="%EXTERNAL" s q=1,con2fld(cond,"EXT")=""
+	. i 'q d
+	.. s lis=$p(cstr,"^",3),len=$l(lis,",")-1
+	#;  *** should be extended to any expression stored in the temp-file:
+	. . s:tempid lis=lis_$$listree^%qaqpagg("l",cond2,"aq")  ;  AK970
+	. . s lis=$$noAny(lis)
+    . . s len=$l(lis,",")-1
+	.. f cp=2:1:len s fld=$p(lis,",",cp) i $d(fl(fld)),'$d(con2fld(cond,fld)) d
+	... s con2fld(cond,fld)="",fld2con(fld,cond)="",flds(cond)=$g(flds(cond))+1
+	#; AK732
+	... QUIT:tempid  ;  temp-file has all fields, there are no dependencies
+	#; JLF261
+	#; AK792
+	. . . s fv=$$$mtV(fld)  ;  find field dependencies
+	. . . QUIT:$e(fv)'="f"  ;  not a field
+	. . . s ifn=$p(fv,"^",3)
+	. . . i ifn["_" { s based=+ifn  ;  collation
+	. . . } else { s irn=$$$smdGetIrnFromIfn(ifn)
+	. . . 	QUIT:$$$smdColComputedAlways(1,irn,ifn)'="Y"  ;  not computed!
+	. . . 	s based=$$$smdColComputedReferencedFields(1,irn,ifn)
+	. . . }
+	#; AK792-
+	#; AK823
+	#;  mark baseless computed fields as dependent on dummy field -1, to compute them first
+	. . . i (based="")||(based=ifn) s fldIsBaseFldFor(-1,fld)="" QUIT
+	#; AK823-
+	... i based'="" f j=1:1 q:$p(based,",",j)=""  s val=$$col($p(based,",",j))  continue:val=fld  s fldIsBaseFldFor(val,fld)="",fldDependsOnFld(fld,val)=""
+	#; JLF261-
+	i cond=cond2,$d(con2fld(cond,"EXT")) d
+	. s fld="" f  s fld=$o(con2fld(cond,fld)) q:fld'=+fld  k fld2con(fld,cond)
+	. k flds(cond),con2fld(cond)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+chkcon(icol) ; if dependee fields evaluated then fire condition code
+	#;  and compute dependent fields  ;  JLF261
+	#; AK732
+	d vset(icol,,.line)  ;  set unarys(icol)
+	n ck,f,cond,cs,cstr,i,idx
+	if funk=2 { s ck=3,idx=1 } else { s ck=funk,idx=ndata+1 }
+	#; JLF261
+	do genConds(icol)	; Generate conditions that depend only on icol
+	do genExprs(icol)	; Generate expressions that depend only on icol
+	QUIT
+genConds(icol)  ;  [public: fld2con,con2fld,line,bottom,cstr,asl,mod,ck,idx,i,f,cs]
+	#;  find conditions dependent on icol that now can be evaluated
+	n cond s cond=""
+	#; Don't evaluate the same expression more than once in this context
+	#;  n cgc d cgcInit^%qaqcasl()  ;  TRW1449  ;  removed by AK1090
+	for
+	{	s cond=$o(fld2con(icol,cond)) q:cond=""
+		continue:'$d(con2fld(cond))
+		k con2fld(cond,icol)
+		continue:$d(con2fld(cond))
+		#; As we wish to run conditional immediately then generate the extracts we need so far, if 'name' array is blank it does nothing but flush any line output
+		do genextract(.name,.subval,.conv,.gref,.olines)
+		if $g($$$mtOptionsSQLRuntimeStatsFlag)=1 { $$$liin("do $i("_$$$SQLRuntimeStatsQ_"("_$g($$$mtOptionsSQLRuntimeStatsPID)_","""_$LG($g(sqlidxhash),1)_""",""conditions"","_cond_",""rowsBefore""))") }
+		$$$liin("g:'"_$$cond^%qaqcpr(cond)_" "_bottom)
+		set $$$aslPkCondsExecOrder(mod,ck,idx)=$g($$$aslPkCondsExecOrder(mod,ck,idx))_cond_","
+		if $extract($get(%caller),1,8)="ShowPlan" {
+			// Needed for %qaqplan
+			set dasl(mod,ck,idx,"condorder")=$g(dasl(mod,ck,idx,"condorder"))_cond_","
+		}
+		if $g($$$mtOptionsSQLRuntimeStatsFlag)=1 { $$$liin("do $i("_$$$SQLRuntimeStatsQ_"("_$g($$$mtOptionsSQLRuntimeStatsPID)_","""_$LG($g(sqlidxhash),1)_""",""conditions"","_cond_",""rowsAfter""))") }
+		s cstr=$$$aslPkConds(mod,ck,idx)
+		f i=1:1 s f=$p(cstr,",",i) q:f=""  s cs(f)=""
+		k cs(cond) s (f,cstr)="" f  s f=$o(cs(f)) q:f=""  s cstr=cstr_f_","
+		s $$$aslPkConds(mod,ck,idx)=cstr
+	}
+	QUIT
+genExprs(icol)  ;  [public: fldIsBaseFldFor,fldDependsOnFld]
+	#; If all of the fields that a calculated or collated field depends on have
+	#; been generated, then generate that calculated or collated field, then
+	#; generate any conditions that depend only on this calculated/collated field
+	n calcOrCollFld s calcOrCollFld=""
+	for
+	{	s calcOrCollFld=$o(fldIsBaseFldFor(icol,calcOrCollFld)) q:calcOrCollFld=""
+		k fldDependsOnFld(calcOrCollFld,icol)
+	#; AK732
+		#;  if all dependee fields done, compute it and its dependents
+		d:'$d(fldDependsOnFld(calcOrCollFld)) comploop(calcOrCollFld),chkcon(calcOrCollFld)
+	#; AK732-
+	}
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; JLF261-
+arrset(node,node2) public {	; re-sort node2 array into node array with node weights
+	s (node,sublev,icol,wt)=""
+	f  s sublev=$o(node2(sublev)) q:sublev=""  d
+	. f  s node=$o(node2(sublev,node)) q:node=""  s nwt=0 d
+	.. f  s wt=$o(node2(sublev,node,wt)) q:wt=""  d
+	... f  s icol=$o(node2(sublev,node,wt,icol)) q:icol=""  d
+	.... s nwt=nwt+wt
+	.. f  s wt=$o(node2(sublev,node,wt)) q:wt=""  d
+	... f  s icol=$o(node2(sublev,node,wt,icol),1,val) q:icol=""  s node(sublev,nwt,node,wt,icol)=$tr(val,$c(2))
+}
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+chkexp(keys)  ;  Apply Extrinsic Functions to Temp Subscripts
+	QUIT:keys=""  ;  Nothing to do
+	n ii,info,val
+	//Initialize a common context for code generation to avoid
+	//duplicate expression evaluation
+	#;  n cgc d cgcInit^%qaqcasl()  ;  TRW1449  ;  removed by AK1090
+	s line=""  ;  Tabula Rasa
+	f ii=1:1 s val=$p(keys,",",ii) q:'val  d  ;  Check for Extrinsics
+	. QUIT:$e($g($$$mtV(val)))'="e"  ;  Not an Extrinsic Function
+	. s line=line_","_pti(val)_"="_$$ptvalue^%qaqcpr(val)
+	. i $l(line)>($$$complength-20) d  ;  Insert the line fragment
+	.. s line="s "_$e(line,2,*) $$$liin(.line)
+	i line'="" s line="s "_$e(line,2,*) $$$liin(.line)
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK732
+vset(icol,expr="",line="none",arg)  ;  set icol to expr (if given), evaluate (or
+	#;  append to .line) its conversions/collations, record it in vset
+	QUIT:'icol
+	QUIT:$bit(vset,icol)  ;  field and its conversons already set!
+	QUIT:(($e(expr,1)="(")&&($e(expr,*)=")")&&($e(expr,2,*-1)=pti(icol)))
+	s $bit(vset,icol)=1  ;  don't set/reconvert later
+	s:expr=pti(icol) expr=""  ;  nothing to set
+	s:expr'="" expr=","_pti(icol)_"="_expr
+	n ufn,uval s ufn=""
+	f  s ufn=$o(mt("unary",icol,ufn),1,uval) q:ufn=""  s expr=expr_$$csufn(icol,ufn,uval,.arg)
+	QUIT:expr=""
+	s expr="s "_$e(expr,2,*)
+	i line="none" $$$liin(expr) QUIT  ;  generate the code,
+	d adlin(expr)  ;  or append to the growing .line if passed in
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+csufn(icol,ufn,uval="",arg) n uvar,call  ;  $$: code to evaluate and
+	#;  set uval=ufn(icol) (with leading comma), record it in vset
+	s:'uval uval=$g(mt("unary",icol,ufn))
+	QUIT:'uval ""  ; No request for this keyword
+	QUIT:$bit(vset,uval) ""  ;  already set in this map!
+	s $bit(vset,uval)=1  ;  don't recompute later
+	s uvar=pti(uval)
+	QUIT:uvar=pti(icol) ""  ;  No-op (enable optimizing into the same var)
+	s:'$d(arg) arg=pti(icol)
+	s:'$d(mt("code",icol,ufn,"call"),call) call=$$gencall(icol,ufn,uval,arg),mt("code",icol,ufn,"call")=call
+	QUIT:uvar=call ""  ;  No-op - value already there
+	QUIT ","_uvar_"="_call
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gencall(icol,ufn,uval,arg)  ;  $$: expression to evaluate ufn(icol)=uval
+	QUIT:$$$mtVType($$$mtV(uval))="f" $$gencoll^%qaqcpre(ufn,arg)  ;  collation
+	RETURN:ufn="%RMLSP" "$e("_arg_",2,*)"  ;  AK1084
+	RETURN:ufn="%RMINUS" "-"_arg
+	RETURN:ufn="%RMVR" "$System.Util.RevCollation("_arg_",2)"
+	QUIT $$opval^%qaqcpre(ufn,icol,arg)  ;  or method
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#;  ***  should probably #define as constant 2000 or 1000 in %msql.inc
+#define HalfLine ($$$MaxRtnLineLength/2)
+#define HalfLine 1000
+adlin(cmds)  ;  [public: line,tag,sqline,mod,lines] append cmds to the growing 'line'
+	QUIT:" "[cmds  ;  no new code provided
+	s line=line_$e(" ",line'="")_cmds
+	if $l(line)>$$$HalfLine $$$liin(.line)  ;  flush as needed
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK732-
+	#; $$ Function - Scratch Column. It Returns 'icol'.
+	#;  We assign a scratch column number, and stick into parse tree.
+	#;  called from col+2^dat,xpand+2,col+1 *** use macro!
+scrcol(ifn,sl2=0) n icol
+	do scratch^%qaqcpr(.icol,1)
+	set $$$mtV(icol)="f^"_str_"^"_ifn 		// Only set the type to "f" here to fake out createval call
+	set:sl2 $$$mtV(icol)=$$$mtV(icol)_"^S2L^"
+	set $p(mts(qno,str,"ATT",ifn),"^",5)=icol
+	do createval^%qaqpdt(icol)
+	set $e($$$mtV(icol),1)="i"			// reset type to "i" after createval call
+	QUIT icol
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; add contents of line to %line variable
+	#;  %line may be empty or already have some Sets in it
+	#;  line should be of the form 's var=value'  If %line already has contents, replace the 's ' with ','
+%linein	s %line=$s(%line'="":$s($g(%hasdo):%line_" "_line,1:%line_","_$e(line,3,*)),1:line) QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; generate extracts of data from node
+genextract(name,subval,conv,gref,olines,allFields=0) [compute,line,lines,m,mt] public {
+	if line'="" $$$liin(.line)
+	#; If nothing to do just reset line counter and exit
+	if '$data(name) kill olines QUIT
+	#; Move any of the already generated lines to make room for the extraction block
+	if $get(olines),olines'=lines do returnlines^%qaqcasl(.olines,.tmpmove,.lines)
+		#; if this is fastSelect xDBC, we only want to extract these variables if this is a static result set call.
+		#; This is signafied by %qQueryFetch=0, and we only look for this check if this is a fast-select statement, which implies only for xDBC
+		#; If there is code to generate in tmpmove, do not skip the data extraction for fastSelect
+		#; not extracting the data could result in a run-time <UNDEFINED> error.  THis is a rare case that I have seen reported in pl159811
+		#; Almost always there is nothing in tmpmove when fastSelect is supported.
+		#; I think sometimes this might even be a bug elsewhere in the QP because the code in tmpmove can set variables not needed.
+	set indent=""
+		#; We will not skip the extraction if there are still fields to compute (generated later at the end of getc1)
+		#; We could possibly enhance this to see if the computed fields rely on the fields in the extraction.
+	if allFields,$g($$$mtFastSelectFlag)=1,'$g(tmpmove),$g(compute)="" { $$$liin("if '$g(%qQueryFetch) {") set indent=1 }
+	#; Generate code for multiple $list/$piece values
+	set tdel=""
+	for {
+		set tdel=$order(name(tdel)) quit:tdel=""
+		set del=$select(tdel=-1:"",1:tdel)
+		kill tname,tconv,tmpcode merge tname=name(tdel),tconv=conv(tdel)
+		set return=$$GenExtract^%GenerateExtract(.tmpcode,$$del(del),$lb(gref,$$$getVarName("sqltmp"),$$$getVarName("sqlpos")),.tname,"",.tconv,$g(%msqlvar)="i%%")
+		if return<0 Ztrap "ExtErr"
+		for i=1:1:$get(tmpcode) set line=tmpcode(i) $$$liin(.line,,indent)
+		set i=""
+		for {
+			set i=$order(subval(tdel,i),1,val) quit:i=""
+			set setvar=$list(val),dataref=$list(val,2),piece=$list(val,3),stor2log=$list(val,4)
+			if piece'="" {
+				set dataref=$$piece(del,dataref,piece,2)
+			}
+			if stor2log'="" {
+				if stor2log[$char(0) {
+					set dataref=$piece(stor2log,$char(0))_dataref_$piece(stor2log,$char(0),2)
+				} else {
+					set dataref=stor2log_"("_dataref_")"
+				}
+			}
+			set line=$select(line="":"Set ",1:line_",")
+			set line=line_setvar_"="_dataref
+			if $length(line)>1000 $$$liin(.line,,indent)
+		}
+		if line'="" $$$liin(.line)
+	}
+	kill name,subval,conv
+	if allFields,$g($$$mtFastSelectFlag)=1,'$g(tmpmove),$g(compute)="" { $$$liin("}") }
+	#; Now insert these buffered lines and reset the current insertion point
+	if $data(tmpmove) { do appendlines^%qaqcasl(.tmpmove,.lines) }
+	kill olines
+}
+	
+	// Given a valeue 'val', return 1 of this value is defined as an asl "next" value
+	// For now we don't care which module, just want to know if we ever loop on this value
+isNextVal(val) [asl] PUBLIC {
+	set mod=""
+	for  {
+		set mod=$o($$$aslMod(mod)) quit:mod=""
+		set n=""
+		for  { 
+			set n=$o($$$aslKNext(mod,1,n),1,data) quit:n=""  
+			RETURN:$p(data,$c(1))=val 1
+		}
+	}
+	QUIT 0
+}
+#INCLUDE %stringreplace
+.
+---

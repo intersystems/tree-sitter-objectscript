@@ -53,15 +53,16 @@ Do Statements Nested
                           (objectscript_identifier))))
                     (expression
                       (expr_atom
-                        (numeric_literal)))))))))))
-    (statement
-      (command_write
-        (keyword_write)
-        (write_argument
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+                        (numeric_literal)))))))
+            (dotted_statement
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ====
 Do conditional, special case

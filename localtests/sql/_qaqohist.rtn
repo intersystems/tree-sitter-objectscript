@@ -1,0 +1,306 @@
+====
+qaqohist
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqohist^MAC^^^0
+%qaqohist
+	;; COMPONENTS :: SQL/Optimizer
+	#;
+#INCLUDE %msql
+#IF 0   ;-------------------------------------------------------------
+ ; Description:   QO - Evaluate condition selectivities using histograms
+ ; Author:        David Plotkin
+ ; Date:          April 19, 2021
+ ;
+#ENDIF  ;-------------------------------------------------------------
+.
+	// Compute exact range condition selectivity and then bucket this value
+	// based on pre-existing selectivity buckets (*not* histogram buckets)
+BucketedFromExactSelectivity(lowerValue="",lowerOp="",upperValue="",upperOp="",histInfo,numBuckets,numNullBuckets,selectivityBuckets,&sc) [] PUBLIC {
+	set sc = $$$OK
+	  #; Check whether or not selectivity buckets have been provided;
+	  #; if not, set to default.
+	set selectivityBuckets = $get(selectivityBuckets,$listbuild(0,.03,.1,.3,.7,.9,.97,.99,1))
+	  #; Compute the exact selectivity before bucketing.
+	try{
+		set exactSel = $$RangeSelectivityExact(lowerValue,lowerOp,upperValue,upperOp,histInfo,numBuckets,numNullBuckets,.sc)
+	} catch (ex) {
+		set sc = ex.AsStatus()
+		return -1
+	}
+	  #; if exact selectivity = 0, return small number
+	if exactSel = 0 {
+		return 1E-10
+	}
+	  #; bucket the exact selectivity to avoid generating too many runtime queries
+	for i = 2:1:$listlength(selectivityBuckets){
+		if exactSel <= $list(selectivityBuckets,i){
+			set bucketSel = ($list(selectivityBuckets,i-1)+$list(selectivityBuckets,i))/2
+			quit
+		}
+	}
+	return bucketSel
+}	
+.
+	// Compute the exact selectivity given lower and/or upper values for a range condition
+	// Called from BucketedFromExactSelectivity
+RangeSelectivityExact(lowerValue,lowerOp,upperValue,upperOp,histInfo,numBuckets,numNullBuckets,&sc) [] PUBLIC {
+	set sc = $$$OK
+	  #; if entire histogram comprises null values, return:
+	  #; selectivity = very very small
+	if numBuckets = numNullBuckets{
+		return 0
+	}
+	  #; parse the histogram
+	for i = 1:1:$listlength(histInfo) {
+		  #; get array of percentiles stored in histogram
+		set percentiles(i) = 100*(i-1)/(numBuckets-1)
+		  #; get field values corresponding to the percentiles
+		set values(i) = $list(histInfo,i)
+	}
+	  #; get the percentile corresponding to the lower value
+	if $get(lowerOp) '= "" {
+		set lowerPercentile = $$InterpolateLower(lowerValue,lowerOp,numNullBuckets,.percentiles,.values)
+	} else {
+		if $get(numNullBuckets) > 0 {
+			set lowerPercentile = percentiles(numNullBuckets)
+		} else {
+			set lowerPercentile = 0
+		}
+	}
+	  #; get the percentile corresponding to the upper value
+	if $get(upperOp) '= "" {
+		set upperPercentile = $$InterpolateUpper(upperValue,upperOp,numNullBuckets,.percentiles,.values)
+	} else {
+		set upperPercentile = 100
+	}
+	  #; exact selectivity is upper value percentile minus lower value percentile
+	set exactSel = (upperPercentile - lowerPercentile)/100
+	return exactSel
+}
+.
+	// Estimate range condition selectivity from histogram buckets.
+	// Exact upper and lower bounds are not given here;
+	// all we know is which buckets the bounds fall into.
+RangeSelectivityBucketed(lowerBucket,upperBucket,numBuckets,&sc) [] PUBLIC {
+	set sc = $$$OK
+	if $data(lowerBucket){
+		if lowerBucket = (numBuckets + 1) { 
+		  	  #; If lowerBucket = numBuckets + 1, then lower bound is 
+		  	  #; greater than the max known field value. Then we need:
+		  	  #;		sel = very very small
+			set sel = .00001
+		} elseif lowerBucket = 0 {
+			  #; If lowerBucket = 0, then lower bound is 
+		  	  #; lower than min known field value. Then:
+		  	  #;		sel = 1
+			set sel = 1
+		} else {
+		  	  #; Otherwise, condition is:
+	  	  	  #;		field > lower
+	 	  	  #; and the selectivity is:
+	  	  	  #;		sel = (numBuckets - (lowerBucket - .5))/numBuckets
+			set sel = (numBuckets - lowerBucket + .5)/numBuckets
+		}
+	} elseif $data(upperBucket) {
+		if upperBucket = 0 {
+			  #; If upperBucket = 0, then upper bound is 
+		  	  #; less than the min known field value. Then we need:
+		  	  #;		sel = very very small
+		  	set sel = .00001
+		} elseif upperBucket = (numBuckets + 1) {
+			  #; If lowerBucket = numBuckets + 1, then upper bound is 
+		  	  #; greater than the max known field value. Then we need:
+		  	  #;		sel = 1
+			set sel = 1
+		} else {
+		  	  #; Otherwise, condition is:
+	      	  #;		field < upper
+		  	  #; and the selectivity is:
+		  	  #;		sel = (upperBucket - .5)/numBuckets
+			set sel = (upperBucket - .5)/numBuckets
+		}
+	} else {
+		  #; didn't provide bounds; return sel = 0
+		set sc = $$$ERROR($$$GeneralError,"Must provide upper or lower bound to calculate range selectivity.")
+		return 0
+	}
+	return sel
+}
+.
+	// Interpolate the lower bound to determine which percentile it corresponds to
+	// Called from: RangeSelectivityExact
+InterpolateLower(lowerValue,lowerOp,numNullBuckets,&percentiles,&values) [] PUBLIC {
+	set key = $order(percentiles("")), foundBounds = 0, i = 1
+	while (key'="") {
+		quit:foundBounds
+		  #; if Op is greater than, look through histogram until histogram value is greater than lowerValue.
+		if lowerOp = ">"{
+			if values(i) ]] lowerValue {
+				  #; if first histogram value is greater than lowerValue, then lowerValue is below the 
+				  #; minimum known table value. Therefore lower percentile = 0
+				if (i = 1) { 
+					return 0
+				  #; if previous histogram value matches lowerValue, then return the corresponding percentile
+				} elseif values(i-1) = lowerValue {
+					return percentiles(i-1)
+				  #; lowerValue is between two bin values; have to interpolate
+				} else {	
+					set lowerHistVal = values(i-1)
+					set upperHistVal = values(i)
+					set lowerPerc = percentiles(i-1)
+					set upperPerc = percentiles(i)
+					set foundBounds = 1
+				}
+			}
+		  #; if Op is not less than, look through histogram until histogram value is greater than or equal to lowerValue.
+		} elseif lowerOp = "'<"{
+			if lowerValue ']] values(i) {
+				  #; either we match a bin value precisely or i = 1 and lowerValue is below the minimum known table value.
+				if (lowerValue = values(i)) || (i = 1) { 
+					return percentiles(i)
+				} else {
+					set lowerHistVal = values(i-1)
+					set upperHistVal = values(i)
+					set lowerPerc = percentiles(i-1)
+					set upperPerc = percentiles(i)
+					set foundBounds = 1
+				}
+			}
+		}
+		set i = i+1, key = $order(percentiles(key))
+		  #; If we've gone through the entire histogram, then the lower bound is above the highest histogram value.
+		  #; Therefore, assume that we are looking at the 100th percentile.
+		if key = "" {
+			return 100
+		}
+	}
+	  #; if we have non-numeric characters, have to convert strings to numbers before interpolating
+	if (lowerValue '= +lowerValue) || (upperHistVal '= +upperHistVal) || (lowerHistVal '= +lowerHistVal) {
+		set strLen = 0
+		  #; when converting to numbers, consider the first strLen characters
+		  #; strLen = min(length of shortest string, 5)
+		for i = 1:1:10{
+			set valASC = $ASCII($extract(lowerValue,i)), lowASC = $ASCII($extract(lowerHistVal,i)), upASC = $ASCII($extract(upperHistVal,i))
+			quit:('valASC || 'lowASC || 'upASC)
+			set strLen = strLen + 1	
+		}
+		  #; if have null string, then we are at the left of the bin
+		if strLen = 0 {
+			set howFarRight = 0
+		  #; otherwise we can now interpolate
+		} else {
+			set intLowerValue = $$StrToInt(lowerValue,strLen), intUpperHistVal = $$StrToInt(upperHistVal,strLen), intLowerHistVal = $$StrToInt(lowerHistVal,strLen)
+			if intUpperHistVal = intLowerHistVal {
+				set intUpperHistVal = intLowerHistVal + 1
+			}
+			set howFarRight = (intLowerValue-intLowerHistVal)/(intUpperHistVal-intLowerHistVal)
+		}
+	}
+	else {
+		set howFarRight = (lowerValue-lowerHistVal)/(upperHistVal-lowerHistVal)
+	}
+	set result = lowerPerc + ( howFarRight * (upperPerc - lowerPerc) )
+	return result
+}
+.
+	// Interpolate the upper bound to determine which percentile it corresponds to
+	// Called from: RangeSelectivityExact
+InterpolateUpper(upperValue,upperOp,numNullBuckets,&percentiles,&values) [] PUBLIC {
+	set key = $order(percentiles("")), foundBounds = 0, i = 1
+	while (key'="") {
+		quit:foundBounds
+		  #; if Op is less than, look through histogram until histogram value is greater than or equal to upperValue.
+		if upperOp = "<"{
+			if upperValue ']] values(i) {
+				  #; if first histogram value is greater than uppperValue, then upperValue is below the 
+				  #; minimum known table value. Therefore upper percentile = 0
+				if (i = 1) { 
+					return 0
+				  #; upperValue is between two bin values; have to interpolate
+				} else {
+					set lowerHistVal = values(i-1)
+					set upperHistVal = values(i)
+					set lowerPerc = percentiles(i-1)
+					set upperPerc = percentiles(i)
+					set foundBounds = 1
+				}
+			}
+		  #; if Op is not greater than, look through histogram until histogram value is greater than upperValue.
+		} elseif upperOp = "'>"{
+			if values(i) ]] upperValue {
+				  #; if upperValue is below the minimum known table value, then return 0.
+				if i = 1 { 
+					return 0
+				  #; if previous histogram value matches upperValue, then return the corresponding percentile
+				} elseif values(i-1) = upperValue {
+					return percentiles(i-1)
+				  #; upperValue is between two bin values; have to interpolate
+				} else {
+					set lowerHistVal = values(i-1)
+					set upperHistVal = values(i)
+					set lowerPerc = percentiles(i-1)
+					set upperPerc = percentiles(i)
+					set foundBounds = 1
+				}
+			}
+		}
+		set i = i+1, key = $order(percentiles(key))
+		  #; If we've gone through the entire histogram, then the upper bound is above the highest histogram value.
+		  #; Therefore, assume that we are looking at the 100th percentile.
+		if key = "" {
+			return 100
+		}
+	}
+	  #; if we have non-numeric characters, have to convert strings to numbers before interpolating
+	if (upperValue '= +upperValue) || (upperHistVal '= +upperHistVal) || (lowerHistVal '= +lowerHistVal) {
+		set strLen = 0
+		  #; when converting to numbers, consider the first strLen characters
+		  #; strLen = min(length of shortest string, 5)
+		for i = 1:1:10{
+			set valASC = $ASCII($extract(upperValue,i)), lowASC = $ASCII($extract(lowerHistVal,i)), upASC = $ASCII($extract(upperHistVal,i))
+			quit:('valASC || 'lowASC || 'upASC)
+			set strLen = strLen + 1	
+		}
+		  #; if have null string, then we are at the left of the bin
+		if strLen = 0 {
+			set howFarRight = 0
+		  #; otherwise we can now interpolate
+		} else {
+			set intUpperValue = $$StrToInt(upperValue,strLen), intUpperHistVal = $$StrToInt(upperHistVal,strLen), intLowerHistVal = $$StrToInt(lowerHistVal,strLen)
+			if intUpperHistVal = intLowerHistVal {
+				set intUpperHistVal = intLowerHistVal + 1
+			}
+			set howFarRight = (intUpperValue-intLowerHistVal)/(intUpperHistVal-intLowerHistVal)
+		}
+	}
+	  #; if everything is numeric, do normal interpolation
+	  #; without converting to numbers first
+	else {
+		set howFarRight = (upperValue-lowerHistVal)/(upperHistVal-lowerHistVal)
+	}
+	set result = lowerPerc + ( howFarRight * (upperPerc - lowerPerc) )
+	return result
+}
+.
+	// Convert strings to integers for interpolation purposes.
+	// Called from: InterpolateLower, InterpolateUpper
+StrToInt(str,strLength = 5) [] PUBLIC {
+	if $length(str) < strLength {
+		set paddingZeros = strLength - $length(str)
+		for i = 1:1:paddingZeros {
+			set str = str_0
+		}
+	}
+	set int = 0
+	for i = 1:1:strLength {
+		set asciiVal = $ASCII($extract(str,i)), power = strLength - i
+		set coeff = asciiVal - 32
+		set addVal = coeff * (95**power)
+		set int = int + addVal
+	}
+	return int
+}
+.
+---

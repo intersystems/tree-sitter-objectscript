@@ -1,0 +1,169 @@
+====
+fm2class4
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%fm2class4^MAC^^^0
+%fm2class4	// VA FileMan -> InterSystems Class Mapper
+.
+#include %msql
+#include %fm2class
+.
+	#;---------------------------------------------------------------------
+	#; Description:   New Fileman to Class Interface
+	#; Author:        David Van De Griek
+	#; Date:          July 2008
+	#; Maintenance History: [ XXXnnn (MM/DD/YY) - Description ] 
+	#;
+	#;  DPV3957 (12/05/2011) - Implement $$$variablePointerValueField setting (2.06)
+	#;                         Implement $$$expandPointers=3 setting
+	#;  DPV3600 (03/18/2010) - Retain class enhancements (1.18)
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#;
+	#;   Start your information here...
+	#;---------------------------------------------------------------------
+ 
+.
+ClassWipe(Classname,filen) [classIndices,classFKeys,classMaps,classTriggers,Classname,filen,SQLCODE,tPackage] PUBLIC {
+	n %0CacheLock,%ROWCOUNT,%ROWID,SQLCODE,classIndices,classFKeys,classMaps,classTriggers
+	set toddFMDMissing=0
+	
+	if '($d(^oddFMD(filen,"p",tPackage))#2) {         // If this node is not defined, we don't have mapped information for this package
+		set toddFMDMissing=1,classIndices="",classFKeys="",classMaps="",classTriggers=""
+	} else {
+		&sql(select Indices, FKeys, Maps, Triggers
+		       into :classIndices, :classFKeys, :classMaps, :classTriggers
+		       from %FileMan.MappedFilePackage ff 
+		      where ff.FileNumber = :filen and Package = :tPackage
+		)
+		if SQLCODE=100 { set toddFMDMissing=1,classIndices="",classFKeys="",classMaps="",classTriggers="" }
+		elseif SQLCODE<0 { $$$output2("ERROR:  Cannot select previously mapped metdata for file "_filen_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q  }
+	}
+		
+	&sql(delete %NOTRIGGER from %Dictionary.ParameterDefinition 
+		 where parent = :Classname 
+		   AND Name IN ('READONLY', 'FILEMANFILENAME', 'FILEMANFILENUMBER', 'FM2CLASSVERSION', 'DATELASTUPDATED',  '%JSONREFERENCE', '%JSONENABLED', '%JSONIGNOREINVALIDFIELD', '%JSONNULL', '%JSONIGNORENULL'))
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete parameters from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	
+	if toddFMDMissing {	// We need to just delete everything from the class since there is no record of what was mapped
+.
+			#; Delete properties
+		&sql(delete %NOTRIGGER from %Dictionary.PropertyDefinition 
+			where parent = :Classname
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete properties from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+.
+		&sql(delete %NOTRIGGER from %Dictionary.IndexDefinition 
+			where parent = :Classname
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete indexes from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.ForeignKeyDefinition
+			where parent = :Classname
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete foreign keys from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.TriggerDefinition 
+		      where parent = :Classname
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete triggers from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.StorageSQLMapDefinition
+		      where parent->parent->Name = :Classname	-- StorageSQLMapDefinition->StorageDefinition->ClassDefinition.Name
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete SQL Map Definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	}
+	else {	// 
+			#; Delete only fields we mapped in previous FM2Class executions
+		&sql(delete %NOTRIGGER from %Dictionary.PropertyDefinition 
+			where parent = :Classname
+			  and SqlFieldName in (select ff.SqlFieldName from %FileMan.MappedField ff where ff.MappedFilePackage = :filen || '||' || :tPackage)
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete properties from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+.
+		&sql(delete %NOTRIGGER from %Dictionary.IndexDefinition 
+			where parent = :Classname
+			  and Name %INLIST :classIndices
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete indexes from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.ForeignKeyDefinition
+			where parent = :Classname
+			  and Name %INLIST :classFKeys
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete foreign keys from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.TriggerDefinition 
+		      where parent = :Classname
+			and Name %INLIST :classTriggers
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete triggers from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+		
+		&sql(delete %NOTRIGGER from %Dictionary.StorageSQLMapDefinition
+		      where parent->parent->Name = :Classname	-- StorageSQLMapDefinition->StorageDefinition->ClassDefinition.Name
+			and Name %INLIST :classMaps
+		)
+		if SQLCODE<0 $$$output2("ERROR:  Cannot delete SQL Map Definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	}
+.
+	&sql(delete %NOTRIGGER from %Dictionary.UDLTextDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete UDL text definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+.
+		#; Rebuild class index.  This is normally done by the AfterDelete trigger for each of the %Dictionary classes, but skipping the trigger and simply calling it once
+		#; here can save a lot of processing time.
+	set ^oddDEF(Classname,63)=$zutil(188)
+	do RebuildItemIndex^%R(Classname,"CLS")
+.
+		#; Delete any TI/TU routines from the BigTrigger logic for this class
+	do DEL^%R(Classname_".TI")
+	do DEL^%R(Classname_".TU")
+	QUIT
+}
+ 
+ClassWipeOld(Classname) [Classname,SQLCODE] PUBLIC {
+	n %0CacheLock,%ROWCOUNT,%ROWID,SQLCODE
+	&sql(delete from %Dictionary.ParameterDefinition where parent = :Classname AND Name IN ('READONLY', 'FILEMANFILENAME', 'FILEMANFILENUMBER' ,'FM2CLASSVERSION', 'DATECREATED', '%JSONREFERENCE', '%JSONENABLED', '%JSONIGNOREINVALIDFIELD', '%JSONNULL', '%JSONIGNORENULL'))
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete parameters from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.PropertyDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete properties from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.PropertyUDLTextDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete property UDL text definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.IndexDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete indexes from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.ForeignKeyDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete foreign keys from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.TriggerDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete triggers from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.StorageDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete storage definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	&sql(delete from %Dictionary.UDLTextDefinition where parent = :Classname)
+	if SQLCODE<0 $$$output2("ERROR:  Cannot delete UDL text definitions from class definition "_Classname_".",1,0) $$$output2("SQLCODE = "_SQLCODE,1,4) $$$output2("%msg = "_$g(%msg),1,4) q
+	QUIT
+}
+.
+	/// This is called at run-time from map invalid conditions and NEXT code to check any whole file screen conditions
+	/// Y is the IEN (ID) value
+	/// namefieldref is the expression to get the value of the .01 field (NAME) from the global
+	/// condition is the expression to execute to check if this row should be returned or not
+	/// It is NOT procedure block so that FileMan environment variables can be referenced
+	/// DA(#) are the values of the IENs of the parent table(s) of this table (for subfiles only)
+SCR(Y,namefieldref,condition,&da...)
+	new DA,i,rset,X
+		// DA() is going to be off by one, need to reset it into DA, da(1)->DA
+	if $d(da)=11 {
+		set DA=$g(DA(1),Y)
+		for i=2:1:$g(da) { set DA(i-1)=da(i) }
+	} else { set DA=Y }
+	set U="^"
+	if condition["X" {
+		set X=""
+			// Looks like we need the NAME field value
+		X "set X="_namefieldref
+	}
+	X condition
+	RETURN $TEST
+.
+#include %quoter
+---

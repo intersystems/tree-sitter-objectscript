@@ -1,0 +1,579 @@
+====
+SYS.SQLRTUMAKER
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%SYS.SQLRTUMAKER^MAC^^^0
+	#; %SYS.SQLRTUMAKER (extract tags and procedures from %SYS.SQLSRV)
+%SYSRTUMAKER	//
+	;; COMPONENTS :: SQL/RTPC
+	#;
+#include %sySystem
+#INCLUDE %occInclude
+#INCLUDE %SYS.DBSRV
+#INCLUDE %occODBC
+#IF 0  ;-------------------------------------------------------
+	; Description:    tags and procedures used in creating an RTPC class
+	; Author:         Jonathan Levinson
+	; Date Started:   08/16/2017
+	;
+#ENDIF
+.
+	; JSL5032, JSL5059, JSL5060
+	; pRTClassName - name of run time query class
+	; pHashStr - Hash str of prepared query (created during prepare time)
+	; sqlrt - this is the RT sql
+	; smode - sqlcomp
+	; err - used to do catch processing after a try-catch to try to get a new instance of the RTU
+	; status - pass by reference status code
+	; returns to caller oref or null
+	; Each run time query is associated with a parent utility query
+CreateNewRunTimeQuery(pRTClassName,pHashStr,&sqlrt,smode,serverProtocol,pUtilityClassName,&err,&status) PUBLIC {	// Compile a statement
+	new %qi,%qiii,%qslotcnt,%qinfo,%qrc
+	set status=$$$OK
+	RETURN:$g(%showplan) ""
+	try {
+		set gotlock=0
+		set pHash=$zstrip($$Hash^%SYS.SQLSRV(pHashStr,.sqlrt,.%sqlHVarTypes),">","=")
+		set gotlock=1 lock +$$$CQ("Query",$$$CQVersion,pHash):$$$CQGetLockTO
+		if '$test {	// failed to acquire lock
+			set gotlock=0
+			set status=$$$ERROR($$$SQLError,-114,$$$Text("Lock Timeout attempting to acquire lock on Runtime Query","%SQL.SQLRTUMAKER"))
+			goto ErrorExit
+		}
+		try {	// See if the CQ is runable
+			set oref=$classmethod(pRTClassName,"%New")
+			if $isobject(oref) { goto Exit }	// All is well
+		} catch newerr {	// report error if something other than <CLASS DOES NOT EXIST>
+			if (newerr.Name'="<CLASS DOES NOT EXIST>") { set status=newerr.AsStatus() goto ErrorExit }
+		}
+			#; Need to create a new RT CQ
+		$$$SuspendAllTrans(tflag)
+ 		set selectmode=$case($g(smode),"%Runtime":"RUNTIME","%ODBC":"ODBC","%EXTERNAL":"DISPLAY","%FDBMS":"FDBMS","":"LOGICAL")
+		set omscost=0
+		merge sqltmp=sqlrt
+		set sqltmp = sqlrt(0)
+		kill sqltmp(0)
+		set compiled=0
+		set rtpclock = 1
+		Lock +$$$CQ("rtpclock",pRTClassName):$$$CQGetLockTO
+		If $test {
+			#; if we can get the lock, someone else may have compiled the RTCQ while we were waiting on the lock
+			#; so we need to check if the class now exists and only if it still does not do we need to compile it
+			try {
+				set oref=$classmethod(pRTClassName,"%New")
+				if $isobject(oref) { Lock -$$$CQ("rtpclock",pRTClassName)#"I" set rtpclock = 0 goto Exit }	
+			} catch newerr {
+				if (newerr.Name'="<CLASS DOES NOT EXIST>") { set status=newerr.AsStatus() goto ErrorExit }
+			}
+			set status=$$CompileRTQ(.sqltmp,.sqlrt,pRTClassName,selectmode,pHash,pUtilityClassName)
+			goto:$$$ISERR(status) ErrorExit
+			set compiled=1
+		} else {
+			set rtpclock = 0
+			set status=$$$ERROR($$$SQLError,-114,$$$Text("Lock Timeout attempting to acquire lock on Runtime Query","%SQL.SQLRTUMAKER"))
+			goto ErrorExit
+		}
+		try {
+			set oref=$classmethod(pRTClassName,"%New")
+			if $g(rtpclock) { Lock -$$$CQ("rtpclock",pRTClassName)#"I" set rtpclock = 0}
+			if '$isobject(oref) {	// We could not instantiate the new RTClass
+				set status=$$$ERROR($$$SQLError,-400,$$$FormatText($$$Text("Could not instantiate run-time class %1","%SQL.SQLRTUMAKER"),pRTClassName))
+				goto ErrorExit
+			} 
+		} catch newerr {
+			Lock -$$$CQ("rtpclock",pRTClassName)#"I"
+			set rtpclock = 0
+			set status=newerr.AsStatus()
+			goto ErrorExit
+		}
+	} catch err {
+		if $g(rtpclock) { Lock -$$$CQ("rtpclock",pRTClassName)#"I"}
+		set status=err.AsStatus()
+		goto ErrorExit
+	}
+.
+Exit	// Success
+	if $g(gotlock) { lock -$$$CQ("Query",$$$CQVersion,pHash)#"I" }
+	if $g(rtpclock) { Lock -$$$CQ("rtpclock",pRTClassName)#"I"}
+	if $d(tflag) { $$$ResumeAllTrans(tflag) }
+	set status=$$$OK
+	RETURN oref
+.
+ErrorExit	// Failure
+	if $g(compiled),$g(pRTClassName)'="",$$$defClassDefined(pRTClassName) do Delete^%apiOBJ(pRTClassName,"-d") 
+	if gotlock { lock -$$$CQ("Query",$$$CQVersion,pHash)#"I" }
+	if $g(rtpclock) { Lock -$$$CQ("rtpclock",pRTClassName)#"I"}
+	if $d(tflag) { $$$ResumeAllTrans(tflag) }
+	do apiOBJ^%ETN(status)
+	RETURN ""
+}
+.
+CompileRTQ(&sql,&sqlrt,pRTClassName,selectmode,pHash,pUtilityClassName)[mtc]{
+	try {
+		new mtc,%qinfo
+		set omscost=0,insertTargetShard=0
+		#;  queryType = 0: xDBC Query; queryType = 1: Embedded SQL; queryType = 2: Dynamic SQL;
+		set nRTP("qType") = 0
+		set nRTP("selectMode") = selectmode
+		set SQLCODE=$$ParseSQL^%SYS.SQLSRV(.sql,,.nRTP)	// implicitly defines mtc()
+		if (SQLCODE<0) {
+			set status=$$$ERROR($$$SQLError,SQLCODE,"Parse of RunTime Query failed"_%msg_$g(sql(1)))
+			goto ErrorExitC
+		}
+		merge %qinfo=mtc(0,0)
+		set SQLCODE=$$AddInto^%SYS.SQLSRV(.sql,$g(%qinfo("sf")),+$g(%qinfo("select")),.sqlout)
+		if SQLCODE<0 {
+			set status=$$$ERROR($$$SQLCode,SQLCODE,"Error adding into clause")
+			goto ErrorExitC
+		}
+		set stmttype=$$GetType^%SYS.SQLSRV(%qinfo("type"))
+		if 'stmttype { set %qrc=-1 quit  }
+		set zz=""
+		if $d(%qinfo("parameter","convertonclient"))#2 { set zz=" /*#OPTIONS {""xDBCParamClientConversions"":"""_%qinfo("parameter","convertonclient")_"""} */" }
+		if $d(%qinfo("select-convertonclient"))#2 { set zz=zz_" /*#OPTIONS {""xDBCL2OonClient"":"""_%qinfo("select-convertonclient")_"""} */" }
+		if stmttype=1 && ( +$g(%qinfo("fastSelect")) || +$g(%qinfo("fastFetch")) ) {
+			set zz=zz_" /*#OPTIONS {""xDBCfastSelect"":"_+$g(%qinfo("fastSelect"))_",""xDBCfastFetch"":"_+$g(%qinfo("fastFetch"))_$s($g(%qinfo("fastSelectSettings"))'="":",""xDBCfastSelectLowSlot"":"_+$lg(%qinfo("fastSelectSettings"))_",""xDBCfastSelectHighSlot"":"_+$lg(%qinfo("fastSelectSettings"),2)_$s($lg(%qinfo("fastSelectSettings"),3)'="":",""xDBCfastSelectPreFields"":"_$$quoter($listtostring($lg(%qinfo("fastSelectSettings"),3))),1:""),1:"")_"} */"
+			set intoAtEndOfLine=(+%qinfo("sf")=sqlout)&&($p(%qinfo("sf"),"^",2)>$l(sqlout(sqlout)))
+			set sqlout(sqlout)=sqlout(sqlout)_zz
+			if ($g(%qinfo("nofromclause"))=1) || (intoAtEndOfLine) {
+				set $p(%qinfo("sf"),"^",2)=$p(%qinfo("sf"),"^",2)+$l(zz)
+			}
+		}
+		#;  privs is an array of relations and privilege codes of the form:
+		#;     privs("1,qualifiedtablename",<action>)=""
+		#;     privs("3,qualifiedtablename",<action>)=""
+		set %qrc=$$CheckPriv^%SYS.SQLSRV(stmttype,.mtc,.%qinfo,.privs,.sysprivs)
+		quit:%qrc
+		set IAmSuperUser=$$$IAmSuperUser	// Need to know here before adding the %All role (DPV3730)
+		set loginroles=$roles
+		$$$AddAllRoleTemporaryInTry  
+.
+		if stmttype=2 {	// INSERT - see if the target is sharded
+			set %qi=$o(%qinfo("table",""),1,zz)
+			set insertTargetShard=$p(zz,$c(1),6)
+		}
+			#; if this is an xDBC query and there was a timeout on the statement, we do not want to timeout on the compilation of the RTCQ
+			#; We will clear the alarm here, and then reset it after RTCQ compilation
+			#; %qtimeout comes from %SYS.DBSRV and is read from the client for the statement being executed
+		if +$g(%qinfo("option","xDBC")),$g(%qtimeout) { do $SYSTEM.Alarm.Clear() }
+.
+		do DefineCQMetadata^%SYS.SQLSRV(stmttype,.%qmetadata,.tImmediatePurge,insertTargetShard)
+		set status=$$CreateClass^%SYS.SQLSRV(pRTClassName,"RTPC runtime utility cached statement created with server version:")
+		if stmttype=1 {	
+			set streams="",%qi="" 
+			for  {
+				set %qi=$o(%qinfo("select",%qi)) quit:%qi=""  
+				set:$case($p($g(%qinfo("select",%qi,1)),$c(1),2),-4:1,-1:1,:0) streams=streams_$lb(%qi)
+			}
+		}
+		set SQLCODE=$$SelectMethods^%SYS.SQLSRV(pRTClassName,.sqlout,$$$aid,$g(%qinfo("select")),$G(streams),.sql,.nRTP,1,selectmode)
+		if SQLCODE'=0 { goto ErrorExitC }
+		
+		#; Compile the cached query class, keep the class using the same setting as SQL queries use
+		do RebuildItemIndex^%R(pRTClassName,"CLS")
+		set SQLCODE=0,sc=$$CompileRecurse^%apiOBJ(pRTClassName,$select($$$CQSaveMAC:"k",1:"")_"-d/multicompile=0",.tError)
+		if $$$ISERR(sc) {
+			set status=sc 
+			if $g(tError(1))[" : SQLCODE=" {
+				set SQLCODE=$p($p(tError(1)," : SQLCODE=",2)," "),%msg=$p($p(tError(1)," : ",3),$$$NL,1)
+					#; If SQLCODE=-52 then most likely the cached query class failed to compile with an error inside the SQL compiler.
+					#; The -52 errors are just noise, and mask the real error, which should by in $p(tError(1),$$$NL,1)
+				if SQLCODE=-52 {
+					set SQLCODE=-400,%msg="Error compiling cached query class "_pRTClassName_":  "_$p(tError(1),$$$NL,2)
+					set status=$$$ERROR($$$SQLError,SQLCODE,%msg)
+				} else {
+					set SQLCODE=-400
+					set status=$$$ERROR($$$SQLError,SQLCODE,%msg)
+				}
+				if $g(%msg)="" {
+					set %msg="Error creating or compiling "_pRTClassName
+				}
+				goto ErrorExitC
+			}
+			else {
+				set SQLCODE=-400,%msg="Process "_$j_" failed to compile Cached Query Class "_pRTClassName_" with these errors: "
+				set status=$$$ERROR($$$SQLError,SQLCODE,%msg)
+				for i=1:1:$g(tError) set %msg=%msg_$$$NL_$g(tError(i))
+				if pRTClassName'="",$$$defClassDefined(pRTClassName) do Delete^%apiOBJ(pRTClassName,"-d")
+				goto ErrorExitC
+			}
+			
+		}
+		// Class compiled OK, if not keeping CQ source, make the class deployed
+		do:'$$$CQSaveMAC MakeClassDeployed^%apiOBJ(pRTClassName,"",,1)
+		Set $$$CQ("RTQ",pUtilityClassName,pRTClassName)=""
+		Set $$$CQ("RTQ2",pRTClassName)=pUtilityClassName
+		set:omscost $$$CQ("Query",$$$CQVersion,pHash,pRTClassName,"cost")=omscost
+		set $$$CQ("Query",$$$CQVersion,pHash,pRTClassName)=$lb($g(%SQLCompileMode,1),$s($g(mtc(0,0,"some unqualified names")):%defschema,1:""),$$$ProcessIsolationLevel)
+		#; Store the metadata that was defined above in DefineCQMetadata()
+		for %qiii=0:1 { quit:'$d(%qmetadata(%qiii))  set $$$CQ("Query",$$$CQVersion,pHash,pRTClassName,%qiii)=%qmetadata(%qiii) }
+		#;  Store the entire SQL text in $$$CQ
+		merge $$$CQ("QueryText",pRTClassName)=sqlrt
+		if $d(privs) {
+			merge $$$CQ("Query",$$$CQVersion,pHash,pRTClassName,"priv")=privs 
+			set:'IAmSuperUser $$$CQ("Query",$$$CQVersion,pHash,pRTClassName,$zu(110),"pu",$$$Hash($$$aid),$$$Hash(loginroles))=""
+		}
+		merge:$d(sysprivs) $$$CQ("Query",$$$CQVersion,pHash,pRTClassName,"syspriv")=sysprivs 
+		do SetExtInfo^%SYS.SQLSRV(.%qinfo,pRTClassName,.clist,.dblist)
+		if stmttype=1 {
+			set $$$QueryFastSelect=+$g(%qinfo("fastSelect"))
+			set $$$CQ("QueryRoutine",pRTClassName)=$listbuild($$$CQVersion,pHash,$h,clist,tImmediatePurge,0,$s(omscost:omscost,1:""),pHash,dblist,serverProtocol,+$g(%qinfo("fastFetch")),+$g(%qinfo("fastSelect")),0,$$UTC2LocalTimeOffset^%SYS.SQLSRV())
+		} else {
+			set $$$CQ("QueryRoutine",pRTClassName)=$listbuild($$$CQVersion,pHash,$h,clist,tImmediatePurge,0,$s(omscost:omscost,1:""),pHash,dblist,serverProtocol,0,0,''%qslotcnt,$$UTC2LocalTimeOffset^%SYS.SQLSRV())
+		}
+		set $$$CQ("LastPrepare",pRTClassName)=$h
+.
+			#; Reset alarm after RTCQ compilation
+		if +$g(%qinfo("option","xDBC")),$g(%qtimeout) { do $SYSTEM.Alarm.Set(%qtimeout) }
+	
+	} catch err {
+			#; Reset alarm after RTCQ compilation
+		if +$g(%qinfo("option","xDBC")),$g(%qtimeout) { do $SYSTEM.Alarm.Set(%qtimeout) }
+		if $g(pRTClassName)'="",$$$defClassDefined(pRTClassName) do Delete^%apiOBJ(pRTClassName,"-d") 
+		set status=err.AsStatus()
+		RETURN err.AsStatus()
+	}
+	RETURN $$$OK
+.
+ErrorExitC 
+	do apiOBJ^%ETN(status)
+	if $g(pRTClassName)'="",$$$defClassDefined(pRTClassName) do Delete^%apiOBJ(pRTClassName,"-d") 
+		#; Reset alarm after RTCQ compilation
+	if +$g(%qinfo("option","xDBC")),$g(%qtimeout) { do $SYSTEM.Alarm.Set(%qtimeout) }
+	RETURN status
+}
+GetSelect(originalsql,&declarestmt) [] public {
+	Set first=originalsql
+	Set si=$find($zcvt(first,"U"),"SELECT") 
+	Set declarestmt=$e(first,1,si-$L("SELECT")-1)
+	Set second=$e(first,si,*)
+	Set sqlselect="SELECT"_second
+	Set tempsql=1
+	Set tempsql(1)=sqlselect
+	Do NormalizeSQL^%qaqqt(.tempsql,.normsql)
+	Return $zstrip(normsql(1),"<>W")
+.
+}
+.
+GetSelectNoRunTime(originalsql) [] public {
+	Set first=originalsql
+	Set si=$find($zcvt(first,"U"),"SELECT") 
+	Set second=$e(first,si,*)
+	Set sqlselect="SELECT %NORUNTIME"_second
+	Return sqlselect	
+}
+.
+GetFullNoRunTime(originalsql) [] public {
+	Set first=originalsql
+	Set si=$find($zcvt(first,"U"),"SELECT") 
+	Set prefix=$e(first,1,si-$L("SELECT")-1)
+	Set second=$e(first,si,*)
+	Set sqlselect=$zstrip(prefix_"SELECT %NORUNTIME"_second,"<W")
+	Return sqlselect
+}
+.
+GetSelectArr(&originalsql) [] public {
+	Do NormalizeSQL^%qaqqt(.originalsql,.normsql)
+	Return $$GetSelect(normsql(1))
+.
+}
+.
+MergeSelectArr(&originalsql,&normsql,&declarestmt) [] public {
+	Do NormalizeSQL^%qaqqt(.originalsql,.normsql)
+	Set normsql(1)=$$GetSelect(normsql(1),.declarestmt)
+}
+.
+	; JSL5054 - stolen from %SYS.DynamicStatement.mac
+GenerateSelectProperties(pStatementClass, qinfo, member, columns, pObjectMode = 0) [ SQLCODE ]
+{
+	set sequence = 0
+	for icol=1:1:qinfo("select") {
+		set colinfo = qinfo("select",icol,1)
+			#; COLINFO is (from %qaqpif2.mac - refer to that routine for verification):
+			#; colinfo(<colnbr>,1) = $c(1) pieces:
+			#;       1) Name
+			#;       2) ODBC Type
+			#;       3) Length
+			#;       4) Precision
+			#;       5) Scale
+			#;       6) NULLABLE
+			#;       7) READONLY 							// DPV2253
+			#;       8) Column Label (same as Name)
+			#;       9) Column Schema Name
+			#;      10) Column Qualifier Name - NULL
+			#;      11) Column Table Name
+			#;      12) Collation function (or * if none)  	// PVA007
+			#;      13) Column's Cach Datatype				// DPV1670
+			#;		14) Projecting Property name			// DPV2083
+			#;		15) Projecting Property's Extent		// DPV2090
+			#;		16) ODBC Type (same as 2)
+			#;		17) Column name as defined in table		// DPV2090
+			#;		18) Autoincrement (sys generated value)	// DPV2541
+			#;		19) IsRowVersion                        // DPV2541 TRUE for system generated RowID values
+			#;		20) IsUnique                            // DPV2541 TRUE if there is a UNIQUE key on this column by itself
+			#;		21) IsExpression                        // DPV2541 TRUE if expression column
+			#;		22) IsHidden                            // DPV2541
+			#;		23) IsIdentity                          // DPV2541 TRUE if IDENTITY column (The column name is the name of the SQLRowID and the SQLRowID is not private)
+			#;		24) IsKeyColumn                         // DPV2541 TRUE if column is part of Primary Key
+			#;		25) IsRowid								// DPV3092 TRUE if field is RowID or Single Field IDKEY field
+			#;
+		set fieldname=$piece(colinfo,$char(1))
+		if fieldname = "" { set fieldname = "__column_" _ icol }
+			#; This is the Cache type class name
+		set dt = $piece(colinfo,$char(1),13)
+		kill params
+		set property = $piece(colinfo,$char(1),14)
+		if (property '= "") && ($piece(qinfo("select",icol),$char(1),8) '= "") {
+			set extent = $piece(colinfo,$char(1),15)
+			set tFieldName = $Piece(colinfo,$Char(1),17)
+			if tFieldName = "" { set tFieldName = $get($$$EXTPROPsqlcolumnname($$$pEXT,extent,property),fieldname) }
+			set fldinfo = $get($$$EXTSQLCOLsqlinfo($$$rEXT,extent,tFieldName))
+			if property '= "%%ID" { set tPropertyType = $get($$$EXTPROPtype($$$pEXT,extent,property),dt),rowid=0 } else { set tPropertyType = extent, rowid=1 }
+		}
+		else { set fldinfo="",rowid=0, extent = "", tPropertyType = dt }
+		if fldinfo '= "" {
+			set p = $$$SQLLocColTypeParameters(fldinfo), oidtype = $$$SQLLocColOIDType(fldinfo)
+				#; We don't ever project property parameters to SQL unless the property type class is a datatype generator class.
+			if ('oidtype) && ('rowid) { for j=1:1:$listlength(p) { set pname = $piece($listget(p,j),"="), pvalue = $piece($listget(p,j),"=",2,999) if (pname'="")&&(pvalue'="") { set params(pname) = pvalue } } }
+			elseif (pObjectMode) && (oidtype>1) { set params("CLASSNAME") = oidtype - 1 }
+		}
+			#; Generate a property name from the field name.
+		set propname = fieldname
+		set tAlias = $extract($translate($extract("n",$extract(fieldname)?1n)_fieldname,$$$GetIdTrxFrom,$$$GetIdTrxTo),1,31)
+.
+		if $data(member($$$ucase(propname))) {
+			set:$length(propname)=1 propname = propname _ " "
+			for i=48:1:57,65:1:90,97:1:122 {
+				set $extract(propname,$length(propname))=$char(i) quit:'$data(member($$$ucase(propname)))
+			}
+			while $data(member($$$ucase(propname))) {
+				set propname = propname _ "_" _ icol
+			}
+		}
+.
+		set member($$$ucase(propname)) = propname
+			// Define the property
+		$$$defMemberSet(pStatementClass,$$$cCLASSproperty,propname,"")
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cXXXXsequencenumber,$increment(sequence))
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPsqlfieldname,fieldname)
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPsqlcolumnnumber,icol+1)
+.
+			// Generate the list of aliases
+		set tPropertyNameLC = $$$lcase(propname)
+		set tPropertyNameUC = $$$ucase(propname)
+		set tAliases(propname) = $Select(tPropertyNameLC'=propname:$listbuild(tPropertyNameLC),1:"")
+		if (tPropertyNameUC '= propname) && (tPropertyNameUC '= "") { set tAliases(propname) = tAliases(propname) _  $listbuild(tPropertyNameUC) }
+			// This is the SQL column name mangled into a valid ObjectIdentifier name and is defined for backward compatibility.
+		if (tAlias '= propname) && (tAlias '= "") { set tAliases(propname) = tAliases(propname) _ $listbuild(tAlias) }
+.
+		if 'pObjectMode { $$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPcalculated,1) }
+			// columns(icol) = property name, columns(icol,0) = sql name, columns(icol,1)=literal/object flag, columns(icol,2) = originating extent,
+			// columns(icol,3) = quick function, columns(icol,4) = stream flag
+		set columns(icol)=propname,columns(icol,0)=fieldname,columns(icol,4)=0
+			#; and determine the correct type class
+		if $Case($p(colinfo,$c(1),2),$$$SQLLONGVARBINARY:1,$$$SQLLONGVARCHAR:1,:0) {
+			$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPtype,dt)
+			set columns(icol,4) = 1
+			kill params
+			set dt = "", params("CLASSNAME") = 2
+		}
+		  #;  Qualify the type with the default package
+		if dt '= "" {
+				#; dt is the declared type class reported by SQL
+				#; tPropertyType is the defined property type if the column can be linked to a property in a class, otherwise it is the same
+				#;		as dt. It is also expected that if the column is linked to a property whose type class is literal that dt and tPropertyType
+				#;		are the same.
+				#; extent is the name of the extent (almost exactly the name of the class...collections and child tables mucks this a bit)
+				#; If pObjectMode is TRUE and tPropertyType is an object type then we'll use that type for the generated result property.
+				#; Otherwise, the type will be dt
+			if ($$$classIsDataType(tPropertyType)) || ('pObjectMode) {
+				$$$NormalizeClassnameByDef(dt,$get($$$comMemberKeyRaw(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPorigin),pStatementClass))
+				$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPtype,dt)
+					#; If the datatype for this column has a MAXLEN parameter, define it here for the CQ property
+				if $$$comMemberDefined(dt,$$$cCLASSparameter,"MAXLEN") { 
+				   set params("MAXLEN")=$piece(colinfo,$char(1),3) 
+				    #; If datatype is "%Library.String", don't allow MAXLEN=0, Otherwise the following error will be thrown: ERROR #5554: MAXLEN parameter value must be a positive integer
+				   if ((params("MAXLEN")=0) && (dt="%Library.String")) { set params("MAXLEN")="" }
+				}
+				if $$$classIsDataType(dt) { set columns(icol,1) = 1 } else { set columns(icol,1) = 0 }
+				if extent '= "" {
+					set columns(icol,2) = extent
+					$$$comClassKeyGetLvar(tSchema,extent,$$$cCLASSsqlschemaname)
+					$$$comClassKeyGetLvar(tTable,extent,$$$cCLASSsqltablename)
+					if (tSchema '= "") && (tTable '= "") { set columns(icol,3) = $get(^oddSQL(tSchema,tTable,"QQ")) set:columns(icol,3)'="" columns(icol,3)="##class("_$lg(columns(icol,3))_")."_$lg(columns(icol,3),2)_"(%rowid,%nolock,0,1)" } else { set columns(icol,3) = "" }
+				}
+				else { set columns(icol,2) = dt }
+			}
+			else {
+				$$$NormalizeClassnameByDef(tPropertyType,$get($$$comMemberKeyRaw(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPorigin),pStatementClass))
+				$$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPtype,tPropertyType)
+				set columns(icol,1) = 0, columns(icol,2) = tPropertyType
+				$$$comClassKeyGetLvar(tSchema,tPropertyType,$$$cCLASSsqlschemaname)
+				$$$comClassKeyGetLvar(tTable,tPropertyType,$$$cCLASSsqltablename)
+				if (tSchema '= "") && (tTable '= "") { set columns(icol,3) = $get(^oddSQL(tSchema,tTable,"QQ")) set:columns(icol,3)'="" columns(icol,3)="##class("_$lg(columns(icol,3))_")."_$lg(columns(icol,3),2)_"(%rowid,%nolock,0,1)" } else { set columns(icol,3) = "" }
+			}
+		}
+		else { set columns(icol,1) = 1 }
+ 		set parameter = $order(params(""))
+		while parameter '= "" {
+			$$$defSubMemberSet(pStatementClass,$$$cCLASSproperty,propname,$$$cPROPparameter,parameter,params(parameter))
+		 	set parameter = $order(params(parameter))
+		}
+	}
+	set columns = qinfo("select")
+		// And now, define the aliases for all properties, checking for uniqueness and for property name conflicts.
+		// tAlias($$$ucase(alias),property)=alias as an index on all aliases.
+		// member($$$ucase(property)) = property as an index on all properties defined
+	set tProperty = $Order(tAliases(""),1,tAliasList)
+	set tAliasCount = 0
+	set tAliasMax = 500
+	while tProperty '= "" {
+		set tAliasString = "", tPROPERTY = $$$ucase(tProperty)
+		for tPtr = 1:1:$listlength(tAliasList) {
+			set tAlias = $List(tAliasList,tPtr)
+				// An alias can differ from the current property or any alias of the current property only by case, check this by allowing $$$ucase(alias) = $$$ucase(property)
+				// An alias must be different from any other property name and from any other alias
+				// 			CHECK - $$$ucase(alias) '= $$$ucase(property) and '$data(member($$$ucase(alias))
+				// An alias must be case insentively unique between properties but can differ by case within the alias list for a given property.
+			if ($$$ucase(tAlias) = tPROPERTY) || (('$Data(member($$$ucase(tAlias)))) && (('$Data(tAliasIndex($$$ucase(tAlias)))) || ($Order(tAliasIndex($$$ucase(tAlias),"")) = tProperty))) { set tAliasString = tAliasString _ "," _ tAlias, tAliasIndex($$$ucase(tAlias),tProperty) = "", tAliasCount = tAliasCount + 1 }
+		}
+		if tAliasString '= "" { $$$defMemberKeySet(pStatementClass,$$$cCLASSproperty,tProperty,$$$cPROPaliases,$Extract(tAliasString,2,*)) }
+		quit:tAliasCount>tAliasMax
+		set tProperty = $Order(tAliases(tProperty),1,tAliasList)
+	}
+		// Generate the property Get method for each column
+	if 'pObjectMode { do SelectColumnMethodGet(pStatementClass,.qinfo,.member,.columns,.sequence) }
+	quit $$$OK
+}
+.
+GenerateStaticProperties(class,member) {
+		#; This function generates properties that are part of the result set state. The property names may get mangled
+		#; if a name conflict occurs.
+	Set sequence=1000
+	For var="c","d","E","p","s","t","l","n","R","Z" {
+		Do AddProperty(class,"%CursorData"_var,"%RawString",.sequence,.member,1,1)
+	}
+	Quit $$$OK
+}
+.
+AddProperty(class,property,type,sequence,member,private=0,multidimensional=0) {
+	If $$$nameIsNameInvalid(property) Quit $$$ERROR($$$PropertyNameInvalid,property)
+	If $Length(property)>$$$MAXNAMELENGTH Quit $$$ERROR($$$PropertyNameTooLong,property,$$$MAXNAMELENGTH)
+	; If $$IsNameConflict^%occName(class,$$$cCLASSproperty,property) Quit $$$ERROR($$$PropertyNameConflict,property)
+	; $$$defMemberKill(class,$$$cCLASSproperty,property)
+	Set membername = $$$ucase($Extract(property,1,$$$MAXNAMELENGTH))
+	If $Data(member(membername)) {
+		Set mangle = "A"
+		While mangle '= "" {
+			Set property = $Extract(property,1,$$$MAXNAMELENGTH - $Length(mangle)) _ mangle
+			Set membername = $$$ucase($Extract(property,1,$$$MAXNAMELENGTH))
+			If '$Data(member(membername)) { Set mangle = "" }
+				#; Property name is unique in 25 characters which means we can have a twentyfive digit base 26 number of possible unique values.
+				#; Very unlikely that we cannot generate a unique identifier using the alpha-addition mangle.
+			Else { Set mangle = $$incrementn^%SYS.SQLSRV(mangle) If $Length(mangle) > 25 { Set mangle = "", sc = $$$ERROR($$$PropertyNameConflict,property) } }
+		}
+	}
+	Set member(membername) = property
+	$$$defMemberSet(class,$$$cCLASSproperty,property,"")
+	$$$defMemberKeySet(class,$$$cCLASSproperty,property,$$$cXXXXsequencenumber,$Increment(sequence))
+	$$$defMemberKeySet(class,$$$cCLASSproperty,property,$$$cPROPtype,type)
+	If private $$$defMemberKeySet(class,$$$cCLASSproperty,property,$$$cPROPprivate,1)
+	If multidimensional $$$defMemberKeySet(class,$$$cCLASSproperty,property,$$$cPROPmultidimensional,1)
+}
+.
+SelectColumnMethodGet(pStatementClass, qinfo, member, columns, sequence)
+{
+	for tPtr = 1:1:columns {
+			// columns(tPtr) is the property name corresponding to the column. columns(tPtr,0) is the SQLNAME.
+		set method = columns(tPtr) _ "Get"
+		set tStatus = $$AddMethod(pStatementClass, method, $Increment(sequence), .member)
+		if $$$ISERR(tStatus) { throw ##class(%Exception.StatusException).CreateFromStatus(tStatus) }
+		set tType = $$$defMemberKeyGet(pStatementClass,$$$cCLASSproperty,columns(tPtr),$$$cPROPtype)
+		if tType = "" { set tType = nameDefaultDataTypeClassNameGet }
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSmethod,method,$$$cMETHreturntype,tType)
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSmethod,method,$$$cMETHcodemode,$$$cMETHCODEMODEEXPRESSION)
+		$$$defMemberKeySet(pStatementClass,$$$cCLASSmethod,method,$$$cMETHimplementation,1)
+		$$$defMemberArraySet(pStatementClass,$$$cCLASSmethod,method,$$$cMETHimplementation,1,"$Get(..%Data("_tPtr_"))")
+	}
+	quit $$$OK
+}
+.
+AddMethod(pStatementClass, method, sequence, member)
+{
+	// if $$$nameIsNameInvalid(method) quit $$$ERROR($$$MethodNameInvalid,method)
+	if $length(method)>$$$MAXNAMELENGTH quit $$$ERROR($$$MethodNameTooLong,method,$$$MAXNAMELENGTH)
+	set membername = $$$ucase($extract(method,1,$$$MAXNAMELENGTH))
+	if $data(member(membername)) quit $$$ERROR($$$MethodNameConflict,method)
+	set member(membername) = method
+	$$$defMemberSet(pStatementClass,$$$cCLASSmethod,method,"")
+	$$$defMemberKeySet(pStatementClass,$$$cCLASSmethod,method,$$$cXXXXsequencenumber,$increment(sequence))
+	quit $$$OK
+}
+.
+	// sql - rtu sql 
+	// str - list of options for has
+GetRTHash(sql,str,&normsql) 
+{
+	set tHash=""
+		#;  Get the hash for this embedded SQL statement.  This hash will be used in error reporting to link to the text of the SQL statement
+		#;  I don't know if the statement is fully qualified or not.  So I will look up using a hash that assumes the statement is fully qualified, and if that
+		#;  is not found I will look up using a hash that includes the %sqlSchemaPatch and %defschema
+	Set arrsql=1
+	Set arrsql(1)=sql
+	do NormalizeSQL^%qaqqt(.arrsql,.normsql)
+	//if $d(mt("unqualified-names"))#2 { set str=$lb(mt("sqlcomp"),$g(%sqlSchemaPath),%defschema) } else { set str=$lb(mt("sqlcomp"),"","") }
+	Return $$Hash^%SYS.SQLSRV(str,.normsql,"")
+.
+}
+.
+	// Given an RTPC utility CQ, purge any runtime CQs associated with it
+	// If DefineAsStale=1, instead of purging the runtime CQ, define it as stale
+PurgeRtqs(utility,ns,DefineAsStale=0) [] PUBLIC {
+	#; Purge any runtime queries associated with this utility query
+	RETURN:utility=""
+	set:$g(ns)="" ns=$namespace
+	set gotlock=0
+	try {
+		set runtime=""
+		for { 
+			set runtime=$o($$$CQns("RTQ",utility,runtime)) quit:runtime=""
+			set gotlock=1
+			lock +$$$CQns("rtpclock",runtime):$$$CQGetLockTO
+			if '$test { 	// report locking error
+				set gotlock=0
+				do apiOBJ^%ETN($$$ERROR($$$CachedQueryLockFailedX,runtime))
+				continue
+			}
+			if '$d($$$CQns("RTQ",utility,runtime)) {	// runtime CQ is not defined
+				lock:gotlock -$$$CQns("rtpclock",runtime)#"I"
+				set gotlock=0
+				continue
+			}
+			if 'DefineAsStale {
+				set sc=$$Delete^%apiOBJ(runtime,"-d",,1)	// Delete the runtime CQ class
+				if $$$ISOK(sc) {
+					kill $$$CQns("RTQ",utility,runtime)
+					kill $$$CQns("RTQ2",runtime)
+					kill $$$CQ("Stale",runtime)
+					if $d($$$srv),$$$logging { do ##class(%SYS.DBSRV).logappend("CQ "_runtime_" Purged") }
+				} else {
+					do apiOBJ^%ETN(sc)	// log error
+				}
+			} else {
+				set $$$CQ("Stale",runtime)=$h
+			}
+			lock:gotlock -$$$CQns("rtpclock",runtime)#"I"
+			set gotlock=0
+		}
+	} catch (err) {
+		if runtime'="",gotlock { lock -$$$CQns("rtpclock",runtime)#"I" set gotlock=0 }
+		do apiOBJ^%ETN(err.AsStatus())		// report error
+	}
+	RETURN
+}
+.
+#INCLUDE %sqlcode
+#INCLUDE %quoter
+#INCLUDE %GlobalInReadOnlyDB
+---

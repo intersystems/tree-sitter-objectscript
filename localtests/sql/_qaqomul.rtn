@@ -1,0 +1,2149 @@
+====
+qaqomul
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqomul^MAC^^^0
+%qaqomul  // QO - Evaluate strategies using multiple maps for a stream
+	;; COMPONENTS :: SQL/Optimizer
+	#;
+#INCLUDE %msql
+#INCLUDE %qao
+#INCLUDE %BigData.ShardingManager // JMM1081
+#define INID(%ifn) ((%ifn)=$p(qoridifn,"^",1)||(qoridifn[(","_(%ifn)_",")))
+#define MAXBIT(%n) (1.1*(%n))
+#define CEIL(%x) ((%x)+(-(%x)#1))
+#define FLOOR(%x) ((%x)-((%x)#1))
+#define MAXCHUNK(%n) ($$$CEIL($$$MAXBIT(%n)/64000))
+#define ISMAP0(%m) ((%m)=$p(mts(qoqn,stream),"^",4))
+#define USEDBYTES 6000
+ #; lower is better in following:
+#define GOODNESS(%t) $s(%t="e":1,%t="c":2,%t="i":3,%t="x":5,%t="":6,1:4)
+ #; PVA066: SLICES : 'typical' number of slices
+#define SLICES 25
+#IF 0   ;-------------------------------------------------------------
+ ; Description:   QO - Evaluate strategies using multiple maps for a stream
+ ; Author:        Paul V. Allen
+ ; Date:          March 15, 2002
+ ;
+ ;  JMM1081 (02/19/2021) - Prevent shard map screening from unnecessarily changing shard local query plan
+ ;  JMM785  (04/27/2017) - Don't use equivalence class selectivity for equals condition, avoiding unwanted temp file
+ ;  JSL5076 (04/27/2017) - Ignore biased outlier setting if RTPC is on
+ ;  JMM737  (07/21/2016) - Consider cancelling outer joins when costing OR-to-UNION optimization 
+ ;  PVA343  (12/07/2015) - Fix leak of collectcost variable 
+ ;  AK935   (09/30/2015) - Use MW2 for BSL map with no rowid subscript
+ ;  PVA326  (07/10/2015) - Fix rare <undefined> on cbndtype in qclassify in qaqomul (from compilation of GE classes) 
+ ;  PVA325  (06/08/2015) - Fix "optimizer optimizer failed to find a usable join order" error for certain aggregate query with WHERE clause 
+ ;  PVA318  (02/12/2015) - Aggmaps support for bitslice with no WHERE clause
+ ;  PVA316  (02/04/2015) - Make cost based decision for or->union optimization for multi-table OR condition case 
+ ;  AK887   (01/27/2015) - (TRW) Support aggmaps generation for COUNT(f)
+ ;  PVA312  (08/29/2014) - Support use of property parameter controlling outlier behavior 
+ ;  PVA308  (06/18/2014) - Fix possible wrong query answer when there is a condition on subscript that comes after they idkey 
+ ;  PVA306  (06/13/2014) - Support system switch for whether selectivity for unknown values (parameters) is assumed to possibly be the outlier. 
+ ;  PVA279  (02/12/2014) - Enhance ptres handling for longstanding defects 
+ ;  PVA275  (10/18/20130 - Improve multi-index optimization of multiple disjuncts 
+ ;  PVA282  (08/30/2013) - Fix <UNDEFINED>collate+11^%qaqpcmp error for a collection predicate applied to field that has an outlier 
+ ;  PVA274  (04/18/2013) - Fix occasional redundant index use in multi-index plans 
+ ;  PVA272  (02/15/2013) - Support separate selectivity for frequent outlier value 
+ ;  PVA263  (06/25/2012) - Modify PVA212 heuristics to more strongly favor MW1 strategies 
+ ;  PVA258  (05/09/2012) - Optimize multi-key joins 
+ ;  PVA248  (12/19/2011) - Fix cases where %noindex hint changed the query answer.
+ ;  PVA242  (07/28/2011) - Support a hint (%noindex) to not use indexes to satisfy the indicated condition. 
+ ;  PVA213  (07/09/2011) - A new hint %ALLINDEX is provided to request that 'all indexes' be used for the first table in the join order. 
+ ;  PVA212  (05/01/2011) - Multi-index optimization will now use indexes for all 'efficient' equality conditions, by default. 
+ ;  PVA232  (12/03/2010) - Support optional second argument of %inlist() to provide a selectivity hint 
+ ;  PVA187  (06/16/2008) - Add 'number of bits per chunk' overhad cost to global access for bit map indexes.
+ ;  AK700   (05/12/2008) - Implement BSL streamless "pretest" condition
+ ;  PVA167  (02/04/2009) - Fix: SELECT DISTINCT with very large number of columns causes <MAXNUMBER> in distsel^%qaqomul 
+ ;  PVA160  (10/29/2008) - Fix costing hole in PVA152
+ ;  PVA154  (09/01/2008) - Improve optimizer cost model : distinguish selectivity for complex conditions on map subscripts from that on map data
+ ;  PVA157  (05/01/2008) - Support faster DISTINCT while preserving case (i.e. with FASTDISTINCT OFF )
+ ;  PVA152  (11/08/2007) - Query Optimization improved for text and collection predicates
+ ;  AK678   (04/26/2007) - Force BSL with %Name split subscript into temp-file
+ ;  PVA148  (09/05/2007) - BSL optimization ignores a condition in WHERE
+ ;  JLF156  (04/24/2007) - Skip over collection index template maps
+ ;  JLF161  (04/18/2007) - Enhance condition dependency management
+ ;  JLF157  (03/04/2007) - Modify equality selectivity of collection predicates and TOP..ORDER BY %SIMILARITY
+ ;  PVA124  (01/04/2006) - Implement facility to undo side effects of conds/outer/class in propagatePreds^%qaqpnl
+ ;  PVA118  (12/15/2006) - BSL processing should not attempt to use virtual or map
+ ;  PVA100  (10/12/2006) - Fix: " <UNDEFINED>ComputeSel+18^%qaqomul " for certain queries with an IN condition
+ ;  AK640   (01/17/2006) - Force BSL with general mapping into temp-file
+ ;  PVA073  (01/28/2005) - Avoid unnecessary data map access for "TOP n id .... ORDER BY id" queries; also for idkey columns. Also, additional TOP bugs.
+ ;  PVA074  (03/17/2005) - Fix <undefined> at isalg7+44^%qaqomul when bit slice is enabled and there are aggregates but none of them are opotimizable with bit slice indexes.
+ ;  JLF015  (12/13/2004) - %ANYOF ('=>') and Row-Level Security
+ ;  PVA072  (11/10/2004) - Support pseudo conditions implied by TOP... ORDER BY in optimizer
+ ;  PVA069  (09/23/2004) - Revise optimizer output structures for specifying aggregates computed with an index. 
+ ;  PVA066  (08/25/2004) - Initial optimizer support for bit slice indexes 
+ ;  PVA065  (07/27/2004) - Optimizer debugging output wrong when mult-index strategies used. 
+ ;  PWC885  (07/12/2004) - Change 1e144 to 1E144 to avoid syntax errors.
+ ;  PVA051  (07/03/2003) - wrong answer for certain OR conditions when multiple index strategy used 
+ ;  PVA046  (11/20/2002) - Range conditions like: value > field mishandled in multi-index strategies. 
+ ;  PVA047  (11/19/2002) - optimizer problems related to prodlog #30240 .
+ ;  PVA045  (11/13/2002) - Disable some multi-index optimizations that code generation doesn't support. 
+ ;  PVA042  (08/29/2002) - Improve queries containing NOT: some wrong answers fixed, and performance improved 
+ ;  PVA040  (08/08/2002) - <DIVIDE>J6+7^%qaqojn> possible if selectivity of a column is 100%. Possibly similar errors elsewhere.  
+ ;  PVA34   (03/15/2002) - Use more than one index per table for restriction. (Created) 
+ ;-------------------------------------------------------------
+ ;                       I N F O R M A T I O N
+ ;-------------------------------------------------------------
+ ;
+ ;  Start your information here...
+ ;
+#ENDIF  ;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#; For a given stream, both for initial stream usage or for building a temp file, there is only one 
+#; basic (IC8M) winning multi-map strategy. Rather than re-compute this for possibly many main join 
+#; algorithms (choosing different join conditions or maps for the main join), we remember this the 
+#; first time called for a stream, returning same result whenever called for that stream.
+ic8m(stream,cost,tree,sel,satconds,psatconds,clsdet) 
+#;    stream - input - stream number to find or build multi-map alg for
+#;    cost - output - cost of multi-map algorithm
+#;    tree - output - tree# of algorithm produced for this stream: $$$malg("sub",tree#,i);
+#;                       lowest i for tree# is root sub algorithm
+#;    sel - output - selectivity consumed by multi-map algorithm. Whole IC8M behaves 
+#;                   effectivly like a generalized CON on ID, with this selectivity.
+#;    satconds - output - $bit string of conditions which should not be listed in ressub in the main
+#;                         algorithm.
+#;    psatconds - output - array of partially satisfied condition selectivities. psatconds(log#)=
+#;                         selectivity that should be used for that partially satisfied condition.
+#;                         Unlike the existing optimizer, any type of condition may be found here
+#;                         for different reasons (for example, only some terms of conjunct within
+#;                         a disjunct may have been used in the IC8M strategy)
+#;    clsdet - output - Whether stream of IDs or chunks is class determinate for the specified stream.
+#;                      If non class determinate, then class filtering must be done later. 
+#;        implicit input: qoqn, mmreq (master map needed after search condition - actually used in conjunct)
+#;                        onemap - if true, allow a single map strategy (added by PVA066)
+#;                        agclsdet - if defined, always generate strategy good for count(*), even if no conditions (PVA318)
+#;		  implicit output: resknown  (added by PVA212)
+#; return value: 0: no good multi-map strategy found 1: it is found
+#;---------------------------------------------------------------------------
+ #; This is where check for previously done ic8m(qoqn,stream) would be done.
+ #;    Actually, mmreq needs to be part of subscripting, 0 and 1 for this could produce
+ #;    different trees. 
+ n ntuple,maxbit,maxchunk,ctop,ifn,info,log,lterms,resroot,costinfo,conds,i,logWithSubq,lcount,call,hasBeenCounted
+ n inptres,inseladj  s inptres="",inseladj="" // PVA279
+ #; PVA066: move setting of ifnval to isalg7
+ s satconds="" kill psatconds
+ s ctop=1 ; conjunct() needs to cost top level different from deep conjuncts.
+ s ntuple=+mts(qoqn,stream),maxbit=$$$MAXBIT(ntuple),maxchunk=$$$MAXCHUNK(ntuple)
+ s ifn="",sel=1 f  { 
+   s ifn=$o(mts(qoqn,stream,"CON",ifn),1,info) q:ifn="" 
+   s log=$p($p(info,"^",2),",",2)
+   s resknown=$e(resknown,1,*-1)_","_log_"," // PVA212
+   s $bit(lterms,log)=1 d:'$bit($g(fully),log) fully(log)
+   s:$d(ptres(log)) $bit(inptres,log)=1 // PVA279
+   s:$d(seladj(log)) $bit(inseladj,log)=1 // PVA279
+   } 
+ s ifn="" f  { 
+   s ifn=$o(mts(qoqn,stream,"RANGE",ifn),1,info) q:ifn="" 
+   #; PVA072: skip TOP: predicates
+   #; PVA212: set resknown
+   s conds=$p(info,"^",2) f i=2:1 
+   {  s log=$p(conds,",",i) q:log=""  
+      s resknown=$e(resknown,1,*-1)_","_log_"," continue:$e($$$mtL(log),1,6)="v^TOP:"  
+      s $bit(lterms,log)=1 d:'$bit($g(fully),log) fully(log)
+      s:$d(ptres(log)) $bit(inptres,log)=1 // PVA279
+      s:$d(seladj(log)) $bit(inseladj,log)=1 // PVA279
+   }
+   }
+ s hasBeenCounted=$d($$$mtBSLNodeStreamCnt(stream)),call="BSLcondcounter^%qaqomul"
+ s:'hasBeenCounted $$$mtBSLNodeStreamCnt(stream)=0
+ s log="" f  {
+   #; PVA072: skip TOP: predicates
+   #; PVA157: skip DISTINCT predicates
+   #; PVA212: set resknown
+   s log=$o(mts(qoqn,stream,"COMP",log),1,info)
+   QUIT:log=""
+   s resknown=$e(resknown,1,*-1)_","_log_","
+   continue:$e($$$mtL(log),1,6)="v^TOP:"
+   continue:$e($$$mtL(log),1,11)="v^DISTINCT^"
+   set:$$listree^%qaqpagg("l",log,"q") logWithSubq=log
+   d:'hasBeenCounted lviter^%qaqpnl("l", log)
+   s $bit(lterms,log)=1
+   d:'$bit($g(fully),log) fully(log)
+   s:$d(ptres(log)) $bit(inptres,log)=1 // PVA279
+   s:$d(seladj(log)) $bit(inseladj,log)=1 // PVA279
+   }
+ i '$d(lterms),'$d(agclsdet) QUIT 0 //PVA318
+ s:'$d(lterms) lterms=""  // PVA318
+ s tree=$i($$$Malg("sub"))
+ QUIT:'$$conjunct(1,"",lterms,tree,.resroot,.cost,.costinfo,.sel,.satconds,.psatconds,.clsdet) 0
+ #; PVA066: allow a single MW if onemap flag set.
+ if $p($$$Malg("sub",tree,resroot),"^",6)["MW" 
+ {  if onemap {s MWonly=1,MWmap=$p($$$Malg("sub",tree,resroot),"^",5)} 
+    else { kill $$$Malg("sub",tree) QUIT 0 }
+ }
+ // Check if too many BSL log nodes are in use
+ QUIT:($$$mtBSLNodeTotalCnt+$$$mtBSLNodeStreamCnt(stream)>$$$MaxNodeThresholdForBSL) 0
+ s $$$mtBSLNodeTotalCnt=$$$mtBSLNodeTotalCnt+$$$mtBSLNodeStreamCnt(stream)
+ ;This is where  save of all outputs into ic8m(qoqn,stream) would be done
+ QUIT 1 ; IC8M multi-map strategy 
+#;---------------------------------------------------------------------------
+#define lviterQ(%type,%val) Set:%val lviterQ($increment(lviterQ))=$listbuild(%type,%val)
+BSLcondcounter
+ // Function used by lviter inside of ic8m^%qaqomul in order to count the per query block BSL count
+ if ev="l" {
+  n lii
+  for lii=4:1:$l(v,"^") {
+    $$$lviterQ(l,$p(v,"^",lii))
+  }
+ } elseif $p(v,"^",2)'="'NULL" {
+   s $$$mtBSLNodeStreamCnt(stream)=$$$mtBSLNodeStreamCnt(stream)+1
+ }
+ QUIT
+#;---------------------------------------------------------------------------
+fully(log) ; Add log to satisfiability dictionaries (fully, partial)
+ #; implicit inputs: qoqn, stream
+ #; partial not implemented yet
+ n x,flds,val,i s $bit(x,1)=0 ; initialize to avoid subscript error for deep streamless conditions
+ s flds=$$$mtLColVals($$$mtL(log))
+ f i=2:1 {s val=$p(flds,",",i) q:val=""  s $bit(x,val)=1 }
+ s $bit(fully(qoqn,stream,x),log)=1
+ s $bit(fully,log)=1
+ QUIT
+#;---------------------------------------------------------------------------
+conjunct(insel,termset,lterms,tree,resroot,cost,costinfo,sel,satconds,psatconds,clsdet,testedconds)
+#;    insel   - input - selectivity so far - defines what map 0 access must be beaten to be effective
+#;    termset - input - bit string of available conditions from conjuncts deeply containing this conjunct
+#;    lterms - input - bit string of log# for the terms of the conjunct to optimize
+#;    tree - input - tree# of algorithm to merge into on success
+#;    resroot - output - sub alg # root entry created in tree for this conjunct
+#;        THIS WILL ALWAYS BE THE LOWEST SUB ALG# GENERATED
+#;    cost - output - cost of multi-map algorithm
+#;    costinfo - output - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs
+#;    sel - output - selectivity consumed by multi-map subtree for this conjunct
+#;    satconds - inout - $bit string of conditions in this conjunct that are fully satisfied
+#;                         as well as inheritied conjunct conditions satisfied
+#;    psatconds - inout - array of partially satisfied condition selectivities. psatconds(log#)=
+#;                         selectivity that should be used for that partially satisfied condition.
+#;                         Unlike the existing optimizer, any type of condition may be found here
+#;                         for different reasons (for example, only some terms of conjunct within
+#;                         a disjunct may have been used in the IC8M strategy)
+#;    clsdet - output - Whether stream of IDs or chunks is class determinate for the specified stream.
+#;                      If non class determinate, then class filtering must be done later. 
+#; 	  testedconds - output - $lb(<fully test conds>,<partially tested conds>), both bit strings. Unaffected by
+#;                            whether previously satisfied or not. // PVA274
+#;        implicit input: qoqn, stream,ctop,mmreq
+#; return value: 0: no good multi-map strategy found 1: it is found
+#;---------------------------------------------------------------------------
+ n map,info,lcost,lsel,bcost,bsel,disjroot,ok,mapused,orused,dtermset,ltree,droot,lcostinf,lsatconds,lpsatconds,lclsdet,mtermset
+ n drootl,drootl2,bcostinf,bsatconds,bpsatconds,bclsdet,augcost,i,iscbm,brcost,mmcost,ltree2,bestdisj,bestmap,typ
+ n ltree3,mw1found,iscurmw1,ltermsused,ltested,bltested,term,savsatconds,jj,impany,lsatsel,blsatsel
+ s (mapused,orused,drootl2)="",sel=1,bestdisj="",drootl=0
+ s ltree=$i($$$Malg("sub")),resroot=$i($$$Malg("sub",1)),ltree2=$i($$$Malg("sub")),ltree3=$i($$$Malg("sub"))
+ s mtermset=$bitlogic(lterms|termset)
+ s savsatconds=satconds // PVA274
+ #; Keep finding next best map or disjunct until inadequate payoff
+ for  {
+   s bcost=1E144,bsel=1,bestdisj="",bestmap=""
+   #; First try maps
+   #; PVA212: use mw1found
+   s map="",mw1found=0 for  { 
+     s map=$o(mts(qoqn,stream,"MAP",map),1,info) q:map=""
+     g:$bit(mapused,map) c1 
+     #; PVA066: skip bit slice indexes here, for now
+     s typ=$p(mts(qoqn,stream,"MAP",map),"^",6)
+     g:(typ="S"||(typ="T")) c1 	 // Skip over collection index template maps JLF156
+     continue:$d($$$mtVirtualOrMaps(map)) // PVA118:  skip "OR" virtual maps 
+     s iscurmw1=0 //PVA263
+     k lpsatconds merge lpsatconds=psatconds s lsatconds=satconds
+     d domap(sel*insel,map,mtermset,ltree,.droot,.lcost,.lcostinf,.lsel,.lsatconds,.lpsatconds,.lclsdet,.ltested)
+     i $$$ISMAP0(map) {s mmcost=lcost g c1}
+     s iscbm=$$iscbm(map) 
+     s:$p($$$Malg("sub",ltree,droot),"^",6)="MW1"&&(lsel<1) iscurmw1=1 // PVA212: set mw1found; PVA263: iscurmw1
+     if (iscurmw1 && 'mw1found)|| ((iscurmw1=mw1found)&&
+     ($s(iscbm:augcost,1:lcost)<bcost && (lsel<1) &&
+     '$bit(lsatconds,$g(logWithSubq)) && // IBA137: Bypass BSL Leaves with Subquery Calls
+     $$localused(ltested,lterms)) ) || (iscbm && ctop && $d(agclsdet)) //PVA263: use iscurmw1 PVA318: additional iscbm case
+       {
+	   if (bestdisj) {k $$$Malg("sub",ltree2)} elseif bestmap {k $$$Malg("sub",ltree,drootl)}
+	   i iscbm {s bcost=augcost,brcost=lcost} else {s (bcost,brcost)=lcost}
+	   s bsel=lsel,drootl=droot,bcostinf=lcostinf,bsatconds=lsatconds,bclsdet=lclsdet,bltested=ltested 
+	   s bestdisj="",bestmap=map
+	   s:iscurmw1 mw1found=1 // PVA263
+	   k bpsatconds 
+	   merge bpsatconds=lpsatconds
+       }
+     else { k $$$Malg("sub",ltree,droot) }
+c1   }
+   #; Then try disjuncts
+   if 'mw1found // PVA263: skip disjuncts while still MW1 found
+   {
+   s disjroot=0 for  {
+     s disjroot=disjroot+1,disjroot=$bitfind(lterms,1,disjroot) q:'disjroot
+     #; Is it really a disjunct? ; also, exclude streamless disjuncts
+     if $$$mtLOperator($$$mtL(disjroot))="!",$$$mtLColVals($$$mtL(disjroot))'="," {
+	   g:$bit(orused,disjroot) c2
+ #; PVA047: Also make sure disjroot not satisfied on an earlier map.	   
+	   g:$bit(satconds,disjroot) c2
+	   #; PV279: if implied, consider it satisfied
+	   #;    Currently, there appears to be no way for this code be reached - that a disjunct is
+	   #;    is implied by other conditions such that all were not satisfied together. The only case
+	   #;    of a disjunct being implied is via conditions beneath a FOR SOME %ELEMENT, and the only direction
+	   #;    of implication is anyofand -> disjunct. In which case, wherever the anyofand was tested, the disjunct
+	   #;    would also be tested or marked implied and satisfied. This code is left for future generality.
+	   if $bit(inptres,disjroot) && $$checkimp(satconds,disjroot,.impany) 
+	   {  s $bit(satconds,disjroot)=1 
+	      if impany s sel=sel*$$GetSel(disjroot) // apply selectivity (once) even though skipped because 
+	                                             #;   no selectivity was applied by anyofand
+          continue	                                             
+	   } 
+	   s dtermset=mtermset,$bit(dtermset,disjroot)=0
+	   k lpsatconds merge lpsatconds=psatconds
+	   s lsatconds=satconds
+	   s ok=$$disjunct(sel*insel,dtermset,disjroot,ltree3,.droot,.lcost,.lcostinf,.lsel,.lsatsel,.lsatconds,.lpsatconds,.lclsdet,.ltested)
+	   g:'ok c2 
+       if lcost<bcost,lsel<1 {
+	     #; PVA279: Check for selectivity adjustment; could cause rejection of disjunct due to lsel=1 after adjust
+	     if $bit(inseladj,disjroot)  && $$checksa(lsatconds,disjroot,.lsel) continue:lsel'<1
+	     if (bestdisj) {k $$$Malg("sub",ltree2)} elseif bestmap {k $$$Malg("sub",ltree,drootl)}
+	     merge $$$Malg("sub",ltree2)=$$$Malg("sub",ltree3) k $$$Malg("sub",ltree3)
+	     s (bcost,brcost)=lcost 
+	     s bsel=lsel,drootl=droot,bcostinf=lcostinf,bsatconds=lsatconds,bclsdet=lclsdet,bltested=ltested
+	     s blsatsel=lsatsel
+	     s bestdisj=disjroot,bestmap=""
+	     k bpsatconds 
+	     merge bpsatconds=lpsatconds
+	     }
+	   else {  k $$$Malg("sub",ltree3) }
+       }
+c2   }
+   }
+   quit:bcost=1E144 ; no new best map or disjunct found; likely all plausible ones have been used
+   #; PVA212: always use MW1 
+   #; PVA213: use any index that is useful if %allindex hint
+   if $$hint^%qaqpre("%ALLINDEX",qoqn)||(bestmap&&($p($$$Malg("sub",ltree,drootl),"^",6)="MW1")) {}  
+   elseif ctop {
+	 if 'mmreq,$bitcount($bitlogic(lterms&~bsatconds),1)=0 { if bcost'<mmcost quit:$$tquit()  continue }
+	 else {
+	   s lsatconds=bsatconds k lpsatconds merge lpsatconds=pbsatconds
+	   d domap(sel*bsel*insel,$p(mts(qoqn,stream),"^",4),mtermset,ltree,.droot,.lcost,.lcostinf,.lsel,.lsatconds,.lpsatconds,.lclsdet)
+	   if bcost+lcost'<mmcost quit:$$tquit()  continue // PVA212: tquit
+	   }
+     }
+   else { ; not ctop
+     if bcost'<mmcost quit:$$tquit()  continue // PVA212: tquit
+     }
+   #; Accumulate cost, selectivity, etc.
+   if bestdisj 
+   {  merge $$$Malg("sub",ltree)=$$$Malg("sub",ltree2)  kill $$$Malg("sub",ltree2) 
+      s $bit(orused,bestdisj)=1
+      s bsel=blsatsel // Now that full bsel used for domap check above
+   }
+   else { s $bit(mapused,bestmap)=1}
+   s satconds=bsatconds
+   merge psatconds=bpsatconds
+   s i="" f  s i=$o(psatconds(i)) q:i=""  k:$bit(satconds,i) psatconds(i)
+ #; PVA274: don't build intersect tree till later; manage individual map and disjunct terms in ltermsused.
+   if drootl2="" 
+   {
+	  s drootl2=drootl,cost=brcost,costinfo=bcostinf,sel=bsel,clsdet=bclsdet
+	  s ltermsused($i(ltermsused))=$lb(drootl,cost,costinfo,cost,costinfo,bltested_$lb(bclsdet)) // node, total cost, total costinfo, cost, costinf, testedconds
+   }
+   else 
+   {  // PVA274: Greedy algorithm workaround: check for prior term that is now superfluous
+	  s cost=$$addcost^%qaqoco(cost,brcost),sel=sel*bsel
+	  s clsdet=clsdet!bclsdet
+      s costinfo=$$icost(costinfo,bcostinf,.lcost)
+      s cost=$$addcost^%qaqoco(cost,lcost)
+      s drootl2=drootl
+	  s ltermsused($i(ltermsused))=$lb(drootl,cost,costinfo,brcost,bcostinf,bltested_$lb(bclsdet))
+      d killGreedo(savsatconds,.ltermsused,.cost,.costinfo)
+   }
+  }
+ #; clean up if there was a best candidate that didn't pay off  
+ if bcost<1E144 { if (bestdisj) {k $$$Malg("sub",ltree2)} else {k $$$Malg("sub",ltree,drootl)} }
+ #; Did we find anything useful?
+ if $bitcount($bitlogic(mapused|orused),1)=0 QUIT 0 
+ #; PVA274: build MI tree from ltermsused
+ s (jj,drootl2)="" for
+ {  s jj=$o(ltermsused(jj),1,term) q:jj=""  s drootl=$li(term)
+    s ltested=$lg($g(testedconds)),bltested=$li($li(term,6)),$li(testedconds)=$bitlogic(ltested|bltested)
+    s ltested=$lg(testedconds,2),bltested=$li($li(term,6),2),$li(testedconds,2)=$bitlogic(ltested|bltested)
+    if 'drootl2 {s drootl2=drootl}
+    else {s i=$i($$$Malg("sub",1)),$$$Malg("sub",ltree,i)="4^,"_+qoridifn_",^,"_drootl2_","_drootl_",^^^MI1^^^^"_$li($li(term,3))_","_$li($li(term,3),2)_"^" s drootl2=i}
+ }
+ #; force resroot to be the top node:
+   s $$$Malg("sub",ltree,resroot)=$$$Malg("sub",ltree,drootl2) k $$$Malg("sub",ltree,drootl2)
+   merge $$$Malg("sub",tree)=$$$Malg("sub",ltree) kill $$$Malg("sub",ltree)
+ QUIT 1
+ #; PVA263: tquit is no longer needed due to unilateral MW1 bias. There will now never be a cost abandoned
+ #;         non-MW1 strategy that needs cleanup, without quitting (because of a yet to be used MW1). 
+ #;         However, we keep it for now, in case PVA263 is put on a switch or its rules modified. It is
+ #;         harmless to keep tquit. 
+ #; PVA212: create tquit: new termination logic for conjunct.
+tquit()
+ if mw1found 
+ {  if (bestdisj) {k $$$Malg("sub",ltree2) s $bit(orused,bestdisj)=1} else {k $$$Malg("sub",ltree,drootl ) s $bit(mapused,bestmap)=1}
+    QUIT 0
+ }
+ else {QUIT 1}
+#; PVA275: Create localused
+localused(testedconds,lterms) [] private
+#; Ensure that at least some conditions 'local' to the conjunct (rather than inherited from super conjuncts)
+#;    are used on this map. Otherwise, this map does not justify usage for a conjunct that is part of a disjunct
+{  
+   s lst1=$li(testedconds),lst2=$li(testedconds,2),lst=$bitlogic(lst1|lst2)
+   QUIT:$bitcount($bitlogic(lst&lterms),1) 1
+   QUIT 0
+}
+#; PVA274: create killGreedo  (google Greedo)
+#;---------------------------------------------------------------------------
+killGreedo(satconds,lterms,cost,costinfo) [] private
+ {
+	 #; satconds - input - bit map of conditions already satisfied on call to conjunct
+	 #; lterms - inout - array of conjunct term plans, and associated information:
+	 #;           // plan node, total cost so far, total costinfo, cost of this term, term's costinfo, term's: $lb(tested conitions, part tested conditions, clsdet)
+	 #; cost - inout - total cost from all terms used
+	 #; costinfo - inout - total costinfo from all terms used
+ #;----	 
+ #; Ensure don't have: killed clsdet=1, new one = 0. 
+ #; satconds is initial state for conjunct call; If the only basis for using an element is conditions satisfied here, 
+ #;   that doesn't justify using it. So all bit map in lterms are filtered by ~satconds in the following logic.
+ #; Note: for maintenance of tested conds, it is not necessary to ensure partially tested conditions are not
+ #;       also listed as fully tested. For the 'real' arguments this is crucial, but for algorithm applied here,
+ #;       overlap is ok. Thus maintenance of partial bit map is, by design, not as precise as for 'real' psatconds
+ #; Note: at cost of performance, could enhance logic to be:
+ #;    For each earlier element, compute total fully satisfied without this one + clsdet without this one; then if this one's
+ #;       (fully+partial+clsdet) subset of (all other (fully + clsdet)), can eliminate. This would discover case that
+ #;       that element 2 is a suset of element 1 + 4, for example. For now, only implement element in isolation a subset
+ #;       (in all ways) of current element.
+ #;---
+ #; NOTE: killGreedo only kills references to abandoned plans. For disjunct plans, the ability to kill the 
+ #;       disjunct subtree is long gone. Considering killGreedo only occasionally finds things to abandon, only
+ #;       a small amount of memory is involved. Further, such abandoned items are useful for debugging - they
+ #;       indicate what killGreedo did. 
+ #;---
+     s last=$o(lterms(""),-1,lastinfo) // get info about last term just added
+     s lasttested=$li(lastinfo,6) // for last, we don't need to subtract satconds, since this is only tested 
+                              #; for being a superset 
+     s lmap=$li(lasttested),lclsdet=$li(lasttested,3),anykilled=0
+	 s term="" for 
+ 	 {  s term=$o(lterms(term),1,terminfo) q:term=last
+ 	    s termtested=$li(terminfo,6),fmap=$li(termtested),pmap=$li(termtested,2),tclsdet=$li(termtested,3)
+ 	    if $bitcount($bitlogic(fmap|pmap&~satconds&~lmap),1)=0 && (tclsdet=0 || (lclsdet=1)) // this term is redundant
+ 	    {  kill lterms(term) s anykilled=1 } // eliminate redundant term 
+ 	 }
+ 	 if anykilled // for simplicity, recompute all from scratch
+ 	 {   s term="",term=$o(lterms(term),1,terminfo)
+ 	     s cost=$li(terminfo,4),$li(terminfo,2)=cost
+ 	     s costinfo=$li(terminfo,5),$li(terminfo,3)=costinfo
+ 	     s lterms(term)=terminfo
+ 	     s next=term for 
+ 	     {  set next=$o(lterms(next),1,nextinfo) q:next=""
+ 	        s cost=$$addcost^%qaqoco(cost,$li(nextinfo,4))
+ 	        s costinfo=$$icost(costinfo,$li(nextinfo,5),.lcost)
+ 	        s cost=$$addcost^%qaqoco(cost,lcost)
+ 	        set $li(nextinfo,2)=cost,$li(nextinfo,3)=costinfo,lterms(next)=nextinfo
+ 	     }
+ 	 }
+    quit
+ }
+#;---------------------------------------------------------------------------
+checksa(satconds,log,sel) [seladj] private
+{ 
+  #; sel: INOUT : adjusted by seladj, but not > 1
+  s pl="",aadj=0 for
+  {  s pl=$o(seladj(log,pl),1,ac) q:pl=""
+     s adj=1
+     for i=2:1:$l(pl,",")-1 {  if '$bit(satconds,$p(pl,",",i)) {s adj=0 q}}
+     if adj {s sel=sel/$$GetSel(ac) s:sel>1 sel=1 s aadj=1}
+  }
+  quit aadj
+}
+#;---------------------------------------------------------------------------
+checkimp(satconds,log,impany) [ptres,mt] private
+#; check if log is implied by satisfied condtions
+#;   Also set impany=1 if log is implied by anyofand (else impany set to 0)
+{  s pl="",impany=0,imp=0 for 
+   {  s pl=$o(ptres(log,pl)) q:pl=""
+      s imp=1
+      for i=1:1:$l(pl,",")-2 
+      {  if $bit(satconds,$p(pl,",",i+1))  
+         {  s:$$$mtLOperator($$$mtL($p(pl,",",i+1)))["ANYOFAND" impany=1
+	        continue
+	     }
+         else {s imp=0 q }
+      }
+      q:imp
+   }
+   quit imp
+}
+#;---------------------------------------------------------------------------
+iscbm(map) ; determine if map is class bit map
+    #; implicit input: qoqn,stream
+    #; returns: 1 if class bit map, else 0
+#;---------------------------------------------------------------------------
+#; There should be more explicit way to do this. Following is quite awful.
+#; PVA047: Fix to test against piece 6 rather than piece 4.
+ QUIT:$p(mts(qoqn,stream,"MAP",map),"^",6)'="B" 0
+ n sub s sub = 0
+ //find the first non-const sub
+ f  {
+ 	s sub=$o(mts(qoqn,stream,"MAP",map,sub)) RETURN:sub="" 0
+ 	if +mts(qoqn,stream,"MAP",map,sub)'=1 QUIT
+ }
+ QUIT:$p(mts(qoqn,stream,"MAP",map,sub),"^",2)'=+qoridifn 0
+ QUIT 1
+#;---------------------------------------------------------------------------
+icost(costinfo1,costinfo2,cost) ; compute cost and cost info for a INTERSECTION operation
+ #; costinfo1, costinfo2 - input - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs, 
+ #;     for each operand of intersecion
+ #; cost - output - standard optimizer cost structure
+ #;   RETURNS: constinfo for result of intersection
+#;---------------------------------------------------------------------------
+ n ga,c1,c2,t1,t2,rt,rc
+ s t1=$li(costinfo1),c1=$li(costinfo1,2),t2=$li(costinfo2),c2=$li(costinfo2,2)
+ if t1,t2 { ; intersection of streams of ID chunks
+   s ga=.5*$s(c1<c2:c1,1:c2),rt=1,rc=c1*c2/maxchunk
+   }
+ elseif t1 { ; operand1 is chunks, operand 2 is ID
+   s ga=.25*c2,rt=0
+   s rc=c1*c2/10/maxchunk ; REALLY NEED ESTIMATE OF IDs in chunk operand.
+   }
+ elseif t2 { ; operant2 is chunks, operand 1 is ID
+   s ga=.25*c1,rt=0
+   s rc=c1*c2/10/maxchunk ; REALLY NEED ESTIMATE OF IDs in chunk operand.
+   }
+ else { ; intersection of streams of ID
+   s ga=.25*$s(c1<c2:c1,1:c2),rt=0
+   s rc=c1*c2/ntuple
+   }   
+ s cost=CGGFACTOR*ga_",0,"_ga_",0"
+ QUIT $lb(rt,rc)
+#;---------------------------------------------------------------------------
+domap(insel,map,termset,tree,resroot,cost,costinfo,sel,satconds,psatconds,clsdet,testedconds)
+#;    insel - input - applied only if map is map0. If 1, normal costing for map0. If <1, treat as if an IN condition
+#;                    of that selectivity is applied to map0, and no other conditions are applied (except to map0 data) 
+#;    map - input - NOTE: if map0, no actual algorithm is generated. Only cost is output. 
+#;    termset - input - bit string of available conditions from conjuncts [deeply] applicable to this map
+#;    tree - input - tree# of algorithm to merge into
+#;    resroot - output - sub alg # entry created in tree for this map (MW1 or MW2)
+#;    cost - output - cost of MAPWALK, including temp file creation for MW2
+#;    costinfo - output - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs
+#;    sel - output - selectivity consumed by map walk
+#;    satconds - inout - $bit string of conditions that are fully satisfied
+#;                         including inheritied conjunct conditions
+#;    psatconds - inout - array of partially satisfied condition selectivities. psatconds(log#)=
+#;                         selectivity that should be used for that partially satisfied condition tested later.
+#;    clsdet - output - Whether stream of IDs or chunks is class determinate for the specified stream.
+#;                      If non class determinate, then class filtering must be done later. 
+#; 	  testedconds - output - $lb(<fully test conds>,<partially tested conds>), both bit strings. Unaffected by
+#;                            whether previously satisfied or not. // PVA274
+#;        implicit input: qoqn, stream, anyclsfd, anyand, anyifn
+#;        implicit output: augcost
+#;---------------------------------------------------------------------------
+ n sub,flds,info,val,fldsc,known,bounding,boundtype,log,ptln,op,cbndtype,i,v2,opr1,opr2,lab,subalg,foundid,fldsidx,ifn,ressub,subtype
+ n svsatconds,svpsatconds,ftested,tbm,wksatconds,impany,anylup,idsub
+ s ftested=""
+ s svsatconds=satconds merge svpsatconds=psatconds
+ s augcost=0,$bit(flds,1)=0,sub="",val="",boundtype="",sel=1,subalg="MW1",foundid=0
+ s resroot=$i($$$Malg("sub",1))
+ s:'$$$ISMAP0(map) termset=$bitlogic(termset&~noindexmap) // PVA242
+ if '$p(mts(qoqn,stream,"MAP",map),"^",5),$p(mts(qoqn,stream,"MAP",map),"^",6)="B" {s clsdet=0} else {s clsdet=1}
+ f  {
+   if val||'sub { ; when sub="" we look for deep constant conditions to pre-test on map access
+     s fldsc="" f  { s fldsc=$o(fully(qoqn,stream,fldsc),1,info) q:fldsc=""
+       if '$bitcount($bitlogic(fldsc&~flds),1) { ; all required fields for these conditions among prior
+                                                 #; subscripts
+	     s info=$bitlogic(info&termset) ; only consider 'available conditions'
+         if $bitcount(info,1) {
+	       if 'val { ; set up pretest for deep streamless conditions
+ #; PVA045: disable pretest optimization in 5.0, codegen not ready yet	       
+	#; reinstated by AK700
+	         s known("pretest")=$bitlogic(known("pretest")|info) 
+	         s log=0 f  { s log=log+1,log=$bitfind(info,1,log) q:'log
+	           if '$bit(satconds,log) { s sel=sel*$$GetSel(log),$bit(satconds,log)=1} 
+	           } 
+	#; reinstated by AK700-
+	         }
+	       elseif $bit(fldsc,val) { ; apply condtions to sub
+	         #; Find best bounding conditions as we go
+	         s log=0 f  { s log=log+1,log=$bitfind(info,1,log) q:'log
+	           if '$bit(satconds,log) { s sel=sel*$$GetSel(log),$bit(satconds,log)=1} 
+	           s ptln=$$$mtL(log),op=$p(ptln,"^",2)
+	           if op="=",$e($$$mtV($p(ptln,"^",4)))="f",$e($$$mtV($p(ptln,"^",5)))="f" {
+ #; PVA045: Disable f1=f2 as bounding condition for 5.0
+ 				 s cbndtype="x"
+	             }
+	           elseif op="=",$e($$$mtV($p(ptln,"^",4)))="f"||($e($$$mtV($p(ptln,"^",5)))="f") {
+	             s opr1=$p(ptln,"^",4),opr2=$p(ptln,"^",5)
+		         if opr1=val,'$$vcontains(opr2,val) {s cbndtype="c"}
+		         elseif opr2=val,'$$vcontains(opr1,val) {s cbndtype="c"}
+		         else {s cbndtype="x"}
+	             }
+ #; PVA051: add missing NULL case as possible bounding condition:	             
+	           elseif op="NULL",$e($$$mtV($p(ptln,"^",4)))="f" {
+		         s opr1=$p(ptln,"^",4)
+		       	 if opr1=val {s cbndtype="c"}    
+		       	 else {s cbndtype="x"}
+		       }
+	           elseif ",IN,INSET,"[(","_op_","),$p(ptln,"^",4)=val {
+		         s cbndtype="i"
+		         f i=5:1 { s v2 =$p(ptln,"^",i) q:v2=""
+		           if $$vcontains(v2,val) {s cbndtype="x" quit}
+		           }
+	             }
+ #; PVA124: undo PVA100 as we now undo oneof when cloned	             
+  	           elseif op="ONEOF" {s cbndtype="i"} ; all the right analysis previously done in this case
+	           elseif op'="'","'<'>%STARTSWITH"[op,$e($$$mtV($p(ptln,"^",4)))="f"||($e($$$mtV($p(ptln,"^",5)))="f") { ; possible range
+	             s opr1=$p(ptln,"^",4),opr2=$p(ptln,"^",5)
+ #; PVA046: fix second vcontains call, used for <value> op <field> case	             
+ 	             if opr1'=val||$$vcontains(opr2,val),opr2'=val||$$vcontains(opr1,val) {s cbndtype="x" }
+	             else { ; ok, it's a range
+ #; PVA046: reverse inequality direction if the field was on the right. 	             
+ 	               if opr2=val s op=$tr(op,"<>","><")
+	               s:op="%STARTSWITH" cbndtype="s" s:op="<"||(op="'>") cbndtype="u" s:op=">"||(op="'<") cbndtype="l"
+	               }
+	             }
+	           else {s cbndtype="x"}
+	           if cbndtype="x"||($$$GOODNESS($e(boundtype))<$$$GOODNESS(cbndtype)) {s $bit(known(sub),log)=1 }
+	           elseif $$$GOODNESS($e(boundtype))>$$$GOODNESS(cbndtype) {
+	             f i=1:1:$ll($g(bounding(sub))) {s $bit(known(sub),$li(bounding(sub),i))=1 }
+	             s bounding(sub)=$lb(log),boundtype=cbndtype
+	             }
+	           elseif "eci"[cbndtype {s $bit(known(sub),log)=1 }
+	           else { ; a slew of range cases; 15 combinations, 6 possible actions
+	             s lab="domapx"_boundtype_cbndtype
+	             g @lab
+domapxss if $$GetSel(log)<$$GetSel($li(bounding(sub))) {s $bit(known(sub),$li(bounding(sub)))=1,$li(bounding(sub))=log} else {s $bit(known(sub),log)=1 } g domapxdun
+domapxsl s $bit(known(sub),log)=1 g domapxdun
+domapxsu s $li(bounding(sub),2)=log,boundtype=$e(lab,7,8) g domapxdun
+domapxls g domapxlus
+domapxll g domapxss
+domapxlu g domapxsu
+domapxus s bounding(sub)=$lb(log)_bounding(sub),boundtype=cbndtype_boundtype g domapxdun
+domapxul g domapxus
+domapxuu g domapxss
+domapxlus s $bit(known(sub),$li(bounding(sub)))=1,$li(bounding(sub))=log,$e(boundtype)=cbndtype g domapxdun
+domapxlul g domapxss
+domapxluu if $$GetSel(log)<$$GetSel($li(bounding(sub),2)) {s $bit(known(sub),$li(bounding(sub),2))=1,$li(bounding(sub),2)=log} else {s $bit(known(sub),log)=1 } g domapxdun 
+domapxsus g domapxss
+domapxsul g domapxsl
+domapxsuu g domapxluu
+domapxdun s log=log ; try to work around SYSTEM bug
+	             }
+	           }
+	         }
+	       } 
+         }
+       }
+     }
+   #; Check if need to switch to subalg MW2 (need temp file to return IDs in order):
+   if sub,'foundid,subtype'=1,boundtype=""||("ce"'[boundtype) s subalg="MW2"
+   if sub,foundid,subtype'=1,sub>idsub,boundtype]""||$bitcount(known(sub),1) s subalg="MW2" // PVA308: force MW2 for conditions on subs after idkey
+   s sub=$o(mts(qoqn,stream,"MAP",map,sub),1,info) q:sub=""
+   s subtype=+info,boundtype=""
+   #; Check for subscript that is the actual ID ifn. (If not present, IDs will not be returned in ID order)
+   if $p(info,"^",2)_$s($p(info,"^",6)]"":"_"_$p(info,"^",6),1:"")=$p(qoridifn,"^") s foundid=1,idsub=sub
+   #; cannot rely on type 0 being no good: given "exact(ifn)=? or whatever", this complex condition won't
+   #;   cause type=6 to be set for collate(ifn) subscript, but in multi-map strategy this subscript is
+   #;   useful for the partial condition. 
+   #;   unfortunately, the following approach doesn't work either because there will be no val# for
+   #;   collate(ifn) in this case. Ultimate resolution may make subscript type reliable, and may allow 
+   #;   ifnval to be obsoleted in favor of the pre-existing mts("ATT").
+   if subtype'=1,subtype'=9,$p(info,"^",2)]"" {
+     s val=$g(ifnval(stream,$p(info,"^",2)_$s($p(info,"^",6)]"":"_"_$p(info,"^",6),1:"")))
+     s:val $bit(flds,val)=1
+     }
+   else { s val="" }
+   }
+ #; Now find "index" conditions which can be tested on a map's data. e
+ #;   Build set of all ifns availablin this map.
+ s ifn="" for  { s ifn=$o(mts(qoqn,stream,"ATT",ifn),1,info) q:ifn=""
+   if $p(info,"^",7)[(","_map_",") s $bit(fldsidx,$p(info,"^",5))=1
+   }
+ s fldsc="" f  { s fldsc=$o(fully(qoqn,stream,fldsc),1,info) q:fldsc=""
+   if '$bitcount($bitlogic(fldsc&~fldsidx),1),$bitcount($bitlogic(fldsc&~flds),1) {
+     s info=$bitlogic(info&termset)
+     s log=0 f  { s log=log+1,log=$bitfind(info,1,log) q:'log
+       if '$bit(satconds,log) { s sel=sel*$$GetSel(log),$bit(satconds,log)=1 } 
+       s $bit(known("index"),log)=1 
+       #; PVAP148: restore following piece of PVA045
+       #; PVA045: Can't allow data with index conditions for MW1, so force MW2  
+       s subalg="MW2" 
+	   }
+     }
+   }
+ 
+ #; linearize known() and bounding() into ressub
+ s wksatconds=svsatconds
+ s ressub="" f i="pretest",$o(mts(qoqn,stream,"MAP",map,"")):1:$o(mts(qoqn,stream,"MAP",map,""),-1),"index"
+ {
+	#; PVA279: add to ftested first, then add to bit map of all so far (from base of svsatconds),
+	#;         then filter out ptres conditions from known(i) but not bounding(i) (and adjust selectivity for both, including impany case)
+	#;         then check for seladj and adjust selectivity. Then add to ressub.
+	#;         Also, change the loop order to have pretest first, just to make sure...
+  	#; PVA274: accumulate tested conditions 
+    s ftested=$bitlogic(ftested|known(i))
+    s tbm=$$pctobit($$listopc($g(bounding(i)))),ftested=$bitlogic(ftested|tbm)
+    s log=0 for 
+    {  s log=log+1,log=$bitfind(tbm,1,log) q:'log  
+       continue:$bit(wksatconds,log) // probably ok to use svsatconds, but ...
+       s $bit(wksatconds,log)=1
+	   if $bit(inptres,log) && $$checkimp(wksatconds,log,.impany) 
+	   {  if 'impany s sel=sel/$$GetSel(log) // Cancel selectivity unless special "implied by anyof and" case
+          #; PVA279: Don't remove anything from bounding(i), even if implied
+          continue	                                             
+ }
+	   if $bit(inseladj,log)&&$$checksa(lsatconds,log,.sel) {}
+ }
+    #;  PVA279: loop on bitfind for $g(bounding(i)),known(i) using $$checkimp, then $$checksa and wksatconds; update wksatconds
+    for anylup=0,1,2
+    {
+       s log=0 for 
+       {  s log=log+1,log=$bitfind(known(i),1,log) q:'log   
+          if '$bit(anyclsfd,log) d anyclassify(log,.anyclsfd,.anyand,.anyifn)
+          continue:(anylup=0 && ($bit(anyand,log) || $bit(anyifn,log)))
+          continue:(anylup=1 && '$bit(anyand,log))
+          continue:(anylup=2 && '$bit(anyifn,log))
+          continue:$bit(wksatconds,log) 
+          s $bit(wksatconds,log)=1
+	      if $bit(inptres,log) && $$checkimp(wksatconds,log,.impany) 
+	      {  if 'impany s sel=sel/$$GetSel(log) // Cancel selectivity unless special "implied by anyof and" case
+		     #; don't test implied condition - but must be implied just on this map
+		     s:$$checkimp($bitlogic(wksatconds&ftested),log,.impany) $bit(known(i),log)=0 
+             continue	                                             
+	      } 
+	      if $bit(inseladj,log)&&$$checksa(lsatconds,log,.sel) {}
+       }
+    }
+    s ressub=ressub_"*"_i_":"_$$bitopc($g(known(i)))_":::"_$$listopc($g(bounding(i))) 
+}
+ s ressub=$p(ressub,"*",3,*-1)_"*"_$p(ressub,"*",2)_"*"_$p(ressub,"*",*) //PVA279: asl generation very sensitive to order of theses
+ #;                                                  changed order for implication analysis, now need to restore it
+ s testedconds=$lb(ftested,"") // PVA274
+ 
+	#; AK640
+ i subalg="MW1",$$genmap(map) s subalg="MW2"
+ do mapcost(insel,map,subalg,.bounding,.known,.cost,.costinfo,svsatconds,.svpsatconds)
+ s:'$$$ISMAP0(map) $$$Malg("sub",tree,resroot)="5^,"_+qoridifn_",^^"_ressub_"^"_map_"^"_subalg_"^^^^"_$li(costinfo)_","_$li(costinfo,2)_"^"
+ 
+ #; if class bit map, and no disk used for real cost, set implicit output augcost as if disk access needed
+ #; Actually, augcost should be set whenever cbm, though it will often be the same as 'cost'.
+ s augcost=cost ; TEMPORARY TEMPORARY TEMPORARY !!!
+ QUIT 
+ 
+#;---------------------------------------------------------------------------
+anyclassify(log,anyclsfd,anyand,anyifn) [mt] PUBLIC
+  #; classify log as anyofand, anything else referencing anyof ifns,
+  #; and everything else. Mark classified logs in anyclsfd. All args 
+  #; except log should be passed by reference and are bit strings. The purpose 
+  #; of having this function is that domap and conjunct may visit the same logs
+  #; many times, as alternatives are explored. All except the first time can
+  #; avoid classification overhead, just doing bit tests.
+{  s $bit(anyclsfd,log)=1
+   if $p($$$mtLOperator($$$mtL(log)),"%NOINDEX")="ANYOFAND" { s $bit(anyand,log)=1 QUIT }
+   if $$hasAnyofIfn^%qaqosn(log) { s $bit(anyifn,log)=1 }
+   QUIT
+}
+#;---------------------------------------------------------------------------
+	#; AK640
+genmap(map)  ;  $$:  1 if map uses "general mapping" features -
+ #;  check for %Storage.SQL, full row reference override, or for
+ #;  any subscript overrides for data access, special NEXT code,
+ #;  invalidIF, start/stop values, or data access variables
+	#; AK640
+ RETURN:'foundid 1  ;  no rowid subscript - use MW2
+	#; AK678
+ n sub,sv
+ f sub=1:1 s sv=$g(mts(qoqn,stream,"MAP",map,sub)) q:sv=""  q:$p(sv,"^",8)
+ QUIT:sv'="" 1  ;  %Name split subscript
+	#; AK678-
+ QUIT:'$d($$$smd(12,map)) 0  ;  virtual
+ QUIT:$$$smdCacheStorage(1,$$$smdMapIrn(map)) 0  ;  table uses default storage
+ QUIT:$$$smdMapRowReference(map)'="" 1  ;  full row reference override
+ #; also check for:  acctype, dataexpovr, invalovr, nxtsubovr, startval, stopval, stopexpr, loopinit, DataAccessVars
+ s sub=""
+ f  s sub=$o($$$smd(12,map,6,sub)) q:'sub  q:"Sub"'[$$$smdMSAccessType(map,sub)  q:$$$smdMSOverrideDataExpression(map,sub)'=""  q:$$$smdMSOverrideNextCode(map,sub)'=""  q:$$$smdMSOverrideInvalidCondition(map,sub)'=""  q:$$$smdMSStartValue(map,sub)'=""  q:$$$smdMSStopValue(map,sub)'=""  q:$$$smdMSLoopInitValue(map,sub)'=""  q:$$$smdMSStopExpression(map,sub)'=""  q:$d($$$smd(12,map,6,sub,"expr"))
+ QUIT ''sub
+#;---------------------------------------------------------------------------
+	#; AK640-
+mapcost(insel,map,subalg,bounding,known,cost,costinfo,satconds,psatconds)
+ #; insel - input - applied only if map is map0. If 1, normal costing for map0. If <1, treat as if an IN condition
+ #;                 of that selectivity is applied to map0, and no other conditions are applied (except to map0 data) 
+ #; map - input
+ #; subalg - input - map walk algorithm (e.g. "MW1" or "MW2")
+ #; bounding - input array by reference - bounding(map subscript)=$list of bounding conditions
+ #; known - input array by reference - known(map subscript)=bit set of conditions applicable
+ #; cost - output - cost of MAPWALK, including temp file creation for MW2; standard optimizer cost structure
+ #; costinfo - output - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs
+ #; NOTE: satconds and psatconds are used only for special map0 usage of mapcost
+ #; satconds - in - $bit string of conditions that are fully satisfied
+ #;                         including inheritied conjunct conditions
+ #; psatconds - in - array of partially satisfied condition selectivities. psatconds(log#)=
+ #;                         selectivity that should be used for that partially satisfied condition tested later.
+ #; 
+ #; implicit input: maxchunk,qoqn,stream,ntuple
+ #; ---
+ n totsel,cgg,cgs,cd,restype,resnodes,idsubga,nid,pgs,idsubs,sel,i,conds,maxsub,svp,svcp,info,svc
+ n bmap,bsel,log,esel,sga,blocks,qsga,cdl,map0,ifn,tup,vals,m,collectcost  ; tup & vals & m are for ddfldst
+ s totsel=1,maxsub=$o(mts(qoqn,stream,"MAP",map,""),-1),cgg=0,cgs=0,cd=0
+ s blocks=$p(mts(qoqn,stream,"MAP",map),"^")
+ s map0=$$$ISMAP0(map)
+ if $p(mts(qoqn,stream,"MAP",map),"^",6)="B" {s restype=$s($$hasIDconds(map):0,1:1),bmap=1} else {s restype=0,bmap=0}
+ #; Compute subscript value product array, and pruned subscript value cardinality array. 
+ #;  The value product is the expected number of values of the tuple of subscripts up to a given one,
+ #;  and is limited by the number of instances of the target class. The pruned subscript value carinality 
+ #;  is the expected number of values at a subscript level given fixed values for prior subscripts - it again
+ #;  accounts for there not being more nodes instances of the class in a map. These are computed up front, 
+ #;  left to right, because they are computed with left recursion, while the main costing is computed 
+ #;  right to left with right recursion. 
+ s svp(0)=1 f i=1:1:maxsub { 
+   s info=mts(qoqn,stream,"MAP",map,i)
+   if +info=1 {s svp(i)=svp(i-1),svcp(i)=1}
+   else {
+     if +info>6 {s svc=$s(ntuple<297:ntuple+3/3,1:100)} ; default for complex subscript
+     else {
+       if bmap,i=maxsub {s svc=maxchunk}
+       else {
+	     s svc=$p(info,"^",3),ifn=$p(info,"^",2)_$s($p(info,"^",6)]"":"_"_$p(info,"^",6),1:"")
+	     if ifn="" {s svc=$s(ntuple<297:ntuple+3/3,1:100)} ; unusable complex subscript
+	     elseif +svc=0 { s m=qoqn,svc=1/$$ddfldst^%qaqpqo(stream,ifn) }
+	     else {s svc=1/svc }
+	     }
+       }
+     s svp(i)=svp(i-1)*svc s:svp(i)>ntuple svp(i)=ntuple
+     s svcp(i)=svp(i)/svp(i-1)
+     }
+   }
+ #; Compute global accesses and disk accesses in tandem
+ f i=maxsub+1:-1:1 {
+   if i=(maxsub+1) { 
+     s log=0,sel=1,conds=$g(known("index")) s:map0 conds=$bitlogic(conds&~satconds)
+     s collectcost=0 // PVA152
+     f  {s log=log+1,log=$bitfind(conds,1,log) q:'log 
+       #; PVA152: accumulate cost of collection predicate tested against data
+       s sel=sel*$$GetSel(log),collectcost=collectcost+$$collect^%qaqpqo1($$$mtLColVals($$$mtL(log)))
+       }
+     s totsel=totsel*sel
+     if bmap {s:sel<1 restype=0}
+     else {
+	   #; PVA152: add in collection predicate cost
+       if sel<1 {s cgg=1+collectcost,cd=blocks/svp(i-1) s:cd<1 cd=1}
+       }
+     g mpcst1 ; no continue statement (yet)  
+     }
+   s esel=1,sga=""
+ #; PVA047: Always use this cost formula for map0, not just if insel < 1. Using regular code didn't do
+ #;         what was needed in case of ID = condition.    
+   if map0 { ; special map0 costing for conjunct termination criterion
+     s i=1 ; short circuit termination
+     s totsel=totsel*insel
+     s cgg=ntuple*insel*$s(cgg>0:cgg,1:1)
+     s cd=ntuple*insel*$s(cd>0:cd,1:1) s:cd>blocks cd=blocks
+     g mpcst1
+     }
+   if $d(bounding(i)) {
+     s log=$li(bounding(i)),info=$$$mtL(log)
+     if "%STARTSWITH'<'>="[$p(info,"^",2) { s bsel=$$GetSel(log),log=$lg(bounding(i),2) 
+       s:log]"" bsel=bsel*$$GetSel(log)
+       if $p(info,"^",2)="=" {s sga=0}   
+       }
+     else {s bsel=1,esel=$$GetSel(log),sga=0}
+     }
+   else {s bsel=1}
+   s log=0,conds=$g(known(i)) f  {s log=log+1,log=$bitfind(conds,1,log) q:'log 
+     s esel=esel*$$GetSel(log)
+     }
+   s sel=bsel*esel,totsel=totsel*sel
+   if i=maxsub,bmap,sga=0 {s sga=64000*sel s:sga>1 sga=1 s sga=sga*svcp(i)}
+   elseif i=maxsub,cgg=0,sga=0 {s cgg=1}
+   s:sga="" sga=svcp(i)*bsel+1
+   s qsga=svcp(i)*sel
+   if 'bmap||(i<maxsub),svp(i)<blocks||(sga=0) {s cd=sga*(1-esel)+(qsga*cd) }
+   else {s cd=sga}
+   s cdl=blocks*bsel/svp(i-1)
+   s:cd>cdl cd=cdl s:cd<1 cd=1
+   if bmap { if i=maxsub {s idsubga=sga} else {s idsubga=idsubga*svcp(i)*sel}}
+   if i=maxsub,bmap 
+   #; PVA187: make bitfind cost proportional to bits per chunk; 
+   #;         otherwise add in a smaller per bit overhead as an index tiebreak.
+   {  if totsel<1 {s sga=sga+(sga*ntuple/svp(i)/100),restype=0 } ; $bitfind overhead; totsel test covers conditions on
+                                                      ; id subscript or "index" conditions
+      else { s sga=sga+(sga*ntuple/svp(i)/300) } // generic bit operation overhead (tie breaker)
+   }
+   s cgg=sga+(qsga*cgg)
+mpcst1   
+   }
+ s nid=ntuple*totsel
+ #; Compute temp file cost for MW2 from idsubga,nid
+ if subalg="MW2",'map0 {
+   if restype=1 { ; accumulate chunks
+	 s cgg=cgg+(1.5*idsubga),cgs=cgs+idsubga
+	 d bitmapsize(maxchunk,nid,.resnodes,.pgs)
+	 s cd=cd+(pgs*2) ; *2 for write/read
+	 s cgg=cgg+resnodes ; read back temp
+	 }
+   elseif $$ddbit^%qaqpmod(+$$$mtR(stream),+qoridifn) { ; bitset IDs into chunks
+	 s cgs=cgs+nid ; nid SET $BIT operations
+	 s restype=1
+	 d bitmapsize(maxchunk,nid,.resnodes,.pgs)
+	 s cd=cd+(pgs*2)
+	 s cgg=cgg+resnodes
+	 }
+   else { ; write out IDs.
+     s idsubs=$l($p(qoridifn,"^",2),",")-2
+	 s cgs=cgs+nid,resnodes=nid
+	 s pgs=$$$CEIL(5*idsubs*nid/$$$USEDBYTES)
+	 s cd=cd+(pgs*2)
+	 s cgg=cgg+nid
+     }
+   }
+ else { if restype=0 { s resnodes=nid} else {s resnodes=idsubga} }
+ #; pretest: reduce cost and selectivity by pretest selectivity (pretest selectivity is really probability
+ #;     pretest conditions passed. Thus, the probability that the cost so far will be incurred at all, vs.
+ #;     no cost at all. Thus multiplying gives cost 'expectation' as in probability theory, a plausible model
+ #;     for this case.
+ s log=0,sel=1,conds=$g(fully("pretest")) f  {s log=log+1,log=$bitfind(conds,1,log) q:'log 
+   s sel=sel*$$GetSel(log)
+   }
+ s totsel=totsel*sel,cd=cd*sel,cgs=cgs*sel,cgg=cgg*sel,resnodes=resnodes*sel
+      
+ s costinfo=$lb(restype,resnodes)
+ s cost=((cd*CDFACTOR)+(cgs*CGSFACTOR)+(cgg*CGGFACTOR))_","_cd_","_cgg_","_cgs
+ QUIT
+#;---------------------------------------------------------------------------
+hasIDconds(map) [mt,known,bounding,qoridifn] PUBLIC {
+  #; Purpose: Check if a map contains conditions on ID fields.
+  #; Returns: 1 if any condition references an ID field, 0 otherwise.
+  #; Context: a map that has ID conditions should always have a result type (restype) equal to 0
+  #; because generally speaking, conditions on ID produces streams of IDs (restype=0), not chunks (restype=1).
+  #; First, get all ifns of ID
+  set idIfns=$listfromstring($e($p(qoridifn,"^",2),2,*-1))_$lb(+qoridifn)
+  #; All map conditions should be listed under 'known' or 'bounding' (for equal or range conditions).
+  #; Second, check 'known' conditions and return 1 if any of them is on any of the ID ifns.
+  set i=""
+  for {
+    set i=$o(known(i))
+    QUIT:i=""
+    set conds=$g(known(i)),log=0
+    for { 
+      set log=log+1,log=$bitfind(conds,1,log)
+      QUIT:'log
+      set flds=$$$mtLColVals($$$mtL(log))
+      for j=2:1:$l(flds,",")-1 {
+        set fld=$p(flds,",",j)
+        CONTINUE:$$$mtVType($$$mtV(fld))'="f"
+        set ifn=$p($$$mtV(fld),"^",3)
+        RETURN:$LISTFIND(idIfns,ifn) 1
+      }
+    }
+  }
+  #; Last, check 'bounding' conditions and return 1 if any of them is on any of the ID ifns .
+  set i=""
+  for {
+    set i=$o(bounding(i))
+    QUIT:i=""
+    set log=$li(bounding(i)),flds=$$$mtLColVals($$$mtL(log))
+    for j=2:1:$l(flds,",")-1 {
+      set fld=$p(flds,",",j)
+      CONTINUE:$$$mtVType($$$mtV(fld))'="f"
+      set ifn=$p($$$mtV(fld),"^",3)
+      RETURN:$LISTFIND(idIfns,ifn) 1
+    }
+  }
+  RETURN 0
+}
+bitmapsize(maxchunk,nid,chunks,pages)  ; compute size of an extended bit map 
+   #; maxchunk - input - maximum chunk number possible over the ID space
+   #; nid - input - number of ids in bit map, assumed equidistributed
+   #; chunks - output - number of chunks expected in the bit map
+   #; pages - output - number of pages the bit map occupies
+ n bpc,s
+ s bpc=nid/maxchunk s:bpc<1 bpc=1
+ s chunks=$s(nid<maxchunk:nid,1:maxchunk)
+ s s=4+(bpc*2),s=$s(s<8000:s,1:8000)
+ s pages=$$$CEIL(s*chunks/$$$USEDBYTES)
+ QUIT
+#;---------------------------------------------------------------------------
+bitopc(bitstr) [] PUBLIC {  // IMPORTANT: assumes that bitstr is defined
+  #; Convert bit string into comma bracked piece list
+ QUIT:bitstr="" "" s pclist=",",i=0 f  { s i=i+1,i=$bitfind(bitstr,1,i) q:'i  s pclist=pclist_i_"," } 
+ s:pclist="," pclist=""
+ QUIT pclist 
+ }
+#;---------------------------------------------------------------------------
+#; PVA157: Create pctobit
+pctobit(str) [] PUBLIC {  
+  #; Convert comma list (pre, post, both) to bit string; obviously, all pieces must be
+  #;    positive integers
+ s bitstr="" f i=1:1 { s v=$p(str,",",i) q:v=""&&(i>1)  continue:v=""  s $bit(bitstr,v)=1 } 
+ QUIT $bitlogic(bitstr)  // canonic form, good for subscripts (PVA258)
+ }
+#;---------------------------------------------------------------------------
+	#; Convert $list into comma bracketed piece list
+ 	#; Was:  QUIT:list="" "" s pclist="," f i=1:1:$ll(list) { s pclist=pclist_$li(list,i)_"," } QUIT pclist
+listopc(list) [] PUBLIC { QUIT:list="" "" QUIT ","_$ListToString(list)_","  }
+#;---------------------------------------------------------------------------
+vcontains(v1,v2) ;Does v1 deeply contain a reference to v2?
+    #; v2 is assumed to be the val# of a field
+    #; v1 is assume to be some $$$mtV(val) val#
+ n vinfo
+ s vinfo=$$$mtV(v1)
+ QUIT:"tx"[$e(vinfo) 0
+ #; PVA045: only allow streamless expression
+	#; what it should be
+ QUIT $p(vinfo,"^",3)'="," ; does it contain any field references?
+#;---------------------------------------------------------------------------
+GetSel(log,ngate=0) ; get selectivity from selectivity dictionary, or compute it for the first time.
+ n sel s sel=$g(seldict(log)) QUIT:sel]"" sel
+ s sel=$$ComputeSel(log,ngate),seldict(log)=sel
+ QUIT sel
+#;---------------------------------------------------------------------------
+ComputeSel(log,ngate=0) 
+#; PVA272: replace PVA040/PVA042 protection against zero selectivity for certain special cases
+#;          with this more robust method. With outliers, prior approach was no longer valid.
+ n sel
+ s sel=$$ComputeSel2(log,ngate) s:sel=0 sel=1e-18 s:sel=1 sel=0.999
+ if ($D(mt("nRTP","SelInfo",log))){
+ 	set sel = mt("nRTP","SelInfo",log)	
+ }
+ set:$D(mt("nRTP","MaxSel",log))&&(sel>mt("nRTP","MaxSel",log)) sel=mt("nRTP","MaxSel",log)	
+ QUIT sel
+ComputeSel2(log,ngate=0) ; Calculate selectivity of a specified condition
+#;    log - input - $$$mtL(log) is the the conditions
+#;    ngate - optional input - if log is to be negated
+#;  RETURNS - selectivity
+ 
+ new flds,inlistLength,op,outlier,sel,size,tsel
+ s op=$p($$$mtLOperator($$$mtL(log)),"%NOINDEX") // PVA242
+ QUIT:op="&" $$andsel(log)
+ #; These are dummy conditions just to be sure we pull legacy
+ #; row ID values for BAT tables
+ QUIT:op="%BATPULL" 1.0
+ s flds=$$$mtLColVals($$$mtL(log))
+ QUIT:flds="," .5 // Perhaps should distinguish outer references and get selectivity of 
+                  #;   the target field?
+ QUIT:op="!" $$orsel(log)
+ #; PVA272: remove: PVA042: Fix simple negation to have same underflow protection as '= and 'null
+ if op="'" { s sel=$$GetSel($$$mtLOperand1($$$mtL(log)),1) QUIT 1-sel}
+ QUIT:op="DISTINCT" $$distsel(log) // PVA157
+ s sel=$$eqsel(log,.outlier,.tsel,ngate) ; Compute minimum equality selectivity of referenced fields,
+ #; Ranges: if mts exists for inequality ifn, range^%qaqpqo1 will have already added selectivity to 
+ #;         to seldict, so ComputeSel will never be called. If the inequality is part of a some ANDed 
+ #;         conditions beneath and OR, andsel will discover it and examing possible two sided ranges.
+ #;         Otherwise it is a standalone inquality below OR
+ if "'<'>']"[op {
+	if ($l(flds,",")=3){
+		n ifn,xb,rsel
+		set ifn = $p(($$$mtV($p(flds,",",2))),"^",3)
+		set xb = ","_log_$c(1)_op_$c(1)_$$$mtLOperand2($$$mtL(log))
+		set rsel = $$GetAllLitRangeSel^%qaqpqo1(xb,ifn)
+		if rsel'="" {
+			quit rsel
+		} 
+	} 
+	quit sel/2+($zsqr(sel)/2)
+	
+ }
+ QUIT:"%STARTSWITH,["[op sel*.75 +($zsqr(sel)/4)
+ #; If we have <list> IN expr, then just use the %STARTSWITH selectivity
+ i "ONEOF"=op { n leftOp s leftOp=$$$mtV($$$mtLOperand1($$$mtL(log))) QUIT:(($e(leftOp)="f")&&(leftOp["_%ANYOF")) sel*.75 +($zsqr(sel)/4) }
+ QUIT:op="ANYOFAND" 1.0 // was .9
+ QUIT:op="NULL" sel QUIT:op="=" sel
+ QUIT:op="'NULL" 1-sel QUIT:op="'=" 1-sel
+ #; Distinguish LIKE that implied a %STARTSWITH from stand alone LIKE
+ if $bit($g(ptlikeimp),log)=1 QUIT .8
+ QUIT:op="%PATTERN" .8*(sel*.75 +($zsqr(sel)/4)) 
+ #; PVA272: outlier handling for IN and ONEOF
+ #; DAP009: update formulae used in PVA272
+ 
+   #; get list length; if longer than number of distinct elemtents, set
+   #; listlength = number of distinct elements
+ if op="IN"&&'outlier{
+	 if ($length($$$mtL(log),"^")-5) > (1/sel){
+		 set inlistLength = $normalize(1/sel,0)
+	 } else {
+		 set inlistLength = $length($$$mtL(log),"^")-5
+	 }
+	 QUIT $S((sel*inlistLength)<1:sel*inlistLength,1:0.999)
+ }
+ if op="IN"&&outlier{
+	 if ($length($$$mtL(log),"^")-5) > ((1-sel)/tsel){
+		 set inlistLength = $normalize((1-sel)/tsel,0)
+	 } else {
+		 set inlistLength = $length($$$mtL(log),"^")-5
+	 }
+	 QUIT $S((sel-(sel*((1-sel)**inlistLength))+(tsel*inlistLength))<1:sel-(sel*((1-sel)**inlistLength))+(tsel*inlistLength),1:0.999)
+ }	 
+   
+   #; PVA272: no reasonable way to test for outlier in $list - there is no $list literal
+ if op="INSET"{
+ 	if ($$getsize^%qaqpnl($$$mtL(log),log)) > (1/sel) {
+		set inlistLength = $normalize(1/sel,0)
+ 	} else {
+		set inlistLength = $$getsize^%qaqpnl($$$mtL(log),log)
+ 	}
+ 	QUIT $S((sel*inlistLength)<1:sel*inlistLength,1:0.999) // PVA232: getsize
+ }
+ #; PVA124: undo PVA100 as we now undo oneof when cloned	             
+.
+   #; get list length; if longer than number of distinct elemtents, set
+   #; listlength = number of distinct elements
+ if op="ONEOF"&&'outlier{
+	 if $p($p(ptv(+ptv($$$mtLOperand1($$$mtL(log)))),"^",$$$PTVRANGEINFO),",",5) > (1/sel){
+		 set inlistLength = $normalize(1/sel,0)
+	 } else {
+		 set inlistLength = $p($p(ptv(+ptv($$$mtLOperand1($$$mtL(log)))),"^",$$$PTVRANGEINFO),",",5)
+	 }
+	 QUIT $S((sel*inlistLength)<1:sel*inlistLength,1:0.999)
+ }
+ if op="ONEOF"&&outlier{
+	 if $p($p(ptv(+ptv($$$mtLOperand1($$$mtL(log)))),"^",$$$PTVRANGEINFO),",",5) > ((1-sel)/tsel){
+		 set inlistLength = $normalize((1-sel)/tsel,0)
+	 } else {
+		 set inlistLength = $p($p(ptv(+ptv($$$mtLOperand1($$$mtL(log)))),"^",$$$PTVRANGEINFO),",",5)
+	 }
+	 QUIT $S((sel-(sel*((1-sel)**inlistLength))+(tsel*inlistLength))<1:sel-(sel*((1-sel)**inlistLength))+(tsel*inlistLength),1:0.999)
+ }
+        ; ONEOF case should only be reached in the pre-optimizer, which will record
+                          ; the condition in seldict, where GetSel will discover it. Thus, pre-
+                          ; optimizer structures are used in the computation.
+ #; PVA072: TOP: predicates
+ if op["TOP:"
+							#; For multi-column TOP predicate
+                            #; sel OR .5 results in (sel+1)/2.
+ 							#; For single column case. This should only be
+                            #; computed here for an expression column.
+                            #; Otherwise it would be computed building the 
+                            #; mts("RANGE") node. Special range type support in
+                            #; andsel isn't needed because TOP predicates are
+                            #; always top level AND conditions. 
+ {	n defaultSel s defaultSel=$s(op[".":(sel+1)/2,1:sel/2+($zsqr(sel)/2))
+ 	QUIT $s($$$mtV($$$mtLOperand1($$$mtL(log)))["SimilarityIdx^":$s(defaultSel>0.10:defaultSel,1:0.10),1:defaultSel)
+ }
+ QUIT sel/2+($zsqr(sel)/2) ; default for everything else same as simple range (e.g. '[ )
+ptvsel(val,oval) [ptv] public
+#; return typical equality selectivity over equivalence class containing val
+#;     oval - output - val number to use for outlier analysis (val with min selectivity)
+{  s list=$p(ptv(+ptv(val)),"^",$$$PTVVALSINCLASS)
+   s sel=1,minsel=2,cnt=0
+   for i=1:1:$l(list,",")-1
+   {  s v=$p(list,",",i),pv=ptv(v) continue:$p(pv,"^",$$$PTVVALTYPE)'="f"  s selc=$p(pv,"^",$$$PTVCONEQLSEL)
+      if selc<minsel { s minsel=selc,oval=v}
+      s sel=sel*selc,cnt=cnt+1
+   }
+   if cnt>1 {s sel=sel**(1/cnt)}
+   QUIT sel
+}
+#; PVA272: rewrite eqsel for outlier support
+#;---------------------------------------------------------------------------
+eqsel(log,outlier,tsel,ngate=0) [mt,ptv,smd] public
+{  ; Find minimum field selectivity for the list of fields for a log#; It should not
+           ; be a streamless condition: It is a design assumption that this would be called only
+           ; in the pre-optimizer when ptv exists. All leaf comparisons get added to seldict by
+           ; pre-optimizer calls to GetSel.
+           #; outlier - output - whether or not returned selectivity is for an outlier
+           #; tsel - output - if outlier, then returned value is outlier selectivitity, while
+           #;                   tsel is typical selectivity. This needed for IN type conditions
+           #; ngate - input, optional - condition will be negated
+ s node=$$$mtL(log),info=$p(node,"^",3),sel=1,mfld=0,outlier=0
+ f i=2:1 { 
+ 	s val=$p(info,",",i) q:val=""
+ 	if $p(node,"^",2)="=" {
+	 	// JMM785: Don't use equivalence class selectivity for equals condition
+ 		s mtnum=$p(node,"^",4) // JMM1081+
+ 		s op=$p($$$mtV(mtnum),"^",5)_"^"_$p($$$mtV(mtnum),"^",6)
+ 		if $e(op,1,17)=$$$SSShardMapScreenExtFunc {
+			// JMM1081: Treat dummy shard map screening expression as special case with selectivity 1, so
+			// shard map screening doesn't alter plan as long as field needed for screening would have been retrieved anyway.
+	 		s selc=1
+ 		}
+ 		else { // JMM1081-
+			s selc=$p(ptv(val),"^",$$$PTVCONEQLSEL)
+ 		} // JMM1081=
+   		if selc<sel { s sel=selc,sval=val }
+ 		if i=2 {s fld=val,sval=val} elseif val'=fld {s mfld=1}
+ 	}
+	else {
+ 		s selc=$$ptvsel(val,.uval)  // PVA279: follow equivalence class
+ 		if selc<sel { s sel=selc,sval=uval }
+    	if i=2 {s fld=val,sval=uval } elseif val'=fld {s mfld=1}
+   	}
+ }
+ s hasoutlier=$$getoutlier(+$p($$$mtV(sval),"^",3),.osel,.oval)
+ if 'hasoutlier { s osel=sel,oval="" }
+ s incoutlier = 0
+ if $$prmIncOutlier(+$p($$$mtV(sval),"^",3)) { s rsel = (sel+osel)/2,outlierBias=1} else {s rsel = sel }
+ if 'mfld 
+ {  s op=$p($p(node,"^",2),"%NOINDEX"),op1=$p(node,"^",4)
+    if op["=" 
+    {  s op2=$p(node,"^",5)
+       if $$$mtVType($$$mtV(op1))="f" {s opf=op1}
+       if $$$mtVType($$$mtV(op2))="f" {s opf=op2,op2=op1}
+       if $d(opf) 
+       {  s vtype=$$matchesoval(sval,op2,hasoutlier,oval) 
+          if vtype=2 {s rsel=sel}
+          elseif hasoutlier&&(oval="")&&(op="'=") {s rsel=osel } // so null outlier sel will not be included by negation
+          elseif hasoutlier&&(oval="") {s rsel=sel} // equality will never select NULL outlier
+          elseif vtype=1 {s tsel=sel,rsel=osel,outlier=1}
+       }
+    }
+    if op["NULL" 
+    {  if ($$$mtVType($$$mtV(op1))="f")
+       {  if hasoutlier && (oval="") {s tsel=sel,rsel=osel,outlier=1} 
+          else {s rsel=sel}
+       }
+    }
+    if op="IN" && ($$$mtVType($$$mtV(op1))="f") {  
+       for i=5:1 {
+        s op2=$p(node,"^",i)
+        q:'op2
+        s:$$matchesoval(sval,op2,hasoutlier,oval)=1 outlier=1
+      }
+    if hasoutlier&&(oval="")&&(ngate) {s rsel=osel,outlier=0 } // so null outlier sel will not be included by negation
+	  elseif hasoutlier && (oval="") {s rsel=sel,outlier=0} // IN can't match NULL
+	  elseif outlier {
+      s tsel=sel,rsel=osel
+    } elseif $g(outlierBias) & 'outlier {
+      set tsel=sel,rsel=osel
+    } else {
+      set rsel=sel
+    }
+    }
+	  if op="ONEOF" && ($$$mtVType($$$mtV(op1))="f") {
+    s op2=$p(node,"^",5),vals=""
+    for {
+      q:op2=""
+      s node=$$$mtV(+op2),sop=$p(node,"^",2)
+      if sop="SET:UNION" {s $p(op2,"^",1)=$p(node,"^",4,5)}
+      elseif sop="SET:SETOF" {s vals=vals_$p(node,"^",4,*),op2=$p(op2,"^",2,*)}
+      else {s op2=$p(op2,"^",2,*)}
+    }
+    for i=1:1:($l(vals,"^")-1) {
+      s:$$matchesoval(sval,$p(vals,"^",i),hasoutlier,oval)=1 outlier=1
+    }  
+    if +$g(mt("logsize",log)) < 0 { Set outlier=1} // obsolete JSL5032 RTPC logic
+    if hasoutlier&&(oval="")&&(ngate) && '$p($p(ptv(sval),"^",$$$PTVRANGEINFO),",",2) {s rsel=osel,outlier=0 } // so null outlier sel will not be included by negation
+    elseif hasoutlier && (oval="") && '$p($p(ptv(sval),"^",$$$PTVRANGEINFO),",",2) { // ONEOF can't match NULL unless incorporated OR .. IS NULL
+      s rsel=sel,outlier=0
+    } elseif outlier {
+      s tsel=sel,rsel=osel
+    } elseif $g(outlierBias) & 'outlier {
+      set tsel=sel,rsel=osel
+    } else {
+      set rsel=sel
+    }
+    }
+ } 
+  QUIT rsel
+}
+#; PVA306: create prmIncOutlier
+#; PVA312: support use of property storage keyword
+#;---------------------------------------------------------------------------
+prmIncOutlier(ifn) [smd, mt] // return 1 for parameter includes outlier behavior, else 0
+{   
+	set irn=$$$smdGetIrnFromIfn(ifn)
+	QUIT:irn="" $s('$d(mt("options","BiasAsOutlier")):$$$BiasQueriesAsOutlier,1:mt("options","BiasAsOutlier"))   // virtual ifn, use system default (no outlier anyway)
+	set pval=$$$smdColBiasQueriesAsOutlier(1,irn,ifn)
+	QUIT:pval="" $s('$d(mt("options","BiasAsOutlier")):$$$BiasQueriesAsOutlier,1:mt("options","BiasAsOutlier"))    // No property setting use system default
+	QUIT pval
+}
+#; PVA272: create matchesoval
+#;---------------------------------------------------------------------------
+matchesoval(fv,v,hasoutlier,oval) [mt,smd] // return:  0 - unknown; 1 - outlier; 2 - non outlier
+{QUIT:($$$mtVType($$$mtV(v))'="t" && '($$$mtVType($$$mtV(v))="v" && (($$$SQLCOLLATIONS[(","_$p($p($$$mtV(v),"^",2),"(")_","))||($$$ISENCODEDCOLLATE($p($p($$$mtV(v),"^",2),"(")))) && ($e($$$mtV($p($$$mtV(v),"^",4)))="t")) || 'hasoutlier) 0
+ s fld=$p($$$mtV(fv),"^",3)
+ QUIT:fld["%ANYOF" 0  // PVA282
+ if fld["_"  // collated field
+ {  s coll=$p(fld,"_",2),len=$p(coll,"(",2)
+    if len]"" s coll=$p(coll,"("),len=$p(len,")")
+    s oval=$$collate^%qaqpcmp($s($$$ISENCODEDCOLLATE(coll):coll,1:$e(coll,2,*)),oval,len)
+    if $$$mtVType($$$mtV(v))="t" {if $p($$$mtV(v),"^",2)=oval {QUIT 1} else {QUIT 2}}
+    else  // collated value
+    {  s coll=$p($$$mtV(v),"^",2),len=$p(coll,"(",2)
+       if len]"" s coll=$p(coll,"("),len=$p(len,")")
+       if oval=$$collate^%qaqpcmp($s($$$ISENCODEDCOLLATE(coll):coll,1:$e(coll,2,*)),$p($$$mtV($p($$$mtV(v),"^",4)),"^",2),len) {QUIT 1} else {QUIT 2}
+    }
+ }
+ else  // non collated field
+ {  if $$$mtVType($$$mtV(v))="t" {if $p($$$mtV(v),"^",2)=oval {QUIT 1} else {QUIT 2}}
+    else  // collated value
+    {  s coll=$p($$$mtV(v),"^",2),len=$p(coll,"(",2)
+       if len]"" s coll=$p(coll,"("),len=$p(len,")")
+       if oval=$$collate^%qaqpcmp($s($$$ISENCODEDCOLLATE(coll):coll,1:$e(coll,2,*)),$p($$$mtV($p($$$mtV(v),"^",4)),"^",2),len) {QUIT 1} else {QUIT 2}
+    }
+ }
+ QUIT 0 
+}
+	//  returns 1 if ifn has outlier, else 0
+	//  osel,oval, and ocol - output - outlier selectivity, value, and collation, unset if no outlier
+	//  often the caller has to be a + in front of the first argument, because the first argument maybe something like "90_%SQLUPPER". 
+	//  As used the ifn needs to be a numeric subscript.
+getoutlier(ifn,osel,oval,ocol) [] PUBLIC {
+	
+	Kill osel,oval ; unset
+	set irn=$$$smdGetIrnFromIfn(ifn)
+	QUIT:irn="" 0	// Could be a virtual ifn
+	set tTemp=$$$smdColOutlierSelectivity(1,irn,ifn)
+	QUIT:tTemp="" 0	// No outlier for this field)
+	set ttype = $$$smdTType(irn)
+	set ocol=$$$smdColCollation(ttype,irn,ifn)
+	s ocol=$s(ocol="":"",ocol="SU":"%SQLUPPER",ocol="A":"%ALPHAUP",ocol="U":"%UPPER",ocol="S":"%SPACE",ocol="P":"%PLUS",ocol="M":"%MINUS",ocol="MV":"%MVR",ocol="E":"",ocol="T":"%STRING",ocol="SS":"%SQLSTRING",ocol["T(":"%STRING("_$p(ocol,"(",2),ocol["SS(":"%SQLSTRING("_$p(ocol,"(",2),ocol["SU(":"%SQLUPPER("_$p(ocol,"(",2),1:ocol)
+	if $$$ISENCODEDCOLLATE(ocol) {
+		do decodeCollate^%qaqcpre(ocol,.parm1,.parm2)
+ 		set ocol = "%COLLATE("_$$$quote(parm1)_$S(parm2="":")",1:","_parm2_")")
+	}
+	set osel=$lg(tTemp),oval=$lg(tTemp,2)
+	QUIT 1
+}
+.
+#;-----------------  
+ 
+#; PVA152: eleminate colleqsel routine
+#; PVA157: new function distsel
+#;---------------------------------------------------------------------------
+distsel(log) // Compute effective selectivity of DISTINCT under heuristic for
+             // for correlation between columns. That is, actualy number of distinct 
+             // rows should be much less than product of column cardinalities.
+ n info,val,i,c,mc,pc,N,strms,str
+ s info=$$$mtL(log),info=$p(info,"^",3),mc=0,pc=1
+ #; PVA167: rearranged order of computations to avoid interim overflow
+ #; Limit computation by product of stream cardinalities
+ s strms=$$strms(info)
+ s str=0,N=1 for 
+ { s str=$bitfind(strms,1,str+1) q:'str
+   s N=N*mts($$$mtRQb($$$mtR(str)),str)
+ }
+ f i=2:1 
+ { s val=$p(info,",",i) q:val=""
+   s c=1/$p(ptv(val),"^",$$$PTVCONEQLSEL)
+   s:c>mc mc=c s pc=$zsqr(c)*pc  
+   s:pc>(.99*N) pc=.99*N
+ }
+ s c=pc*$zsqr(mc)
+ s:c>(.99*N) c=.99*N
+ QUIT c/N  
+#; PVA157: new function strms 
+#;---------------------------------------------------------------------------
+strms(vals) // return bitstring of streams referenced by comma (pre/post) delimited
+            // list of "f" vals
+    n li,sl
+	s sl="" 
+	f li=2:1 s val=$p(vals,",",li) q:val=""  s $bit(sl,$p($$$mtV(val),"^",2))=1
+	QUIT sl
+#;---------------------------------------------------------------------------
+orsel(log) ; accumulate selectivity over OR operators without tail recursion
+ n disjlist,lc,lt,info,ln,sel,selc
+ s disjlist($i(lc))=log,sel=0
+ s lt="" f  { s lt=$o(disjlist(lt),1,ln) q:lt="" 
+   #; PVA242: handle %noindex
+   s info=$$$mtL(ln) if $p($p(info,"^",2),"%NOINDEX")="!" { s disjlist($i(lc))=$p(info,"^",4),disjlist($i(lc))=$p(info,"^",5) }
+   else { s selc=$$GetSel(ln),sel=sel+selc-(sel*selc) }
+   }
+ QUIT sel
+#;---------------------------------------------------------------------------
+andsel(log) ; accumulate selectivity over AND operators without tail recursion
+            ; Also, look for multiple range conditions and adjust selectivity
+ n conjlist,lc,lt,info,ln,sel,selc,rbnds,rlist,ifn,v1,v2,v,v1inf,v2inf
+ s conjlist($i(lc))=log,sel=1
+ s lt="" f  { s lt=$o(conjlist(lt),1,ln) q:lt="" 
+   #; PVA242: handle %noindex
+   s info=$$$mtL(ln) if $p($p(info,"^",2),"%NOINDEX")="&" { s conjlist($i(lc))=$p(info,"^",4),conjlist($i(lc))=$p(info,"^",5) }
+   else { 
+     s op=$p($p(info,"^",2),"%NOINDEX")
+     if op="'" { s sel=sel*$$GetSel(ln) }
+     elseif "'<'>%STARTSWITH"'[op { s sel=$$GetSel(ln)*sel }
+     else { 
+       s v1=$p(info,"^",4),v2=$p(info,"^",5),v1inf=$$$mtV(v1),v2inf=$$$mtV(v2)
+       if $$isconst^%qaqpmod(v2inf),$e(v1inf)="f" {s v=v1 d setrng(0)}
+       elseif op'="%STARTSWITH",$$isconst^%qaqpmod(v1inf),$e(v2inf)="f" {s v=v2 d setrng(1)}
+       else {s sel=$$GetSel(ln)*sel}
+       }
+     }
+   }
+ #; Special handling for multiple ranges on the same ifn
+ s v="" f  { s v=$o(rbnds(v),1,info) q:v=""
+   if $ll(info)=2 { 
+   s selc=$$eqsel($li($li(info,1),1)) 
+     s selc=2*selc/3+($zsqr(selc)/3)
+     s sel=sel*selc
+     s selc=$zsqr(selc) ; divide two sided range selectivity among the bounding conditions
+     s seldict($li($li(info,1),1))=selc,seldict($li($li(info,2),1))=selc
+     }
+   else { s sel=sel*$$GetSel($li($li(info,1),1)) }
+   s ln=0,info=$g(rlist(v)) f  { s ln=ln+1,ln=$bitfind(info,1,ln) q:'ln
+     s sel=sel*.8 ; assume each additional inequality on same ifn only adds a little selectivity
+     s seldict(ln)=.8
+     }
+   }
+ QUIT sel
+setrng(reverse) n i,bnd
+ if reverse {s op=$tr(op,"<>","><")}
+ if op["<" {s bnd="u"} elseif op[">" {s bnd="l"} else {s bnd="s"}
+ if '$d(rbnds(v)) {s rbnds(v)=$lb($lb(ln,bnd)) }
+ elseif $li($li(rbnds(v),1),2)="s" { s $bit(rlist(v),ln)=1 }
+ elseif op["%STARTSWITH" { f i=1:1:$ll(rbnds(v)) { s $bit(rlist(v),$li($li(rbnds(v),i),1))=1 } s rbnds(v)=$lb($lb(ln,bnd))}
+ elseif $ll(rbnds(v))=2 { s $bit(rlist(v),ln)=1 }
+ elseif bnd'=$li($li(rbnds(v),1),2) { s rbnds(v)=rbnds(v)_$lb($lb(ln,bnd)) }
+ else { s $bit(rlist(v),ln)=1 }
+ QUIT
+#;---------------------------------------------------------------------------
+disjunct(insel,termset,disjroot,tree,resroot,cost,costinfo,sel,satsel,satconds,psatconds,clsdet,testedconds) 
+#;    insel   - input - selectivity so far - defines what map 0 access must be beaten to be effective
+#;    termset - input - bit string of available conditions from conjuncts [deeply] containing this disjunct
+#;    disjroot - input - log# of root of disjunct
+#;    tree - input - tree# of algorithm to merge into on success
+#;    resroot - output - sub alg # root entry created in tree for this disjunct
+#;        THIS WILL ALWAYS BE THE LOWEST SUB ALG# GENERATED
+#;    cost - output - cost of multi-map algorithm (in standard optimizer format).
+#;    costinfo - output - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs
+#;    sel - output - selectivity consumed by multi-map subtree for this disjunct (including 
+#;                   inherited conditions satisfied only some OR terms)
+#;    satsel - output - selectivity of disjunct based only on inherited conditions used in all OR terms
+#;                      (as well any local conditions of the disjunct used)
+#;    satconds - inout - $bit string of conditions inherited from conjuncts which are 
+#;                         satisfied by every term of this disjunct. THIS WILL INCLUDE DISJROOT
+#;                         if it is fully satisfied.
+#;    psatconds - inout - array of partially satisfied condition selectivities. psatconds(log#)=
+#;                         selectivity that should be used for that partially satisfied condition.
+#;                         Unlike the existing optimizer, any type of condition may be found here
+#;                         for different reasons (for example, only some terms of conjunct within
+#;                         a disjunct may have been used in the IC8M strategy)
+#;    clsdet - output - Whether stream of IDs or chunks is class determinate for the specified stream.
+#;                      If non class determinate, then class filtering must be done later. 
+#; 	  testedconds - output - $lb(<fully test conds>,<partially tested conds>), both bit strings. Unaffected by
+#;                            whether previously satisfied or not. // PVA274
+#;        implicit input: qoqn, stream
+#; return value: 0: no good multi-map strategy found 1: it is found
+#;---------------------------------------------------------------------------
+ n disjlist,lc,lt,ln,info,conjlist,ct,cn,lterms,lcost,lsatconds,lpsatconds,lclsdet,lsel,lc2,success,ltree,croot,crootl,i
+ n lcostinf,disjsat,csatconds,cpsatconds,ltested,ctested,tbm1,tbm2,localsel,clocalsel
+ n ctop s ctop=0   ; force off for all deep conjuncts
+ s cost="0,0,0,0",disjsat=1,lt="",success=1,ltree=$i($$$Malg("sub")),resroot=$i($$$Malg("sub",1))
+#; linearize disjunct (use array, rather than bit list because it must function as a queue for linearization
+ s disjlist($i(lc))=disjroot
+ s crootl=""
+ f  { s lt=$o(disjlist(lt),1,ln) q:lt="" 
+   s info=$$$mtL(ln) if $p(info,"^",2)="!" { s disjlist($i(lc))=$p(info,"^",4),disjlist($i(lc))=$p(info,"^",5) }
+   else {
+     #; build termset for the current conjunct, using an array list as a queue
+     k conjlist s lc2=0,conjlist($i(lc2))=ln,ct="",lterms="" 
+     f  { s ct=$o(conjlist(ct),1,cn) q:ct=""
+       s info=$$$mtL(cn) i $p(info,"^",2)="&" { s conjlist($i(lc2))=$p(info,"^",4),conjlist($i(lc2))=$p(info,"^",5)}
+       else { s $bit(lterms,cn)=1 d:'$bit($g(fully),cn) fully(cn) }
+       }   
+     #; process the conjunct
+     k lpsatconds merge lpsatconds=psatconds s lsatconds=satconds
+     s ltested="" // PVA274
+     s success=success&$$conjunct(insel,termset,lterms,ltree,.croot,.lcost,.lcostinf,.lsel,.lsatconds,.lpsatconds,.lclsdet,.ltested)
+     i 'success g donedisjunct
+ #; PVA051: move this disjsat bookkeeping here so it applies to first conjunct of a disjunct as well as later ones.
+     s:$bitcount($bitlogic(lterms&~lsatconds),1)'=0 disjsat=0
+     #; Compute localsel
+     s localsel=$$accsel(lterms,satconds,lsatconds,.psatconds,.lpsatconds)
+     #; accumulate cost.
+     s cost=$$addcost^%qaqoco(cost,lcost)
+     #; set up union operation in ltree
+     if 'crootl {
+	   s crootl=croot,costinfo=lcostinf,sel=lsel,csatconds=lsatconds,clsdet=lclsdet,ctested=ltested,clocalsel=localsel
+	   merge cpsatconds=lpsatconds
+	   } 
+     else { 
+       s costinfo=$$ucost(costinfo,lcostinf,.lcost)
+       s cost=$$addcost^%qaqoco(cost,lcost)
+       s i=$i($$$Malg("sub",1)),$$$Malg("sub",ltree,i)="4^,"_+qoridifn_",^,"_crootl_","_croot_",^^^MU1^^^^"_$li(costinfo)_","_$li(costinfo,2)_"^" s crootl=i
+       #; Accumulate selectivity and other quantities
+       s sel=sel+lsel-(sel*lsel),clocalsel=clocalsel+localsel-(clocalsel*localsel)
+       s csatconds=$bitlogic(csatconds&lsatconds)
+       #; PVA274: maintain tested conditions 
+       s tbm1=$li(ctested),tbm2=$li(ltested),$li(ctested)=$bitlogic(tbm1&tbm2)
+       s tbm1=$li(ctested,2),tbm2=$li(ltested,2),$li(ctested,2)=$bitlogic(tbm1&tbm2)
+       s i="" f  s i=$o(cpsatconds(i)) q:i=""  i '$d(lpsatconds(i)) k cpsatconds(i)
+       s clsdet=clsdet&lclsdet
+       }
+     }
+   }
+donedisjunct
+ #; merge candidate tree into input tree on success
+ i success { ; first force last union to be resroot
+   s $$$Malg("sub",ltree,resroot)=$$$Malg("sub",ltree,crootl) k $$$Malg("sub",ltree,crootl)
+   merge $$$Malg("sub",tree)=$$$Malg("sub",ltree)
+   #; compute satsel from clocalsel
+   s satsel=clocalsel*$$accsel(termset,satconds,csatconds,.psatconds,.cpsatconds)
+   s satconds=csatconds
+   s testedconds=ctested
+   #; PVA065: add setting of cpsatconds if not disjsat
+   #; PVA274: must also set disjroot appropriately into testedconds
+   if disjsat { s $bit(satconds,disjroot)=1,tbm1=$li(testedconds),$bit(tbm1,disjroot)=1,$li(testedconds)=tbm1 }
+   else {s cpsatconds(disjroot)=$$GetSel(disjroot)/clocalsel,tbm1=$li(testedconds,2),$bit(tbm1,disjroot)=1,$li(testedconds,2)=tbm1}
+   merge psatconds=cpsatconds
+   s i="" f  s i=$o(psatconds(i)) q:i=""  k:$bit(satconds,i) psatconds(i)
+   }
+ k $$$Malg("sub",ltree)
+ QUIT success
+#;---------------------------------------------------------------------------
+accsel(terms,satconds,csatconds,epsatconds,psatconds) [inseladj,inptres] public  // accumulate selectivity of conditions 
+  #; terms - input - $bit string of condition numbers to accumulate selectivity for
+  #; satconds - input - $bit string of conditions considered satisfied before terms (for ptres/seladj analysis)
+  #; csatconds - input - $bit string of conditions to be considered fully satisfied for the computation
+  #; epsatconds - input by ref - partial selectivity of a condition that is considered excluded from
+  #;                 computation
+  #; psatconds - input by ref - array of partially satisfied conditions and with their 'unused'
+  #;               selectivity. accsel figures that epsat/psat is what to include in compuation, with 
+  #;               full selectivity when there is no epsat
+  #;  Order of condition testing doesn't matter for computing selectivity - that's what seladj is all about
+{  
+   s log=0,sel=1 for 
+   {  s log=log+1,log=$bitfind(terms,1,log) q:'log
+      if '$bit(satconds,log)
+      {
+         if $bit(csatconds,log)
+         {  
+	        if $bit(inptres,log) && $$checkimp(satconds,log,.impany) 
+	        {  s $bit(satconds,log)=1 
+	           if impany s sel=sel*$$GetSel(log) // apply selectivity (once) even though skipped because 
+	                                             #;   no selectivity was applied by anyofand
+               continue	                                             
+	        }
+	        s lsel=$$GetSel(log)
+            s $bit(satconds,log)=1
+	        if $bit(inseladj,log)  && $$checksa(satconds,log,.lsel) continue:lsel'<1
+	        s sel=sel*lsel
+         }
+         elseif $d(psatconds(log))
+         {  if $d(epsatconds(log))
+            {  s sel=sel*epsatconds(log)/psatconds(log)
+            }
+            else
+            {  s sel=sel*$$GetSel(log)/psatconds(log)
+            }
+            
+	     }
+      }
+   } 
+   QUIT sel
+}
+#;---------------------------------------------------------------------------
+ucost(costinfo1,costinfo2,cost) ; compute cost and cost info for a UNION operation
+ #; costinfo1, costinfo2 - input - $list of result type (0 - ID, 1 - chunk of ID), number of chunks or IDs, for each operand of union
+ #; cost - output - standard optimizer cost structure
+ #;   RETURNS: constinfo for result of union
+ n ga,c1,c2,t1,t2,rt,rc
+ s t1=$li(costinfo1),c1=$li(costinfo1,2),t2=$li(costinfo2),c2=$li(costinfo2,2)
+ if t1,t2 { ; union of streams of ID chunks
+   s ga=.5*$s(c1<c2:c1,1:c2),rt=1,rc=c1+c2-(c1*c2/maxchunk)
+   }
+ elseif t1 { ; operand1 is chunks, operand 2 is ID
+   s ga=.25*c2,rt=1
+   if c2>maxchunk {s rc=maxchunk} else {s rc=c1+c2-(c1*c2/maxchunk)}
+   }
+ elseif t2 { ; operant2 is chunks, operand 1 is ID
+   s ga=.25*c1,rt=1
+   if c1>maxchunk { s rc=maxchunk } else {s rc=c1+c2-(c1*c2/maxchunk)}
+   }
+ else { ; union of streams of ID
+   s ga=.25*$s(c1>c2:c1,1:c2),rt=0
+   s rc=c1+c2-(c1*c2/ntuple)
+   }   
+ s cost=CGGFACTOR*ga_",0,"_ga_",0"
+ QUIT $lb(rt,rc)
+#;---------------------------------------------------------------------------
+isalg7 ; generate initial stream alg that just accesses map0 (if needed) after a multi-map algorithm 
+ #; Implicit output: MIfound (whether a multi-index strategy was filed)
+ #; PVA073: new variables idxconds,idxsel
+ #; PVA212: Isolate this routine from allmaps(), including new-ing rather than saving/restoring
+ #;         many optimizer variables; add MIfound implicit output
+ n cost,tree,sel,satconds,psatconds,procalg,mform,i,ifn,info,log,qojrid,psel,mmreq,clsdet,ressub,map,qoio,a,conds,idxconds,idxsel,vorused,outnodes,high
+ n resknown,resmaybe,respar,impany s resmaybe="",respar="",resknown="" // could set respar from psatconds, but never really used later
+ n anyifn,anyand,anyclsfd,anylup,anysort,anyfiled
+ s vorused=0,anyclsfd="",anyand="",anyifn=""
+ if '$d($$$mtBSLNodeTotalCnt) s $$$mtBSLNodeTotalCnt=0
+ #; PVAP66: new a bunch more variables
+ n jaifnlst,qoorder,onestrm,str,aggmap,sub,b,val,aggval,aggused,goodagg,onemap,aggmaps,aggsubs,aggvals
+ #; PVA066: move setting of ifnval here from IC8M
+ #; Following should move to %qaqo1 eventually
+ i '$d(ifnval) s i="" f  { s i=$o($$$mtV(i),1,info) q:i=""  s:$e(info,1,2)="f^" ifnval($p(info,"^",2),$p(info,"^",3))=i }
+ s map="" ; ISALG7 is always mapless (multiple maps before map0 access)
+ #; PVA073: iniitalize idxconds
+ s ressub=",",idxconds=","
+ s high="isalg7"
+ s qojrid=1 ; force recid based cost in main algorithm
+ #; PVA066: Add support for bit sliced aggregates:
+ if '$d(^ISCNoBitSliceAggs) {
+ n ntuple,maxbit,maxchunk,cgg,cgs,cd,cost2,cstinf,chunks,chunks2,pages,agclsdet,ncsubfound,nacost,nccost
+ #; nacost is number of aggregates with regular bit slice cost, nccost is number with count(f) cost
+ s nacost=0,nccost=0
+   s ntuple=+mts(qoqn,qosn),maxbit=$$$MAXBIT(ntuple),maxchunk=$$$MAXCHUNK(ntuple)
+   s agclsdet=1
+   s onestrm=0,str="" f   {s str=$o(mts(qoqn,str)) q:str=""  if onestrm { s onestrm=0 quit  } else {s onestrm=1} }
+   if $d(mts("AGG",qoqn)),'$d(mts("DISTINCT",qoqn)),onestrm {
+     s aggmap="" f  { s aggmap=$o(mts(qoqn,qosn,"MAP",aggmap),1,a) q:aggmap="" 
+       continue:$p(a,"^",6)'="S"
+       s ncsubfound=0
+       k aggsubs // PVA069
+       s sub="" f  { q:ncsubfound  s sub=$o(mts(qoqn,qosn,"MAP",aggmap,sub),1,info) q:sub=""  
+         continue:+info=1  
+         s ncsubfound=1
+         continue:+info=9
+         s ifn=$p(info,"^",2)_$s($p(info,"^",6)]"":"_"_$p(info,"^",6),1:"")
+         s val=$g(ifnval(qosn,ifn))
+         continue:'val
+         k aggvals // PVA069
+         s aggval="" for  { s aggval=$o(mts("AGG",qoqn,val,aggval),1,info) q:aggval=""
+       if ",SUM,AVG,COUNT,"[(","_info_",") {
+	           #; PVA069: Rework aggregate recording for new style aggmas
+		     if '$bit($g(aggused),aggval) {
+			    s $bit(aggused,aggval)=1
+		    if info="COUNT" {s nccost=nccost+1} else {s nacost=nacost+1}
+			    s aggvals=$s($d(aggvals):aggvals,1:",")_aggval_","
+		     	if '$p(a,"^",5) s agclsdet=0
+		     }  // In the future, trade off among possible indexed aggregate possibilities.
+		        // For now, just use the first -> no different for bit slice. 
+           }
+         }
+         #; set up aggmap info for possible use
+         #; PVA318: set "s" flag if originates in superclass
+         s:$d(aggvals) aggsubs=$s($d(aggsubs):aggsubs,1:";"_aggmap_$s($p(a,"^",5):"",1:"s"))_"*"_sub_":::::"_aggvals
+	   }
+	   s:$d(aggsubs) aggmaps=$g(aggmaps)_aggsubs
+     }
+     #; Check that any unused aggregate is a COUNT(*)
+     s goodagg=1
+     s val="" f  { s val=$o(mts("AGG",qoqn,val)) q:val=""  q:'goodagg  continue:val="*"
+       s aggval="" f  { s aggval=$o(mts("AGG",qoqn,val,aggval)) q:aggval=""
+         if '$bit($g(aggused),aggval) s goodagg=0 quit //PVA074: $g around aggused
+       }  
+     }
+ if $G(aggmaps) = "" s goodagg=0
+     if goodagg {
+	   s mmreq=0 // else wouldn't use bit slice strategy
+	   s onemap=1 // single map strategy ok for this case
+	   if '$$ic8m(qosn,.cost,.tree,.sel,.satconds,.psatconds,.clsdet) s satconds="",sel=1,clsdet=0
+     }
+	  	     #; Make sure whole WHERE clause is index satisfiable
+ 	 if goodagg {
+	   s ifn="" f  { s ifn=$o(mts(qoqn,qosn,"CON",ifn),1,info) q:ifn=""  q:'goodagg
+         s log=$p($p(info,"^",2),",",2)
+         s:'$bit(satconds,log) goodagg=0
+       }
+     }
+     if goodagg { 
+       s ifn="" f  { s ifn=$o(mts(qoqn,qosn,"RANGE",ifn),1,info) q:ifn=""  q:'goodagg
+         s log=$p($p(info,"^",2),",",2)
+         s:'$bit(satconds,log) goodagg=0
+       }
+     }
+     if goodagg {
+       s log="" f  s log=$o(mts(qoqn,qosn,"COMP",log),1,info) q:log=""  q:'goodagg  s:'$bit(satconds,log) goodagg=0
+     }     
+     if goodagg {
+	   #; Add cost to save IC8M output and cost per aggmap entry (to cost from IC8M)
+	   if sel<1 {
+	     d bitmapsize(maxchunk,ntuple*sel,.chunks,.pages) 
+	     s cd=2*pages // write and read each page
+	     #; get output nodes from ic8m tree - this will account for rowids vs. chunks
+	     s i="",i=$o($$$Malg("sub",tree,i),1,info)
+	     s cgs=2*$p($p(info,"^",10),",",2) 
+	     s cgg=chunks // Saved output definitely chunks. Global gets to read filter. (multiplied 
+	        #; by slices later)
+	   }
+	   else {s cd=0,cgg=0,cgs=0} // No filter
+	   #; estimate cost characteristics of a bit slice
+	   d bitmapsize(maxchunk,ntuple/2,.chunks2,.pages)
+	   s cgg=cgg+chunks2 // add in global gets per slice. 
+	   if sel<1 {
+	     s cstinf=$$icost($lb(1,chunks),$lb(1,chunks2),.cost2)
+	     s cgg=cgg+$p(cost2,",",3)  // add in cost of bitlogic for intersections
+	   }
+	   else { s cgg=1.5*cgg } // some cost for bitcounts
+	   #; PVA069: count bit slice maps (with new structure) rather than aggregates
+   s cgg=nacost*$$$SLICES*cgg + (nccost*2*cgg) // multiply by number of aggregations and number of slices
+   s cd=cd+(nacost*$$$SLICES*pages + (nccost*2*pages)) // Reading each slice's pages
+.
+	   #; Add all this to ic8m cost
+	   s cost2=((cd*CDFACTOR)+(cgs*CGSFACTOR)+(cgg*CGGFACTOR))_","_cd_","_cgg_","_cgs
+	   s cost=$s(sel<1:$$addcost^%qaqoco(cost,cost2),1:cost2)
+       #; File aggmap strategy. Will fall through and also file a conventional strategy for comparison.
+	   d setform // set up cost formula array
+	   s ressub=""
+	   s procalg="IS13"
+	   s qoio=""
+   s qoorder = 0
+	   s jaifnlst=","_+qoridifn_","
+	   #; PVA073: bit slice case never updated for new jfile argument added for TOP optimization.
+           #; PVA318: file prefilter alg irrespective of selectivity
+	   d jfile^%qaqosn2(procalg,.mform,"",ressub,mmreq,"","","IC9M:"_tree,cost,'(clsdet||agclsdet),aggmaps)
+     }
+}
+}
+ k agclsdet // PVA318
+ s MIfound=0,MWonly=0,MWmap=0 // PVA325: start with fresh state for non-bit slice strategies
+ if $$hint^%qaqpre("%ALLINDEX",qoqn) {s onemap=1} else {s onemap=0} // PVA213
+ i $$nonidfld(qosn) {s mmreq=1} else {s mmreq=0} ; mmreq may also be set later
+ i '$$ic8m(qosn,.cost,.tree,.sel,.satconds,.psatconds,.clsdet) QUIT  // PVA212: no need to restore anymore
+ #; Use new setform routine
+ d setform // set up cost formula array 
+ #; accumulate all remaining selectivity into map0 selectivity
+ #; NOTE: we set mmreq (master map required) if any conditions are unsatisfied by by IC8M. Observe
+ #; that if they are conditions in any way satisifiable on the ID, then they should have been done
+ #; as part of IC8M. Also, observe that without saying S1 main algorithm, and master map required,
+ #; we really have no place to put these conditions (there is no map with subscripts - only "map0" 
+ #; is applicable).
+ #; 
+ #; PVA279: due conditions in similar order to qaqosn for better implication for collection predicates
+ #; PVA073: separate out conditions that depend only ID into idxsel/idxconds
+ s sel=1,idxsel=1
+ for anylup=0,1,2 // PVA279: 0=no collection conds, 1=anyofands, 2=all other collection conds
+ { g:anylup=1 NOCONRANGE // PVA279: a CON or RANGE cannot be an anyofand
+   s ifn="" f  { 
+   s ifn=$o(mts(qoqn,qosn,"CON",ifn),1,info) q:ifn="" 
+   s log=$p($p(info,"^",2),",",2)
+   if '$bit(satconds,log) { 
+       if '$bit(anyclsfd,log) {d anyclassify(log,.anyclsfd,.anyand,.anyifn)}
+       continue:(anylup=0 && $bit(anyifn,log))
+       continue:(anylup=2 && '$bit(anyifn,log))
+	   s $bit(satconds,log)=1
+	   if $$checkimp(satconds,log,.impany) 
+	   {  if impany s sel=sel*+info // apply selectivity for condition implied by anyofand, but don't test
+          continue // skip implied condition                                           
+	   } 
+     if '$$idcond(log) {
+       s psel=$g(psatconds(log)) if psel { s sel=sel*psel} else { s sel=sel*+info }
+       s mmreq=1,ressub=ressub_log_","
+       #; PVA160: add collection cost, if needed
+       s mform($$$SGPb)=mform($$$SGPb)+$$collect^%qaqpqo1($$$mtLColVals($$$mtL(log)))
+     }
+     else {
+       s psel=$g(psatconds(log)) if psel { s idxsel=idxsel*psel} else { s idxsel=idxsel*+info }
+       s idxconds=idxconds_log_","
+     }
+       if $$checksa(satconds,log,.sel) {} // adjust selectivity if part of a logically interpendent set of conditions
+   }
+ }
+ s ifn="" f  { 
+   s ifn=$o(mts(qoqn,qosn,"RANGE",ifn),1,info) q:ifn="" 
+   #; PVA072: loop over individual conditions in RANGE, since TOP: predicate
+   #;         may have been filtered out.   
+   s conds=$p(info,"^",2) f i=2:1 { s log=$p(conds,",",i) q:log=""
+     if '$bit(satconds,log) { 
+         if '$bit(anyclsfd,log) {d anyclassify(log,.anyclsfd,.anyand,.anyifn)}
+         continue:(anylup=0 && $bit(anyifn,log))
+         continue:(anylup=2 && '$bit(anyifn,log))
+	     s $bit(satconds,log)=1
+	     if $$checkimp(satconds,log,.impany) 
+	     {  if impany s sel=sel*+info // apply selectivity for condition implied by anyofand, but don't test
+            continue // skip implied condition                                           
+	     } 
+ #; PVA073: separate out conditions that depend only ID into idxsel/idxconds
+       if '$$idcond(log) {
+         s psel=$g(psatconds(log)) if psel { s sel=sel*psel} else { s sel=sel*$$GetSel(log) }
+         s mmreq=1,ressub=ressub_log_","
+         #; PVA160: add collection cost, if needed
+         s mform($$$SGPb)=mform($$$SGPb)+$$collect^%qaqpqo1($$$mtLColVals($$$mtL(log)))
+       }
+       else {
+         s psel=$g(psatconds(log)) if psel { s idxsel=idxsel*psel} else { s idxsel=idxsel*$$GetSel(log) }
+         s idxconds=idxconds_log_","
+       }
+         if $$checksa(satconds,log,.sel) {} // adjust selectivity if part of a logically interpendent set of conditions
+     }
+   }
+ }
+NOCONRANGE
+ s log="" f  {
+   s log=$o(mts(qoqn,qosn,"COMP",log),1,info) q:log="" 
+   if '$bit(satconds,log) { 
+       if '$bit(anyclsfd,log) d anyclassify(log,.anyclsfd,.anyand,.anyifn)
+       continue:(anylup=0 && ($bit(anyand,log) || $bit(anyifn,log)))
+       continue:(anylup=1 && '$bit(anyand,log))
+       continue:(anylup=2 && '$bit(anyifn,log))
+	   s $bit(satconds,log)=1
+	   if $$checkimp(satconds,log,.impany) 
+	   {  if impany s sel=sel*+info // apply selectivity for condition implied by anyofand, but don't test
+          continue // skip implied condition                                           
+	   } 
+ #; PVA073: separate out conditions that depend only ID into idxsel/idxconds
+     if '$$idcond(log)||$bit(noindexmap,log) { //PVA248: just in case - probably don't need noindexmap test here
+       s psel=$g(psatconds(log)) if psel { s sel=sel*psel} else { s sel=sel*+info }
+       s mmreq=1,ressub=ressub_log_","
+       #; PVA160: add collection cost, if needed
+       s mform($$$SGPb)=mform($$$SGPb)+$$collect^%qaqpqo1($$$mtLColVals($$$mtL(log)))
+       #; PVA157: add distinct filter cost 
+       if $$$mtLOperator($$$mtL(log))="DISTINCT" s mform($$$SGPb)=mform($$$SGPb)+(CDFACTOR/CGGFACTOR)
+     }
+     else {
+	   #; PVA157: We should detect the possibility of DISTINCT on an expression of ID here,
+	   #;   in which case temp file filtering cost should be added, as above, but...
+	   #;   there is no place to put it in current cost structures. Currently, we leave it 
+	   #;   as a known defect.   
+       s psel=$g(psatconds(log)) if psel { s idxsel=idxsel*psel} else { s idxsel=idxsel*+info }
+       s idxconds=idxconds_log_","
+     }
+       if $$checksa(satconds,log,.sel) {} // adjust selectivity if part of a logically interpendent set of conditions
+     }
+   }
+ }
+ #; PVA073: id conditions to imul, rest to map0
+ s mform($$$SSO0)=sel,mform($$$SSOIMULD)=idxsel
+ if ressub'="," {s ressub="map0:"_ressub_":::"} else {s ressub=""}
+ if idxconds'="," s ressub="indexmul:"_idxconds_":::"_$s(ressub="":"",1:"*"_ressub)
+ #; PVA066: move setting of qojrid early to apply to whole isalg7 routine
+ #; if only ID needed, and all conditions satisfied by IC8M, then main algorithm does not need map0
+ i mmreq s procalg="IS1" ; access map0 from a temp index or stream of IDs or chunks of bits.
+ e  s procalg="IS13" ; the null initial stream algorithm
+ #; See if any interesting order is ID or leading components of ID. Set qoio if so, since IC8M delivers
+ #;   IDs in order.
+ #;   NOTE: Ideally we should consider the possibility that there is more than one interesting order
+ #;   compatible with ID order (in which case ISALG7 should be recorded for each). For now we assume this is highly unlikely.
+ s qoio="" f i=1:1 s qoio=$o(qointord(qoio)) q:qoio=""  s a=$$getifn^%qaqosn(qoio) q:$$idorder(a)
+ if qoio]"" 
+ {  s jaifnlst=$p(a,"^"),qoorder=1 
+    if 'timefirst(qoqn) k qointord(qoio) // PVA212: so don't override multi-index with single index from int. order
+ } 
+ else { s jaifnlst=","_+qoridifn_",",qoorder=0} // PVA212: set qoorder here
+ d jfile^%qaqosn2(procalg,.mform,"",ressub,mmreq,"","","IC8M:"_tree,cost,'clsdet)
+ s MIfound=1 // PVA212: trigger non-filing of other algorithms; also eliminate 'restore' label
+ QUIT
+#; PVA066: new routine setform
+#;---------------------------------------------------------------------------
+setform
+ #; Adjust formula array to model application of multi-map selecitivity as generalized CON against 
+ #;    master map
+ #; PVA212: New variables needed by nodes^%qaqojn2
+ n a,b,c,d,map0,map,mapiread,allinmap,map0read
+ s map0=1,map=$p(mts(qoqn,qosn),"^",4) // PVA212: all initializations from scratch; can't assume form() exists
+ f i=1:1:$$$SUBMAX s mform(i)=1
+ s mform($$$SNitup)=+mts(qoqn,qosn)*sel
+ s mform($$$SNbblk)=+mts(qoqn,qosn,"MAP",map) // PVA212: init from scratch
+ s (mform($$$SNiblk),mform($$$SGPi))=0
+ s allinmap=1,map0read="",mapiread="",outnodes="1,0,0",d=0 // PVA212: implicit input for nodes^%qaqojn2
+ s a="" f i=1:1 s a=$o(mts(qoqn,qosn,"ATT",a)) q:a=""  d nodes^%qaqojn2 // PVA212: need this now that isalg7 used outside of allmaps
+ s mform($$$SGPb)=1+$g(mform($$$SGPb)) // PVA212: use mapiread because we set map0 flag
+ s mform($$$SZB)=mform($$$SNitup)
+ QUIT
+ #; PVA073: new function idcond
+#;---------------------------------------------------------------------------
+idcond(log) ; Return 1 if the condition is satisfiable against an ID
+            ;   else 0
+ n fs,idsat,ifn,i
+ s idsat=1
+ s fs=$$$mtLColVals($$$mtL(log))
+ for i=2:1 { 
+   s ifn=$p(fs,",",i) q:ifn=""
+   s ifn=$p($$$mtV(ifn),"^",3)
+   if '$$$INID(ifn) s idsat=0 q
+ }
+ QUIT idsat
+#;---------------------------------------------------------------------------
+idorder(ifnlist) ; is the list of ifns, taken as an interesting order, combatible with id order?
+    #; ifnlist - intput - ,ifn1,ifn2,...ifnk,   : comma bracketed list of ifns
+    #;      returns: 1 it is combatible, 0 otherwise
+ n i,ifn
+ QUIT:$l(ifnlist,",")<3 0
+ QUIT:$l(ifnlist,",")=3&&($p(ifnlist,",",2)=$p(qoridifn,"^",1)) 1
+ f i=2:1 s ifn=$p(ifnlist,",",i) q:ifn=""  q:ifn'=$p($p(qoridifn,"^",2),",",i)
+ QUIT ifn=""
+#;---------------------------------------------------------------------------
+nonidfld(stream) ; Is any field not available from ID needed for this stream? 
+#;    NOTE: Really any field needed for reason beyond single stream restriction.
+#;          Single stream restriction analysis handled elsewhere based on what 
+#;          conditions are satisfied in indexes.
+#; stream - input
+#;    implicit inpug: qoqn,qoridifn
+#; return: 1 if non ID field needed, otherwise 0
+ n ifn
+ s ifn="" f  s ifn=$o(mts(qoqn,stream,"ATT",ifn),1,info) q:ifn=""  i +info'=1 q:'$$$INID(ifn)
+ QUIT ifn]""
+ #; PVA316: create quickcost, qcond, and qclassify. 
+ #;---------------------------------------------------------------------------
+quickcost(qno,nodistinct,where="")[$$$MalgItself,$$$McostItself,fsave,ptv,ptj,ptres,mt,maxs,mts,mvMaps,ptfjoo,ptfjoos,str,v,seldict,linx,ojdun,po,noindexmap,m,log,mname,fval,call,nulstr,nopad,nonvop] PUBLIC ; Perform a truncated cost evaluation of FROM...WHERE [ORDER BY] clause of indicated query, leaving no 'breadcrumbs'
+#;     nodistinct: if DISTINCT is being done for qno, 1 means hide/restore any impact on optimizer, 0 means leave optimizer
+#;                 seeing it.
+#;     where: optional alternative to mt("w") to use
+#; CRUCIAL THAT CHANGES TO %qaqpqo1 are mirrored here
+{    
+#; do all stuff in qo1 for mts creation, without assuming conds/class/outer done. Ojs in linx(?). Should be no
+#;   other hidden predicates(?)[e.g. mt("c") doesn't exist in this state]. Ignore streamless conditions (would normally be in mt("c")). (go over what undo side effects does).
+#; need flag for optimizer to prune any number of streams; and suppress interesting orders except for ORDER BY (key to achieving quick).
+#; make sure pruning is working as expected (?) [might be necessary to record initial stream in every solution entry, so don't have to follow 
+#; chain for each one]. Have independent options to hide TOP[ORDER BY], DISTINCT from optimizer. 
+#;
+#; What about TOP? Supposed to ask for time to first row. Since we don't put TOP in UNION terms, doesn't this defeat the purpose?
+#; But we could(!) put TOP in each UNION term. Conclusion: as long as we don't put TOP in union terms, simply don't do or->union 
+#; under TOP (unless TOTOPOPT specified). Add cross comments that if we ever DO put TOP in UNION terms, then we should be 
+#; consistent with that fact for costing. Then we don't need flag for this. But we still do for DISTINCT - if DISTINCT needed before, 
+#; and still needed, then tradeoff should ingnore DISTINCT. 
+ 
+ s savm=m
+ m sptv=ptv // s smaxv=maxv  // perhaps can do better than save restore, but this is safest (creatmtsagg makes new 
+                             #; "v" nodes, without ptv entries. No way to back these out, so don't reset maxv, and
+                             #; hope for the best.
+ s swhere=$g($$$mtWhere(qno)) // always, because setAnyof may modif
+ m svmts=mts(qno)
+ m sptj=ptj(qno)
+ m smtl=$$$mtLRoot // unfortunately needed
+ #; In case altternate WHERE contains & operators (from beneath OR).
+ if where]"" {f li=1:1 { s log=$p(where,"^",li) q:log=""  d where^%qaqpqo(.where,log,.li) } }
+ s:where]"" $$$mtWhere(qno)=where
+ s:$d($$$mtNumAnyOf) savanyof=$$$mtNumAnyOf
+ n mvMaps s mvMaps=""
+ 
+ #; JMM737+
+ #; If called to cost one branch of an OR-to-UNION optimization, try cancelling
+ #; outer joins.
+ #; NOTE: This needs happen after setting mt("w",qno) to where, above, because 
+ #; killojs^%qaqpre2 operates on mt("w",qno).  However, should this actually
+ #; happen before flattening top level ands by calling where^%qaqpqo(.where,log,.li) above?
+ #; In the test case from prodlog 141886, the order doesn't make a difference.
+ if where'="" {
+ 	s savecall=call,savenulstr=nulstr,savenopad=$g(nopad),savelinx=$g(linx)
+ 	k savemtONqno
+ 	m savemtONqno=$$$mtOnRoot(qno)
+ 	s call="nopad^%qaqpnl"
+ 	s logs=where f  s log=+logs,logs=$p(logs,"^",2,*) q:'log  d lvtree^%qaqpnl("l",log)
+ 	s ojkilled=$$killojs^%qaqpre2(qno)
+ }
+ #; JMM737-
+.
+ //--need to make following take optional 'm'  argument
+ d setAnyof^%qaqpre3(qno) // have to do this
+ // don't do orlog since we want to favor or->union optimization (AND there is no real costing for ORLOG, since fake maps and fields)
+ d txtfixptv^%qaqpqo1(qno) 
+ f fval=1:1:$$$maxv s:"f"=$p($g(ptv(fval)),"^",$$$PTVVALTYPE) $p(ptv(fval),"^",$$$PTVLOGREFS)=""
+ // replicatge/adapt logic in loop over cond: no ptl exists, conds/class/outr not done
+ s noindexmap="" // PVA242
+ f lgi=1:1 s log=$p($g($$$mtWhere(qno)),"^",lgi) q:log=""  d qcond(log,0,qno)
+ f lgi=1:1 s log=$p(linx,"^",lgi) q:'log  i $$$mtLOperand2($$$mtL(log)),"f"=$e($$$mtV($$$mtLOperand2($$$mtL(log)))) d:qno=$$$mtRQb($$$mtR($p($$$mtV($$$mtLOperand2($$$mtL(log))),"^",2))) qcond(log,1,qno)
+ m svmtofs=$$$mtSequencers
+ d ptfjoo^%qaqpqo1(qno)  // make sure to protect from side effects
+ s mname=""
+ f str=1:1:maxs d:$$$mtRQb($$$mtR(str))=qno maps^%qaqpqo1
+ if mvMaps'="" f str=1:1:maxs  d:$$$mtRQb($$$mtR(str))=qno cloneMaps^%qaqpqo1(qno,str,mvMaps)
+	
+	#; Completely remove the collection index template from the mts "ATT" map lists,
+	#; and mark the template so it is not mistakenly used for any plan.
+	#; 
+	
+		s str=""
+		for
+		{	s str=$o(mts(qno,str)) q:str=""
+			s i=""
+			for
+			{	s i=$o(mt("collidx",i)) q:i=""
+				continue:$d(mts(qno,str,"MAP",i))=0
+				if '$d(mt("smdimp",i))||(mt("smdimp",i)=i)
+				{	if '$d(mt("smdimp",i))
+					{	s $p(mts(qno,str,"MAP",i),"^",3)=""	// The index template is not eligible for use as a conditional map, e.g. for 'NULL baseFld  JLF156
+						s $p(mts(qno,str,"MAP",i),"^",6)="T"	// Mark as a Template map
+					}
+					s a=""
+					for
+					{	s a=$o(mts(qno,str,"ATT",a),1,v) q:a=""
+						if (a'["_%ANYOF")
+						{	s val=$p(v,"^",5),pc14=$p(ptv(val),"^",$$$PTVMAPS)
+							s ch=$f(","_pc14,","_i_",") 
+							s:ch>0 $e(pc14,ch-$l(i)-2,ch-2)="",$p(ptv(val),"^",$$$PTVMAPS)=pc14
+						}
+					}
+				}
+			}
+		}
+.
+ // no ormaps since skipped orlog
+    s mt("nfo")=""
+	s:qno=1 mt("nfo")=$$bitree^%qaqpqo1("v",$g($$$mtNewVals),"f")  ;  for INSERT/UPDATE
+	s:qno=1 mt("nfo")=$$bitree^%qaqpqo1("v",$tr($g($$$mtSequencers),"d"),"f",mt("nfo"))  ;  ORDER
+	#;  look in HAVING, SELECT, ORDER, GROUP 
+	s mt("nfo")=$$bitree^%qaqpqo1("l",$g($$$mtHaving(qno)),"f",mt("nfo")),mt("nfo")=$$bitree^%qaqpqo1("v",$$$mtOutputVals($g($$$mtOutput(qno)))_$tr($g($$$mtSequencersQb(qno)),"d")_$g($$$mtGroupDistinctList(qno)),"f",mt("nfo"))
+	#;  target rowid needed for UPDATE/DELETE
+	i qno=1,"DEL UPD"[$$$mtStatementType,mcurs s str=$$$ptrel($$$mtTarget),$bit(mt("nfo"),$p(mts(1,str,"ATT",$p(mts(1,str),"^",5)),"^",5))=1
+ // Fill in mts(  ATT  ) - just for this qno
+ 	f fval=1:1:$$$maxv s v=$g(ptv(fval)) d:"f"=$p(v,"^",$$$PTVVALTYPE)&&(qno=$p(v,"^",$$$PTVQB)) att^%qaqpqo1
+	#;  set up mts("VOP")/nonvop=$LB(valog) (negative for conditions)  ;  AK1081
+	n nonvop s nonvop="",mts("VOP")="" s call="mtsvop^%qaqpqo1"
+	f val=1:1:$$$maxv d lvtree^%qaqpnl("v",val)
+	f log=1:1:$$$maxl d lvtree^%qaqpnl("l",log)
+ #; COULD have OR of exists that is suitable for
+ #;     for bit slice, and or->union would defeat that. Need to produce low cost bit slice plan to make sure
+	#; Build mts("AGG")
+	if '$d(^ISCNoBitSliceAggs) {
+		s m=qno do createMtsAGG^%qaqpqo1()
+	}
+  
+ // hirar required; This fills infor in mts stream entries about which streams, stored together, are parent-child joined
+ 	f str=1:1:maxs d:$$$mtRQb($$$mtR(str))=qno hirar^%qaqpqo1
+ 	f str=1:1:maxs s m=$$$mtRQb($$$mtR(str)) d:(m=qno&&($p(mts(m,str),"^",3)'="")) hirad^%qaqpqo1(str,",")
+	k $$$fsave s $$$fsave=""  f str=1:1:maxs {if $$$mtRQb($$$mtR(str))=qno {s m=qno d fsave^%qaqpqo1} } ;  remove unneeded nodes
+ // OJ stuff required if we want quick!
+	n ojdun s ojdun=""  ;  positioned string by str# - 3: easy, 2: hard, 1: hard (not recursed yet)
+	n po  ;  construct partial order of outer join targets
+	f ln=1:1 s log=$p(linx,"^",ln) q:'log  s str=$$$mtV($$$mtLOperand1($$$mtL(log))) d:($e(str)="f"&&($$$mtRQb($$$mtR($p(str,"^",2)))=qno)) porder^%qaqpqo1($p(str,"^",2),$p($$$mtV($$$mtLOperand2($$$mtL(log))),"^",2))
+	d getpo^%qaqpqo1  ;  set in po list of streams in reverse order of processing
+	f ln=1:1:$ll(po) d ezoj^%qaqpqo1($li(po,ln))
+ d ^%qaqo1(qno)
+ s best=0
+ s n="",n=$o($$$Mcost(qno,1,n),-1)
+ s s4="",s4=$o($$$Mcost(qno,1,n,s4))
+ s order="",order=$o($$$Mcost(qno,1,n,s4,order),-1)
+ f x=0:1:2 
+ {  s y=$g($$$Mcost(qno,1,n,s4,order,x))
+    i y s cost=+$$$Mcost(qno,1,n,s4,order,x,y) i (cost<best||'best) s best=cost
+ }
+ i $$topopt^%qaqpag s x=+$$$Mcost(qno,1,n,s4) s:x<.5 x=.5 s x=x*2,y="" f  s y=$o($$$Mcost(qno,1,n,s4,order,0,y),1,cost) q:y=""  i $p($p(cost,"^"),",",4)=0 s cost=cost/x i best>cost s best=cost
+ s qcost=best
+ #; JMM737+
+ if where'="" {
+	 #; Restore variables possibly modified while cancelling outer joins
+	 s call=savecall,nulstr=savenulstr,nopad=savenopad,linx=savelinx
+	 k $$$mtOnRoot(qno)
+	 m $$$mtOnRoot(qno)=savemtONqno
+ }
+ #; JMM737-
+ kill $$$MalgItself,$$$McostItself  
+ k $$$mtSequencers m $$$mtSequencers=svmtofs
+ k ptfjoo(qno),ptfjoos(qno)
+ k $$$fsave
+ k ptj(qno) m ptj(qno)=sptj
+ k seldict
+ s $$$mtWhere(qno)=swhere
+ k ptv m ptv=sptv // s maxv=smaxv // kill first in case new entries added
+ k mts(qno)  m mts(qno)=svmts
+ k mts("VOP")  ;  AK1081
+ k mts("AGG")
+ k ptres,mt("forallval"),mt("foralllog"),mt("filterm"),mt("collidx"),mt("smdimp"),mt("adoj"),mt("adoj0")
+ s:$d(savanyof) $$$mtNumAnyOf=savanyof
+ s vn="" for { s vn=$o($$$mtAnyOfVals(vn)) q:vn=""  k $$$mtAnyOfVals(vn)  }
+ s m=savm
+ k $$$mtLRoot m $$$mtLRoot=smtl  // unfortunately needed
+ QUIT qcost
+}
+qcond(log,islinx,qno) [mt,ptv,collectcost,sl,ptlg,str,ifn,m,mts,type] PUBLIC
+{  
+ #define aptv(%val,%pn,%stuff) s $p(ptv(%val),"^",%pn)=$p($g(ptv(%val)),"^",%pn)_%stuff
+    n collectcost  // PVA343: NEW, as is done in cond^%qaqpqo1
+   	s ptlg=$$$mtL(log),vals=$p(ptlg,"^",3),m=qno
+	d marknoindex^%qaqpqo1(log)  // PVA242
+	f pi=2:1 s val=$p(vals,",",pi) q:val=""  $$$aptv(val,$$$PTVLOGREFS,log_",")
+	s collectcost=$$collect^%qaqpqo1(vals) //PVA152
+   #; figure type from parse tree itself: no ptl, no generalized CON, no equivalence classes
+   if (islinx) 
+   {  s cbndtype="o",val=$p(ptlg,"^",4)
+	  i $$$mtVType($$$mtV(val))'="f",'$d(ptv(val)) s ptv(val)=val_"^e^^^^"_val_",^"_m
+  	  i $$$mtVType($$$mtV(val))'="f" $$$aptv(val,$$$PTVLOGREFS,log_",") 
+  	  $$$aptv(val,$$$PTVOJSTR,($p($$$mtV($p(ptlg,"^",5)),"^",2))_",")
+  	  #; $$$aptv(val,$$$PTVOJSTR,str_",")
+   } 
+    else {s cbndtype=$$qclassify(log),ptlg=$$$mtL(log)} // classify can modify mt("l",log)
+   if cbndtype="c"||(cbndtype="i") 
+   { d con^%qaqpqo1 
+     k mts(qno,str,"RANGE",ifn) // quick version of 'collision' handling
+   }
+   elseif cbndtype = "x" { d strval^%qaqpqo1(vals),comp^%qaqpqo1 }
+   elseif cbndtype = "m" { d strval^%qaqpqo1(vals),mrel^%qaqpqo1(sl) }
+   elseif cbndtype = "t" {} // ignore streamless
+   elseif cbndtype = "o" { s type="o" d join^%qaqpqo1 }
+   elseif cbndtype = "j" { s type="j" d join^%qaqpqo1 }
+   elseif cbndtype = "e" 
+   { 
+   	 #; ptsjoin requires a free type variable to be set.
+   	 #; this won't mean anything to ptsjoin except that it's not "o"
+   	 s type = "e"
+   	 s con=$p(ptlg,"^",5),vals=$p($$$mtV(con),"^",3)
+     d strval^%qaqpqo1(vals) s val=$p(ptlg,"^",4),str=$p($$$mtV(val),"^",2)
+     s %Y=$$seltabs^%qaqpqo1(sl) d ptsjoin^%qaqpqo1(val,con,$tr(sl,"^"),%Y)
+   }
+   else // some type of range (do nothing if CON exists)
+   {  s v=ptv($p(ptlg,"^",4))
+      s str=$p(v,"^",$$$PTVSTR),ifn=$p(v,"^",$$$PTVIFN)
+      if '$d(mts(qno,str,"CON",ifn))
+      {  s sel=$$eqsel^%qaqomul(log)
+         if cbndtype="s" //for quickcost, unilaterally overwrite any prior RANGE
+         {  s sel=sel*.75 +($zsqr(sel)/4)
+          	s mts(m,str,"RANGE",ifn)=sel_"^,"_log_",^"_$p(ptlg,"^",5)_$c(1)_2_","_log_$c(1)_$p(ptlg,"^",2)_$c(1)_$p(ptlg,"^",5)_","
+			s $p(mts(m,str,"RANGE",ifn),"^",7)=collectcost // PVA152
+	     }
+	     elseif '$d(mtS(qno,str,"RANGE",ifn))
+	     {  // l or u bound; for quick cost, just keep one (we don't distinguish much). If startswith exists already, do nothing
+	        s sel=sel/2+($zsqr(sel)/2)
+	        s mts(m,str,"RANGE",ifn)=sel_"^,"_log_",^"_$S(cbndtype="u":$c(1,1),1:"")_$p(ptlg,"^",5)_$c(1)_0_","_log_$c(1)_$p(ptlg,"^",2)_$c(1)_$p(ptlg,"^",5)_"," 
+	        s $p(mts(m,str,"RANGE",ifn),"^",7)=collectcost 
+	     }
+      }
+   } 
+}
+qclassify(log) [mt,ptv] PUBLIC 
+  // s startswith, c CON=, i CONin, l range lbound, u range ubound, j join, x COMP, m MREL, t streamless
+  // e exp join
+{  
+	           s ptln=$$$mtL(log),op=$p(ptln,"^",2)
+	           if $p(ptln,"^",3)="," {s cbndtype="t" }
+	           elseif op="=",$e($$$mtV($p(ptln,"^",4)))="f",$e($$$mtV($p(ptln,"^",5)))="f" {
+		         if $p($$$mtV($p(ptln,"^",4)),"^",2)'=$p($$$mtV($p(ptln,"^",5)),"^",2) {s cbndtype="j"} 
+		         else {s cbndtype="x"} 
+	             }
+	           elseif op="=",$e($$$mtV($p(ptln,"^",4)))="f"||($e($$$mtV($p(ptln,"^",5)))="f") {
+	             s opr1=$p(ptln,"^",4),opr2=$p(ptln,"^",5)
+		         if '$$vcontains(opr2,0)||'$$vcontains(opr1,0) 
+		         {  s cbndtype="c" 
+		            if $$$mtVType($$$mtV(opr1))="f" {s v=ptv(opr1) }
+		            else {s v=ptv(opr2),$p(ptln,"^",4,5)=opr2_"^"_opr1,$$$mtL(log)=ptln}
+		            s $p(ptv(+v),"^",$$$PTVCONTYPE)="c"
+		         }
+		         else 
+		         {  s strs1=$$strs^%qaqpre2("v",opr1),strs2=$$strs^%qaqpre2("v",opr2)
+		            if $bitcount($bitlogic(strs1&strs2),1)=0 
+		            {  s cbndtype="e"
+		               if ($$$mtVType($$$mtV(opr2))="f") {s $p(ptln,"^",4,5)=opr2_"^"_opr1,$$$mtL(log)=ptln}
+		            }
+		            else {s cbndtype="x"}
+		         }
+	           }
+	           elseif op="NULL",$e($$$mtV($p(ptln,"^",4)))="f" {
+		       	 s cbndtype="c"  
+		       	 s $p(ptv($p(ptln,"^",4)),"^",$$$PTVCONTYPE)="n"
+		       }
+	           elseif ",IN,INSET,"[(","_op_","),$e($$$mtV($p(ptln,"^",4)))="f" {
+		         s cbndtype="i"
+		         f i=5:1 { s v2 =$p(ptln,"^",i) q:v2=""
+		           if $$vcontains(v2,0) {s cbndtype="x" quit}
+		           }
+		         if cbndtype="i"
+		         {  s v=ptv($p(ptln,"^",4))
+		            s $p(ptv(+v),"^",$$$PTVCONTYPE)="i"
+		            if op="IN" {s $p(rinfo,",",5)=$l(ptln,"^")-4}
+		            else {s $p(rinfo,",",5)=10} // For quick, no don't bother being fancy
+		            s $p(ptv(+v),"^",$$$PTVRANGEINFO)=rinfo
+		            // only 5th piece of PTVRANGEINFO need be set for quick cost to work ok
+		         }
+	           }
+  	           elseif op="ONEOF" {s cbndtype="i"} ; all the right analysis previously done in this case
+	           elseif op'="'","'<'>%STARTSWITH"[op,$e($$$mtV($p(ptln,"^",4)))="f"||($e($$$mtV($p(ptln,"^",5)))="f") { ; possible range
+	             s opr1=$p(ptln,"^",4),opr2=$p(ptln,"^",5)
+ 	             if $$vcontains(opr2,0)&& $$vcontains(opr1,0) {s cbndtype="x" }
+ 	             elseif op="%STARTSWITH" && ($$$mtVType($$$mtV(opr1))'="f") {s cbndtype="x" }
+	             else { ; ok, it's a range
+ 	               if $$$mtVType($$$mtV(opr2))="f" 
+ 	               {  s op=$tr(op,"<>","><")
+ 	                  s $p(ptln,"^",4,5)=opr2_"^"_opr1,$p(ptln,"^",2)=op
+ 	                  s $$$mtL(log)=ptln
+ 	               }
+	               s:op="%STARTSWITH" cbndtype="s" s:op="<"||(op="'>") cbndtype="u" s:op=">"||(op="'<") cbndtype="l"
+	               }
+	             }
+	           else {s cbndtype="x"}
+		       if cbndtype="x"&&($bitcount($$strs^%qaqpre2("l",log),1)>1) {s cbndtype="m"}
+  QUIT cbndtype
+}
+.
+GetRTPCListSel(log,&osel,&sel)[mt] PUBLIC {
+	set v=$$$mtL(log)
+	if $P(v,"^",6)'="" {
+		// similar calculation in getsize^%qaqpnl
+		// but we don't need to modify mt
+		set ll=+$p($$$mtV($P(v,"^",6)),"^",2)
+		set:ll=0 ll=5
+		set:ll<0 ll=-ll
+	} else {
+		set ll=5
+	}
+	set l1 = $S((1/sel)<ll:1/sel,1:ll)
+	set l2 = $S((1+((1-osel)/sel))<ll:(1+((1-osel)/sel)),1:ll)
+	set finalSel = l1*sel
+	set osel = osel+(sel*(l2-1))
+	if osel>=1 set osel = 0.999
+	set sel = $S(finalSel>=1:0.999,1:finalSel)	
+	RETURN $$$OK
+}
+.
+---

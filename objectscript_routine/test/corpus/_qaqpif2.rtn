@@ -1,0 +1,2402 @@
+====
+qaqpif2
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqpif2^MAC^^^0
+%qaqpif2	// Get detailed info in mtc(0,0,)
+	;; COMPONENTS :: SQL/DataDictLookup
+	#;
+#INCLUDE %occInclude
+#include %syPidtab
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Create detailed mtc(0,0,... array
+	; Author:        Michael R. Pantaleo
+	; Date Started:  10 October 1996
+	;
+	;  AK850   (11/30/2020) - Implement lateral join
+	;  PVA236  (03/09/20ll) - Fix <SUBSCRIPT> error in pathifn caused by attempt to tread %vid as a real view field 
+	;  DPV3337 (01/08/2009) - New argtype, rettype in agg
+	;  DPV3270 (09/25/2008) - Correct type returned for XMLAGG columns
+	;  DPV3262 (09/17/2008) - Return correct type for literal string values that have valid numbers
+	;  DPV3258 (09/11/2008) - Avoid <SUBSCRIPT> error if $p(v,"^",2,3) is long because of -> joins
+	;  DPV3236 (08/11/2008) - Implement support for getVersionColumns and update what isRowVersion means
+	;  DPV3227 (07/28/2008) - Implement "tablist" info compile
+	;  DPV3220 (07/15/2008) - Improve PRECISION and SCALE reporting for Aggregates and other functions
+	;  DPV3198 (06/19/2008) - Improvements to precision/scale reporting for numeric values and expressions 
+	;  DPV3173 (06/02/2008) - Return NUMERIC type for +, -, /, AVG, SUM, etc; unless one of the arguments to the operand is DOUBLE
+	;  DPV3132 (03/26/2008) - Fix DPV3093 for parameter type reporting
+	;  DPV3128 (03/21/2008) - Fix type reporting for union queries
+	;  DPV3096 (01/23/2008) - Fix pathifn for view fields
+	;  DPV3093 (01/11/2008) - Better support for parameter datatypes
+	;  DPV3092 (01/08/2008) - Support IsRowid for xDBC metadata
+	;  PVA151  (11/01/2007) - Restore accedental feature: "INSERT .... VALUES somearry() " worked from dynamic sql prior to Cache 5.1
+	;  PVA149  (10/15/2007) - Restore support of arrow syntax from view columns in post 2007.1 versions
+	;  DPV3053 (10/16/2007) - For COALESCE function return best compatible type
+	;  DPV3045 (10/03/2007) - Correct type information for CASE, other functions.
+	;  DPV3024 (09/24/2007) - Fix ROUND() function to return type of first argument
+	;  DPV2998 (08/15/2007) - Report IsIdentity for IDENTITY column or RowID fields that are not PRIVATE
+	;  DPV2903 (04/05/2007) - In ddfun, Quit "*" if field not found.
+	;  DPV2899 (04/03/2007) - Fix TO_DATE(n,'J') for dates prior to 1841 via xDBC
+	;  DPV2892 (03/21/2007) - Correct metadata for isCaseSensitive
+	;  PVA129  (02/23/2007) - <UNDEFINED>clone+3^%qaqpnl when compiling CREATE VIEW of full outer join of two comples full outer joins
+	;  DPV2834 (01/10/2007) - Fix reporting of isAutoIncrement and isReadOnly for IDENTITY columns
+	;  AK661   (11/06/2006) - Fix NULLABLE reporting for OUTER JOIN
+	;  DPV2734 (09/20/2006) - Update maxlen of of types in definfo to be like defaults in %qadadt and %ourODBC.
+	;  DPV2724 (09/01/2006) - Enhancments and Fixes to CONVERT.  SMALLDATETIME, CHAR; Column metadata
+	;  DPV2686 (07/05/2006) - Implement scalar function REPLACE
+	;  AK651   (06/29/2006) - NVL inherits collation of its first argument
+	;  DPV2667 (06/01/2006) - SQL: CAST Enhancements and fixes
+	;  DPV2654 (05/18/2006) - SQL Fix: Have H_Variable length use ODBCVarcharMaxlen config setting
+	;  DPV2573 (01/17/2006) - In express, return the VTRomsinfo type of the value if it is defined.  Added %Library.Numeric to definfo()
+	;                         SQL Fix ProdLog 48455:  [SHD,ECORO] Function that should return type NUMERIC returns VARCHAR
+	;  DPV2541 (10/24/2005) - Add isAutoIncrement, isCaseSensitive, isCurrency, IsReadOnly, IsRowVersion, IsUnique, IsAliased, IsExpression, IsHidden, IsIdentity, IsKeyColumn do xDBC metadata
+	;  DPV2531 (10/05/2005) - Support BIGINT in CAST
+	;  DPV2314 (10/26/2004) - Implement support for INSERT INTO <table> DEFAULT VALUES
+	;  DPV2313 (10/26/2004) - Fix SELECT %exact(x) and %exact(x),x in moreinfo
+	;  DPV2312 (10/26/2004) - Fix type reported for functions NVL, ISNULL, IFNULL, NULLIF, and COALESCE
+	;  DPV2253 (07/23/2004) - Report READONLY columns in mtc()
+	;  DPV2236 (06/18/2004) - Use 8K as default length of host variables
+	;                         SQL Fix ProdLog 37452: unicode literal in sql statement is truncated at 127 chars
+	;  DPV2216 (05/19/2004) - SQL Enhancement:  Add Support for CONVERT(BIT,n)
+	;  DPV2160 (01/29/2004) - Mark constants compared with aggregates with aggragate type information
+	;                         SQL Fix ProdLog 35427: if you have HAVING>:x, then x gets reported as CHAR
+	;  DPV2150 (12/22/2003) - Fic DPV2090 to put real filed name in proper location
+	;			  SQL Fix ProdLog 34362:  wrong results for %Library.SQLCatalog_SQLViewFields()
+	;  DPV2102 (10/30/2003) - %EXTERNAL(...) now returns VARCHAR type always
+	;  DPV2090 (10/09/2003) - Add extent of the extent which projected the field to mtc()'s moreinfo information
+	;  DPV2083 (10/02/2003) - Add projecting property name to mtc()'s moreinfo information
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  DPV2072 (09/15/2003) - Add support for BIGINT datatype
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  PVA050  (02/12/2003) - ensure use of rowid based on one field, and the field itself are equally optimized
+	;  AK562   (04/25/2003) - Apply correct %ODBCIN to IN parameters
+	;  PYD094  (04/22/2003) - Return column datatype instead of VARCHAR for IFNULL
+	;  BJB237  (08/27/2002) - Avoid <MAXNUMBER> error in SQL constants
+	;  DPV1803 (08/21/2002) - Fix type, length, precision, scale reporting for literals
+	;  DPV**** (07/23/2002) - Report -9 (WVARCHAR) on UNICODE systems (Turned off - change pending)
+	;  DPV1686 (04/02/2002) - Report 4096 as LENGTH and PRECISION for LIST() aggregate function
+	;  MIT182  (04/02/2002) - provide datatype info for function arguments
+	;  DPV1670 (03/07/2002) - Add Cache' type information to mtc()
+	;  AK482   (08/02/2001) - Stewarts: Report to ODBC datatype of IN parameters
+	;  DPV1570 (07/26/2001) - Fix TYPE, LENGTH, PRECISION, SCALE reporting for some aggregates
+	;  DPV1563 (07/05/2001) - Fix NULLABLE returned for Aggregate functions.
+	;  AK474   (05/03/2001) - VA: Outer join fields are NULLABLE
+	;  DPV1450 (11/15/2000) - Fix $$$GetIrnFromIfn calls in agg when aggifn=""
+	;  DPV1445 (11/07/2000) - Don't attempt to calculate path for %%Q# tables in pathifn
+	;  DPV1434 (10/26/2000) - Report better values, consistent with what NUMERIC returns for getTypeInfo, for math expressions
+	;                         Fix getting val# in vexpress
+	;  AK454   (10/25/2000) - Gerd: Replace "M" in column headers
+	;  DPV1431 (10/24/2000) - Changed all %Date to %Library.Date, %Time[Stamp] to %Library.Time[Stamp], etc
+	;  DPV1395 (09/14/2000) - Fix setting of moreinfo piece 1 for expressions
+	;  DPV1363 (08/11/2000) - Fix calculation of function column length for m=2
+	;  AK448   (08/10/2000) - COMTRONIC: Field in subquery Prepare info
+	;  DPV1357 (08/08/2000) - Support LIST Aggregate function
+	;  DPV1310 (05/30/2000) - Support schemas
+	;  AK440   (05/10/2000) - ADO: Make description=name always
+	;  PVA007  (12/07/1999) - Info compile now returns collation
+	;  DPV1197 (11/29/1999) - Fix more ODBC Length/Precision problems for Delphi
+	;  DPV1168 (10/20/1999) - Fix ODBC Length/Precision reporting for some functions
+	;                         which have a return type of %String.
+	;  AK398   (10/13/1999) - Fix ODBC Server error reporting
+	;  AK396   (10/04/1999) - Unique: Fix prepare info for $$
+	;  DPV1103 (07/09/1999) - Support for types in definfo
+	;  DPV1101 (07/06/1999) - Support ABS function - return info for function's expression
+	;  DPV1087 (06/15/1999) - Populate mtc(0,0,"table" fully.
+	;  AK370   (09/03/1999) - ANT: Report description=name for expressions
+	;  AK369   (06/02/1999) - Fix prepare info for concatenation
+	;  AK364   (05/18/1999) - EMIS: Fix prepare info for built-in functions
+	;  AK361   (04/29/1999) - ODBC datatype reporting and conversion
+	;  AK360   (04/26/1999) - Fix prepare info for constants
+	;  DPV1047 (04/20/1999) - Retain '_' in SQL functions
+	;  DPV1045 (04/15/1999) - Fix -> syntax field lookup
+	;  DPV1025 (03/26/1999) - Retain '_' in username
+	;  DPV947  (01/07/1999) - Determine a field's ifn without calling
+	;                         $$path
+	;  AK341   (12/09/1998) - Fix prepare info for SELECT f,f
+	;  AK339   (12/04/1998) - Companion fields for host variables
+	;  AK305   (01/08/1998) - Fix $$getbval input
+	;  AK310   (02/10/98)   - New Server Optimizations
+	;  DPV789  (12/16/97)   - ELiminate calls to %qsc* routines
+	;  MRP689  (05/12/97)   - Populate/Get Gen. View Fields Info Properly
+	;                       --- Moved %colinfo.INC to (%qaqpif4) ---
+	;  MRP687  (04/26/97)   - NextGen Server Backward Compatibility
+	;  MRP678  (03/04/97)   - Support ADT's for NextGen
+	;  MRP670  (02/10/97)   - Support SQL_TIMESTAMP & MEMO Field
+	;                       - Added ($g($$$serverqueryvar)>0) as the
+	;                         last parameter for all calls to $$colinfo
+	;  MRP650  (10/14/96)   - Server Rewrite for Version 4.0
+	;  MRP642  (09/18/96)   - Robust Stored Procedure Information
+	;                        --- Initial Creation of Routine ---
+	;
+#ENDIF  ;-------------------------------------------------------------
+	$$$Abort  ;  Not an Entry Point!!
+ 
+#define default(%item) $p("~12~255~255~0~2~","~",%item)
+#define type(%val) $p($g($$$mtV(+%val)),"^")
+ 
+	/// Called from %qaqpifo
+moreinfo(list,select)  ;  More Detailed information about SELECT-list & Parameters
+#IF 0   ;-------------------------------------------------------------
+	;                       I N F O R M A T I O N
+	;-------------------------------------------------------------
+	; 
+	; select parameter is the name of the subscript to get/put the select info in.
+	;
+	; New information added with MRP642 as follows:
+	;
+	;   mtc(0,0,"parameter")=n  (Number of Parameters)	defined in %qaqpsq, %qaqpif2, and %qaqpDDLParser2
+	;   mtc(0,0,"parameter",1..n)= $c(1) pieces:
+	;                                 1) Parameter Name
+	;                                 2) val# of the parameter in mt("v"
+	;                                 3) 1 = Good Parameter
+	;                                    0 = Parameter part of SELECT-list
+	;                                 4) val# in mt("v" that the param
+	;                                    is being compared against
+	;
+	; The following two arrays will have the exact information, but
+	; some information will only pertain to the SELECT-list items.  The
+	; $c(1) pieces that do not pertain to parameters will be defaulted
+	; to the empty string ("").  For more details see Michael Pantaleo's
+	; design paper: "Stored Procedure Item Descriptors.doc"
+	;
+	;   mtc(0,0,"parameter",1..n,1) = $c(1) pieces: (moreinfo)
+	;				2) ODBC Type
+	;				4) Precision
+	;				5) Scale
+	;				6) NULLABLE
+	;				7) EXTERNALSQLTYPE (DPV3648)
+	;				8) Slot #, only if Fast Statement is supported, and only for INS
+	;				9) TRUNCATE flag (0/1/2/UTCTimeOffset), only for fastInsert
+	;				10) MINVAL/MINLEN value, only for fastInsert
+	;				11) MAXVAL value, only for fastInsert
+	;				12) Corresponding field name, only for fastInsert
+	;	// defined in %qaqpsq
+	;	// val is the $$$mtV(val) number for the parameter
+	;	mtc(0,0,"parameter","val",val) = parameter number
+	;	mtc(0,0,"parameter","convertonclient") = "|" delimited string of paraameter variable references for parameters to convert on the client
+	;	
+	;
+	;   mtc(0,0,"table",m_"^"_IQN) = $c(1) pieces		defined in pathifn^%qaqpif2, DefineMtcTable^%qaqpif2, gview^%qaqpsq, and %qaqqt
+	;	1)  Table Type (1 or 3)
+	;	2)  irn
+	;	3)  Table Name (iqn)
+	;	4)  Extent name
+	;	5)  Class name
+	;	6)  Shard flag (0/1/2)
+	;	7)  fastInsert supported (1/0)		// DPV4962
+	;	8)  fastSelect supported (1/0)		// DPV4962
+	;	9)  fastSelect Slot Count, 0 if fastSelect not supported 
+	;	10)  Real table name, defined for shard-server versions of a table, this is the iqn of the table from the shard master that projected this table.  Used for privilege checking
+	;	11)  fastInsert Slot Count, 0 if fastInsert not supported 
+	;
+	;   mtc(0,0,"model",UPPER(trained-model-name)) = $c(1) pieces		defined in %qaqpslx
+	;	1)  model-name
+	;	2)  trained-mode-name (exact case)
+	;
+	; 	For THROUGH statements we define this in %qaqpsq1 so if modified, please update through^%qaqpsq1 accordingly!
+	;   mtc(0,0,"select",1..n) = $c(1) pieces:
+	;	1)  Fieldname (AS name if one is used)
+	;	2)  Fieldname (was Description)
+	;	3)  
+	;	4)  Length
+	;	5)  
+	;	6)  0 (was Internal to External)
+	;	7)  irn
+	;	8)  ifn
+	;	9)  ---
+	;	10) Default title
+	;	11) val
+	;	12) select item text
+	;	13) ---
+	;
+	;   mtc(0,0,"select",1..n,1) = $c(1) pieces:
+	;	1) Name
+	;	2) ODBC Type
+	;	3) Length
+	;	4) Precision
+	;	5) Scale
+	;	6) NULLABLE
+	;	7) READONLY 				// DPV2253
+	;	8) Column Label (same as Name)
+	;	9) Column Schema Name
+	;	10) Column Qualifier Name - NULL
+	;	11) Column Table Name
+	;	12) Collation funcion (or * if none)  	// PVA007
+	;	13) Column's Caché Datatype		// DPV1670
+	;	14) Projecting Property name		// DPV2083
+	;	15) Projecting Property's Extent	// DPV2090
+	;	16) ODBC Type (same as 2)
+	;	17) Column name as defined in table	// DPV2090
+	;	18) Autoincrement (sys generated value)	// DPV2541
+	;	19) IsRowVersion                        // DPV2541 TRUE for system generated RowID values
+	;	20) IsUnique                            // DPV2541 TRUE if there is a UNIQUE key on this column by itself
+	;	21) IsExpression                        // DPV2541 TRUE if expression column
+	;	22) IsHidden                            // DPV2541
+	;	23) IsIdentity                          // DPV2541 TRUE if IDENTITY column (The column name is the name of the SQLRowID and the SQLRowID is not private)
+	;	24) IsKeyColumn                         // DPV2541,DPV3947 TRUE if column is part of Key that is fully included in the rowset
+	;	25) IsRowid				// DPV3092 TRUE if field is RowID or Single Field IDKEY field
+	;	26) ContainerField			// DPV3623 Contains the name of the container field if this is a serial field
+	;	27) EXTERNALSQLTYPE			// DPV3648 External SQL Dataype name/number (for linked tables only)
+	;	28) Storage Slot (for fast statement)	// DPV4962, empty if fastSelect is not supported
+	;	29) IsList				// DPV58xx, 1 if the value is a $list value, 0 otherwise
+	;
+	;	mtc(0,0,"columnar-insert") = 2 / 1 / 0 flag.  1 if this is an insert into a table with columnar maps (2 is columnar insert with %NOJOURN)
+	;   mtc(0,0,"emptyrow") = $lb() or storage node with literal defaults filled in.  Only defined for fastInsert
+	;   mtc(0,0,"fastFetch") = 1/0 if this statement supports fastFetch
+	;   mtc(0,0,"fastInsert") = 1/0 flag  1 means the statement supports fastInsert
+	;   mtc(0,0,"fastInsertExplicit") = $lb() of field names that were explicitly specified in the INSERT statement
+	;   mtc(0,0,"fastInsertSettings") = $lb() of fastInsert "other" information
+	;        1)  %NOCHECK - 1 if %NOCHECK was specified, otherwise 0
+	;        2)  %NOLOCK - 1 if %NOLOCK was specified, otherwise 0
+	;        3)  %NOINDEX - 1 if %NOINDEX was specified, otherwise 0
+	;        4)  Key Slots - # of key slots to read from the front of the row value.  These are RowID field values
+	;        5)  Node Cout - # of nodes stored in the master map
+	;        6)  CURRENT_DATE columns - $list of fieldnames that are to be set to the current date
+	;        7)  CURRENT_TIMESTAMP columns - $list of fieldnames that are to be set to the current timestamp
+	;        8)  CURRENT_TIME columns - $list of fieldnames that are to be set to the current time
+	;        9)  NORMALIZE_TS columns - $list of fieldnames that are to be set to timestamp values that need to be normalized
+	;       10)  INSERT OR UPDATE - 1 if INSERT OR UPDATE was specified, otherwise 0
+	;       11)  %NOJOURN - 1 if %NOJOURN was specified, otherwise 0
+	;       12)  # of CDM nodes for fastColumnarInsert
+	;       13)  NOTNULLPREFILER - 1 if NOT NULL constraints are checked at Prepare or on the client
+	;       14)  LOADDATA - 1 if this INSERT if for LOAD DATA, otherwise 0
+	;   mtc(0,0,"fastInsertReason") = if fastInsert is not supported, this is a reason why
+	;   mtc(0,0,"fastInsertRequired") = $lb(field names that need to have NOT NULL constraint checked at execution
+	;   mtc(0,0,"fastSelectSettings") = $lb() fastSelect "other" information
+	;        1)  fastLowSlot  - lowest slot position we are selecting
+	;        2)  fastHighSlot - highest slot position we are selecting
+	;        3)  fastPreFields - $lb list of output column-position in the order they will be sent to the client pre-datanode.
+	;	mtc(0,0,"nocq") = 1 - do not generate a cached query
+	;	mtc(0,0,"option",<option-key>) = <option-value>
+	;   mtc(0,0,"select-convertonclient") = "," delimited string of select column positions that will be converted on the client
+	;	mtc(0,0,"columnar-insert") = 0/1/2 flag.  1 if this is an insert into a table with columnar maps, 2 if columnar maps and %NOJOURN, 0 if no columnar maps
+	; 	mtc(0,0,"through-fdwObject") = foreign data wrapper object handle for a prepared statement executed via THROUGH
+	; 	mtc(0,0,"through-server") = name of the server that will be used for the THROUGH statement, to check USE privilege
+	;
+#ENDIF  ;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	new data,done,fastAllSlots,fastInsert,fastInsertCurrentDate,fastInsertCurrentTime,fastInsertCurrentTS,fastInsertNormalizeTS,fastHighSlot,fastLowSlot,fastPreFields,fastSelect,findex,gi,ifn,ii,info,irn,jj,L2OCliVal,L2OonClient,moreinfo,ODBCOUT,ojtab,ok,omsi,pos,scatch,singleTable,singleTableData,slot,totlen,type,val,ival,iv,tdata,tname,v
+	set ojtab=""  ;  fill in prepare information for all fields
+	set ojtab=$g(mt("ojtab"))	// AK661=
+		#;  $list in ojtab all streams appearing to the right of =*
+	for val=1:1 {
+		set v=$g($$$mtL(val)) quit:v=""  
+		if $e(v,1,5)="v^=*^" { 
+			set v=$p($$$mtV($p(v,"^",5)),"^",3) 
+			set:v'="" ojtab=ojtab_$lb(v)
+		}
+	}
+		#; PVA129: must follow streamed view fields to underlying vals
+	for val=1:1 {
+		set v=$g($$$mtV(val)) QUIT:v="" 
+		if $e(v)="f" 
+		{  
+			set ival=val,iv=v 
+			do vfollow(.ival,.iv)
+			if $e(iv)="f" {
+				set $$$VTRifn(val)=$$pathifn(iv)
+				continue:$$$VTRgetifn(ival)=""  	// probably %VID "field"
+				set omsi=$$finfo($$$VTRgetifn(ival))
+				set:$$ojtab(v,omsi) $p(omsi,$c(1),6)=1
+				set $$$VTRomsinfo(val)=omsi
+			}
+		}
+	}
+.
+	if $$$SQLCompileOption("SQLLoadDataID")'="" { set mtc(0,0,"option","SQLLoadDataID")=$$$SQLCompileOption("SQLLoadDataID") }
+	if $$$SQLCompileOption("xDBC")'="" { set mtc(0,0,"option","xDBC")=$$$SQLCompileOption("xDBC") }
+	set fastSelect=0	        // Assume we cannot use fastSelect interface
+	set:$$$mtStatementType="INS" mtc(0,0,"fastInsert")=0	// Assume we cannot use fastInsert interface
+	set fastAllSlots=0      // Number of slots in the entire node
+	set fastPreFields=""    // $lb list of output positions that are prepended to the data-row output
+	                        // For example, SELECT Name, %ID, SSN from Person, fastPreFields=$lb(2), output postion 2, is a PreField
+		// If we are sending 3 fields in slots 4, 10, 15, we will only send $li(data,4,15), not the entire node
+	set fastLowSlot=1000000     // Holds the first slot position in the data that will be sent
+	set fastHighSlot=0          // Holds the last slot position in the data that will be sent
+	
+	set singleTable=0,singleTableData=""
+	set ii=$o(mtc(0,0,"table",""),1,singleTableData),jj=$o(mtc(0,0,"table",ii))
+	set:jj="" singleTable=1	// Only a single table
+	
+	if $$$SQLCompileOption("xDBC")=1,$$$SQLCompileOption("xDBCServerProtocol")>8,'$$$SQLCompileOption("XEP") {
+		new parquetCacheClass,precision
+		set fastSelect=1	// Assume we can use fastSelect interface
+		
+			#; No fastSelect support if there is:
+			#;      - ORDER BY
+			#;      - UNION
+			#;      - GROUP BY
+			#;      - HAVING
+			#;      - No select columns
+		if $d($$$mtSequencers) || $d(mt("union")) || $d($$$mtGroupDistinctRoot) || $d($$$mtHavingRoot) || (+$g(mtc(0,0,select))=0) || ($$$SQLCompileOption("xDBCCompileMode")'=1) { set fastSelect=0 }
+	
+		if singleTable,$p(singleTableData,$c(1),3)="%TSQL_sys.snf" { set fastSelect=0,mtc(0,0,"nofromclause")=1 }	// Single table that is no from clause table.
+		if $$$mtStatementType="SEL" {
+			if singleTable,$$$SQLCompileOption("xDBCfastSelectSupported")=1,fastSelect,$$MapsSupportFast($p(singleTableData,$c(1),2)) {	// Only a single table we did not set fastSelect=0 (no order by, group by, union, having, etc.), and there is only a data map or data map and BME index
+				if $p(singleTableData,$c(1),8),$$allColumnsOKForFast(.mtc,.mt,.fastPreFields) { set fastSelect=1,fastAllSlots=$p(singleTableData,$c(1),9) }     // fastSelect is supported for this table and statement
+				else { set fastSelect=0 }
+			} else {
+				set fastSelect=0
+			}
+			set:'fastSelect $p(mtc(0,0,"table",ii),$c(1),8,9)=0
+		} elseif $$$mtStatementType="INS" {
+			new fieldscale,fldcat,inputValsOK,insertedcolumns
+			set parquetCacheClass=+$$$comMemberKeyGet($p(singleTableData,$c(1),5),$$$cCLASSparameter,"PARQUETCACHECLASS",$$$cPARAMdefault)
+			if parquetCacheClass { set mtc(0,0,"nocq")=1 }  // Do not define a cached query!!!
+			if '$$$mtKInsertDefaultFlag($g($$$mtK)),$d($$$mtNewVals) { // DEFAULT VALUES specified, don't use fastInsert
+				set inputValsOK=1 
+				for i=1:1 {
+					set val=$p($$$mtNewVals,",",i) quit:val=""
+					set ifn=+$$$VTRgetifn($p($$$mtFList,",",i))	// target field we are inserting into
+					set insertedcolumns(ifn)=""
+					set irn=$$$smdGetIrnFromIfn(ifn)				// target table we are inserting into
+					if $e($g($$$mtV(val)),1,10)="v^CURDATE^" {
+						if $$$smdColfastInsertSlot(1,irn,ifn)>8000 { set inputValsOK=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"CURRENT_DATE used for value of field "_$$$smdColName(1,irn,ifn) }
+						set fastInsertCurrentDate=$g(fastInsertCurrentDate)_$lb($$$smdGetFieldName(ifn))
+					} elseif $e($g($$$mtV(val)),1,8)="v^CURTS^" {
+							#; If there is a precision for CURTS, make sure the precision is a literal value.  
+							#; We do not support host variables here for fastInsert
+						set precision=0
+						if $p($$$mtV(val),"^",4) {  // there is a precision
+							if $$$mtV($p($$$mtV(val),"^",4))?1"t^"1N {	// make sure it is a literal value
+								set precision=$p($$$mtV($p($$$mtV(val),"^",4)),"^",2)	// record literal precision below for use in the filer
+							} else {
+								set inputValsOK=0,mtc(0,0,"fastInsertReason")="Input value of CURRENT_TIMESTAMP(n) with non-literal precision"
+							}
+						}
+						if $$$smdColfastInsertSlot(1,irn,ifn)>8000 { set inputValsOK=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"CURRENT_TIMESTAMP used for value of field "_$$$smdColName(1,irn,ifn) }
+						set fastInsertCurrentTS=$g(fastInsertCurrentTS)_$lb($$$smdGetFieldName(ifn)_$s(precision:$c(1)_precision,1:""))
+					} elseif $e($g($$$mtV(val)),1,10)="v^CURTIME^" {
+							#; If there is a precision for CURTIME, make sure the precision is a literal value.  
+							#; We do not support host variables here for fastInsert
+						set precision=$$$GetTimePrecision // defaulr precision for CURRENT_TIME is the system config setting
+						if $p($$$mtV(val),"^",4) {  // there is an explicit precision
+							if $$$mtV($p($$$mtV(val),"^",4))?1"t^"1N {	// make sure it is a literal value
+								set precision=$p($$$mtV($p($$$mtV(val),"^",4)),"^",2)	// record literal precision below for use in the filer
+							} else {
+								set inputValsOK=0,mtc(0,0,"fastInsertReason")="Input value of CURRENT_TIME(n) with non-literal precision"
+							}
+						}
+						if $$$smdColfastInsertSlot(1,irn,ifn)>8000 { set inputValsOK=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"CURRENT_TIME used for value of field "_$$$smdColName(1,irn,ifn) }
+						set fieldscale=$p($$$VTRgetomsinfo($p($$$mtFList,",",i)),$c(1),5)
+						if fieldscale'="",precision,fieldscale<precision { set precision=fieldscale }
+						set fastInsertCurrentTime=$g(fastInsertCurrentTime)_$lb($$$smdGetFieldName(ifn)_$c(1)_precision)
+					} elseif $e($g($$$mtV(val)),1,10)="v^%ODBCIN^" {
+							#; A new value is an %ODBCIN expression, it could be {t '...'} or {d '...'}, and if so we can handle that for fastInsert.
+							#; as long as the ODBC scalar function type matches the type of the input column
+						new val2 set val2=$p($$$mtV(val),"^",4)
+						if $e($g($$$mtV(val2)))="x" {
+							set fldcat=$$$smdColCategory(1,irn,ifn)
+							if $$$VTRgetcat(val)="DATE",$$$VTRgetcat(val2)="DATE",fldcat="DATE" {}
+							elseif $$$VTRgetcat(val)="TIME",$$$VTRgetcat(val2)="TIME",fldcat="TIME" {}
+							elseif $$$VTRgetcat(val)="TIMESTAMP",$$$VTRgetcat(val2)="TIMESTAMP",fldcat="TIMESTAMP" {}
+							elseif $$$VTRgetcat(val)="POSIXTS",$$$VTRgetcat(val2)="POSIXTS",fldcat="POSIXTS" {}
+							else { 
+								set inputValsOK=0,mtc(0,0,"fastInsertReason")="Input value use ODBC scalar type that does not match input field type"
+								quit
+							}
+						}
+					} elseif $e($g($$$mtV(val)))'="x",$g($$$mtV(val))'="t^" {  // Not a host-var and not a null literal
+						set inputValsOK=0,mtc(0,0,"fastInsertReason")="Input value not parameter/host-variable or supported function - "_$$$mtV(val)
+						quit
+					} elseif $$$SQLCompileOption("xDBCfastInsertSupported")<2 {	// Columnar fastInsert is not supported by this client or server
+						if $$$smdColfastInsertSlot(1,irn,ifn)>8000 {
+							set inputValsOK=0,mtc(0,0,"fastInsertReason")="Insert into columnar data field, but Columnar fastInsert is not supported by the client/server - "_$$$smdColName(1,irn,ifn)
+							quit
+						}
+					}
+				}
+			} else { set inputValsOK=0,mtc(0,0,"fastInsertReason")="DEFAULT VALUES specified" }
+.
+				#; if the table has CDMs and fastColumnar is not supported by the client/server connection, don't attempt to use fastInsert
+				#; The CDM maps are represented in the empty-row-defaults" metadata and if we say this is fastInsert, the client will sen data for those fields even if the fields are not mentioned in the INSERT statement
+				#; This corrects an issue found in Jira DP-446403
+			if $$$SQLCompileOption("xDBCfastInsertSupported")<2,$d(irn),$$$smdHasColumnarDataMaps(1,irn) {
+				set ifn=0
+				for {
+					set ifn=$o($$$smd(1,irn,2,ifn),1) quit:'ifn
+					continue:$d(insertedcolumns(ifn))	// explicitly inserted, already checked for above
+					continue:$$$smdColNumber(1,irn,ifn)=1&&($$$smdColRecIDBased(1,irn,ifn)="Y")	// RowID field that is based on other field(s)
+					if $$$smdColfastInsertSlot(1,irn,ifn)>8000 {
+						set inputValsOK=0,mtc(0,0,"fastInsertReason")="Insert into a table with a columnar data field (not specified by the INSERT), but Columnar fastInsert is not supported by the client/server - "_$$$smdColName(1,irn,ifn)
+						quit
+					}
+				}
+			}
+			
+			if singleTable,inputValsOK,$$$SQLCompileOption("xDBCfastInsertSupported")>0,$p(singleTableData,$c(1),7),$$$SQLCompileOption("xDBCFunction")'="EB" {	                      // fastInsert is supported
+				set mtc(0,0,"fastInsert")=1,fastSelect=0
+					#; Recored a list of fields specified for the insert
+					#; We will use this generation of the fastInsert filing code to determine what fields we need to compute defaults
+					#; If a field was specified in the INSERT statement, no default value/check is needed
+				for i=1:1 {
+					set val=$p($$$mtFList,",",i) quit:val=""
+					continue:$e($g($$$mtV(val)))'="f"  // possible?
+					set mtc(0,0,"fastInsertExplicit")=$g(mtc(0,0,"fastInsertExplicit"))_$lb($p($$$VTRgetomsinfo(val),$c(1),1))
+				}
+			} else {
+				if 'singleTable { set mtc(0,0,"fastInsertReason")="Multiple table entries in mtc(0,0,""tables"")" }
+				elseif '$p(singleTableData,$c(1),7) { set mtc(0,0,"fastInsertReason")="table does not support fastInsert - reason "_$$$smdFastInsert(1,$p(singleTableData,$c(1),2)) }
+				elseif $$$SQLCompileOption("xDBCfastInsertSupported")<1 { set mtc(0,0,"fastInsertReason")="xDBCfastInsertSupported = "_$$$SQLCompileOption("xDBCfastInsertSupported") }
+				elseif $$$SQLCompileOption("xDBCFunction")="EB"  { set mtc(0,0,"fastInsertReason")="ExecuteBatch does not support fastInsert" }
+			}
+			if $$$SQLCompileOption("xDBCfastInsertSupported")=2,$$$smdHasColumnarMaps(1,$p(singleTableData,$c(1),2)) { set mtc(0,0,"columnar-insert")=1+($$$mtKNoJournalFlag($$$mtK)=1) }
+		} else {
+			set fastSelect=1
+		}
+		if $case($$$mtStatementType,"SEL":1,"DEC":1,:0) {
+			if $g(mtc(0,0,"nofromclause"))=1 { set mtc(0,0,"fastFetch")=0 }
+			elseif $zu(67,10,$j)=$$$LCBTYPE { set mtc(0,0,"fastFetch")=0,fastSelect=0 }	// LCB Server process does not use fast*  The process is identified as type 48 ($$$LCBTYPE) in LCBSuperCOnnect2^%SYS.DBSRV
+			else { set mtc(0,0,"fastFetch")=$$AnyExternalTable(.mtc) }	// No fastFetch support if there is an external table involved
+		}
+		set:$$$mtStatementType="SEL" mtc(0,0,"fastSelect")=fastSelect
+	} elseif $$$SQLCompileOption("XEP") {
+		set mtc(0,0,"fastFetch")=0
+	}
+.
+	  #;  now process SELECT-list items
+	  #;  make sure AS alias in $P(info) is reported properly (name+label)
+	  #;  Supply collation function in 12th piece for BitMap Query use  ;  PVA007
+	set L2OonClient=""
+	for ii=1:1:$g(mtc(0,0,select)) {
+		set info=$g(mtc(0,0,select,ii))
+		continue:info=""
+		set irn=$p(info,$c(1),7),ifn=$p(info,$c(1),8),val=$p(info,$c(1),11)
+		  #;  if SELECT f,...,f then copy from the first occurance of the field
+		set type=$e($g($$$mtV(+val)))
+		set moreinfo=""
+ 
+ 		  #;  extrinsic function - default into VARCHAR
+		if $e(type)="e" { 
+			set moreinfo="ExtrFun_"_ii_$$definfo("%Library.String")
+			set:$p(info,$c(1))'="" $p(moreinfo,$c(1))=$p(info,$c(1))
+			set:$p(moreinfo,$c(1),7)="" $p(moreinfo,$c(1),7)=(''$g(^%SYS("sql","sys","report non-fields as not readonly"))=0)	// DPV2253 (Not a field - always readonly (DPV3539 configurable)
+			set $p(moreinfo,$c(1),8)=$p(moreinfo,$c(1))
+			set mtc(0,0,select,ii,1)=moreinfo
+		}
+.
+		  #; ------ NAME ------
+		if $p(info,$c(1))'="" { set $p(moreinfo,$c(1))=$p(info,$c(1)) }
+		else { set $p(moreinfo,$c(1))=$$getinfo(1,type,.irn,.ifn,val,list,info,ii) }
+ 
+		  #; --- ODBC Type/LENGTH/PRECISION/SCALE/NULLABLE/READONLY/COLUMN_NAME/ ---
+		  #; --- COLUMN_SCHEMA/COLUMN_QUALIFIER_NAME/COLUMN_TABLE_NAME ---
+		for pos=2:1:6,11 set $p(moreinfo,$c(1),pos)=$$getinfo(pos,type,.irn,.ifn,val,list,info,ii)	// ODBC TYPE/LENGTH/PRECISION/SCALE/NULLABLE/.../COLUMN_TABLE_NAME
+		set $p(moreinfo,$c(1),9,10)=""_$c(1)								// COLUMN_SCHEMA_NAME/COLUMN_QUALIFIER_NAME
+ 
+		  #; ------ ODBC Type ------
+		set $p(moreinfo,$c(1),16)=$p(moreinfo,$c(1),2)
+		set:type'="f" irn="",ifn=""	// DPV2150=
+ 
+		if $g($$$mtV(val))'="" {
+			s $p(moreinfo,$c(1),12)=$$ddfun(val,list)  // PVA007					// COLLATION_FUNCTION
+			s $p(moreinfo,$c(1),13)=$$ColumnObjectType($p(moreinfo,$c(1),2),val,list)		// CACHE' DATATYPE (DPV1670)
+		}
+		for pos=7,8,9,10,12:1:16 set:$p(moreinfo,$c(1),pos)="" $p(moreinfo,$c(1),pos)=$p($$$VTRgetomsinfo(val),$c(1),pos)
+		if irn,ifn,'$d(unf(val)) {	// If a field, and not a field from a leg in a union...
+				#;  Report as READONLY if ReadOnly or system generated value
+			set:'$p(moreinfo,$c(1),7)&&($$$smdColReadOnly(1,irn,ifn)||($$$smdColSystemGeneratedValue(1,irn,ifn))||($$$smdColIsIdentityColumn(1,irn,ifn)&&('$zu(115,11)))) $p(moreinfo,$c(1),7)=1	// DPV2253	// DPV2834
+			//s:$p(moreinfo,$c(1),9)="" $p(moreinfo,$c(1),9)=$p($$$VTRgetomsinfo(val),$c(1),9)		// COLUMN_SCHEMA_NAME
+			set:$p(moreinfo,$c(1),14)="" $p(moreinfo,$c(1),14)=$$$smdColPropertyName(1,irn,ifn)		// DPV2083
+			set:$p(moreinfo,$c(1),15)="" $p(moreinfo,$c(1),15)=$$$smdExtent(1,irn)				// DPV2090
+			set:$p(moreinfo,$c(1),17)="" $p(moreinfo,$c(1),17)=$$$smdGetFieldName(ifn)			// DPV2090	// DPV2150 (17, not 16)
+			set $p(moreinfo,$c(1),18)=($$$smdColSystemGeneratedValue(1,irn,ifn)||($$$smdColIsIdentityColumn(1,irn,ifn)&&('$zu(115,11)))||($$$smdColDatatype(1,irn,ifn)="%Library.AutoIncrement"))	// DPV2541 Autoincrement // DPV2834
+			set:$p(moreinfo,$c(1),19)="" $p(moreinfo,$c(1),19)=$$$smdColIsRowVersion(1,irn,ifn)		// IsRowVersion
+			if 'singleTable,$d($$$mtOnCount) { set $p(moreinfo,$c(1),20)=0 }					// DPV2541 IsUnique
+			else                         { set $p(moreinfo,$c(1),20)=($$$smdColUnique(1,irn,ifn)="Y") }
+			set $p(moreinfo,$c(1),21)=0									// DPV2541 IsExpression
+			set $p(moreinfo,$c(1),22)=($$$smdColHidden(1,irn,ifn)="Y")					// DPV2541 IsHidden
+			set $p(moreinfo,$c(1),23)=($$$smdColIsIdentityColumn(1,irn,ifn))||('$$$smdColHidden(1,irn,ifn)&&($$$smdGetIcolFromIfn(ifn)=1))		// DPV2541 IsIdentity
+			set $p(moreinfo,$c(1),24)=0	//$$$smdColIsKeyColumn(1,irn,ifn)						// DPV2541 IsKeyColumn
+			set $p(moreinfo,$c(1),25)=($$$smdGetIcolFromIfn(ifn)=1||($$$smdRowIDPhysicalFields(1,irn)=ifn))	// DPV3092 IsRowid
+			set $p(moreinfo,$c(1),26)=$$$smdColContainerField(1,irn,ifn)					// DPV3623 ContainerField
+			set $p(moreinfo,$c(1),27)=$$$smdColEXTERNALSQLTYPE(1,irn,ifn)					// DPV3648 EXTERNALSQLTYPE
+			if fastSelect {
+				new scratch
+				set slot=$$$smdColfastSelectSlot(1,irn,ifn)
+				set scratch=$lf(fastPreFields,ii)
+				if scratch { set $p(moreinfo,$c(1),28)=-scratch }
+				else { 
+					set $p(moreinfo,$c(1),28)=slot
+					set:slot<fastLowSlot fastLowSlot=slot
+					set:slot>fastHighSlot fastHighSlot=slot
+				}
+			}
+			set $p(moreinfo,$c(1),29)=$s($$$smdColListCollection(1,irn,ifn)="Y":1,
+			                             $$$smdColArrayCollection(1,irn,ifn):1,
+			                             $$$comClassKeyGet($p(moreinfo,$c(1),13),$$$cCLASSclientdatatype)=$$$cCLASSCLIENTDATATYPELIST:1,
+			                             1:0)
+			set findex(irn,+ifn)=ii										// Used below to determine which columns are IsKeyColumn=1
+				// Tweak the datatype reported if the conversion is to be performed on the client
+				// type 1091 is DATE, 1092 is TIME, 1093 is POSIXTIME
+			if $$$SQLCompileOption("xDBCCompileMode")=1,$$$SQLCompileOption("xDBCServerProtocol")>6,$$$smdColConvertL2OOnClient(1,irn,ifn) {
+				if $case($p(moreinfo,$c(1),2),9:1,91:1,:0) { set $p(moreinfo,$c(1),2)=1091,$p(moreinfo,$c(1),16)=1091,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1091) } 
+				elseif $case($p(moreinfo,$c(1),2),10:1,92:1,:0) { set $p(moreinfo,$c(1),2)=1092,$p(moreinfo,$c(1),16)=1092,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1092) } 
+				elseif $case($p(moreinfo,$c(1),2),11:1,93:1,:0),$$checkDataType^%apiDDL2($$$smdColDatatype(1,irn,ifn),$lb("%Library.PosixTime")) { set $p(moreinfo,$c(1),2)=1093,$p(moreinfo,$c(1),16)=1093,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1093) } 
+			}
+		}
+		else {
+			set $p(moreinfo,$c(1),7)=(''$g(^%SYS("sql","sys","report non-fields as not readonly"))=0)	// DPV2253 (Not a field - always readonly (DPV3539 configurable)
+			if type="v" {													// DPV2541, DPV4377, and expression, but not AVG
+				set $p(moreinfo,$c(1),21)=($p($$$mtV(val),"^",2)'="/0")
+				
+			}
+				// Tweak the datatype reported if the conversion is to be performed on the client
+			if $$$SQLCompileOption("xDBCCompileMode")=1,$$$SQLCompileOption("xDBCServerProtocol")>6,$case($$$SQLCompileOption("xDBCFunction"),"DU":0,"DQ":1,:1) {
+				if type="a" {
+					set agg=$p($$$mtV(val),"^",2)
+					if ",max,min,"[agg {
+						set aggval=+$p($$$mtV(val),"^",5)
+						if $e($g($$$mtV(aggval)))="f" {
+							set ifn=$$getifn(aggval,list)
+							set irn=$$getirn(ifn)
+							if $$$smdColConvertL2OOnClient(1,irn,ifn)
+								set datatype=$$$smdColDatatype(1,irn,ifn)
+								set category=$$$smdColCategory(1,irn,ifn)
+								if $p(moreinfo,$c(1),13)="%Library.TimeStamp",category="POSIXTS" { set $p(moreinfo,$c(1),13)="%Library.PosixTime" }
+						}
+					}
+				} elseif $p($$$mtV(val),"^",1,2)="v^%ODBCOUT" {
+						#; if this is %ODBCOUT(f) and f is also in the select list and f is a field that we are converting on the client, we can convert %ODBCOUT(f) on the client too
+						#; an example of this is SELECT DOB, ..., %ODBCOUT(DOB)
+						#; Define cross reference of ODBCOUT(val)=$lb(target-val,select-position)
+					set targval=$p($$$mtV(val),"^",4)
+					if $e($g($$$mtV(targval)))="f" { set ODBCOUT(val)=$lb(targval,ii) }
+					elseif $case($$$SQLCompileOption("xDBCFunction"),"DU":0,"DQ":1,:1) {
+						if $p($g($$$mtV(targval)),"^",1,2)="v^CURDATE",$case($p(moreinfo,$c(1),2),9:1,91:1,:0) { set $p(moreinfo,$c(1),2)=1091,$p(moreinfo,$c(1),16)=1091,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1091) }
+						if $p($g($$$mtV(targval)),"^",1,2)="v^CURTIME",$case($p(moreinfo,$c(1),2),10:1,92:1,:0) { set $p(moreinfo,$c(1),2)=1092,$p(moreinfo,$c(1),16)=1092,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1092) }
+						if $p($g($$$mtV(targval)),"^",1,2)="v^CURTS",$p(moreinfo,$c(1),13)="%Library.PosixTime",$case($p(moreinfo,$c(1),2),11:1,93:1,:0) { set $p(moreinfo,$c(1),2)=1091,$p(moreinfo,$c(1),16)=1091,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1091) }
+					}
+				}
+				if '$d(unf(val)) && ((irn && ifn) || ($case($$$SQLCompileOption("xDBCFunction"),"DU":0,"DQ":1,:1) && (($e($$$mtV(val),1,9)="v^CURDATE") || ($e($$$mtV(val),1,9)="v^CURTIME") || ($e($$$mtV(val),1,7)="v^CURTS")))) {
+					if $p(moreinfo,$c(1),13)="%Library.Date",$case($p(moreinfo,$c(1),2),9:1,91:1,:0) { set $p(moreinfo,$c(1),2)=1091,$p(moreinfo,$c(1),16)=1091,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1091) }
+					elseif $p(moreinfo,$c(1),13)="%Library.Time",$case($p(moreinfo,$c(1),2),10:1,92:1,:0) { set $p(moreinfo,$c(1),2)=1092,$p(moreinfo,$c(1),16)=1092,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1092) }
+					elseif $p(moreinfo,$c(1),13)="%Library.PosixTime",$case($p(moreinfo,$c(1),2),11:1,93:1,:0) { set $p(moreinfo,$c(1),2)=1093,$p(moreinfo,$c(1),16)=1093,L2OonClient=L2OonClient_","_ii,L2OCliVal(val)=$lb(ii,1093) }
+				}
+			}
+			if irn,ifn,$d(unf(val)) {	// Have to re-check to see if unf(val) is defined because irn,ifn might have been set above
+				set:$p(moreinfo,$c(1),19)="" $p(moreinfo,$c(1),19)=$$UnionAllRowVersion(unf(val),irn,ifn)	// IsRowVersion
+				set $p(moreinfo,$c(1),22)=$$UnionAllHidden(unf(val),irn,ifn)					// IsHidden
+				set $p(moreinfo,$c(1),23)=$$UnionAllIsIdentity(unf(val),irn,ifn) 				// IsIdentity
+				set $p(moreinfo,$c(1),25)=$$UnionAllRowIds(unf(val),irn,ifn)					// IsRowid
+				set $p(moreinfo,$c(1),27)=$$UnionAllContainers(unf(val),irn,ifn) 				// ContainerField
+				set $p(moreinfo,$c(1),29)=$$UnionAllIsList(unf(val),irn,ifn) 					// IsList
+			}
+			if fastSelect {
+				new scratch
+				set scratch=$lf(fastPreFields,ii)
+				if scratch { set $p(moreinfo,$c(1),28)=-scratch }	// scratch should always be TRUE for non-field fastSelect columns
+			}
+			set:$p(moreinfo,$c(1),29)="" $p(moreinfo,$c(1),29)=$case($p($g($$$mtV(+val)),"^",1,2),"v^LISTBUILD":1,"v^LISTFROMSTRING":1,:0) 
+		}
+		set:$p(info,$c(1))'="" $p(moreinfo,$c(1))=$p(info,$c(1)) 
+		set $p(moreinfo,$c(1),8)=$p(moreinfo,$c(1))
+		set mtc(0,0,select,ii,1)=moreinfo
+	} // end of processing SELECT list items
+		#; See if there are any ODBCOUT(val) columns where val is converted on the client, if so, this item can be converted on the client too
+		#; ODBCOUT(val)=$lb(target-val,select-position)
+		#; L2OCliVal(val)=$lb(select-position,type)
+	if $d(ODBCOUT) {
+		new d1,d2
+		set val=""
+		for  {
+			set val=$o(ODBCOUT(val),1,d1) quit:val=""
+			if $d(L2OCliVal($lg(d1,1)),d2) {
+				set $p(mtc(0,0,"select",$lg(d1,2),1),$c(1),2)=$lg(d2,2)
+				set $p(mtc(0,0,"select",$lg(d1,2),1),$c(1),16)=$lg(d2,2)
+				set L2OonClient=L2OonClient_","_$lg(d1,2)
+			}
+		}
+	}
+	if L2OonClient'="" { set mtc(0,0,"select-convertonclient")=$e(L2OonClient,2,*) }
+	
+	if fastSelect && ((fastLowSlot>1) || (fastHighSlot<fastAllSlots) || (fastPreFields'="")) { set mtc(0,0,"fastSelectSettings")=$lb(+fastLowSlot,+fastHighSlot,fastPreFields) }
+	
+		#;  If there are any fastPreFields, they will be added to the beginning ofthe data node, so we have to offset the column location of the other columns
+	if fastPreFields'="" {
+		new offset set offset=$ll(fastPreFields)
+		for ii=1:1:$g(mtc(0,0,select)) {
+			set moreinfo=mtc(0,0,select,ii,1)
+			if $p(moreinfo,$c(1),28)>0 { set $p(moreinfo,$c(1),28)=$p(moreinfo,$c(1),28)+offset,mtc(0,0,select,ii,1)=moreinfo }
+		}
+	}
+	
+		#; See if any of the columns in the select list can be defined as IskeyColumn
+		#;	If the statement only uses a single table, see if the UNIQUE or PKEY columns are contained in the select list of this query
+		#;	If all of a constraint's columns are present, we can define IsKeyColumn=1 for these columns
+		#;	here is the definition of IsKeyColumn:
+		#;	true if the column is one of a set of columns in the rowset that, taken together, uniquely identify the row. 
+		#;	The set of columns with IsKeyColumn set to true must uniquely identify a row in the rowset. There is no requirement that this set of columns is a minimal set of columns. 
+		#;	This set of columns may be generated from a base table primary key, a unique constraint or a unique index. false if the column is not required to uniquely identify the row.
+	if singleTable {	// Only a single table
+		set done=0,irn=""
+		for  {
+			set irn=$o(findex(irn)) q:irn=""	// For each table in the resultset
+			set ii=""
+			for  {
+				set ii=$o($$$smd(1,irn,3,ii),1,data)
+				quit:ii=""			// no more keys for this table
+				set data=$lg(data,3)		// data is now a list of ifn's that define the key columns
+				set ok=1
+				for jj=1:1:$l(data,",") if '$d(findex(irn,$p(data,",",jj))) set ok=0 quit	// no match for this key on his table
+				if ok {		// match found
+					for jj=1:1:$l(data,",") set $p(mtc(0,0,select,findex(irn,$p(data,",",jj)),1),$c(1),24)=1	// Define each key column as isKeyColumn=1
+					set done=1
+					quit
+				}
+				quit:done
+			}
+		}
+	}
+			
+		#; ------ Process Host-Variable (Parameter) items Second ------
+		#;  if SET ff=:var, give var the ODBC datatype of ff
+	if "INS UPD"[$$$mtStatementType,'$$$mtKInsertDefaultFlag($g($$$mtK)),$d($$$mtNewVals) {
+		new checkminmax,maxval,minval,notnullprefiler,storageSlot,targifn,targirn,targval,type,utcoffset
+		for ii=1:1:$l($$$mtNewVals,",")-1 {
+			set val=$p($$$mtNewVals,",",ii)
+			if $$$mtVType($$$mtV(val))="x" {
+				set targval=$p($$$mtFList,",",ii)
+				set targifn=$$$VTRgetifn(targval)
+				set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",val)),$c(1),4)=targval
+				if $g(mtc(0,0,"fastInsert")) && targifn {
+					new truncate
+					set targirn=$$$smdGetIrnFromIfn(targifn)
+					set storageSlot=$$$smdColfastInsertSlot(1,targirn,targifn)
+						#; if there is no storage slot for the field, or this is a %FilemanDate or %FilemanTimeStamp value, or this is a list collection, or this field is read only, or field is a stream, we cannot use fastInsert
+					if 'storageSlot || $case($$$smdColCategory(1,targirn,targifn),"FMDATE":1,"FMTIMESTAMP":1,:0) || ($$$smdColCollectionType(1,targirn,targifn)'="") || ($$$smdColReadOnly(1,targirn,targifn)) || ($$$smdColStream(1,targirn,targifn)) || ($case($$$smdColDatatype(1,targirn,targifn),"%Library.InformixTimeStamp":1,:0)) { 
+						set mtc(0,0,"fastInsert")=0 kill mtc(0,0,"fastInsertExplicit")
+						if 'storageSlot { set mtc(0,0,"fastInsertReason")="No storage Slot for field "_$$$smdColName(1,targirn,targifn) }
+						elseif $case($$$smdColCategory(1,targirn,targifn),"FMDATE":1,"FMTIMESTAMP":1,:0) { set mtc(0,0,"fastInsertReason")="FMDATE/FMTIMESTAMP field" }
+						elseif ($$$smdColReadOnly(1,targirn,targifn)) { set mtc(0,0,"fastInsertReason")="Read-only field" }
+						elseif ($$$smdColDatatype(1,targirn,targifn)="%Library.InformixTimeStamp") { set mtc(0,0,"fastInsertReason")="Field with datatype %Library.InformixTimeStamp" }
+						else { set mtc(0,0,"fastInsertReason")="Stream field" }
+					}
+						#; Make sure the conversion for the field can be performed on the client!
+					if $$$smdColDatatype(1,targirn,targifn)'="%Library.TimeStamp",'$$$smdColConvertO2LOnClient(1,targirn,targifn) {
+						set mtc(0,0,"fastInsert")=0 kill mtc(0,0,"fastInsertExplicit")
+						set mtc(0,0,"fastInsertReason")="Field '"_$$$smdColName(1,targirn,targifn)_"', datatype '"_$$$smdClassname(1,targirn)_"."_$$$smdColDatatype(1,targirn,targifn)_"' cannot perform OdbcToLogical conversion on the client"
+					}
+					if $g(mtc(0,0,"columnar-insert")),$$$smdColIsIdentityColumn(1,targirn,targifn) {
+						set mtc(0,0,"fastInsert")=0 kill mtc(0,0,"fastInsertExplicit")
+						set mtc(0,0,"fastInsertReason")="Explicit insert into identity field of a columnar storage table"
+					}
+						#; TRUNCATE setting=2 indicates %NOCHECK, client will use this value to determine if validation checking occurs
+					set truncate=$$$smdColTruncate(1,targirn,targifn)
+						#; If this is a TIMESTAMP or POSIXTS field, we will use the truncate metadata to hold the UTC time offset.  This will be used by the client to 
+						#; determine the current date when converting strings to timestamps where the date component of the timestamp string is missing.
+						#; The UTC time offset is the number of minutes the server if offset from UTC  a positive value means a timezone west of Greenwich
+					if $case($$$smdColCategory(1,targirn,targifn),"TIMESTAMP":1,"POSIXTS":1,:0) {
+						set truncate=$g(utcoffset,$$UTC2LocalTimeOffset^%SYS.SQLSRV())
+					}
+					if $$$mtKNoCheckFlag($$$mtK)=1 { set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",val),1),$c(1),8,11)=storageSlot_$c(1)_$s(truncate=1:1,1:2) }   // for fastInsert: %NOCHECK if %NOCHECK and TRUNCATE=1, report 1 for TRUNCATE, not 2.  
+					else { // for fastInsert: Define storage slot for parameter (gets slot of target field), TRUNCATE?, MINVAL/MINLEN, MAXVAL
+						set minval=$$$smdColMinVal(1,targirn,targifn)
+						set checkminmax=$case($$$smdColCategory(1,targirn,targifn),"INTEGER":1,"DATE":1,"TIME":1,"NUMERIC":1,"DOUBLE":1,"POSIXTS":1,:0)
+						if checkminmax,minval'="",'$isvalidnum(minval) { set mtc(0,0,"fastInsert")=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"Non-numeric MINVAL for field "_$$$smdColName(1,targirn,targifn) kill mtc(0,0,"fastInsertExplicit") kill mtc(0,0,"fastInsertExplicit") }
+						set maxval=$$$smdColMaxVal(1,targirn,targifn)
+						if checkminmax,maxval'="",'$isvalidnum(maxval) { set mtc(0,0,"fastInsert")=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"Non-numeric MAXVAL for field "_$$$smdColName(1,targirn,targifn) kill mtc(0,0,"fastInsertExplicit") kill mtc(0,0,"fastInsertExplicit") }
+						set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",val),1),$c(1),8,11)=storageSlot_$c(1)_truncate_$c(1)_minval_$c(1)_maxval
+					}
+					set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",val),1),$c(1),12)=$$$smdColName(1,targirn,targifn)
+				}
+			} elseif $g(mtc(0,0,"fastInsert")) && ($e($$$mtV(val),1,10)="v^%ODBCIN^") {
+				new realval
+				set realval=$p($$$mtV(val),"^",4)
+				if $$$mtVType($$$mtV(realval))="x" {
+					set targval=$p($$$mtFList,",",ii)
+					set targifn=$$$VTRgetifn(targval)
+					if $g(mtc(0,0,"fastInsert")) && targifn {
+						set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",realval)),$c(1),4)=targval
+						set targirn=$$$smdGetIrnFromIfn(targifn)
+						set storageSlot=$$$smdColfastInsertSlot(1,targirn,targifn)
+							#; if there is no storage slot for the field, or this is a %FilemanDate or %FilemanTimeStamp value, or this is a list collection, or this field is read only, or field is a stream, we cannot use fastInsert
+						if 'storageSlot || $case($$$smdColCategory(1,targirn,targifn),"FMDATE":1,"FMTIMESTAMP":1,:0) || ($$$smdColCollectionType(1,targirn,targifn)'="") || ($$$smdColReadOnly(1,targirn,targifn)) || ($$$smdColStream(1,targirn,targifn)) { 
+							set mtc(0,0,"fastInsert")=0 kill mtc(0,0,"fastInsertExplicit")
+							if 'storageSlot { set mtc(0,0,"fastInsertReason")="No storage Slot for field "_$$$smdColName(1,targirn,targifn) }
+							elseif $case($$$smdColCategory(1,targirn,targifn),"FMDATE":1,"FMTIMESTAMP":1,:0) { set mtc(0,0,"fastInsertReason")="FMDATE/FMTIMESTAMP field" }
+							elseif ($$$smdColReadOnly(1,targirn,targifn)) { set mtc(0,0,"fastInsertReason")="Read-only field" }
+							else { set mtc(0,0,"fastInsertReason")="Stream field" }
+						}
+							#; Make sure the conversion for the field can be performed on the client!
+						if $$$smdColDatatype(1,targirn,targifn)'="%Library.TimeStamp",'$$$smdColConvertO2LOnClient(1,targirn,targifn) {
+							set mtc(0,0,"fastInsert")=0 kill mtc(0,0,"fastInsertExplicit")
+							set mtc(0,0,"fastInsertReason")="Field '"_$$$smdColName(1,targirn,targifn)_"', datatype '"_$$$smdClassname(1,targirn)_"."_$$$smdColDatatype(1,targirn,targifn)_"' cannot perform OdbcToLogical conversion on the client"
+						}
+						if 
+							#; TRUNCATE setting=2 indicates %NOCHECK, client will use this value to determine if validation checking occurs
+						if $$$mtKNoCheckFlag($$$mtK)=1 { set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",realval),1),$c(1),8,11)=storageSlot_$c(1)_2 }   // for fastInsert: %NOCHECK
+						else { // for fastInsert: Define storage slot for parameter (gets slot of target field), TRUNCATE?, MINVAL/MINLEN, MAXVAL
+							set minval=$$$smdColMinVal(1,targirn,targifn)
+							set checkminmax=$case($$$smdColCategory(1,targirn,targifn),"INTEGER":1,"DATE":1,"TIME":1,"NUMERIC":1,"DOUBLE":1,"POSIXTS":1,:0)
+							if checkminmax,minval'="",'$isvalidnum(minval) { set mtc(0,0,"fastInsert")=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"Non-numeric MINVAL for field "_$$$smdColName(1,targirn,targifn) }
+							set maxval=$$$smdColMaxVal(1,targirn,targifn)
+							if checkminmax,maxval'="",'$isvalidnum(maxval) { set mtc(0,0,"fastInsert")=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"Non-numeric MAXVAL for field "_$$$smdColName(1,targirn,targifn) }
+							set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",realval),1),$c(1),8,11)=storageSlot_$c(1)_$$$smdColTruncate(1,targirn,targifn)_$c(1)_$$$smdColMinVal(1,targirn,targifn)_$c(1)_$$$smdColMaxVal(1,targirn,targifn)
+						}
+						set $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",realval),1),$c(1),12)=$$$smdColName(1,targirn,targifn)
+					}
+				}
+			}
+		}
+			#; If this is INSERT & fastInsert & not %NOCHECK, and xDBCfastInsertNotNullOnClient=1 make sure all the required fields in the table are defined in the "flist".
+			#; Also, make sure a required field does not have an input value of NULL speciied (NULL is not replaced with a HVar by the client preparser)
+			#; If not, report a -108 error here at Prepare
+		if $$$mtStatementType="INS",$g(mtc(0,0,"fastInsert")),'$$$mtKNoCheckFlag($g($$$mtK)),$$$SQLCompileOption("xDBCfastInsertNotNullOnClient")=1 {
+			new def,inputval
+			set notnullprefiler=1
+				#; Build array of fields specified in the INSERT field list:
+			new fields,i,ifn,irn,missing
+			for i=1:1 {
+				set val=$p($$$mtFList,",",i) quit:'val
+				set ifn=+$$$VTRgetifn(val)
+				set:ifn fields(ifn)=""
+				set:'$d(irn) irn=$$$smdGetIrnFromIfn(ifn)
+					#; Make sure NULL was not specified for the required field
+				if 'parquetCacheClass,$$$smdColRequired(1,irn,ifn)="Y" {
+					set inputval=$p($g($$$mtNewVals),",",i)
+					if inputval,$$$mtV(inputval)="t^" { new fname set fname=$$$smdColName(1,irn,ifn) do error(108) }
+				}
+			}
+				#; Now make sure all required fields in this table are specified in "flist", also, build a list of required fields with an ObjectScript expression for a default that still needs to be checked for null at execution time
+			set ifn=0,missing=""
+			for {
+				set ifn=$o($$$smd(1,irn,2,ifn),1) quit:'ifn
+				continue:$$$smdColNumber(1,irn,ifn)=1&&($$$smdColRecIDBased(1,irn,ifn)="Y")	// RowID field that is based on other field(s)
+				if $$$smdColComputed(1,irn,ifn)="Y",$$$smdColComputedAlways(1,irn,ifn)="Y" { continue }	// Computed Always field
+				if $$$smdColDefaultValue(1,irn,ifn)'=""	{	// has a default
+					set def=$$$LOWER($$$smdColDefaultValue(1,irn,ifn))
+					if $isvalidnum(def)||($e(def)="+")||($e(def)="-") { continue }				// literal number
+					if $e(def)="""",$e(def,*)="""" { continue }		// literal string
+						#; if the INS has fields NOT specified in the statement and those fields have non-literal defaults and the field uses columnar storage, we cannot perform CFI
+					if '$d(fields(ifn)),$$$smdColfastInsertSlot(1,irn,ifn)>8000 {
+						set mtc(0,0,"fastInsert")=0,mtc(0,0,"fastInsertReason")=$g(mtc(0,0,"fastInsertReason"))_$s($g(mtc(0,0,"fastInsertReason"))="":"",1:", ")_"Non-literal default for field "_$$$smdColName(1,irn,ifn)
+					}
+					if $e(def,1,3)="$i("||($e(def,1,11)="$increment(")||($e(def,1,5)="$seq(")||($e(def,1,10)="$sequence(") { continue }		// $increment or $sequence
+					if def="$username" { continue }	// USER, CURRENT_USER, SESSION_USER, SYS_USER
+					if $case($p(def,"(",1,2),"##class(%library.posixtime).currenttimestamp":1,"##class(%library.posixtime).currentutctimestamp":1,:0) { continue }	// CURRENT_TIMESTAMP, GETUTCDATE, SYSDATE, GETDATE for posixtime
+					if def="$zdt($zu(188),3,1)"||(def="$zdt($now(0),3,1)")||($p(def,",",1,3)="$zdt($zu(188),3,1") { continue }	// CURRENT_TIMESTAMP, GETUTCDATE, SYSDATE, GETDATE for timestamp
+					if def="$p($h,"","",2)" { continue }	// CURRENT_TIME
+					if def="$zu(67,11,$j)" { continue }	// SYSTEM_USER
+						#; If we get here, the field is required, has a default, but we do not know until run-time if the default will produce a null value, so we still have to check for NOT NULL in the filer
+					set mtc(0,0,"fastInsertRequired")=$g(mtc(0,0,"fastInsertRequired"))_$lb($$$smdColName(1,irn,ifn),def)
+					continue
+				}
+				if $$$smdColRequired(1,irn,ifn)="Y",'$d(fields(ifn)) { set missing=missing_$e(",",missing'="")_$$$smdColName(1,irn,ifn) }
+			}
+			if missing'="",'parquetCacheClass { do error(108) }	// error message includes content of missing
+		}
+	}
+		#;  find logical conditions comparing :var with a field, but exclude the "contains" ('[') operator
+	for ii=1:1:$$$maxl {
+		set info=$$$mtL(ii)
+		if $e(info)="v",$e(info,1,4)'="v^[^" do xf($p(info,"^",4),$p(info,"^",5)),xf($p(info,"^",5),$p(info,"^",4))
+	}
+	
+		#;  find logical conditions comparing field IN (:var,:var,...)
+	for ii=1:1:$$$maxl {
+		set info=$$$mtL(ii)
+		if $e(info,1,5)="v^IN^" f jj=5:1:$l(info,"^")-1 d xf($p(info,"^",jj),$p(info,"^",4))
+	}
+		#;  find arguments of certain functions
+	for ii=1:1:$$$maxv {
+		set info=$$$mtV(ii)
+		if $e(info,1,12)="v^SUBSTRING^" d vardt($p(info,"^",4),"%Library.String"),vardt($p(info,"^",5),"%Library.Integer"),vardt($p(info,"^",6),"%Library.Integer")
+		if ($e(info,1,4)="v^-^")||($e(info,1,4)="v^+^") d vardt($p(info,"^",4),"%Library.Numeric"),vardt($p(info,"^",5),"%Library.Numeric")
+		if $e(info,1,10)="v^DATEADD^" do vardt($p(info,"^",5),"%Library.Integer")
+	}
+	
+	new compareval,comparevalmoreinfo,comparevaltype,parmval,piece8to12
+	for ii=1:1:$g(mtc(0,0,"parameter")) {	//  Process those Parameter items
+		set info=$g(mtc(0,0,"parameter",ii))
+		set parmval=$p(info,$c(1),2),compareval=$p(info,$c(1),4)
+		set moreinfo=$$$VTRgetdt(parmval)
+		set piece8to12=$p($g(mtc(0,0,"parameter",ii,1)),$c(1),8,12)
+		if moreinfo'="" { 	// metadata already defined for this parameter in mt()
+			set moreinfo=$$$VTRgetomsinfo(parmval)
+			if moreinfo'="" { set moreinfo=$c(1)_$p(moreinfo,$c(1),2,7),mtc(0,0,"parameter",ii,1)=$$convert1to999(moreinfo,compareval)_$c(1)_piece8to12 } 
+			else { set mtc(0,0,"parameter",ii,1)=$$convert1to999($p($$definfo($$$VTRgetdt(parmval)),$c(1),1,7),compareval)_$c(1)_piece8to12 }
+			if compareval {
+				set comparevalmoreinfo=$$$VTRgetomsinfo(compareval)
+				set comparevaltype=$p(comparevalmoreinfo,$c(1),2)
+				if $$$SQLCompileOption("xDBCCompileMode")=1,$piece(moreinfo,$c(1),2)=12,comparevaltype = -1  {
+					#; Our xDBC parsers handle do not accurately report large literal strings as streams, but instead as replaced literals (99)
+					goto copyfromcomparevalmoreinfo
+				}
+				if $$$SQLCompileOption("xDBCCompileMode")=1,$$$SQLCompileOption("xDBCServerProtocol")>6,$p(comparevalmoreinfo,$c(1),18) { // piece 18 is O2L supported on client
+					if $g(mtc(0,0,"fastInsert")) {
+						if $case(comparevaltype,9:1,1091:1,:0)  { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1091_$c(1,1)_10_$c(1)_0,mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) }		// DATE
+						set scale=$p(comparevalmoreinfo,$c(1),5)
+						if $case(comparevaltype,10:1,1092:1,:0) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1092_$c(1,1)_(8+$s(scale:1,1:0)+scale)_$c(1)_scale,mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) }	// TIME
+					} else {
+						if $case(comparevaltype,9:1,1091:1,:0)  { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=$case($$$SQLCompileOption("xDBCFunction"),"DU":9,"DQ":9,:1091)_$c(1,1)_10_$c(1)_0 }		// DATE
+						set scale=$p(comparevalmoreinfo,$c(1),5)
+						if $case(comparevaltype,10:1,1092:1,:0) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=$case($$$SQLCompileOption("xDBCFunction"),"DU":10,"DQ":10,:1092)_$c(1,1)_(8+$s(scale:1,1:0)+scale)_$c(1)_scale }	// TIME
+						if $case($p(mtc(0,0,"parameter",ii,1),$c(1),2),1091:1,1092:1,:0) { set mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) }
+					}
+					if $case(comparevaltype,11:1,1093:1,:0),$$IsPosixTime($p(moreinfo,$c(1),9),$p(moreinfo,$c(1),11),$p(moreinfo,$c(1),1)) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1093_$c(1,1)_(19+$s(scale:1,1:0)+scale)_$c(1)_scale } 					// TIMESTAMP/POSIXTIME
+				} elseif $g(mtc(0,0,"fastInsert")),comparevaltype=11 { //TIMESTAMP
+						#; We don't report TIMESTAMP as being able to convert on the client (currently),  TimeStamp has O2L conversion, but not L2O.
+						#; If this is fastInsert, we want to make sure if the target field is TIMESTAMP, the paramrter is TIMESTAMP also.  This allows {d '...'} to be convered to TIMESTAMP on the client
+					set scale=$p(comparevalmoreinfo,$c(1),5)
+					set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=11_$c(1,1)_(19+$s(scale:1,1:0)+scale)_$c(1)_scale
+				}
+			}
+			do tweakminmaxval(ii,.mtc)
+			continue
+		}
+			
+		if 'compareval {		// No comparison field, default to VARCHAR, precision 4096
+			set mtc(0,0,"parameter",ii,1)=$$convert1to999($$definfo("%Library.String"),$p(mtc(0,0,"parameter",ii),$c(1),4))_$c(1)_piece8to12
+			do tweakminmaxval(ii,.mtc)
+			continue
+		}
+			// if we get here, the parameter is known to compare against another value
+		set moreinfo=$$$VTRgetomsinfo(compareval)	//  see if have all info, e.g. field
+		if moreinfo'="" {
+			set mtc(0,0,"parameter",ii,1)=$$convert1to999($c(1)_$p(moreinfo,$c(1),2,6)_$c(1)_$$getExternalSQLType($$$mtV(compareval)),$p(mtc(0,0,"parameter",ii),$c(1),4))_$c(1)_piece8to12
+			set comparevaltype=$p(moreinfo,$c(1),2)
+			if $$$SQLCompileOption("xDBCCompileMode")=1,$$$SQLCompileOption("xDBCServerProtocol")>6,$p(moreinfo,$c(1),18) { // piece 18 is O2L supported on client
+				if $g(mtc(0,0,"fastInsert")) {
+					if $case(comparevaltype,9:1,1091:1,:0)  { set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=1091,mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) }   // DATE
+					if $case(comparevaltype,10:1,1092:1,:0) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=1092,mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) } // TIME
+				} else {
+					if $case(comparevaltype,9:1,1091:1,:0)  { set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=$case($$$SQLCompileOption("xDBCFunction"),"DU":9,"DQ":9,:1091) }   // DATE
+					if $case(comparevaltype,10:1,1092:1,:0) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=$case($$$SQLCompileOption("xDBCFunction"),"DU":10,"DQ":10,:1092) } // TIME
+					if $case($p(mtc(0,0,"parameter",ii,1),$c(1),2),1091:1,1092:1,:0) { set mtc(0,0,"parameter","convertonclient")=$g(mtc(0,0,"parameter","convertonclient"))_"|"_$p(info,$c(1),1) }
+				}
+				if $case(comparevaltype,11:1,1093:1,:0),$$IsPosixTime($p(moreinfo,$c(1),9),$p(moreinfo,$c(1),11),$p(moreinfo,$c(1),1)) { set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=1093 }                                                             // TIMESTAMP/POSIXTIME
+			} elseif $g(mtc(0,0,"fastInsert")),comparevaltype=11 { //TIMESTAMP
+					#; We don't report TIMESTAMP as being able to convert on the client (currently),  TImeStamp has O2L conversion, but not L2O.
+					#; If this is fastInsert, we want to make sure if the target field is TIMESTAMP, the paramrter is TIMESTAMP also.  This allows {d '...'} to be convered to TIMESTAMP on the client
+				set $p(mtc(0,0,"parameter",ii,1),$c(1),2)=11
+			}
+			do tweakminmaxval(ii,.mtc)
+			continue
+		}
+copyfromcomparevalmoreinfo ##; --- ODBC Type//PRECISION/SCALE/NULLABLE ---
+		set type=$$$type(compareval)
+		for pos=2,4,5,6 set $p(moreinfo,$c(1),pos)=$$getinfo(pos,type,"","",compareval,list,info,ii)
+		set $p(moreinfo,$c(1),7)=$$getExternalSQLType($$$mtV(compareval))
+		set mtc(0,0,"parameter",ii,1)=$$convert1to999(moreinfo,$p(mtc(0,0,"parameter",ii),$c(1),4))_$c(1)_piece8to12
+		do tweakminmaxval(ii,.mtc)
+		do tweakparmdt("",select,compareval,ii,.mtc)
+	}
+	
+		#; define empty row with default values metadata for Fast Insert
+	if $$$mtStatementType="INS",mtc(0,0,"fastInsert") {
+		set ii=$o(mtc(0,0,"table",""),1,data)
+		set irn=$p(data,$c(1),2)
+		set mtc(0,0,"emptyrow")=$$$smdFastEmptyRow(1,irn)
+		set mtc(0,0,"fastInsertSettings")=$lb($$$mtKNoCheckFlag($$$mtK)=1,$$$mtKNoLockFlag($$$mtK)=1,$$$mtKNoIndexFlag($$$mtK)=1,$$$smdFastKeySlots(1,irn),$$$smdFastNodes(1,irn),fastInsertCurrentDate,fastInsertCurrentTS,fastInsertCurrentTime,fastInsertNormalizeTS,$g(mt("orupdate")),$$$mtKNoJournalFlag($$$mtK)=1,$$$smdFastColumnarNodes(1,irn),''$g(notnullprefiler),''$$$SQLCompileOption("SQLLoadDataID"),$$$mtKDefer($$$mtK)=1)
+		//set mtc(0,0,"deffuncrow")=$$$smdFastDefFuncRow(1,irn)
+	}
+.
+	if $d(mtc(0,0,"parameter","convertonclient")) { set $e(mtc(0,0,"parameter","convertonclient"),1)="" }
+.
+	QUIT
+.
+.
+/// Given a schema, tablename, and fieldname, see if the datatype of the field is or extends %PosixTime
+IsPosixTime(schema="",table="",field="") {
+	if schema=""||(table=""||(field="")) { RETURN 0 }
+	set irn=$$$smdGetIrn(schema_"."_$tr(table,".",$c(2)))
+	RETURN:'irn 0
+	set ifn=$$$smdGetIfn(1,irn,field)
+	RETURN:'ifn 0
+	RETURN $$checkDataType^%apiDDL2($$$smdColDatatype(1,irn,ifn),$lb("%Library.PosixTime"))
+}
+.
+	// Given an mtc(), see if all the select columns are:
+	//    - a field
+	//    - The RowID
+	//    - a literal
+	//    - a host variable
+	// If a field it must also have a storage slot in the map data.  If not, can't use fastSelect
+	// If so, return 1. 
+	// If not, return 0
+allColumnsOKForFast(&mtc,&mt,&fastPreFields) [mt] PRIVATE {
+	set irn=0,numberOfColumns=$g(mtc(0,0,"select"))
+	for column=1:1:numberOfColumns {  
+		set info=$g(mtc(0,0,"select",column))
+		set val=+$p(info,$c(1),11)
+			#; If literal/variable and only literal/variable is being selected, no fastSelect
+		if $case($e($g($$$mtV(val))),"t":1,"x":1,:0) { set fastPreFields=fastPreFields_$lb(column) continue }	// literal values and host variables in the select list are supported for fastSelect
+		if 'val || ($e($g($$$mtV(val)))'="f") { RETURN 0 }
+		set:'irn irn=+$p(info,$c(1),7)                        // only set once, all fields have to be from the same table
+		set ifn=+$p(info,$c(1),8)
+		set storageSlot=$$$smdColfastSelectSlot(1,irn,ifn)
+			#; If rowid field and only rowid field is being selected, no fastSelect
+		if $$$smdRowIDField(1,irn)=ifn { set:'storageSlot fastPreFields=fastPreFields_$lb(column) continue }
+			#; If idkey field and only idkey field is being selected, no fastSelect
+		if $$$smdRowIDBased(1,irn)="Y",(","_$$$smdRowIDLogicalFields(1,irn)_",")[(","_ifn_",") { set:'storageSlot fastPreFields=fastPreFields_$lb(column) continue }
+		if '$$$smdColfastSelect(1,irn,ifn) { RETURN 0 }            // we determiend at class compile time that this field does not support fastSelect
+	}
+		#; if all columns are preFields, this is not a fastSelect statement
+	if fastPreFields'="",$ll(fastPreFields)=numberOfColumns { RETURN 0 }
+	RETURN 1
+}
+.
+AnyExternalTable(&mtc) [] PRIVATE {
+	set tab=""
+	for  {
+		set tab=$o(mtc(0,0,"table",tab),1,tdata) quit:tab=""
+		if $p($$$smdConnection(1,$p(tdata,$c(1),2)),",")'="" { RETURN 0 }	// Found an external table
+	}
+	RETURN 1      // Did not find an external table
+}
+.
+	// Given an irn, return 1 if there are only a data map and BME indexmap, or there are other indices but no index contains all fields specified in the SELECT list
+MapsSupportFast(irn) [mtc] PUBLIC {
+	if $$$smdConnection(1,irn)'="" { RETURN 0 }	// linked tables do not support fastSelect
+	set mapname="",ok=1,indexMapList=""
+	for {
+		set mapname=$o($$$smd(1,irn,"map",mapname)) quit:mapname=""
+		set imp=$o($$$smd(1,irn,"map",mapname,"")) continue:imp=""
+		continue:$$$smdMapMaster(imp)="Y"	   // master map is OK
+		continue:$$$smdMapIndexType(imp)="BE"	   // Bitmap Extent index is OK
+		set ok=0
+		set indexMapList=indexMapList_$lb(+imp)    // Build a list of imp values of non-BME index maps for this table.
+		do GetMapFields(imp,.mapFields)
+	}
+	if ok { RETURN 1 }     // table only has Master Map and maybe a BME index
+	
+		#; Here we have index maps defined.  Need to take a closer look and see if the select list of fields can be found within a single index map
+		#; if all the fields in the select list can be found in a single index map, assume the Q.O. might use this map only and we can't use fastSelect
+	
+		#; First, get a list of all fields in the select list
+	set fieldList=""
+	for iter=1:1:$g(mtc(0,0,"select")) {  
+		set ifn=$p($g(mtc(0,0,"select",iter)),$c(1),8) continue:ifn=""
+			#; If the field we found is a single field IDKEY field, use the ifn of the RowID field instead, as that is what will be defined in the map definition
+		if $$$smdRowIDBased(1,irn)="Y",$$$smdRowIDLogicalFields(1,irn)=ifn { set ifn=$$$smdRowIDField(1,irn) }
+		set fieldList(ifn)=""
+	}
+		#; Now see if any index map contains all fields in the fieldList
+	set imp=""
+	for {
+		set imp=$o(mapFields(imp)) quit:imp=""
+		set ifn="",ok=1	// ok=1 means assume all fields are mappedin this index unless we fine otherwise
+		for {
+			set ifn=$o(fieldList(ifn)) quit:ifn=""
+			if '$d(mapFields(imp,ifn)) { set ok=0 quit }
+		}
+		if ok { RETURN 0 }	// if ok=1, we found an index map which has all fields in the select list defined in it, else try next map
+	}
+	RETURN 1
+}
+.
+	// Given a map id, define mapFields(imp,ifn)="" for each field found in the map subscripts or map data
+GetMapFields(imp,&mapFields) [] PRIVATE {
+	set ilev=""
+		#; First look through map subscripts
+	for {
+		set ilev=$o($$$smd(12,imp,6,ilev),1,data) quit:ilev=""
+		if $lg(data,19) set mapFields(imp,$lg(data,19))=""
+	}
+		#; Then look through map data
+	for {
+		set ilev=$o($$$smd(12,imp,7,ilev),1,data) quit:ilev=""
+		if $lg(data,1) set mapFields(imp,$lg(data,1))=""
+	}
+	QUIT
+}
+.
+	// Tweak the datatype reported if the conversion is to be performed on the client
+	// type 1091 is DATE, 1092 is TIME, 1093 is POSIXTIME
+tweakparmdt(comparevalmoreinfo,select,compareval,ii,&mtc) [] PRIVATE {
+	set:comparevalmoreinfo="" comparevalmoreinfo=$$getmoreinfo(compareval,select,.irn,.ifn)
+	QUIT:comparevalmoreinfo=""
+	set comparevaltype=$p(comparevalmoreinfo,$c(1),2)
+	if $$$SQLCompileOption("xDBCCompileMode")=1,$$$SQLCompileOption("xDBCServerProtocol")>6,$case($$$SQLCompileOption("xDBCFunction"),"DU":0,"DQ":0,:1),$$$smdColConvertO2LOnClient(1,irn,ifn),$case(comparevaltype,9:1,10:1,11:1,1091:1,1092:1,1093:1,:0) {
+		if comparevaltype=1091 { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1091_$c(1,1)_11_$c(1)_0 }	// DATE
+		if comparevaltype=1092 { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1092_$c(1,1)_8_$c(1)_0 }	// TIME
+		if comparevaltype=1093 { set $p(mtc(0,0,"parameter",ii,1),$c(1),2,5)=1093_$c(1,1)_19_$c(1)_0 }	// TIMESTAMP/POSIXTIME
+	}
+	QUIT
+}
+.
+	// given a parameter entry, if the type is INTEGER or BIGINT, and the MINVAL/MAXVAL is defined to be the limit of those types, turn MINVAL/MAXVAL to null
+	// as there is no need for the client to perform validation based on size.  Any valid INTEGER or BIGINT is allowed.
+tweakminmaxval(ii,&mtc) [] PRIVATE {
+		#; TRUNCATE=2 means %NOCHECK.  So don't define any MINVAL/MINLEN/MAXVAL for the parameter.  This causes the client to not validate.
+	if $p(mtc(0,0,"parameter",ii,1),$c(1),9)=2 {
+		set $p(mtc(0,0,"parameter",ii,1),$c(1),10,11)=$c(1)
+	} else {
+		if $p(mtc(0,0,"parameter",ii,1),$c(1),2)=-6 {  // TINYINT
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),10)=-128 $p(mtc(0,0,"parameter",ii,1),$c(1),10)=""
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),11)=127 $p(mtc(0,0,"parameter",ii,1),$c(1),11)=""
+		}
+		elseif $p(mtc(0,0,"parameter",ii,1),$c(1),2)=5 {  // SMALLINT
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),10)=-32768 $p(mtc(0,0,"parameter",ii,1),$c(1),10)=""
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),11)=32767 $p(mtc(0,0,"parameter",ii,1),$c(1),11)=""
+		}
+		elseif $p(mtc(0,0,"parameter",ii,1),$c(1),2)=4 {  // INTEGER
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),10)=-2147483648 $p(mtc(0,0,"parameter",ii,1),$c(1),10)=""
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),11)=2147483647 $p(mtc(0,0,"parameter",ii,1),$c(1),11)=""
+		}
+		elseif $p(mtc(0,0,"parameter",ii,1),$c(1),2)=-5 {  // BIGINT
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),10)=-9223372036854775808 $p(mtc(0,0,"parameter",ii,1),$c(1),10)=""
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),11)=9223372036854775807 $p(mtc(0,0,"parameter",ii,1),$c(1),11)=""
+		}
+		elseif $p(mtc(0,0,"parameter",ii,1),$c(1),2)=1093 {  // POSIXTIME
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),10)=-6979664624441081856 $p(mtc(0,0,"parameter",ii,1),$c(1),10)=""
+			set:$p(mtc(0,0,"parameter",ii,1),$c(1),11)=1406323805406846975 $p(mtc(0,0,"parameter",ii,1),$c(1),11)=""
+		}
+	}
+	RETURN
+}
+	// given a val# for an item in the select list, return the moreinfo metadata for that val#
+getmoreinfo(val,select,&irn,&ifn) [mtc] PRIVATE {
+	set irn="",ifn=""
+	for i=1:1:$g(mtc(0,0,select)) {
+		continue:$p($g(mtc(0,0,select,i)),$c(1),11)'=val
+		set irn=$p(mtc(0,0,select,i),$c(1),7),ifn=$p(mtc(0,0,select,i),$c(1),8)
+		RETURN $g(mtc(0,0,select,i,1))
+	}
+	RETURN ""
+}
+convert1to999(moreinfo,compval) [mtc] PRIVATE {
+		#; If the external type of this parameter is 1 AND this is an Oracle linked table, return type 999 (reqested by MIT1040/1041)
+	if $p(moreinfo,$c(1),7)=1,$p($g(mtc(0,0,"select",compval,1)),$c(1),15)'="",$$$UPPER($$$comMemberKeyGet($p(mtc(0,0,"select",compval,1),$c(1),15),$$$cCLASSparameter,"EXTDBNAME",$$$cPARAMdefault))="ORACLE" {
+		set $p(moreinfo,$c(1),2)=999
+	}
+	QUIT moreinfo
+} 
+.
+getExternalSQLType(v) [mt] PRIVATE {
+	set fname=$p(v,"^",4),tname=$s($p(v,"^",2,3)'["->":$g($$$mtFromTableName($p(v,"^",2,3))),1:"")
+	set:tname="" tname=$$$LastPiece($p(v,"^",3),"->")
+	QUIT:tname=""||(fname="") ""
+	set ifn=$$GetifnFromTableOrView^%qaqpifo(fname,tname) do error(31):'ifn
+	QUIT:ifn[$c(1) ""	// This is a view column, so it cannot have an external type???
+	QUIT $$$smdColEXTERNALSQLTYPE(1,$$$smdGetIrnFromIfn(ifn),ifn)
+}
+.
+scanUnion(val,unionType,unionVal) [mt] PRIVATE {
+	QUIT val
+}
+	#;  mark dt as datatype of var if it is a parameter
+vardt(var,dt) [mt] PRIVATE { s:$e($g($$$mtV(+var)))="x" $$$VTRdt(var)=dt QUIT  }
+ 
+ 
+ojtab(v,omsi)  ;  $$: 1 if field NULLABLE due to outer-join
+	QUIT:$p(omsi,$c(1),6)=1 0  ;  already NULLABLE anyway
+	QUIT:$p(v,"^",4)["->" 1  ;  arrow-syntax implies outer-join
+	s v=$p(v,"^",3)
+	QUIT:v="" 0  ;  no alias used for this field - who knows? ***
+	QUIT $lf(ojtab,v)  ;  NULLABLE if from one of these streams
+ 
+ddfun(val,list) ; The collation of the given val#, if a field - %ALPHAUP,%STRING(5),
+	#;  etc., "" for EXACT field, and "*" ("coercable") if not a field
+	#; NOTE!! There is a ddfun^%qaqpqo that MUST be kept in synch with this one - it uses the
+	#;  the mt() structures as they exist after ifn/irn and stream replacement.
+	n v,ifn,irn s v=$$$mtV(val)
+	RETURN:$e(v,1,9)="v^%EXACT^" ""  ;  AK1086
+	QUIT:$e(v,1,6)="v^NVL^" $$ddfun($p(v,"^",4),list)	// AK651
+	if $e(v,1,22)="v^USERDEFINEDFUNCTION:" QUIT $$$VTRgetcollation(val)	// DPV3588
+	if $e(v,1,3)="v^_" {	// DPV3589
+			#; if A||B and A and B have the same collation, report concatenated value as the same collation
+		new collation1
+		set collation1=$$ddfun($p(v,"^",4),list)
+		QUIT:collation1=$$ddfun($p(v,"^",5),list) collation1
+	}
+	i $e(v)="x",$isvalidnum($e(v,3,*)),v'="x^0" RETURN $$ddfun($e(v,3,*),list)  ;  lateral field
+	RETURN:$e(v)="n" $$ddfun($p(v,"^",4),list)  ;  correlated field
+	RETURN:($e(v)="v")&&(",%ANYOF,%ANYOFKEY,"[(","_$p($p(v,"^",2),":")_",")) $$ddfun($p(v,"^",4),list)	// JLF015
+		#;  If an explicit collation function is used in the query, return it
+	QUIT:$e(v)="v"&&(($$$ISENCODEDCOLLATE($p(v,"^",2)))||("^%ALPHAUP^%EXACT^%MINUS^%MVR^%PLUS^%SPACE^%SQLSTRING^%SQLUPPER^%STRING^%TRUNCATE^%UPPER^"[("^"_$p($p(v,"^",2),"(")_"^"))) $p($p(v,"^",2),"(")	// DPV2992=
+	QUIT:$e(v)'="f" "*"  ;  "coercable" for non-field
+	i v["_%ANYOF" { QUIT:$l(v,"_")=3 $p($p(v,"^",3),"_",2) s $p(v,"^",3)=+$p(v,"^",3) }	// DPV added, from JLF015 in %qaqpqo
+	#; DPV2892 = ??? So if schema, tablename, or field name as an _ in it, we don't return the collation function??? QUIT:v["_" "*"
+	s ifn=$$getifn(val,list) QUIT:ifn="" "*"	// DPV2903 (QUIT)
+	s irn=$$getirn(ifn)
+	s v=$$$smdColCollation(1,irn,ifn)
+	if $$$ISENCODEDCOLLATE(v) {QUIT "%"_v}
+	QUIT $s(v="A":"%ALPHAUP",v="U":"%UPPER",v="S":"%SPACE",v="P":"%PLUS",v="M":"%MINUS",v="MV":"%MVR",v="E":"%EXACT",v="T":"%STRING",v="SS":"%SQLSTRING",v="SU":"%SQLUPPER",v="TR":"%TRUNCATE",v["T(":"%STRING("_$p(v,"(",2),v["SS(":"%SQLSTRING("_$p(v,"(",2),v["SU(":"%SQLUPPER("_$p(v,"(",2),v["TR(":"%TRUNCATE("_$p(v,"(",2),1:v)
+ 
+ColumnObjectType(type,val,list) [mt] PUBLIC {
+	    #;  If a field, return the Object datatype for the field, otherwise bind the ODBCType to an object type.
+	    #;  This Object type will be used by OLE prepares so the CLIENTDATATYPE can be determined for the column.
+	    #;  This is needed for OLE conversions
+	set v=$$$mtV(val)
+	if $e(v)="f" {
+		if $p($$$mtV(val),"^",4)="%VID" { QUIT "%Library.Integer" }
+		s ifn=$$getifn(val,list),irn=$$getirn(ifn)
+		QUIT $$$smdColDatatype(1,irn,ifn)
+	}
+	if $e(v,1,22)="v^USERDEFINEDFUNCTION:",$p($$$VTRgetomsinfo(val),$c(1),13)'="" {
+		QUIT $p($$$VTRgetomsinfo(val),$c(1),13)
+	}
+	else {  // Turn ODBC type back into Cache' Object system type
+		QUIT $Case(type,-11:"%Library.UniqueIdentifier",-7:"%Library.Boolean",-6:"%Library.TinyInt",-5:"%Library.BigInt",-4:"%Library.GlobalBinaryStream",-3:"%Library.Binary",-1:"%Library.GlobalCharacterStream",2:"%Library.Numeric",4:"%Library.Integer",5:"%Library.SmallInt",8:"%Library.Double",9:"%Library.Date",10:"%Library.Time",11:"%Library.TimeStamp",:"%Library.String")	// DPV2072 (BigInt)	// DPV3173
+	}
+}
+.
+DefineMtcTable
+	new fname,i,info,irn,iv,ival,li,m,ml,mlabel,path,tname,irn,type,v,val
+	for val=1:1 { 
+		set v=$g($$$mtV(val)) quit:v="" 
+	   	if $e(v)="f" {  
+	      		set ival=val,iv=v 
+			do vfollow(.ival,.iv)
+			if $e(iv)="f" {
+				set mlabel=$p(v,I,2,3)
+				set m=+mlabel
+				set fname=$p(v,I,4)
+				set tname=""
+				set:mlabel'["->" tname=$g($$$mtFromTableName(mlabel))
+				continue:tname?1"%%Q".n				// Don't attempt path lookup for %%Q# psuedo entries
+			 	set:tname="" tname=$$$LastPiece(mlabel,"->")
+				set irn=$$$smdLoadGetIrn(tname,$g($$$mtTvf(m,tname)))
+				set type=$$$smdGetTType(tname)
+				   #;  We now take all the irns in the path variable and stick all the tables into
+				   #;  mtc(0,0,"table",<table>).  This is so the table <-> cached query cross index
+				   #;  will be more accurate, allowing us to properly purge cached queries when
+				   #;  classes are compiled.
+				continue:'$d($$$smd(type,irn))  ; ??? possible
+				set info=$$$smdRVData(tname)
+				set mtc(0,0,"table",m_"^"_tname)=type_$c(1)_$p(info,$c(1),2)_$c(1)_$p(info,$c(1))_$c(1)_$$$smdExtent(type,irn)_$c(1)_$$$smdClassname(type,irn)_$c(1)_$$$smdSharded($p(info,$c(1),3),irn)_$c(1)_$$$smdFastInsert(type,irn)_$c(1)_$$$smdFastSelect(type,irn)_$c(1)_$$$smdfastSelectSlotCount(type,irn)_$c(1)_$$$smdShardMasterName(type,irn)_$c(1)_$$$smdfastInsertSlotCount(type,irn)
+			}
+	   	}
+	}
+	QUIT
+.
+	// called from:
+	// - moreinfo^%qaqpif2()
+	// - vallength^%qaqpslx
+	// - IsAStream^%qaqpslx
+	// - IsAIdField^%qaqpslx
+pathifn(v,notabcalc=0)   ;  ifn - code copied from field^qo
+		#;  v         - data from 'v' node entry in parse tree
+		#;  notabcalc - If TRUE, don't bother calculating mt(0,0,"table") - optional parameter
+		#; PVA149: Modify throughout for elimination of path^%qavFunctions; use new $$$mtV() info for arrow references instead. 
+	new fname,li,m,ml,mlabel,path,tname
+	set mlabel=$p(v,I,2,3)
+	set m=+mlabel
+	set fname=$p(v,I,4)
+	set tname="" 
+	set:mlabel'["->" tname=$g($$$mtFromTableName(mlabel))		// DPV3258
+	QUIT:tname?1"%%Q".n||(callname="tablist") ""		// Don't attemp path lookup for %%Q# psuedo entries
+	new irn,type
+ 	set:tname="" tname=$$$LastPiece(mlabel,"->")
+	set irn=$$$smdLoadGetIrn(tname,$g($$$mtTvf(m,tname)))
+	set type=$$$smdGetTType(tname)
+	if 'notabcalc {
+			#;  We now take all the irns in the path variable and stick all the tables into
+			#;  mtc(0,0,"table",<table>).  This is so the table <-> cached query cross index
+			#;  will be more accurate, allowing us to properly purge cached queries when
+			#;  classes are compiled.
+		new info
+		if $d($$$smd(type,irn)) {
+			set info=$$$smdRVData(tname)
+			set mtc(0,0,"table",m_"^"_tname)=type_$c(1)_$p(info,$c(1),2)_$c(1)_$p(info,$c(1))_$c(1)_$$$smdExtent(type,irn)_$c(1)_$$$smdClassname(type,irn)_$c(1)_$$$smdSharded($p(info,$c(1),3),irn)_$c(1)_$$$smdFastInsert(type,irn)_$c(1)_$$$smdFastSelect(type,irn)_$c(1)_$$$smdfastSelectSlotCount(type,irn)_$c(1)_$$$smdShardMasterName(ttype,irn)_$c(1)_$$$smdfastInsertSlotCount(type,irn)
+		}
+	}
+	if type=1 {	// Table
+		new ifn
+		set ifn=$$$smdGetIfn(1,irn,fname)
+		if ifn="" { do error(31) }	// e31 uses tname and fname variables
+		QUIT ifn
+	}
+	QUIT:fname="%VID" "" // PVA236
+	new vcol
+	set vcol=$$$smdGetViewColNum(irn,fname)
+	QUIT $$$smdGetViewColIfn(irn,fname,vcol)	// type must be 3	// DPV3096
+ 
+		#;	$$$smd(8,ifn) = $c(1) pieces
+		#;		1.  fldname
+		#;		2.  datatype
+		#;		3.  length
+		#;		4.  precision
+		#;		5.  scale
+		#;		6.  nullable
+		#;		7.  --
+		#;		8.  fldname
+		#;		9.  schema
+		#;		10. --
+		#;		11. tabname
+		#;		12->15. --
+		#;		16. datatype
+		#;		17. supports Logical2Odbc client conversion
+		#;		18. supports Odbc2Logical client conversion
+		#;  This is stored in $$$VTRomsinfo(val) for fields at the beginning of %qaqpif2
+finfo(ifn) [] PUBLIC {
+	#; YCL110 - check ODBC VARCHAR maximum length config glb during query prepare time 
+	set info = $$$smd(8,ifn)
+	if (",-1"_$c(1)_"-1,"_$c(2,1,2)_",")[(","_$p($$$smd(8,ifn),$c(1),3,4)_","){
+		set odbcVarcharMaxlen=$$$ODBCVarcharMaxlen,$p(info,$c(1),3,4)=odbcVarcharMaxlen_$c(1)_odbcVarcharMaxlen
+	}
+	RETURN info
+}
+ 
+ 
+definfo(dt,lOvr,pOvr,sOvr,nullOvr="") ;
+		#;  default ODBC prepare information - $P($C(1)):
+		#;  /2:ODBC Type#/3:LENGTH/4:PRECISION/5:SCALE/6:NULLABLE=2//////////16:ODBC Type#
+		#;  lOvr can be used to override the default LENGTH
+		#;  pOvr can be used to override the default PRECISION
+		#;  sOvr can be used to override the default SCALE
+		#;
+	RETURN:dt="%Library.String" $c(1)_12_$c(1)_$s($g(lOvr)'="":lOvr,1:255)_$c(1)_$s($g(pOvr)'="":pOvr,1:255)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_12
+	RETURN:dt="%Library.RawString" $c(1)_12_$c(1)_$s($g(lOvr)'="":lOvr,1:255)_$c(1)_$s($g(pOvr)'="":pOvr,1:255)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_12
+	RETURN:dt="%Library.Integer" $c(1)_4_$c(1)_$s($g(lOvr)'="":lOvr,1:4)_$c(1)_$s($g(pOvr)'="":pOvr,1:10)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_4   			// DPV1197+
+	RETURN:dt="%Library.SmallInt" $c(1)_5_$c(1)_$s($g(lOvr)'="":lOvr,1:2)_$c(1)_$s($g(pOvr)'="":pOvr,1:5)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_5
+	RETURN:dt="%Library.TinyInt" $c(1)_-6_$c(1)_$s($g(lOvr)'="":lOvr,1:1)_$c(1)_$s($g(pOvr)'="":pOvr,1:3)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-6				// DPV2531=
+	RETURN:dt="%Library.BigInt" $c(1)_-5_$c(1)_$s($g(lOvr)'="":lOvr,1:8)_$c(1)_$s($g(pOvr)'="":pOvr,1:19)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-5			// DPV2531=
+	RETURN:dt="%Library.DateTime" $c(1)_11_$c(1)_$s($g(lOvr)'="":lOvr,1:16)_$c(1)_$s($g(pOvr)'="":pOvr,1:19)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_11
+	RETURN:dt="%Library.TimeStamp" $c(1)_11_$c(1)_$s($g(lOvr)'="":lOvr,1:16)_$c(1)_$s($g(pOvr)'="":pOvr,1:19)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_11
+	RETURN:dt="%Library.PosixTime" $c(1)_11_$c(1)_$s($g(lOvr)'="":lOvr,1:16)_$c(1)_$s($g(pOvr)'="":pOvr,1:19)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_11
+	RETURN:dt="%Library.Date" $c(1)_9_$c(1)_$s($g(lOvr)'="":lOvr,1:4)_$c(1)_$s($g(pOvr)'="":pOvr,1:11)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_9				// DPV2899 (11, not 10)
+	RETURN:dt="%Library.Time" $c(1)_10_$c(1)_$s($g(lOvr)'="":lOvr,1:4)_$c(1)_$s($g(pOvr)'="":pOvr,1:8)_$c(1)_""_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_10
+	RETURN:dt="%Library.Float" $c(1)_8_$c(1)_$s($g(lOvr)'="":lOvr,1:$s($g(pOvr)'="":pOvr,1:15)+2)_$c(1)_$s($g(pOvr)'="":pOvr,1:15)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_8
+	RETURN:dt="%Library.Double" $c(1)_8_$c(1)_$s($g(lOvr)'="":lOvr,1:8)_$c(1)_$s($g(pOvr)'="":pOvr,1:20)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_8	// DPV2667=
+	RETURN:dt="%Library.Currency" $c(1)_2_$c(1)_$s($g(lOvr)'="":lOvr,1:$s($g(pOvr)'="":pOvr,1:15))_$c(1)_$s($g(pOvr)'="":pOvr,1:15)_$c(1)_$s($g(sOvr)'="":sOvr,1:4)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_2	// DPV2667=
+	RETURN:dt="%Library.Numeric" $c(1)_2_$c(1)_$s($g(lOvr)'="":lOvr,1:$s($g(pOvr)'="":pOvr,1:15)+2)_$c(1)_$s($g(pOvr)'="":pOvr,1:15)_$c(1)_$s($g(sOvr)'="":sOvr,1:0)_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_2	// DPV2573=
+	RETURN:dt="%Library.Boolean" $c(1)_-7_$c(1)_$s($g(lOvr)'="":lOvr,1:1)_$c(1)_$s($g(pOvr)'="":pOvr,1:1)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-7				// DPV2216=
+	RETURN:dt="%Library.Binary" $c(1)_-3_$c(1)_$s($g(lOvr)'="":lOvr,1:255)_$c(1)_$s($g(pOvr)'="":pOvr,1:255)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-3			// DPV2724=
+	RETURN:dt="%Library.BinaryStream"||(dt="%Stream.GlobalBinary")||(dt="%Stream.FileBinary") $c(1)_-4_$c(1)_$s($g(lOvr)'="":lOvr,1:2147483647)_$c(1)_$s($g(pOvr)'="":pOvr,1:2147483647)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-4		// DPV3583
+	RETURN:dt="%Library.CharacterStream"||(dt="%Stream.GlobalCharacter")||(dt="%Stream.FileCharacter") $c(1)_-1_$c(1)_$s($g(lOvr)'="":lOvr,1:2147483647)_$c(1)_$s($g(pOvr)'="":pOvr,1:2147483647)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-1	// DPV3583
+	RETURN:dt="%Library.UniqueIdentifier" $c(1)_-11_$c(1)_$s($g(lOvr)'="":lOvr,1:36)_$c(1)_$s($g(pOvr)'="":pOvr,1:36)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_-11				// DPV4310=
+	RETURN:dt="%Library.Vector" $c(1)_12_$c(1)_$s($g(lOvr)'="":lOvr,1:64000)_$c(1)_$s($g(pOvr)'="":pOvr,1:64000)_$c(1)_0_$c(1)_$s(nullOvr'="":nullOvr,1:2)_$c(1,1,1,1,1,1,1,1,1,1)_12 // 64k default for now, ALV002
+	RETURN ""
+ 
+ 
+xf(var,fld) [mt,mtc] PUBLIC {
+		#;  if var is a variable and fld is a field or agg, mark the parameter
+	s v1=$e($g($$$mtV(+fld)))
+	set:(v1="f"||(v1="a"))&&($e($g($$$mtV(+var)))="x")&&($d(mtc(0,0,"parameter","val",var))#2) $p(mtc(0,0,"parameter",mtc(0,0,"parameter","val",var)),$c(1),4)=fld
+	RETURN
+}
+ 
+ 
+getinfo(item,type,irn,ifn,val,list,oldinfo,pos) ; Return Appropriate 'item' Information
+	new retval
+	if '$d(gi(val,item),retval) {
+		#; Logic to avoid FRAMESTACK with very deep expressions. Walk tree and call 'getinfo' from the bottom to top to build the 'gi'
+		#; cache so when we call it here we do not recurse very deeply. This is very simplistic of assuming we need 'getinfo' for each
+		#; argument to the expression, when often only one argument may be needed.
+		if type="v",$p($g($$$mtV(val)),"^")="v",$stack>200 {  ; Add check on $stack so we only do this when we are starting to get deep, so simple case can be done recursively.
+			new nargs,ninfo,npend,nstack,ntype,nval,ni,nj,ntmp
+			set npend($i(npend))=val
+			for ni=1:1 {
+				if '$data(npend(ni),nval) QUIT
+				if $data(gi(val,item)) CONTINUE
+				set ninfo=$g($$$mtV(nval)),nargs=$p(ninfo,"^",4,*),ntype=$p(ninfo,"^")
+				if ntype="v" {
+					if ni'=1,'$d(gi(nval,item)) set nstack($i(nstack))=nval
+					for nj=1:1:$l(nargs,"^") {
+						set:$p(nargs,"^",nj)'="" npend($i(npend))=$p(nargs,"^",nj)
+					}
+				}
+			}
+			for ni=$g(nstack):-1:1 {
+				if '$d(gi(nstack(ni),item)) set gi(nstack(ni),item)="",ntmp=$$getinfo(item,type,"","",nstack(ni),list,oldinfo,pos)  ; Call it to build 'gi' cache in reverse order
+			}
+		}
+	}
+	if $g(retval)="" {
+		set (retval,gi(val,item))=$$ginu()  ; Use two argument set as 'val' can be changed when we return from $$ginu so this will set the 'before' value rather than the after value
+	}
+	QUIT retval
+	
+ginu()  // item, type, irn, ifn, val, oldinfo, pos defined from call to getinfo(...)
+	GOTO:$d(unf(val)) unf
+	QUIT:item=500&&(type="f") val  ;  500 = val# of related "f" entry	// AK448
+	new vinfo,oval
+	s vinfo=$g($$$mtV(val))
+	#; PVA129: must follow streamed view fields to underlying val
+	set oval=val
+	do vfollow(.val,.vinfo)
+	set:vinfo]""&&(oval'=val) type=$e(vinfo)
+	set:'ifn&&(item'=500) ifn=$$getifn(val,list)
+	set:'irn&&(ifn)&&(item'=500) irn=$$getirn(ifn)
+	QUIT:item=5&&($$$VTRgetscale(val)'="") $$$VTRgetscale(val)
+	QUIT:$p($$$VTRgetomsinfo(val),$c(1),item)'="" $p($$$VTRgetomsinfo(val),$c(1),item)
+	GOTO $case(type,"a":agg,"e":extfunc,"f":fieldi,"m":mexpress,"n":corfield,"q":subquery,"s":asfield,"t":literal,"v":express,"x":param,:exit)
+exit	QUIT ""
+	
+unf	; Come here with a val that has union siblins in unf(val), find the best item for the val list
+	#; unf() holds the union legs item pairs.
+	#; for example, if we have:
+	#;    select a,b union select c,d union select e,f
+	#; we have:	unf(val(a))=$lb(val(a),val(b))
+	#;		unf(val(c))=$lb(val(c),val(d))
+	#;		unf(val(e))=$lb(val(e),val(f))	
+	#; we then use this structure to define most compatible type/precision/length/scale/etc. for each column in the union query
+.
+	#; item, type, irn, ifn, val, oldinfo, pos defined from call to getinfo(...) -> ginu()
+	new clearfldinfo,i,ii,ifnval,irnval,null,return,scales,t1,vallist,values
+	set vallist=unf(val),clearfldinfo=0
+	new unf
+		#; t1 is type precedence:: VARCHAR, TIMESTAMP, DOUBLE, NUMERIC, BIGINT, INTEGER, SMALLINT, DATE, TIME, TINYINT
+	set:item=2 t1(12)=7,t1(11)=7.5,t1(8)=6,t1(2)=5,t1(-5)=4,t1(4)=3,t1(5)=2,t1(9)=1.9,t1(10)=1.8,t1(-6)=1,t1(0)=0
+	for i=1:1:$ll(vallist) {
+		if item'=500 { set ifnval=$$getifn($lg(vallist,i),list),irnval=$$getirn(ifnval) } else { set ifnval="",irnval="" }
+		set values(i)=$$getinfo(item,$$$type($lg(vallist,i)),irnval,ifnval,$lg(vallist,i),list,oldinfo,pos)			// get type for each union sibling
+		if item=4 {
+			set unf($lg(vallist))=vallist
+			set scales(i)=$$getinfo(5,$$$type($lg(vallist,i)),irnval,ifnval,$lg(vallist,i),list,oldinfo,pos)		// get scale for each union sibling if getting precision
+			kill unf
+		}
+		set null(i)=($g($$$mtV($lg(vallist,i)))="t^")
+		if ifn'=ifnval set clearfldinfo=1
+	}
+	set return=values(1)
+	if item=2,null(1) { set return=0 }	// Looking for TYPE, first item is null, it has lowest type rank
+	for i=2:1:$ll(vallist) {
+		if item=2 {		// DATATYPE
+			if $case(values(1),12:1,11:1,10:1,9:1,-6:1,- 5:1,2:1,4:1,5:1,8:1,:0),$case(values(i),12:1,11:1,10:1,9:1,-6:1,-5:1,2:1,4:1,5:1,8:1,:0) {
+				continue:null(i)
+				set:t1(values(i))>t1(return) return=values(i)	// We have a not-null leg, see if it is a better type than what we have already found
+			}
+		}
+		elseif item=3||(item=5) {	// LENGTH || SCALE
+			set:'null(i)&&(values(i)>return) return=values(i)
+		}
+		elseif item=4 {		// PRECISION  Precision will be determined by max(s1, s2) + max(p1-s1, p2-s2)
+			set:'null(i) return=$$max(scales(1),scales(i))+$$max(return-scales(1),values(i)-scales(i))
+		}
+		elseif item=6 {		// NULLABLE
+			set:values(i) return=1
+		}
+		elseif item=11 {		// TABLE's COLUMN NAME, NULL for columns from a union
+			if clearfldinfo { set return="" }
+			else { set return=values(i) }
+		}
+	}
+	if item=2,return=0 { set return=12 }	// For TYPE, all legs are null, report VARCHAR
+	for i=1:1:$ll(vallist) {
+		set gi($lg(vallist,i),item)=return
+			#; If VARCHAR and PRECISION>LENGTH, update LENGTH to be equal to PRECISION
+		if item=4,$g(gi($lg(vallist,i),2))=12,return>$g(gi($lg(vallist,i),3)) { set gi($lg(vallist,i),3)=return,$p(moreinfo,$c(1),3)=return }
+		//if clearfldinfo for ii=7:1:11,14,15,17 set gi($lg(vallist,i),ii)="" set:item=ii return=""
+	}
+	RETURN return
+.
+	// Given a "," list of val numbers, return 1 if each of the vals is a RowVersion field
+UnionAllRowVersion(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '($$$smdColIsRowVersion(1,irn,ifn)) { RETURN 0 } // first item not a RowVersion
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list) RETURN:'ifn 0
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '($$$smdColIsRowVersion(1,irn,ifn)) { RETURN 0 } // i'th item not a RowVersion
+	}
+	RETURN 1	// All items are RowVersions
+}
+.
+	// Given a "," list of val numbers, return 1 if each of the vals is a Hidden field
+UnionAllHidden(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '($$$smdColHidden(1,irn,ifn)="Y") { RETURN 0 } // first item not a Hidden
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list) RETURN:'ifn 0
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '($$$smdColHidden(1,irn,ifn)="Y") { RETURN 0 } // i'th item not Hidden
+	}
+	RETURN 1	// All items are Hidden
+}
+.
+	// Given a "," list of val numbers, return 1 if each of the vals is a Identity field
+UnionAllIsIdentity(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '($$$smdColIsIdentityColumn(1,irn,ifn))||('$$$smdColHidden(1,irn,ifn)&&($$$smdGetIcolFromIfn(ifn)=1)) { RETURN 0 } // first item not an Identity
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list) RETURN:'ifn 0
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '($$$smdColIsIdentityColumn(1,irn,ifn))||('$$$smdColHidden(1,irn,ifn)&&($$$smdGetIcolFromIfn(ifn)=1)) { RETURN 0 } // i'th item not an Identity
+	}
+	RETURN 1	// All items are Identities
+}
+.
+	// Given a "," list of val numbers, return 1 if each of the vals is a RowID field
+UnionAllRowIds(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '($$$smdGetIcolFromIfn(ifn)=1 || ($$$smdRowIDPhysicalFields(1,irn)=ifn)) { RETURN 0 } // first item not a rowid
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list) RETURN:'ifn 0
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '($$$smdGetIcolFromIfn(ifn)=1 || ($$$smdRowIDPhysicalFields(1,irn)=ifn)) { RETURN 0 } // i'th item not a rowid
+	}
+	RETURN 1	// All items are RowIds
+}
+	
+	// Given a "," list of val numbers, return 1 if each of the vals is a Container field
+UnionAllContainers(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '($$$smdGetIcolFromIfn(ifn)=1 || ($$$smdRowIDPhysicalFields(1,irn)=ifn)) { RETURN 0 } // first item not a Container
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list) RETURN:'ifn 0
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '($$$smdGetIcolFromIfn(ifn)=1 || ($$$smdRowIDPhysicalFields(1,irn)=ifn)) { RETURN 0 } // i'th item not a Container
+	}
+	RETURN 1	// All items are Containers
+}
+.
+	// Given a "," list of val numbers, return 1 if each of the vals is a a list
+UnionAllIsList(vallist="",irn,ifn) [list,mt] PUBLIC {
+	RETURN:vallist="" 0
+		// irn and ifn are for the first value in vallist, don't need to compute them
+	if '$s($$$smdColListCollection(1,irn,ifn)="Y":1,
+	      $$$smdColArrayCollection(1,irn,ifn):1,
+	      $$$comClassKeyGet($$$smdColDatatype(1,irn,ifn),$$$cCLASSclientdatatype)=$$$cCLASSCLIENTDATATYPELIST:1,
+	      1:0) {
+		      RETURN 0	 // first item not a list
+	      }
+	for i=2:1:$ll(vallist) {
+		set val=$lg(vallist,i)
+		set ifn=$$getifn(val,list)
+		if 'ifn {
+			if '$case($p($g($$$mtV(+val)),"^",1,2),"v^LISTBUILD":1,"v^LISTFROMSTRING":1,:0) { RETURN 0 }  // item is not a list
+			continue
+		}
+		set irn=$$getirn(ifn) RETURN:'irn 0 
+		if '$s($$$smdColListCollection(1,irn,ifn)="Y":1,
+		      $$$smdColArrayCollection(1,irn,ifn):1,
+		      $$$comClassKeyGet($$$smdColDatatype(1,irn,ifn),$$$cCLASSclientdatatype)=$$$cCLASSCLIENTDATATYPELIST:1,
+		      1:0) {
+			      RETURN 0	 // item not a list
+		      }
+	}
+	RETURN 1	// All items are list
+}
+.
+	#; PVA129: create vfollow
+vfollow(val,v) // follow streamed view f val to underlying val; 
+		#; update val and v(=$$$mtV(val)) if passed by reference
+	n tname,fval,qn
+	for  {
+		q:$e(v)'="f"
+		q:$p(v,"^",2,3)["->"	// DPV3258 Avoid <SUBSCRIPT> error if $p(v,"^",2,3) is long because of -> joins
+		s tname=$g($$$mtFromTableName($p(v,"^",2,3))) // PV149: $g() because new style arrow reference won't 
+							#;          have associated mt("f")
+		q:$e(tname,1,3)'="%%Q"
+		s qn=$e(tname,4,*),fval=$$$mtPViewIDVal($$$mtP(qn))
+		if val=fval { quit }	//  s val="",v="" q
+		s val=$p($$$mtOutputVals($$$mtOutput(qn)),",",val-fval),v=$$$mtV(val)
+	}
+	QUIT 
+ 
+fieldi ; Return Field
+	#;                                                   Information
+	QUIT:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	QUIT $p($$$VTRgetomsinfo(val),$c(1),item)
+ 
+ 
+corfield ; ---
+	; ---Return Correlated Field Information ---
+	q:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	n corifn,corval,return
+	s return="",corval=$p(vinfo,"^",4) q:corval="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	s:item'=500 corifn=$$getifn(corval,list)
+		#; --- NAME/TYPE/LENGTH/PRECISION/SCALE/NULLABLE/UNNAMED/ ---
+		#; --- COLUMN_LABEL/COLUMN_OWNER_NAME/COLUMN_QUALIFIER_NAME/ ---
+		#; --- COLUMN_TABLE_NAME/Multi-Line/Data Type - Subtype ---
+	q:",1,2,3,4,5,6,7,8,9,10,11,14,15,"[(","_item_",") $$getinfo(item,$$$type(corval),$$getirn(corifn),corifn,corval,list,oldinfo,pos)
+	q:item=500 $$getinfo(item,$$$type(corval),"","",corval,list,oldinfo,pos)
+	q return
+ 
+ 
+subquery ; ---
+		#; --- Return Subquery Information ---
+	q:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT
+		#; ------ NAME ------
+	q:item=1 $$typename(type)_"_"_pos
+	n return,subq,subqifn,subqval
+	s subq=+$p(vinfo,"^",2),subqval=+$$$mtOutputVals($g($$$mtOutput(subq)))
+	q:subqval="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	s return=""
+	s:item'=500 subqifn=$$getifn(subqval,list)
+		#; --- TYPE/LENGTH/PRECISION/SCALE/NULLABLE ---
+		#; --- COLUMN_OWNER_NAME/COLUMN_QUALIFIER_NAME/COLUMN_TABLE_NAME ---
+		#; --- Multi-Line/Data Type - Subtype ---
+	q:",2,3,4,5,6,9,10,11,14,15,"[(","_item_",") $$getinfo(item,$$$type(subqval),$$getirn(subqifn),subqifn,subqval,list,oldinfo,pos)
+		#; ------ val# ------
+	q:item=500 $$getinfo(item,$$$type(subqval),"","",subqval,list,oldinfo,pos)
+	q return
+ 
+ 
+asfield ; ---
+		#; ---Return AS Alias Field Information ---
+	q:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	n asifn,asval,return
+	s return="",asval=$p(vinfo,"^",4) q:asval="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	s:item'=500 asifn=$$getifn(asval,list)
+		#; --- NAME/TYPE/LENGTH/PRECISION/SCALE/NULLABLE/COLUMN_LABEL ---
+		#; --- COLUMN_OWNER_NAME/COLUMN_QUALIFIER_NAME/COLUMN_TABLE_NAME ---
+		#; --- Multi-Line/Data Type - Subtype ---
+	q:",1,2,3,4,5,6,8,9,10,11,14,15,"[(","_item_",") $$getinfo(item,$$$type(asval),$$getirn(asifn),asifn,asval,list,oldinfo,pos)
+	q:item=500 $$getinfo(item,$$$type(asval),"","",asval,list,oldinfo,pos)
+	q return
+ 
+ 
+literal ; ---
+	    #; ---Return literal Information ---
+	  QUIT:vinfo="" $$$default(item)  // Nothing Found So Set DEFAULT
+	    #; ------ NAME ------
+	  QUIT:item=1 $$typename(type)_"_"_pos
+	  new literal set literal=$p(vinfo,"^",2)
+	    #; ------ TYPE ------
+	  QUIT:item=2 $s($g(mt("noquconst",val))&&($Number(literal)'=""):$s(literal[".":2,1:4),1:12)	// DPV3173	// DPV3262
+	    #; ------ LENGTH ------
+	  QUIT:item=3 $s($l(literal)'=0:$l(literal),1:1)
+	    #; ------ PRECISION ------
+	  QUIT:item=4 $s($g(mt("noquconst",val))&&($Number(literal)'=""):$l($p($Number(literal),".",1))+$l($p($Number(literal),".",2)),1:$s($l(literal)'=0:$l(literal),1:1))	// DPV3262
+	    #; ------ SCALE ------
+	  QUIT:item=5 $s($g(mt("noquconst",val))&&($Number(literal)'=""):$l($p($Number(literal),".",2)),1:0)						// DPV3262
+	    #; ------ NULLABLE ------
+	  QUIT:item=6 $s($l(literal)>0:0,1:1)
+	    #; ------ COLUMN_TABLE_NAME ------
+	  QUIT:item=11 ""
+	    #; ------ val# ------
+	  QUIT:item=500 ""
+	  QUIT return
+ 
+ 
+param // Return Parameter Information
+	q:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT
+	i vinfo=("x^"_+$e(vinfo,3,*)),vinfo'="x^0" {
+		n corifn,corval,return
+		s return="",corval=$e(vinfo,3,*)
+		s:item'=500 corifn=$$getifn(corval,list)
+		q:",1,2,3,4,5,6,7,8,9,10,11,14,15,"[(","_item_",") $$getinfo(item,$$$type(corval),$$getirn(corifn),corifn,corval,list,oldinfo,pos)
+		q:item=500 $$getinfo(item,$$$type(corval),"","",corval,list,oldinfo,pos)
+		q return
+	}
+		#; ------ NAME ------
+	q:item=1 $$typename(type)_"_"_pos
+	if item>1,item<6,$p($$$VTRgetomsinfo(val),$c(1),item)'="" QUIT $p($$$VTRgetomsinfo(val),$c(1),item)
+	n compval,ODBCVarcharMaxlen
+	s compval=$g(mtc(0,0,"parameter","val",val)),ODBCVarcharMaxlen=$$$ODBCVarcharMaxlen	// DPV2654=
+	QUIT:compval="" $p("~12~"_ODBCVarcharMaxlen_"~"_ODBCVarcharMaxlen_"~0~2~","~",item) 		// Nothing Found So Set DEFAULT (DPV2654)
+	s compval=+$p($g(mtc(0,0,"parameter",compval)),$c(1),4)
+	QUIT:'compval $p("~12~"_ODBCVarcharMaxlen_"~"_ODBCVarcharMaxlen_"~0~2~","~",item) 		// Nothing Found So Set DEFAULT (DPV2654)
+	n compifn s:item'=500 compifn=$$getifn(compval,list)
+		#; --- TYPE/LENGTH/PRECISION/SCALE/NULLABLE/COLUMN_LABEL ---
+		#; --- COLUMN_OWNER_NAME/COLUMN_QUALIFIER_NAME/COLUMN_TABLE_NAME ---
+		#; --- Multi-Line/Data Type - Subtype ---
+	if item=5,$$$VTRgetscale(val)'="" QUIT $$$VTRgetscale(val)
+	q:",2,3,4,5,6,8,9,10,11,14,15,"[(","_item_",") $$getinfo(item,$$$type(compval),$$getirn(compifn),compifn,compval,list,oldinfo,pos)
+		#; ------ val# ------
+	q:item=500 $$getinfo(item,$$$type(compval),"","",compval,list,oldinfo,pos)
+	q ""
+ 
+ 
+typename(t) [] PRIVATE {	// Return a name for the type of token found in the parse tree
+	  QUIT $s(t="a":"Aggregate",t="b":"Built_In_Function",t="f":"Field",t="m":"COSExpr",t="n":"Correlated_Field",t="q":"Subquery",t="s":"AS_Alias",t="t":"Literal",t="v":"Expression",t="x":"HostVar",t="e":"ExtrFun",1:"UNDEFINED")
+	}
+ 
+ 
+getifn(val,list) ; Get the 'ifn' given the 'val' into the parse tree
+	n fname,tname,v
+	#; PVA129: follow through streamed view field before doing prior logic
+	s v=$g($$$mtV(+$g(val)))
+	d:$d(val) vfollow(.val,.v)
+	set:$p(v,"^")'="f" val=$$getinfo(500,$$$type(val),"","",val,list,"","")
+	QUIT $$$VTRgetifn(+val)
+ 
+ 
+getirn(ifn) [] PUBLIC { QUIT:ifn="" "" QUIT $$$smdGetIrnFromIfn(ifn)  }	// Get the 'irn' given the 'ifn'
+ 
+ 
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#;  FROM HERE DOWN USED TO BE %qaqpif3
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+agg ; Return Aggregate 
+	#;                                                 Information...
+	QUIT:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT...
+		#; ------ NAME ------
+	QUIT:item=1 $$typename(type)_"_"_pos
+	n agg,aggifn,aggval,argtype,atype,rettype,return	// DPV3337 (argtype,rettype)
+	s return="",agg=$p(vinfo,"^",2)
+	s atype=$s(",avg,count,sum,"[(","_agg_","):1,",max,min,"[(","_agg_","):2,agg["list"||(agg="xmlagg"):3,1:"")	// DPV3270 (xmlagg)
+	s aggval=+$p(vinfo,"^",5)
+	s:(item=2)||(item=3)||(item=4)||(item=5) aggifn=$$getifn(aggval,list)
+		#; ------ TYPE ------
+	if item=2 {
+		QUIT:agg="count" -5  	// COUNT is always BIGINT
+		if agg="sum"||(agg="avg") {
+			set argtype=$p($$$VTRgetomsinfo(aggval),$c(1),2)
+			set:argtype="" argtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			if agg="avg" {
+				QUIT:$case(argtype,8:1,12:1,:0) 8	// AVG(DOUBLE) or AVG(VARCHAR) returns DOUBLE
+				QUIT $$NumericOrDouble(item,aggval,list,oldinfo,pos)   ; NUMERIC/Number
+			} 
+			QUIT:$case(argtype,4:1,5:1,-6:1,:0) 4	// SUM(INT), or SUM(SMALLINT), or SUM(TINYINT) returns INT
+			QUIT:argtype=-5 -5			// SUM(BIGINT) returns BIGINT
+			QUIT:$case(argtype,8:1,12:1,:0) 8	// SUM(DOUBLE) SUM(VARCHAR) returns DOUBLE
+			QUIT 2					// All else return NUMERIC
+		}
+		QUIT:atype=1 $$NumericOrDouble(item,aggval,list,oldinfo,pos)   ; NUMERIC/Number	// DPV3173
+		QUIT:atype=3 12		// LIST is always VARCHAR
+		i atype=2 s return=$p($$$VTRgetomsinfo(aggval),$c(1),2) s:return="" return=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+		QUIT:return'="" return
+		QUIT 2     ; Default to NUMERIC/Number
+	}
+		#; ------ LENGTH ------
+	if item=3 {
+		QUIT:agg="count" 8  	// COUNT is always BIGINT/Length=8
+		QUIT:atype=1 20
+		QUIT:atype=3 4096
+		i atype=2 s return=$p($$$VTRgetomsinfo(aggval),$c(1),3) s:return="" return=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+		QUIT:return'="" return
+		QUIT 20  ; Default to 20/16
+	}
+		#; ------ PRECISION ------
+	if item=4 {
+		QUIT:agg="count" 19  	// COUNT is always BIGINT/Precision=19
+		QUIT:agg="avg" 18  	// AVE is always NUMERIC/Precision=18 (DPV3220)
+		if agg="sum"||(agg="avg") {
+			s rettype=$p($$$VTRgetomsinfo(val),$c(1),2)
+			s:rettype="" rettype=$$getinfo(2,type,irn,ifn,val,vinfo,oldinfo,pos)
+			QUIT:rettype=4 10		// If SUM(val) returns INT, precision 10
+			QUIT:rettype=-5 19		// If SUM(val) returns BIGINT, precision 19
+			QUIT 18				// other types return precision 18
+		}
+		QUIT:'aggval 18  	// COUNT(*)
+		QUIT:atype=3 4096	// LIST(...)  // DPV1686
+		s return=$p($$$VTRgetomsinfo(aggval),$c(1),4) QUIT:return'="" return
+		s return=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+		QUIT:return'="" return
+		QUIT 18  ; Default to 18
+	}
+		#; ------ SCALE ------
+	if item=5 {	// DPV3220=
+		QUIT:agg="count" 0
+		i agg="avg" {
+				#; If the type of the arg to AVG is NUMERIC with precision p and scale s, the precision of the result is 18 and the scale is 18-p+s.
+			n argscale,argtype,argprec,rettype
+			s rettype=$$getinfo(2,type,irn,ifn,val,vinfo,oldinfo,pos)
+			QUIT:rettype=8 0	// If we are returning DOUBLE, no SCALE as it is meaningless
+			s argtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			QUIT:$case(argtype,2:0,:1) 8  // avg of anything but NUMERIC (and DOUBLE) is hard-coded to 8
+			s argprec=$$getinfo(4,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			s argscale=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			QUIT 18-argprec+argscale	// For NUMERIC, 
+		}
+		i agg="sum" {
+				#; sum(double), return scale 0, sum(char) or sum(binary), return scale 8
+			n argtype,rettype
+			s rettype=$$getinfo(2,type,irn,ifn,val,vinfo,oldinfo,pos)
+			QUIT:rettype=8 0			// If we are returning DOUBLE, no SCALE as it is meaningless
+			s argtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			QUIT:$case(argtype,12:1,-3:1,:0) 8 	// sum of char or binary, assume field has number data, scale hard-coded to 8
+		}
+		QUIT:agg["list" 0
+		s return=$p($$$VTRgetomsinfo(aggval),$c(1),5) QUIT:return'="" return
+		s return=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos) QUIT:return'="" return
+		QUIT 16  ; Default to 18/16
+	}
+		#; ------ NULLABLE ------
+		#;  COUNT is NOT NULLABLE.  All other Aggreagates are NULLABLE  ;  DPV1563
+	If item=6 QUIT:agg="count" 0 QUIT 1
+		#; ------ COLUMN_LABEL ------
+	i item=8 d  QUIT return
+	. s return=$tr($p(oldinfo,$c(1),2),";",".") ; Substitute Semicolons...
+	. s:return["," return=""""_return_""""       ; Quote String if Commas..
+		#; ------ COLUMN_TABLE_NAME ------
+	QUIT:item=11 ""
+		#; ------ val# ------
+	i item=500 d  QUIT return
+	. i 'aggval s return="" q
+	. if $p($g($$$mtV(aggval)),"^")'="f" s return=$$getinfo(item,$$$type(aggval),"","",aggval,list,oldinfo,pos) q
+	. s return=aggval
+	QUIT ""
+.
+ 
+mexpress ; ---
+		#; ---Return M Expression Information ---
+	q:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT...
+		#; ------ NAME ------
+	q:item=1 $$typename(type)_"_"_pos
+	n return s return=""
+		#; ------ TYPE ------
+	q:item=2 -1  ; ** Indeterminate: LONGVARCHAR/Text
+		#; ------ LENGTH ------
+	q:item=3 255  ; ** Indeterminate: 255/30
+		#; ------ PRECISION ------
+	q:item=4 255  ; ** Indeterminate: 255/30
+		#; ------ SCALE ------
+	q:item=5 0     ; ** Indeterminate: 0/0
+		#; ------ NULLABLE ------
+	q:item=6 1
+		#; ------ COLUMN_LABEL ------
+	i item=8 d  q return
+	. s return=$tr($p(oldinfo,$c(1),2),";",".") ; Substitute Semicolons...
+	. s:return["," return=""""_return_""""       ; Quote String if Commas..
+		#; ------ COLUMN_TABLE_NAME ------
+	q:item=11 ""
+		#; ------ val# ------
+	q:item=500 ""
+	q return
+ 
+ 
+extfunc ; ---
+		#; ---Return Extrinsic Function Information ---
+	QUIT:vinfo="" $$$default(item)	// Nothing Found So Set DEFAULT...
+		#; ------ NAME ------
+	QUIT:item=1 $$typename(type)_"_"_pos
+		#; ------ TYPE ------
+	QUIT:item=2 12
+		#; ------ LENGTH ------
+	QUIT:item=3 255
+		#; ------ PRECISION ------
+	QUIT:item=4 255
+		#; ------ SCALE ------
+	QUIT:item=5 0
+		#; ------ NULLABLE ------
+	QUIT:item=6 1
+		#; ------ COLUMN_LABEL ------
+	if item=8 {
+		new return
+		set return=$tr($p(oldinfo,$c(1),2),";",".")	// Substitute Semicolons...
+		set:return["," return=""""_return_""""		// Quote String if Commas..
+		QUIT return
+	}
+		#; ------ COLUMN_TABLE_NAME ------
+	QUIT:item=11 ""
+		#; ------ val# ------
+	QUIT:item=500 ""
+	QUIT ""
+.
+express ; ---
+		#; ---Return Expression Information ---
+	QUIT:vinfo="" $$$default(item)  ; Nothing Found So Set DEFAULT...
+		#; ------ NAME ------
+	new vfun
+	set vfun=$p(vinfo,"^",2)
+	if item=1 {
+		if $case(vfun,"/0":1,"SQRT_AGG":1,"/AGG":1,"CASE_AGG":1,"JSON_ARRAY_AGG":1,:0) { RETURN "Aggregate_"_pos }	// /0, CASE_AGG, SQRT_AGG, /AGG, and JSON_ARRAY_AGG is an expression we replaced AVG aggregate with
+		if $e(vfun,1,4="udaf") || ( ($p(vfun,":",1)="USERDEFINEDFUNCTION") && $p(vfun,":",5) && ($e($$$mtV($p(vfun,":",5)))="a") ) { RETURN "Aggregate_"_pos }
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" { QUIT "Window_"_pos }
+		QUIT $$typename(type)_"_"_pos
+	}
+	if item>1,item<6,$p($$$VTRgetomsinfo(val),$c(1),item)'="" { QUIT $p($$$VTRgetomsinfo(val),$c(1),item) }
+	new iscifn,iscval,iscvals
+	set iscval="",iscvals=""
+		#;  May be InterSystems Extended Function or ABS function  ;  DPV1101
+		#;  DPV2102 Force %EXTERNAL function to return VARCHAR, regardless of type of argument.
+	if ($e(vfun)="%" && ((vfun'="%EXTERNAL"))) || $case(vfun,"ABS":1,"CASE":1,"CEILING":1,"COALESCE":1,"DECODE":1,"FLOOR":1,"GREATEST":1,"IFNULL":1,"ISNULL":1,"LEAST":1,"NULLIF":1,"NVL":1,"ROUND":1,"TRUNCATE":1,:0) {
+		if vfun="COALESCE" { 
+			set iscval=$$BestCompatibleType(item,$p(vinfo,"^",4,*),list,oldinfo,pos,vfun) 	// Best compatible type of all arguments
+		}
+		elseif vfun="GREATEST"||(vfun="LEAST") { 
+			set iscval=$$BestCompatibleTypeAll(item,$p(vinfo,"^",4,*),list,oldinfo,pos,vfun)		// Best compatible type of all arguments
+		}
+		elseif vfun="CASE" {
+			new i,v1,vlist
+			set vlist="" for i=5:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			s iscval=$$BestCompatibleTypeAll(item,vlist,list,oldinfo,pos,vfun)			// Best compatible type of all return arguments
+		}
+		elseif vfun="DECODE" {
+			new i,v1,vlist
+				#; vlist will be all the possible return values.  DECODE(expr {,search,result}[,default])
+				#; Every other value beginning with the 6th "^" piece, and at the end of the results look for a potention default.
+			set vlist="" for i=6:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			s iscval=$$BestCompatibleType2(item,vlist,list,oldinfo,pos,vfun)			// Best compatible type of all return arguments
+		}
+		elseif vfun="IFNULL" { 	// DPV4515, use BestCompatibleTypeAll for the 2 possible return arguments for IFNULL
+			new vlist
+			if $p(vinfo,"^",6)="" { set vlist=$p(vinfo,"^",5)_"^" } else { set vlist=$p(vinfo,"^",5,6)_"^" }
+			s iscval=$$BestCompatibleTypeAll(item,vlist,list,oldinfo,pos,vfun)			// Best compatible type of all return arguments
+		}
+		else { set iscval=$p(vinfo,"^",4) if iscval="" RETURN $$$default(item) }						// Same as first argument
+		set:item'=500 iscifn=$$getifn(iscval,list)
+	}
+	new NumericOrDouble
+	set NumericOrDouble=0
+	if $d(mt("agg-orig-argval",val))#2 { set NumericOrDouble=1,iscval=mt("agg-orig-argval",val) set:item'=500 iscifn=$$getifn(iscval,list) }
+	if (" ACOS ASIN ATAN ATAN2 COS COT DEGREES EXP LOG LOG10 MOD POWER RADIANS SIN SQRT TAN "[(" "_vfun_" ")) { set NumericOrDouble=1 }
+		#; ------ TYPE ------
+	If item=2 {
+		if vfun="%INTERNAL" {
+			if $p($$$VTRgetomsinfo($p(vinfo,"^",4)),$c(1),2)=9  { QUIT 4 }	// %INTERNAL(DATE) returns INTEGER always, even if there is an iscval
+			if $p($$$VTRgetomsinfo($p(vinfo,"^",4)),$c(1),2)=10 { QUIT 2 }	// %INTERNAL(TIME) returns NUMERIC always, even if there is an iscval
+		}
+		if $d(mt("agg-orig-argval",val))#2 { QUIT $$NumericOrDouble(item,mt("agg-orig-argval",val),list,oldinfo,pos) }
+		if vfun="ROUND"||(vfun="TRUNCATE") {
+				#; Hopefully the second argument to ROUND or TRUNCATE was a literal value and we can get the SCALE directly from that
+			new scale,v1
+			set v1=$p(vinfo,"^",5) 
+			if $e($g($$$mtV(v1)))="t" {
+				set scale=$normalize($p($$$mtV(v1),"^",2),0)
+				if scale>0 { QUIT 2 } // scale>0 means Numeric, otherwise fall through to determine type
+			}
+		}
+		if vfun="VECTOR_COSINE"||(vfun="VECTOR_DOT_PRODUCT") { // get and return the datatype according to the arguments, default to DOUBLE
+			QUIT $$GetVecFuncReturnType(vfun,$p(vinfo,"^",4),$p(vinfo,"^",5)) 
+		}
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" {
+			RETURN:(",LAG,LEAD,"[(","_$p(vfun,":",2)_","))&&$p(vinfo,"^",10) $p($$definfo("%Library.String"),$c(1),2)
+			new winifn,wintype,winval
+			set winval=$p(vinfo,"^",8)		// This is now the val# of the main arg to the window function
+			set wintype=$p($$$VTRgetomsinfo(winval),$c(1),2)
+			set winifn=$$getifn(winval,list)
+			set:wintype="" wintype=$$getinfo(item,$$$type(winval),$$$smdGetIrnFromIfn(+winifn),winifn,winval,list,oldinfo,pos)
+			RETURN wintype //QUIT $p($$$VTRgetomsinfo($p(vinfo,"^",8)),$c(1),2)
+		}
+		if iscval { 
+			if $p($$$VTRgetomsinfo(iscval),$c(1),2)'="" { QUIT $p($$$VTRgetomsinfo(iscval),$c(1),2) } 
+			else { QUIT $$getinfo(item,$$$type(iscval),$$getirn(iscifn),iscifn,iscval,list,oldinfo,pos) }
+		}
+		QUIT:(vfun="/"||(vfun="/AGG"))&&($g(^%SYS("sql","sys","report / as double"))) 8		// DPV3593
+		if vfun="/0" {	// AVG aggregate
+				// This is special behavior for AVG aggregate
+				// $p(vinfo,"^",4) is the val number for the sum part of the AVG equation
+				// We want to get the aggtype of the argument to sum
+			new aggifn,aggtype,aggval
+			set aggval=$p(vinfo,"^",4)		// This is now the val# of the SUM
+			set aggval=$p($$$mtV(aggval),"^",5)	// aggval is now the val# of the argument to the SUM of the AVG equation
+			set aggtype=$p($$$VTRgetomsinfo(aggval),$c(1),2)
+			set aggifn=$$getifn(aggval,list)
+			set:aggtype="" aggtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			QUIT:$case(aggtype,8:1,12:1,:0) 8	// AVG(DOUBLE) or AVG(VARCHAR) returns DOUBLE
+			QUIT $$NumericOrDouble(item,aggval,list,oldinfo,pos)   ; NUMERIC/Number
+		}
+		if ",+,-,\,#,"[(","_vfun_",") {
+			RETURN $$BestCompatibleNumberType(item,$p(vinfo,"^",4,*),list,oldinfo,pos,vfun) 	//  DOUBLE, NUMERIC, BIGINT, SMALLINT, or INT
+		}
+		QUIT:",*,/,"[(","_vfun_",")||(NumericOrDouble) $$NumericOrDouble(item,$p(vinfo,"^",4,*),list,oldinfo,pos)  	//  DECIMAL or DOUBLE	// DPV3173
+		QUIT 12  // VARCHAR
+	}
+		#; ------ LENGTH ------
+	n return s return=""
+	If item=3 {
+		if vfun="CASE" {
+				#; we need to find the longest length of all the possible result values from this CASE function.
+				#; Result values are the every other value starting at 5 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=5:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(3,vlist,list,oldinfo,pos)
+		}
+		if vfun="DECODE" {
+				#; we need to find the longest length of all the possible result values from this DECODE function.
+				#; Result values are the every other value starting at 6 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=6:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(3,vlist,list,oldinfo,pos)
+		}
+		if vfun="IFNULL" {
+				#; we need to find the longest length of all the possible result values from this IFNULL function.
+				#; Result values are either value 5 or 6 (if there is no 6 result is NULL)
+			new vlist
+			if $p(vinfo,"^",6)="" { set vlist=$p(vinfo,"^",5)_"^" } else { set vlist=$p(vinfo,"^",5,6)_"^" }
+			QUIT $$LargestItem(3,vlist,list,oldinfo,pos)
+		}
+		if vfun="VECTOR_COSINE"||(vfun="VECTOR_DOT_PRODUCT") {
+			QUIT:$$GetVecFuncReturnType(vfun,$p(vinfo,"^",4),$p(vinfo,"^",5))=-5 8  // set length=8 for BigInt (-5)
+		}
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" {
+			new winifn,winlength,winval
+			set winval=$p(vinfo,"^",8)		// This is now the val# of the main arg to the window function
+			set winlength=$p($$$VTRgetomsinfo(winval),$c(1),3)
+			set winifn=$$getifn(winval,list)
+			set:winlength="" winlength=$$getinfo(item,$$$type(winval),$$$smdGetIrnFromIfn(+winifn),winifn,winval,list,oldinfo,pos)
+			if (",LAG,LEAD,"[(","_$p(vfun,":",2)_","))&&$p(vinfo,"^",10) {
+				new windefaultval,windefaultvallength
+				set windefaultval = $p(vinfo,"^",10)
+				set windefaultvallength=$p($$$VTRgetomsinfo(windefaultval),$c(1),3)	
+				if windefaultvallength=""{
+					new windefaultifn
+					set windefaultifn = $$getifn(windefaultval,list)
+					set windefaultvallength=$$getinfo(item,$$$type(windefaultval),$$$smdGetIrnFromIfn(+windefaultifn),windefaultifn,windefaultval,list,oldinfo,pos)
+				}
+				set:windefaultvallength>winlength winlength = windefaultvallength // max of winlength and windefaultvallength
+			}
+			RETURN winlength
+		}
+		if vfun="%INTERNAL" {
+			if $p($$$VTRgetomsinfo($p(vinfo,"^",4)),$c(1),2)=10 { QUIT 15 }	// %INTERNAL(TIME) returns NUMERIC(15,9) always, even if there is an iscval
+		}
+		if $d(mt("agg-orig-argval",val))#2 { QUIT 36 }
+		if iscval { 
+			QUIT:$p($$$VTRgetomsinfo(iscval),$c(1),3)'="" $p($$$VTRgetomsinfo(iscval),$c(1),3)
+			QUIT $$getinfo(item,$$$type(iscval),$$getirn(iscifn),iscifn,iscval,list,oldinfo,pos)
+		}
+		QUIT:",SIN,COS,ASIN,ACOS,"[(","_vfun_",") 21			// DPV3220
+		QUIT:",LOG,LOG10,"[(","_vfun_",") 23				// DPV3220
+		QUIT:vfun="/0" 20						// DPV4377
+		QUIT:",ATAN,ATAN2,COT,DEGREES,EXP,POWER,RADIANS,SQRT,TAN,"[(","_vfun_",") 38		// DPV3220
+		QUIT:",+,-,*,/,\,#,"[(","_vfun_",")||(NumericOrDouble) 17   // 17 is max length for numeric types
+		QUIT:vfun="JSON_ARRAY_AGG" 8192					// DPV4803
+			#;   Try to be accurate with the length of ||, but hostvars are always 255...
+		If vfun="_" {
+			n v1,v2,v1ifn,v2ifn s v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			s return=$$getinfo(item,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)+$$getinfo(item,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			#; DPV3755= QUIT:return>255 255
+			QUIT return
+		}
+		QUIT 255
+	}
+		#; ------ PRECISION ------
+	If item=4 {
+		if vfun="CASE" {
+				#; we need to find the largest precision of all the possible result values from this CASE function.
+				#; Result values are the every other value starting at 5 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=5:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(4,vlist,list,oldinfo,pos)
+		}
+		if vfun="CODE" {
+				#; we need to find the largest precision of all the possible result values from this CASE function.
+				#; Result values are the every other value starting at 5 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=5:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(4,vlist,list,oldinfo,pos)
+		}
+		if vfun="DECODE" {
+				#; we need to find the largest precision of all the possible result values from this DECODE function.
+				#; Result values are the every other value starting at 6 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=6:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(4,vlist,list,oldinfo,pos)
+		}
+		if vfun="IFNULL" {
+				#; we need to find the largest precision of all the possible result values from this IFNULL function.
+				#; Result values are either value 5 or 6 (if there is no 6 result is NULL)
+			new vlist
+			if $p(vinfo,"^",6)="" { set vlist=$p(vinfo,"^",5)_"^" } else { set vlist=$p(vinfo,"^",5,6)_"^" }
+			QUIT $$LargestItem(4,vlist,list,oldinfo,pos)
+		}
+		if vfun="VECTOR_COSINE"||(vfun="VECTOR_DOT_PRODUCT") {
+			QUIT:$$GetVecFuncReturnType(vfun,$p(vinfo,"^",4),$p(vinfo,"^",5))=-5 19  // set precision=19 for BigInt (-5)
+		}
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" {
+			new winifn,winprecision,winval
+			set winval=$p(vinfo,"^",8)		// This is now the val# of the main arg to the window function
+			set winprecision=$p($$$VTRgetomsinfo(winval),$c(1),4)
+			set winifn=$$getifn(winval,list)
+			if (",LAG,LEAD,"[(","_$p(vfun,":",2)_","))&&$p(vinfo,"^",10) {
+				// this is a %Library.String, precision is the same as max length
+				new winlength,windefaultval,windefaultvallength
+				set winlength=$p($$$VTRgetomsinfo(winval),$c(1),3)
+				set:winlength="" winlength=$$getinfo(3,$$$type(winval),$$$smdGetIrnFromIfn(+winifn),winifn,winval,list,oldinfo,pos)
+				set windefaultval = $p(vinfo,"^",10)
+				set windefaultvallength=$p($$$VTRgetomsinfo(windefaultval),$c(1),3)	
+				if windefaultvallength=""{
+					new windefaultifn
+					set windefaultifn = $$getifn(windefaultval,list)
+					set windefaultvallength=$$getinfo(3,$$$type(windefaultval),$$$smdGetIrnFromIfn(+windefaultifn),windefaultifn,windefaultval,list,oldinfo,pos)
+				}
+				set:windefaultvallength>winlength winlength = windefaultvallength // max of winlength and windefaultvallength
+				RETURN winlength
+			}
+			set:winprecision="" winprecision=$$getinfo(item,$$$type(winval),$$$smdGetIrnFromIfn(+winifn),winifn,winval,list,oldinfo,pos)
+			RETURN winprecision
+		}
+		if vfun="%INTERNAL" {
+			if $p($$$VTRgetomsinfo($p(vinfo,"^",4)),$c(1),2)=10 { QUIT 15 }	// %INTERNAL(TIME) returns NUMERIC(15,9) always, even if there is an iscval
+		}
+		if $d(mt("agg-orig-argval",val))#2 { QUIT 36 }
+		if iscval { if $p($$$VTRgetomsinfo(iscval),$c(1),4)'="" { QUIT $p($$$VTRgetomsinfo(iscval),$c(1),4) } else { QUIT $$getinfo(item,$$$type(iscval),$$getirn(iscifn),iscifn,iscval,list,oldinfo,pos) }}
+		if vfun="/0" {						// DPV4377 (AVG)
+				#; similar to "/", but we now the prec,scale of the divider is 19,0 (count())
+			new aggifn,aggtype,aggval,return
+			set aggval=$p(vinfo,"^",4)		// This is now the val# of the SUM
+			set aggval=$p($$$mtV(aggval),"^",5)	// aggval is now the val# of the argument to the SUM of the AVG equation
+			set aggifn=$$getifn(aggval,list)
+			set aggtype=$p($$$VTRgetomsinfo(aggval),$c(1),2)
+			set:aggtype="" aggtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			set return=$$getinfo(4,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)+20	// aggprec+20, 20 for precision of divisor
+			RETURN $s(return>36:36,1:return)
+		}
+		QUIT:vfun="JSON_ARRAY_AGG" 8192					// DPV4803
+		if vfun="+"||(vfun="-") {	// For + and - the precision will be max(scale1, scale2) + max(prec1-scale1, prec2-scale2) + 1
+			new v1,v2,v1ifn,v2ifn
+			set v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list)
+			if v2="" {	// Unary +, -, or TO_NUMBER
+				if $$getinfo(2,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)=12 {	// converting string to number, retain maximum scale
+					RETURN 36
+				}
+				RETURN $$getinfo(4,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)	// Unary operator, not addition or subtraction
+			}
+			set v2ifn=$$getifn(v2,list)
+			new prec1,prec2,scale1,scale2
+			set prec1=$$getinfo(4,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			set prec2=$$getinfo(4,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			set scale1=$$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			set scale2=$$getinfo(5,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			set return=$$max(scale1,scale2)+$$max(prec1-scale1,prec2-scale2)+1
+			RETURN:return>36 36
+			RETURN return
+		}
+		If vfun="*" {	// For * the precision will be prec1 + prec2 + 1
+			n v1,v2,v1ifn,v2ifn s v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			n prec1,prec2
+			s prec1=$$getinfo(4,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			s prec2=$$getinfo(4,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			s return = prec1+prec2+1
+			QUIT:return>36 36
+			QUIT return
+		}
+		If $case(vfun,"/":1,"/AGG":1,"MOD":1,:0) {	// For / the precision will be prec1 - scale1 + scale2 + max(6, scale1 + prec2 + 1)
+			QUIT:$g(^%SYS("sql","sys","report / as double")) 15		// DPV3593
+			n v1,v2,v1ifn,v2ifn s v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			n prec1,prec2,scale1,scale2
+			s prec1=$$getinfo(4,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			s prec2=$$getinfo(4,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			s scale1=$$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			s scale2=$$getinfo(5,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			s return = prec1-scale1+scale2+$$max(6,scale1+prec2+1)
+			QUIT:return>36 36
+			QUIT return
+		}
+		QUIT:",SIN,COS,ASIN,ACOS,"[(","_vfun_",") 19			// DPV3220
+		QUIT:",LOG,LOG10,"[(","_vfun_",") 21				// DPV3220
+		QUIT:",ATAN,ATAN2,COT,DEGREES,EXP,POWER,RADIANS,SQRT,TAN,"[(","_vfun_",") 36		// DPV3220
+		QUIT:",\,#,"[(","_vfun_",")||(NumericOrDouble) 15  // 15 is the max precision for numeric type - what we report in typeinfo
+			#;   Try to be accurate with the precision of ||, but hostvars are always 255...
+		If vfun="_" {
+			n v1,v2,v1ifn,v2ifn s v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			s return=$$getinfo(item,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)+$$getinfo(item,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			#;DPV3577= QUIT:return>255 255
+			QUIT return
+		}
+		QUIT 255
+	}
+		#; ------ SCALE ------
+	If item=5 {
+		if vfun="CASE" {
+				#; we need to find the largest scale of all the possible result values from this CASE function.
+				#; Result values are the every other value starting at 5 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=5:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(5,vlist,list,oldinfo,pos)
+		}
+		if vfun="DECODE" {
+				#; we need to find the largest scale of all the possible result values from this DECODE function.
+				#; Result values are the every other value starting at 6 and also the last value.
+			new i,v1,vlist
+			set vlist="" for i=6:2 set v1=$p(vinfo,"^",i) if v1'="" { s vlist=vlist_v1_"^" } else { set v1=$p(vinfo,"^",i-1),vlist=vlist_v1_"^" q  }
+			QUIT $$LargestItem(5,vlist,list,oldinfo,pos)
+		}
+		if vfun="IFNULL" {
+				#; we need to find the largest scale of all the possible result values from this IFNULL function.
+				#; Result values are either value 5 or 6 (if there is no 6 result is NULL)
+			new vlist
+			if $p(vinfo,"^",6)="" { set vlist=$p(vinfo,"^",5)_"^" } else { set vlist=$p(vinfo,"^",5,6)_"^" }
+			QUIT $$LargestItem(5,vlist,list,oldinfo,pos)
+		}
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" {
+			RETURN:(",LAG,LEAD,"[(","_$p(vfun,":",2)_","))&&$p(vinfo,"^",10) $p($$definfo("%Library.String"),$c(1),5)
+			new winifn,winscale,winval
+			set winval=$p(vinfo,"^",8)		// This is now the val# of the main arg to the window function
+			set winscale=$p($$$VTRgetomsinfo(winval),$c(1),5)
+			set winifn=$$getifn(winval,list)
+			set:winscale="" winscale=$$getinfo(item,$$$type(winval),$$$smdGetIrnFromIfn(+winifn),winifn,winval,list,oldinfo,pos)
+			RETURN winscale
+		}
+		if $case(vfun,"FLOOR":1,"CEILING":1,:0) { QUIT 0 }
+		if vfun="ROUND"||(vfun="TRUNCATE") {
+				#; Hopefully the second argument to ROUND or TRUNCATE was a literal value and we can get the SCALE directly from that
+			new scale,v1
+			set v1=$p(vinfo,"^",5) 
+			if $e($g($$$mtV(v1)))="t" {
+				set scale=$normalize($p($$$mtV(v1),"^",2),0)
+				QUIT $s(scale>0:scale,1:0)
+			}
+		}
+		if vfun="VECTOR_COSINE"||(vfun="VECTOR_DOT_PRODUCT") {
+			new rettype
+			set rettype=$$GetVecFuncReturnType(vfun,$p(vinfo,"^",4),$p(vinfo,"^",5))
+			QUIT:rettype=2 4 // set scale=4 for Numeric (2)
+			QUIT:rettype=-5 0 // set scale=0 for BigInt (-5)
+		}
+		if vfun="%INTERNAL" {
+			if $p($$$VTRgetomsinfo($p(vinfo,"^",4)),$c(1),2)=10 { QUIT 9 }	// %INTERNAL(TIME) returns NUMERIC(15,9) always, even if there is an iscval
+		}
+		if $d(mt("agg-orig-argval",val))#2 {
+			new rettype
+			set rettype=$$getinfo(2,type,irn,ifn,mt("agg-orig-argval",val),vinfo,oldinfo,pos)
+			QUIT:rettype=8 0	// If we are returning DOUBLE, no SCALE as it is meaningless
+			QUIT 17
+		}
+		if iscval { if $p($$$VTRgetomsinfo(iscval),$c(1),5)'="" { QUIT $p($$$VTRgetomsinfo(iscval),$c(1),5) } else { QUIT $$getinfo(item,$$$type(iscval),$$getirn(iscifn),iscifn,iscval,list,oldinfo,pos) }}
+		If vfun="+"||(vfun="-") {	// For +,- the scale will be max(scale1, scale2)
+			new v1,v2,v1ifn,v2ifn
+			set v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list)
+			if v2="" {	// Unary +, -, or TO_NUMBER
+				if $$getinfo(2,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)=12 {	// converting string to number, retain maximum scale
+					RETURN 17
+				}
+				RETURN $$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)	// Unary operator, not addition or subtraction
+			}
+			set v2ifn=$$getifn(v2,list)
+			new scale1,scale2
+			set scale1=$$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			set scale2=$$getinfo(5,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			set return = $$max(scale1,scale2)
+			RETURN return
+		}
+		If vfun="*" {	// For * the precision will be scale1 + scale2
+			n v1,v2,v1ifn,v2ifn s v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			n scale1,scale2
+			s scale1=$$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			s scale2=$$getinfo(5,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			s return = scale1+scale2
+			QUIT:return>17 17
+			QUIT return
+		}
+		If $case(vfun,"/":1,"/AGG":1,"MOD":1,:0) {	// For / the scale will be max(6, scale1 + prec2 + 1)
+			QUIT:$g(^%SYS("sql","sys","report / as double")) 0		// DPV3593
+			if vfun="MOD" {
+					#; Could probably do this for "/" and "/AGG" too, but there are UnitTests that fail when I change this to return SCALE=0 for all 3 functions.
+				new rettype
+				set rettype=$$getinfo(2,type,irn,ifn,val,vinfo,oldinfo,pos)
+				QUIT:rettype=8 0	// If we are returning DOUBLE, no SCALE as it is meaningless
+			}
+			new prec2,scale1,v1,v2,v1ifn,v2ifn
+			set v1=$p(vinfo,"^",4),v2=$p(vinfo,"^",5),v1ifn=$$getifn(v1,list),v2ifn=$$getifn(v2,list)
+			set scale1=$$getinfo(5,$$$type(v1),$$getirn(v1ifn),v1ifn,v1,list,oldinfo,pos)
+			set prec2=$$getinfo(4,$$$type(v2),$$getirn(v2ifn),v2ifn,v2,list,oldinfo,pos)
+			set return = $$max(6,scale1+prec2+1)
+			QUIT:return>17 17
+			QUIT return
+		}
+		if vfun="/0" {			// DPV4377 (AVG)
+				#; If the type of the arg to AVG is NUMERIC with precision p and scale s, the precision of the result is 18 and the scale is 18-p+s.
+			new rettype
+			set rettype=$$getinfo(2,type,irn,ifn,val,vinfo,oldinfo,pos)
+			RETURN:rettype=8 0	// If we are returning DOUBLE, no SCALE as it is meaningless
+.
+			new aggifn,aggtype,aggval
+			set aggval=$p(vinfo,"^",4)		// This is now the val# of the SUM
+			set aggval=$p($$$mtV(aggval),"^",5)	// aggval is now the val# of the argument to the SUM of the AVG equation
+			set aggifn=$$getifn(aggval,list)
+			set aggtype=$p($$$VTRgetomsinfo(aggval),$c(1),2)
+			set:aggtype="" aggtype=$$getinfo(2,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			RETURN:aggtype'=2 8  		// avg of anything but NUMERIC (and DOUBLE) is hard-coded to 8
+			new aggprec,aggscale,retval
+			set aggprec=$$getinfo(4,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			set aggscale=$$getinfo(item,$$$type(aggval),$$$smdGetIrnFromIfn(+aggifn),aggifn,aggval,list,oldinfo,pos)
+			set retval=18-aggprec+aggscale	// For NUMERIC
+			RETURN $s(retval'<0:retval,1:8)	// DPV6023, no negative values...
+												#; This might have been a better fix(???), but breaks a lot of UnitTests
+													#; For NUMERIC, the scale will 17.  If we knew the actual precision of the count we are dividing by to get the average, we could do better, but we have to assume bigint
+												#; RETURN $case(aggtype,2:17,:8)  		// avg of anything but NUMERIC (and DOUBLE) is hard-coded to 8
+		}
+		QUIT:",SIN,COS,ASIN,ACOS,"[(","_vfun_",") 18			// DPV3220
+		QUIT:",LOG,LOG10,"[(","_vfun_",") 18				// DPV3220
+		QUIT:",ATAN,ATAN2,COT,DEGREES,EXP,POWER,RADIANS,SQRT,TAN,"[(","_vfun_",") 18		// DPV3220, DPV4107
+		QUIT:",\,#,"[(","_vfun_",")||(NumericOrDouble) 0
+		QUIT:"_"=vfun 0  // 0/0 ; *** TEMPORARY DEFAULT ***
+		QUIT 0  // Default 0/0
+	}
+		#; ------ NULLABLE ------
+	QUIT:item=6 1
+		#; ------ COLUMN_LABEL ------
+	If item=8 {
+		s return=$tr($p(oldinfo,$c(1),2),";",".")  // Substitute Semicolons...
+		s:return["," return=""""_return_""""       // Quote String if Commas..
+		QUIT return
+	}
+		#; ------ COLUMN_TABLE_NAME ------
+	QUIT:item=11 ""
+		#; ------ val# ------
+	If item=500 {
+		If iscval {  ; --- InterSystems % Function Extension ---
+			QUIT:$p($g($$$mtV(iscval)),"^")'="f" $$getinfo(item,$$$type(iscval),"","",iscval,list,oldinfo,pos)
+			QUIT iscval
+		}
+		if $p(vfun,":",1)="%WINDOW_FUNCTION" {
+			QUIT $$getinfo(item,$$$type($p(vinfo,"^",8)),"","",$p(vinfo,"^",8),list,oldinfo,pos)
+		}
+		QUIT:$p(vinfo,"^",4)'="" $$getinfo(item,$$$type($p(vinfo,"^",4)),"","",$p(vinfo,"^",4),list,oldinfo,pos)
+		QUIT ""
+	}
+	QUIT return
+ 
+	/// Called for COALESCE function only
+BestCompatibleType(item,vlist,list,oldinfo,pos,funcName="???") [funcName,mt,t1,t2] PRIVATE {
+		#; vlist is a '^' list of values
+		#; Given this list of values, return the val# of the value with the best compatibile datatype of all the types of the values in the list
+	new t1
+	set t1(8)=6,t1(2)=5,t1(-5)=4,t1(4)=3,t1(5)=2,t1(-6)=1,t1(-99)=0,bct="",retval=+vlist,firstType="",allString=1
+	for i=1:1 {
+		set val=$p(vlist,"^",i) quit:val=""
+		set iscifn=""
+		set:item'=500 iscifn=$$getifn(+val,list)
+		set thisType=$p($$$VTRgetomsinfo(val),$c(1),2)
+		if thisType="" { set thisType=$$getinfo(2,$$$type(+val),$$getirn(iscifn),iscifn,+val,list,oldinfo,pos) }
+		continue:thisType=""
+		set:thisType'=12 allString=0
+		set vinfo=$g($$$mtV(val))
+		if vinfo="t^" { set thisType=-99 }
+		elseif $p(vinfo,"^",1,2)="v^%EXACT",$g($$$mtV($p(vinfo,"^",4)))="t^" { set thisType=-99 }
+		if firstType="" { set firstType=thisType,bct=thisType continue } 	// first time through
+		if $case(firstType,-6:1,-5:1,2:1,4:1,5:1,8:1,-99:1,:0),$case(thisType,-6:1,-5:1,2:1,4:1,5:1,8:1,-99:1,:0) { set:t1(thisType)>t1(bct) bct=thisType,retval=val continue }	// Numeric types
+		if bct'=thisType,'allString { new t2 set null1=0,null2=0 set:bct=-99 bct=12,null1=1 set:thisType=-99 thisType=12,null2=1 set retval="",t1=$$$GetOdbcTypeName(bct)_$s(null1:" (NULL)",1:""),t2=$$$GetOdbcTypeName(thisType)_$s(null2:" (NULL)",1:"") do error(378) }
+	}
+	RETURN retval
+}
+ 
+BestCompatibleType2(item,vlist,list,oldinfo,pos,funcName="???") [funcName,mt,t1,t2] PRIVATE {
+		#; vlist is a '^' list of values
+		#; Given this list of values, return the val# of the value with the best compatibile datatype of all the types of the values in the list
+		#; Same as BestCompatibleType, but make implcit conversion to VARCHAR allowed
+		#; don't report error if there is a conflict.
+		#; type -99 is used for NULL (lowest priority, if all NULL, use VARCHAR) // DPV3737
+		#; Datatype precedense is defined as:
+		#;  VARCHAR DOUBLE NUMERIC BIGINT INTEGER SMALLINT TINYINT
+	n t1 s t1(12)=7,t1(8)=6,t1(2)=5,t1(-5)=4,t1(4)=3,t1(5)=2,t1(-6)=1,t1(-99)=0,bct="",retval=+vlist,firstType=""
+	for i=1:1 {
+		set val=$p(vlist,"^",i) quit:val=""
+		set iscifn="" 
+		set:item'=500 iscifn=$$getifn(+val,list)
+		set thisType=$p($$$VTRgetomsinfo(val),$c(1),2)
+		set:thisType="" thisType=$$getinfo(2,$$$type(+val),$$getirn(iscifn),iscifn,+val,list,oldinfo,pos)
+		continue:thisType=""
+		set:$g($$$mtV(val))="t^" thisType=-99
+		if firstType="" set firstType=thisType,bct=thisType,retval=val continue  	// first time through
+		if $case(firstType,-6:1,-5:1,2:1,4:1,5:1,8:1,12:1,-99:1,:0),$case(thisType,-6:1,-5:1,2:1,4:1,5:1,8:1,12:1,-99:1,:0) set:t1(thisType)>t1(bct) bct=thisType,retval=val continue	// Numeric & Varchar types
+	}
+	set:retval=-99 retval=12	// All values are NULL, use VARCHAR
+	QUIT retval
+}
+.
+.
+BestCompatibleTypeAll(item,vlist,list,oldinfo,pos,funcName="???") [funcName,mt,t1,t2] PRIVATE {
+		#; vlist is a '^' list of values
+		#; Given this list of values, return the val# of the value with the best compatibile datatype of all the types of the values in the list
+		#; Same as BestCompatibleType, but make implcit conversion to VARCHAR allowed
+		#; don't report error if there is a conflict.
+		#; type -99 is used for NULL (lowest priority, if all NULL, use VARCHAR) // DPV3737
+		#; Datatype precedense is defined as:
+		#;  LONGVARBINARY LONGVARCHAR VARBINARY VARCHAR GUID TIMESTAMP DOUBLE NUMERIC BIGINT INTEGER DATE TIME SMALLINT TINYINT BIT
+	n t1
+	set t1(-4)=15,t1(-1)=14,t1(-3)=13,t1(12)=12,t1(-11)=11,t1(11)=10,t1(8)=9,t1(2)=8,t1(-5)=7,t1(4)=6,t1(9)=5,t1(10)=4,t1(5)=3,t1(-6)=2,t1(-7)=1,t1(-99)=0
+	set bct="",retval=+vlist,firstType=""
+	for i=1:1 {
+		set val=$p(vlist,"^",i) quit:val=""
+		set iscifn="" 
+		set:item'=500 iscifn=$$getifn(+val,list)
+		set thisType=$p($$$VTRgetomsinfo(val),$c(1),2)
+		set:thisType="" thisType=$$getinfo(2,$$$type(+val),$$getirn(iscifn),iscifn,+val,list,oldinfo,pos)
+		continue:thisType=""
+		set:$g($$$mtV(val))="t^" thisType=-99
+		if firstType="" set firstType=thisType,bct=thisType,retval=val continue  	// first time through
+		if $case(firstType,-11:1,-7:1,-6:1,-5:1,-4:1,-3:1,-1:1,2:1,4:1,5:1,8:1,9:1,10:1,11:1,12:1,-99:1,:0),$case(thisType,-11:1,-7:1,-6:1,-5:1,-4:1,-3:1,-1:1,2:1,4:1,5:1,8:1,9:1,10:1,11:1,12:1,-99:1,:0) { set:t1(thisType)>t1(bct) bct=thisType,retval=val continue }	// Numeric & Varchar types
+	}
+	set:retval=-99 retval=12	// All values are NULL, use VARCHAR
+	QUIT retval
+}
+.
+BestCompatibleNumberType(item,vlist,list,oldinfo,pos,vfun) [mt] PRIVATE {
+		#; vlist is a '^' list of values
+		#; Assume only 1 or 2 entries in vlist, used only for unary and binary operations
+		#; Only used for +, -, \, and # and - operators
+.
+	set val1=$p(vlist,"^",1)
+	set iscifn="" set:item'=500 iscifn=$$getifn(+val1,list)
+	set val1Type=$p($$$VTRgetomsinfo(val1),$c(1),2)
+	set:val1Type="" val1Type=$$getinfo(2,$$$type(+val1),$$getirn(iscifn),iscifn,+val1,list,oldinfo,pos)
+	set val2=$p(vlist,"^",2)
+	if val2="" {
+			#; unary operation, +val or -val
+			#; VARCHAR, VARBINARY, TIME -> NUMERIC
+			#; BIT -> TINYINT
+			#; DATE -> INTEGER
+			#; TIMESTAMP, POSIXTIME -> BIGINT
+			#; All else, just return the type of the operand
+		RETURN $case(val1Type,12:2,-7:-6,-3:2,9:4,10:2,11:-5,91:4,92:2,93:-5,:val1Type)
+	}
+	set iscifn="" set:item'=500 iscifn=$$getifn(+val2,list)
+	set val2Type=$p($$$VTRgetomsinfo(val2),$c(1),2)
+	set:val2Type="" val2Type=$$getinfo(2,$$$type(+val2),$$getirn(iscifn),iscifn,+val2,list,oldinfo,pos)
+	if vfun="-" {
+		if val1Type=9,val2Type=9 RETURN 4	// DATE-DATE=INTEGER
+		if val1Type=9,val2Type=4 RETURN 9	// DATE-INTEGER=DATE
+		if val1Type=12,val2Type'=12 RETURN val2Type
+		if val2Type=12,val1Type'=12 RETURN val1Type
+		if val1Type=12,val2Type=12 RETURN 2	// STRING-STRING=NUMERIC
+	} elseif vfun="+" {
+		if val1Type=9,val2Type=4 RETURN 9	// DATE+INTEGER=DATE
+		if val1Type=4,val2Type=9 RETURN 9	// INTEGER+DATE=DATE
+		if val1Type=12,val2Type'=12 RETURN val2Type
+		if val2Type=12,val1Type'=12 RETURN val1Type
+		if val1Type=12,val2Type=12 RETURN 2	// STRING+STRING=NUMERIC
+	} elseif $case(vfun,"*":1,"/":1,"\":1,:0) {
+		if val1Type=12,val2Type'=12 RETURN val2Type
+		if val2Type=12,val1Type'=12 RETURN val1Type
+		if val1Type=12,val2Type=12 RETURN 2	// STRING<op>STRING=NUMERIC
+	}
+	if val1Type=8||(val2Type=8) RETURN 8	// if either is a double, return double
+	if val1Type=2||(val2Type=2) RETURN 2	// if either is a numeric, return numeric
+	if $case(val1Type,-5:1,4:1,:0)||$case(val1Type,-5:1,4:1,:0) RETURN -5	// if either is a bigint or integer, return bigint
+	if val1Type=-6,val2Type=-6 RETURN 5	// If both are tinyint, return smallint
+	if (val1Type=-6||(val1Type=5)) && (val2Type=-6||(val2Type=5)) RETURN 4	// If both are tinyint or smallint, return integer
+		// If we get here we don't know the types.  This can happen on a DQ message with ? parameters, or even a prepared statement with ?
+		// because we have not yet bound the parameters before Prepare.  
+		// This was seen in pl154545
+		// Dmitry and I agreed when we see this case to return type 12 (VARCHAR) instead of -5 (BIGINT).  The PL case had DOUBLE parameter values,
+		// and that does not work for a BIGINT type.  Dmitry claims the client can handle the DOUBLES in a VARCHAR list item ok
+	RETURN 12
+}
+.
+NumericOrDouble(item,vlist,list,oldinfo,pos) [mt] PRIVATE {	// DPV3173=
+		#; vlist is a '^' list of values
+		#; Return 2 if none of the values in the value list are DOUBLE.  If any are DOUBLE, return 8
+	s retval=2
+	for i=1:1 {
+		s val=$p(vlist,"^",i) q:val=""
+		s iscifn="" s:item'=500 iscifn=$$getifn(+val,list) s thisType=$p($$$VTRgetomsinfo(val),$c(1),2)
+		s:thisType="" thisType=$$getinfo(2,$$$type(+val),$$getirn(iscifn),iscifn,+val,list,oldinfo,pos)
+		continue:thisType=""
+		if thisType=8 s retval=8 q
+	}
+	QUIT retval
+}
+.
+LargestItem(item,vlist,list,oldinfo,pos) [mt] PRIVATE {
+		#; Called for item = 3 (Length), 4 (Precision), and 5 (Scale)
+		#; vlist is a '^' list of values
+		#; Given this list of values, return the largest scale of the values
+	set maxItem=0
+	for i=1:1 {
+		set val=$p(vlist,"^",i),thisItem="" q:val=""
+		set iscifn=$$getifn(+val,list)
+		set:$p($$$VTRgetomsinfo(val),$c(1),item)'="" thisItem=$p($$$VTRgetomsinfo(val),$c(1),item)
+		set:thisItem="" thisItem=$$getinfo(item,$$$type(+val),$$getirn(iscifn),iscifn,+val,list,oldinfo,pos)
+		set:thisItem>maxItem maxItem=thisItem
+	}
+	QUIT maxItem
+}
+.
+GetVecFuncReturnType(func,arg1,arg2) [mt] PUBLIC { // get the datatype for vector fields
+	
+	// if either argument is a field or subquery, get its IFN and IRN
+	if "fq"[$$$mtVType($$$mtV(arg1)) { set argIFN=$$$VTRgetifn(arg1) }
+	elseif "fq"[$$$mtVType($$$mtV(arg2)) { set argIFN=$$$VTRgetifn(arg2) }
+	
+	// Get the datatype
+	if $g(argIFN)'="" { set argIRN=$$$smdGetIrnFromIfn(argIFN), vdt=$$$UPPER($$$smdColVectorDatatype(1,argIRN,argIFN)) }
+	// IFN not found, but if either argument is TO_VECTOR function, and get its type
+	elseif $p($$$mtV(arg1),"^",2) = "TO_VECTOR" { set vdt=$p($$$mtV($p($$$mtV(arg1),"^",5)),"^",2) } 
+	elseif $p($$$mtV(arg2),"^",2) = "TO_VECTOR" { set vdt=$p($$$mtV($p($$$mtV(arg2),"^",5)),"^",2) } 
+	
+	// if found vector datatype, set it: decimal -> 2 (decimal), int & dot_product -> -5 (bigint), others -> 8 (double)
+	RETURN:$g(vdt)'="" $s(vdt="DECIMAL":2,(func="VECTOR_DOT_PRODUCT")&&(",INT,INTEGER,"[(","_vdt_",")):-5,1:8)
+	
+	// Otherwise, default to Double
+	RETURN 8
+}
+.
+max(a,b) [] PUBLIC { q:a>b a q b }
+.
+error(e) GOTO ^%qaqperr  ; -- e is error# --
+ 
+#INCLUDE %fcalpha
+---
+
+

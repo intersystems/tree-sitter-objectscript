@@ -1,0 +1,1696 @@
+====
+qaqpsq1
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqpsq1^MAC^^^0
+%qaqpsq1	// SQL parser overflow
+	;; COMPONENTS :: SQL/Parser
+	#;
+#INCLUDE %occInclude
+#INCLUDE %occODBC
+#IF 0   ;-------------------------------------------------------------
+	; Description:   SQL parser overflow
+	; Author:        Aviel Klausner
+	; Date Started:  September 09 1987
+	;
+	;  MRP1271 (10/23/2021) - [DP-409627] Enhance <explain> statement to support INTO <param> (Complex Variable) rather than INTO <host ref>
+	;  MRP1270 (10/21/2021) - [DP-409026] Fix <FRAMESTACK>lvtreemod+2^%qaqpnl error for 'EXPLAIN ALT STAT' statement within Embedded SQL interface
+	;  MRP1267 (09/29/2021) - [DP-408485] Fix bugs and Refactor the SQL 'EXPLAIN' feature
+	;  AK1034  (12/08/2020) - Check for sharded arrow->syntax tables
+	;  AK1007  (08/21/2019) - Distribute filer calls to parallel servers
+	;  MRP1017 (08/25/2017) - SQL: Add proper SQLCODE/message for Cursors not declared
+	;  MRP1015 (08/22/2017) - SQL: Add meaningful SQLCODE error for 'Cardinality mismatch between the SELECT-list and %INTOLIST-param'
+	;  JSL5032 (02/16/2017) - %NORUNTIME flag as specified in Paul's Run-time Plan Choice specification on Confluence
+	;  PVA349  (02/11/2015) - Fix parsing problem where (even with delimited identifiers) you could not INSERT into a table named "JSON_TABLE". 	
+	;  PVA331  (09/06/2015) - Support %nofplan directive, display whether a shown plan is frozen, and various other frozen plan changes 
+	;  PVA320  (05/10/2015) - Initial Query Plan save/use facility 
+	;  AK883   (08/01/2013) - Remove ORDER BY if "onerow"
+	;  PVA280  (08/13/2013) - Remve CATALOG as a reserved word + many reserved word cleanups 
+	;  PVA276  (06/26/2013) - Fix: query fails with an <UNDEFINED>axes+5^%qaqcky *asl(4,2,1,"id") error
+	;  PVA266  (10/10/2012) - Fix spurious error message in CREATE VIEW if ORDER is the last token in the CREATE VIEW
+	;  PVA257  (04/04/2012) - Fix rare situations causing ORDER BY in subqueries to be ignored
+	;  AK840   (12/14/2011) - "findname" parsing for "rename" refactoring
+	;  AK839   (12/07/2011) - INSERT OR UPDATE statement
+	;  PVA246  (11/03/2011) - Fix INSERT.. SELECT ... ORDER BY for xDBC and deferred compile
+	;  PVA243  (09/02/2011) - Restore informative sqlcode 143 and message for view query with ORDER BY
+	;  PVA227  (08/20/2010) - Fix run time <undefined> for arrow syntax referencing child table
+	;  PVA204  (10/27/2009) - Make ORDER a non reserved word
+	;  PVA189  (06/18/2009) - Fix odd error messages on ORDER BY after UNION issues
+	;  PVA184  (06/14/2009) - Optimizer support for TOP... ORDER BY in subqueries
+	;  PVA180  (05/19/2009) - Parse TOP ... ORDER BY in subqueries
+	;  DPV3410 (05/14/2009) - Implement SQL schema search paths
+	;  DPV3382 (03/30/2009) - Support ORDER BY in INSERT...SELECT TOP ... query, correct issue with DPV3341
+	;  DPV3361 (02/17/2009) - Enhancements for CALL support
+	;  DPV3355 (01/29/2009) - Correct <UNDEFINED> in "recount" info compile with ORDER BY in view query and view does not exist
+	;  DPV3318 (12/01/2008) - Correct type reporting for replaced xDBC host variables
+	;  PVA163  (10/30/2008) - Give informative SQL Error message for UNION with invalid ORDER BY
+	;  DPV3300 (10/22/2008) - Implement LOCK/UNLOCK TABLE statements
+	;  DPV3286 (10/07/2008) - Don't perform SQL function lookup in deferred SQL compilation
+	;  DPV3244 (08/11/2008) - SQL: Embedded CALL statement NEW's %sqlcontext 
+	;  DPV3158 (05/13/2008) - Don't allow UPDATE to set non-stream field equal to stream field value
+	;  DPV3121 (03/05/2008) - Implement LinkedTableMap to define fake master map for Linked tables
+	;  DPV3113 (02/26/2008) - Report error -134 if ORDER BY in a view's query
+	;  DPV3104 (02/13/2008) - Fix filing of stream through Objects with %CacheSQLStorage
+	;  DPV3095 (01/22/2008) - Support for column-level privileges
+	;  DPV3093 (01/11/2008) - Better support for parameter datatypes
+	;  DPV3080 (12/10/2007) - Fix problem with :i%<%field> name (example, i%%MyProperty)
+	;  AK686   (11/21/2007) - Implement %IDADDED for JDBC positioned update
+	;  PVA149  (10/15/2007) - Restore support of arrow syntax from view columns in post 2007.1 versions
+	;  PVA139  (09/21/2007) - Allow updatable view to be streamed
+	;  DPV3042 (10/02/2007) - Report -377 error if duplicate fields in INSERT or UPDATE list
+	;  DPV3020 (09/19/2007) - Check EXECUTE privilege on procedure when user defined function is called
+	;  DPV3011 (08/31/2007) - Support "w" as alias for weekday/dw in DATE* functions
+	;  DPV2994 (08/06/2008) - Revert stream oref change.  Implement %OBJECT()
+	;  DPV2986 (07/30/2007) - Experimental change - Support %NOJOURN and %ILOCK
+	;  DPV2986 (07/30/2007) - Add support for UPDATE %NOJOURN and %ILOCK
+	;  DPV2935 (05/16/2007) - Add support for %USECHECKVARIABLE for use in Deleting child rows
+	;                         SQL Fix ProdLog 50689: %check value in trigger with parent-child relationship
+	;  DPV2913 (04/24/2007) - Handle &sql(/*comment*/) as a no-op
+	;  PVA131  (03/07/2007) - Arrow syntax from multi-table view gives erroneous error 31
+	;  DPV2849 (01/25/2007) - More 999 -> $$$MaxStringLength changes
+	;  DPV2841 (01/17/2007) - STATISTICS is now an SQL reserved word so it will not cnflict with UPDATE STATISTICS
+	;  PVA125  (01/10/2007) - <subscript> error or infinite loop for ORDER BY with trailing comma; should give error message
+	;  PVA104               - Cache SQL allows invalid FROM clause - reference across commas
+	;  DPV2754 (10/11/2006) - Implement TRUNCATE TABLE <tablename>
+	;  DPV2753 (10/11/2006) - Make INTO optional for INSERT statement
+	;  DPV2646 (05/10/2006) - Support DATEADD and DATEDIFF with dw and dy dateparts
+	;  AK637   (11/10/2005) - Support FROM in UPDATE/DELETE
+	;  DPV2625 (04/26/2006) - Use oref in sqlvars() list, not oref.prop from oref.prop(xxx)
+	;                         SQL Fix ProdLog 43822:  Multidimensional host vars not working in classes
+	;  AK628   (07/27/2005) - Remove ORDER BY for "onerow" queries
+	;  DPV2446 (06/17/2005) - Get list of kids from $$$smd, not the extent
+	;  DPV2350 (01/26/2004) - Remove support for SETUSER
+	;  DPV2319 (10/28/2004) - Move option to %qaqpDDLParser2
+	;  DPV2314 (10/26/2004) - Implement support for INSERT INTO <table> DEFAULT VALUES
+	;  DPV2299 (09/29/2004) - Allow ms/millisecond for DATEADD/DATEDIFF.
+	;                         SQL Fix ProdLog 39033: milliseconds in DATEADD/DATEDIFF preprocessor error
+	;  PVA067  (09/07/2004) - ORDER BY <number> broken by PVA053
+	;  JLF017  (07/31/2004) - SAVEPOINTs
+	;  JLF015  (05/01/2004) - %ANYOF, =>, and collection indexes
+	;  DPV2240 (06/23/2004) - Support :oref.prop(...) as host variable for mulitdimensional arrays
+	;  DPV2205 (04/07/2004) - Fix use of oref.prop as SQL host variable in procedure method
+	;  DPV2162 (01/30/2004) - Pass qstruct through to DotSyn^%qarmac calls
+	;  DPV2148 (12/19/2003) - Enhance User-defined procedure error reporting.
+	;  DPV2126 (11/14/2003) - Support SETUSER <username>
+	;  DPV2122 (11/12/2003) - Fix INS/SEL privilege checking
+	;  BJB275  (10/03/2003) - Do not allow DesRef->field to be modified by INSERT or UPDATE
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  DPV2038 (07/11/2003) - Avoid <MAXSTRING> error in hold holdcur()
+	;  PVA053  (06/11/2003) - Give error message for ambiguous ORDER BY clause 
+	;  DPV2012 (06/10/2003) - New PROCNAME, SCHEMA in UserDefinedFunction
+	;  PVA052  (06/05/2003) - Gather correct information for SELECT privilege checking 
+	;  PVA050  (02/12/2003) - ensure use of rowid based on one field, and the field itself are equally optimized. 
+	;  AK561   (04/22/2003) - Parse Oracle's FOR UPDATE NOWAIT
+	;  DPV1963 (03/14/2003) - Eliminate binding of connection string to ^mdd
+	;  DPV1892 (12/10/2002) - Support oref.prop[.prop2...] for embedded property references.
+	;  MIT219  (12/09/2002) - Support INSERT SELECT for external tables
+	;  DPV1882 (11/20/2002) - Fix problem in getlabel where a field's label is found in viewinfo(7) when it should come from this m's query
+	;  DPV1878 (11/12/2002) - Fix to getlabel when as'=""
+	;  DPV1857 (10/22/2002) - Don't perform SQL Function lookup if extab or info is true
+	;  DPV1833 (09/18/2002) - Support oref.prop as host variable
+	;  DPV1808 (08/27/2002) - Support %NOTRIGGER
+	;  DPV1800 (08/20/2002) - Don't look up Stored Procedure info in "recount" compilation
+	;  DPV1738 (06/04/2002) - Move getlabel here from %qaqpslx
+	;  DPV1732 (05/31/2002) - Re-implement SQL Function support
+	;  DPV1625 (12/06/2001) - Populate sqlvars list for SQL in procedure methods
+	;  DPV1596 (10/09/2001) - Support calling SQL functions
+	;  DPV1509 (03/15/2001) - Implement CALL statement, remove indirection around QP arrays, cleaned up old/minor change codes
+	;  AK459   (12/11/2000) - Trevor: Setup $$$mtPActiveQbs for INSERT
+	;  AK458   (12/04/2000) - Al: Remove orderopt optimization
+	;  DPV1425 (10/19/2000) - Support class instance variables in host variables
+	;  DPV1324 (06/19/2000) - #import sets current schema(s)
+	;  DPV1310 (05/30/2000) - Support schemas
+	;  DPV1284 (03/30/2000) - Use $$any() instead of $$anyid() for reserved words
+	;  DPV1269 (03/01/2000) - Fix SET TRANSACTION
+	;  AK410   (11/29/1999) - Berne: Allow FOR UPDATE on SELECT
+	;  DPV1167 (10/20/1999) - Fix :var("string") variable references when delimited
+	;                         identifiers are on
+	;  AK395   (09/03/1999) - External tables
+	;  DPV1081 (06/04/1999) - Support %NOINDEX
+	;  AK363   (05/13/1999) - Improve ODBC run-time variables
+	;  DPV1007 (03/17/1999) - Preserve '_' in identifier names
+	;  AK353   (02/01/1999) - UNION of SELECT
+	;  AK355   (02/12/1999) - EMIS: Set $$$mtNewVals for INSERT-SELECT
+	;  AK345   (12/31/1998) - Nicer $C(0) (SQL empty string) in $$quoter
+	;  AK335   (11/02/1998) - Empty string and NULL
+	;  AK326   (07/23/98)   - Replace ?<pat> with %PATTERN <const>
+	;  AK316   (05/14/98)   - CCS:  Ignore constants in ORDER BY
+	;  DPV852  (07/13/98)   - Support more than 6 significant chars for a
+	;                         cursor name
+	;  AFH294  (06/03/98)   - SET OPTION & UPDATE STATISTICS
+	;  DPV797  (12/31/97)   - New DDL Parser routine
+	;  MRP698  (07/01/97)   - Fix ORDER BY Alias
+	;  DPV751  (06/26/97)   - Renamed %aaa* to %qcg*
+	;  MRP694  (06/18/97)   - Support Expressions in INSERT VALUE-List
+	;  AK289   (04/07/97)   - Restructure INSERT/UPDATE
+	;  MRP679  (03/11/97)   - Fix problems with <MAXSTRING> on DSM
+	;  MRP677  (02/27/97)   - Remove Leading Underscore from Identifiers &
+	;                         Handle <owner>.<catalog>.<schema>.<table> for
+	;                         INSERT/UPDATE/DELETE Statements..
+	;  MRP673  (02/18/97)   - Implement %NOLOCK Enhancement
+	;  MRP662  (01/10/97)   - Fix <UNDEFINED> error in 'nuval'
+	;  MRP643  (10/02/96)   - Modularize Embedded SQL Code: 'gvar' to 
+	;                         '$$$MSQLModuleVariable'
+	;  MRP628  (07/22/96)   - Optimize ORDER BY Code Generation
+	;  MRP570  (06/26/96)   - Transaction Processing
+	;  MRP615  (06/03/96)   - Count the number of Rows FETCHed with
+	;                         GET <cursor> <host-var> = %ROWCOUNT
+	;  MRP597  (03/03/96)   - Consolidate the SQL Reserved Word List
+	;  MRP590  (03/21/96)   - Fix General View Qualification
+	;  MRP556  (11/30/95)   - Allow ORDER BY <agg> only as <column> alias
+	;  MRP535  (10/20/95)   - Support SET <field> = <value expression>
+	;  AK277   (08/01/95)   - Fix Exponential notation in tag expo
+	;  RLL600  (05/10/95)   - Support FETCH %ROWCOUNT=nnn
+	;  RLL577  (02/14/95)   - Support vendorized TP commands
+	;  VM012   (10/30/94)   - report incompatible SELECT list in INSERT
+	;  MRP428  (08/09/94)   - Support %EXTERNAL/%INTERNAL <integer>
+	;  MRP402  (05/14/94)   - Set the INTO list into the "info" list: 
+	;                            mtc(0,0,"into",#)=var
+	;  MRP397  (05/04/94)   - Support the SQL Concatenation operator ||
+	;  AK276   (11/20/93)   - allow expressions in ORDER BY
+	;  MRP300  (02/24/93)   - Add  [ %CATALOG ] [ <schema> <period> ] to
+	;                         'tname' to skip over schema names after
+	;                         INSERT, UPDATE, DELETE
+	;  AK012;AK021;AK022;AK024;AK045;AK052;AK062;AK069;IS033;EYT099
+	;  AK171;AK172;AK178;MRP129;AK180;ALL003;MRP165;ALL006;MRP167
+	;  AK192;AK193;ALL001;RGG625;AK232;AK233;AK234;RLL155;AK248;AK251
+	;  AK260
+	;
+#ENDIF  ;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+stat	;  process an SQL statement
+	$$$lexcheckid("EXPLAIN") GOTO explain
+	if token="WITH" { // --- Skip over the CTE's <with clause> ::= WITH <with list>  [See 'sqlbnf.txt' for details] ---
+		do lext    // Skip past the 'WITH' token!
+		do cte(1)  // Process the CTE's <with clause>!
+		do:"|DECLARE|SELECT|INSERT|UPDATE|DELETE|"'[("|"_token_"|") error(383)  // Throw error if the final <sql statement> of the <with clause> insn't one of the following SQL types: { DECLARE | SELECT | INSERT | UPDATE | DELETE }
+	}
+	if "(SELECT"[token { set mt("t")="SEL",mtag=gtag_"o" GOTO selct }
+	$$$lexcheckid("DECLARE") GOTO decl
+	$$$lexany(" OPEN FETCH CLOSE ",val) GOTO ofc
+	$$$lexcheckid("INSERT") GOTO insrt
+	$$$lexcheckid("UPDATE") GOTO updat
+	$$$lexcheckid("DELETE") GOTO delet
+	do:$d($$$mtCTERoot) error(383)  // Throw error to prevent CTE in the following <sql statement> types!
+	$$$lexcheckid("THROUGH") set mt("t") = "THR" GOTO through
+	if $$checkid("TRUNCATE") { set mt("t")="DEL" GOTO truncate }	// DPV2754=
+	GOTO ddl^%qaqpDDLParser:$$any(" CREATE ALTER DROP ",.val)	// Reserved words
+	GOTO ddl^%qaqpDDLParser:$$anyid(" TRAIN USE VALIDATE ",.val)		// Not reserved words
+	GOTO lock^%qaqpDDLParser:$$checkid("LOCK")
+	GOTO unlock^%qaqpDDLParser:$$checkid("UNLOCK")	// DPV3300=
+	GOTO tune^%qaqpDDLParser:$$anyid(" TUNE COLLECT ",.val)
+	#; JLF017
+	GOTO rollb:$$checkid("ROLLBACK")
+	GOTO savep:$$checkid("SAVEPOINT")
+	set:%delid %delid=3
+	GOTO grant^%qaqpsq2:$$checkid("GRANT")
+	GOTO revok^%qaqpsq2:$$checkid("REVOKE")
+	set:%delid=3 %delid=1
+	GOTO chkprv^%qaqpsq2:$$checkid("%CHECKPRIV")
+	if $$checkid("START"),$$checkid("TRANSACTION") { GOTO starttp^%qaqptp1 }  ;  Parse the START TRANSACTION  statement
+	if $$checkid("SET") {
+		goto settp^%qaqptp1:$$checkid("TRANSACTION")	// SET TRANSACTION
+		goto ml^%qaqpDDLParser:$$checkid("ML")		// SEL ML ...
+		goto option^%qaqpDDLParser2			// SET OPTION ...
+	}
+	if $$checkid("%INTRANSACTION") { set mtag=gtag_"label" QUIT }   ; %IN_TRANSACTION
+	#; DPV2350= GOTO:$$checkid("SETUSER") setuser^%qaqpDDLParser  	// DPV2126=
+	GOTO call^%qaqpDDLParser2:$$checkid("CALL")
+	GOTO retcall^%qaqpDDLParser2:$case(token,":":1,"?":1,:0)	// DPV1509, DPV3244	// DPV3361=
+	GOTO freeze^%qaqpDDLParser:$$checkid("FREEZE")
+	GOTO unfreeze^%qaqpDDLParser:$$checkid("UNFREEZE")
+	GOTO purge^%qaqpDDLParser:$$checkid("PURGE")
+	GOTO build^%qaqpDDLParser:$$checkid("BUILD")
+	GOTO load^%qaqpDDLParser:$$checkid("LOAD")
+	GOTO cancelQuery^%qaqpDDLParser:$$checkid("CANCEL")
+	#; DPV2913
+	if '$$checkid("%BEGTRANS"),'$$checkid("%INTRANS") { if $$checkid("COMMIT") { if $$checkid("WORK") {} } else { if token=$c(1) { s mt("t")="XXX"  q  /* assume SQL text is only a comment - no error */ } else { d error(51) } } }    ;  WORK optional
+	set mtag=gtag_"label"  ;  transaction operations
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; HSU193,MRP1267,IBA023,MRP1329,MRP1330,MRP1333,MRP1335,MRP1349,MRP1350,MRP1351
+explain	; <explain statement>     ::= <explain>
+	   #; <explain>               ::= EXPLAIN [ <explain option list> ] [ INTO <param> ] <explain sql statement>
+	   #; <explain sql statement> ::= { <selct> | <with clause> | <updat> | <delet> }
+	   #;  -- <selct> denotes the SELECT Statement
+	   #;  -- <with clause> denotes the WITH Statement (aka CTE)
+	   #;  -- <updat> denotes the UPDATE Statement
+	   #;  -- <delet> denotes the DELETE Statement
+	   #;  -- <insrt>, which denotes the INSERT Statement, is not currently supported with <explain>
+	   #; <explain option list>   ::= [ <alt option ] [ <stat option> ]
+	   #; <alt option>            ::= ALT | ALL
+	   #; <stat option>           ::= STAT | STATS
+	   #;   -- The <stat option> and <alt option> can be specified in any order
+	
+	new altStat,declSub,explainInputPosStart,explainInputSub,explainInputSubStart,explainSQLStr,explainStmt,inputLine,inputOrig,isDYNorDEC,parenCnt,%plan,planStatus,planStr,sqlErrCode,sqlErrMsg,sqlStmtType,sqlStmtTypes,sqlStr,sqlStrDSQ,ucqFlag
+.
+	#; --- Set 'EXPLAIN ...' Processing Default Values ---
+	set sqlErrCode=0,sqlErrMsg="",planStr=""
+	set isDYNorDEC=((((%caller="DynamicStatement")||($$$SQLCompileOption("xDBC")=1))||(callname="tablist"))&&(mt("t")'="DEC"))
+	set ucqFlag=$s(isDYNorDEC:1,1:0)
+	
+	set $$$mtExplain=1
+	merge $$$mtExplainQuery=input
+	
+	set $$$mtExplainPlan="ShowPlan"
+	set $$$mtExplainStatsFlag=0
+	set $$$mtExplainInto=""
+	
+	for altStat=1:1:2 { // --- Process <alt option> & <stat option> twice, since they can be in any order ---
+		QUIT:",(,INTO,SELECT,WITH,"[(","_token_",")  // 'ALT' and/or 'STAT' used or not found!
+.
+		if $g($$$mtExplainPlan)'="ShowPlanAlt",$$anyid(" ALT ALL ") { // --- Set flag to Perform 'ShowPlanAlt(...)' ---
+			set $$$mtExplainPlan="ShowPlanAlt"
+		}
+		
+		if '$g($$$mtExplainStatsFlag),$$anyid(" STAT STATS ") { // --- Set flag to Collect 'Statistics' for 'ShowPlan[Alt](...)' ---
+			set $$$mtExplainStatsFlag=1
+		}
+	}
+	
+	if $$checkid("INTO") { // --- Process 'INTO <param>' ---
+		new name
+		do param  // Process INTO <param>
+		set $$$mtExplainInto=name
+	}
+	
+	#; --- Record the Original 'input' value ---
+	merge inputOrig=input
+	
+	#; --- Process the EXPLAIN <input statement> ---
+	for parenCnt=0:1 { QUIT:'$$checkid("(")  }  // Skip past all open parentheses: [ ( ]*
+	
+	// --- Record the start of the <explain sql statement> ---
+	set explainInputSubStart=line,explainInputPosStart=f,explainStmt=sql // The location within 'input(line)' where the EXPLAIN Supported DML Statement { <selct> | <with clause> | <updat> | <delet> } starts!
+	
+	$$$lexcheckid("WITH") do cte(1)  // Skip over the CTE's <with clause> ::= WITH <with list>  [See 'sqlbnf.txt' for details]
+	
+explainSQL // --- Process the <explain sql statement> ---
+	
+	set sqlStr=$e(explainStmt,explainInputPosStart,*)
+	set explainInputSub=explainInputSubStart
+	for  { // --- Process All 'inputOrig(...)' Nodes ---
+		set explainInputSub=$o(inputOrig(explainInputSub),1,inputLine)
+		QUIT:explainInputSub=""  // No more 'inputOrig(...)' Nodes!
+		
+		set sqlStr=sqlStr_$s(sqlStr="":"",1:$c(10))_inputLine
+	}
+	set:parenCnt sqlStr=$reverse($p($reverse(sqlStr),")",parenCnt+1,*))  // Don't include enclosing close parentheses: [ ) ]*
+	
+	#; --- Determine the SQL Statement Type ---
+	set sqlStmtType=$$getSQLStmtType(sqlStr)
+	set:sqlStmtType="" sqlStmtType="UNKNOWN"
+	
+	#; --- Double the Single-Quotes (') ---
+	set sqlStrDSQ=$replace(sqlStr,"'","''")
+	
+	if ",(,SELECT,UPDATE,DELETE,"[(","_token_",") { // --- Process All EXPLAIN Supported DML Statements ---
+		
+		set $$$mtExplainType=mt("t")  // Record SQL <explain statement> 'type' - { SEL | UPD | DEL }
+		
+		if isDYNorDEC { // --- Process Dynamic SQL Statement OR <declare-cursor statement> (<decl>) ---
+			
+			#; --- Create new Query Plan <select statement> (<selct>) & ignore <into> clause for Dynamice SQL Statements ---
+			set explainSQLStr="SELECT %SYSTEM.QUERY_PLAN("_"'"_sqlStrDSQ_"'"_","_$$$mtExplainStatsFlag_","_"'"_$$$mtExplainPlan_"',"_",$LISTBUILD('EXPLAIN','DYN','"_sqlStmtType_"',0,"_ucqFlag_",1)) AS Plan"
+			
+			#; --- Save new SQL Query after killing old "query" array first ---
+			kill $$$mtExplainQuery
+			set $$$mtExplainQuery=explainSQLStr
+			set:(mt("t")'="DEC") mt("t")="SEL"  // Set SQL Statement Type to <select statement>!
+		}
+		else { // --- Process Embedded SQL Statement, so fetch the 'plan' during compilation ---
+			#; --- Process the SQL Statement with 'ShowPlan(...)' OR 'ShowPlanAlt(...)' ---
+			set planStatus=$$getSQLPlan^%apiSQL(sqlStr,$$$mtExplainPlan,.%plan,$LB("EXPLAIN","EMB",sqlStmtType,1,ucqFlag,1),$$$mtExplainStatsFlag,"/verbose=3/format=INLINE-TEXT-ARRAY")
+			
+			#; --- Refactor the SQL '%plan' & Double the Single-Quotes (') where appropriate ---
+			if planStatus="" { // --- Process Valid SQL Statement Plan ---
+				set planStr=$SYSTEM.SQL.RefactorSQLPlan("%plan",$$$mtExplainPlan,,,,,$LB(3576000,1,1))
+				set planStr="'"_$replace(planStr,"'","''")_"'"
+				
+				#; --- Create a New <select statement> (<selct>) with the Refactored SQL Query Plan (Pass-through) ---
+				set explainSQLStr="SELECT %SYSTEM.QUERY_PLAN(NULL,NULL,NULL,"_planStr_",$LISTBUILD('EXPLAIN','EMB','"_sqlStmtType_"',0,"_ucqFlag_",1)) AS Plan"
+			}
+			else { // --- Process the Embedded SQL Statement Parsing Error ---
+				set sqlErrCode=$LG(planStatus,10),sqlErrMsg=$LG(planStatus,11)
+				set:sqlErrMsg["'" sqlErrMsg=$replace(sqlErrMsg,"'","''")
+				
+				#; --- Create a New <select statement> (<selct>) with the SQL Parsing Error (Pass-through) ---
+				set explainSQLStr="SELECT %SYSTEM.QUERY_PLAN("_"'"_sqlStrDSQ_"'"_","_$$$mtExplainStatsFlag_","_"'"_$$$mtExplainPlan_"'"_",,$LISTBUILD('EXPLAIN','EMB','"_sqlStmtType_"',0,"_ucqFlag_",1,,,,"_sqlErrCode_",'"_sqlErrMsg_"')) AS Plan"
+			}
+			
+			if $g($$$mtExplainInto)'="" { // --- Add <into> clause ---
+				set explainSQLStr=explainSQLStr_" INTO :"_$$$mtExplainInto
+			}
+			
+			#; --- Process <declare-cursor statement> (<decl>) ---
+			set:$g($$$mtExplainDecl)'="" explainSQLStr=$$$mtExplainDecl_" "_explainSQLStr
+			
+			#; --- Save new SQL Query after killing old "query" array first ---
+			kill $$$mtExplainQuery
+			set $$$mtExplainQuery=explainSQLStr
+			set:(mt("t")'="DEC") mt("t")="SEL"  // Set SQL Statement Type to <select statement>!
+		}
+	}
+	else { // --- Process Parsing Error if an unsupported SQL Statement follow the <explain statement> ---
+		#; --- Set SQL Parsing Error Information ---
+		set sqlErrCode=-481  // SQLCODE: -481
+		set sqlErrMsg=$$$FormatMessage(,"%Parser","e"_$ZABS(sqlErrCode),,sqlStmtType) // %msg: EXPLAIN does not support the following SQL statement type: <sqlStmtType>
+.
+		#; --- Create New Query Plan <select statement> (<selct>) with SQL Parsing Error (Pass-through) ---
+		set explainSQLStr="SELECT %SYSTEM.QUERY_PLAN("_"'"_sqlStrDSQ_"'"_","_$$$mtExplainStatsFlag_","_"'"_$$$mtExplainPlan_"'"_",,$LISTBUILD('EXPLAIN','"_$s(isDYNorDEC:"DYN",1:"EMB")_"','"_sqlStmtType_"',0,"_ucqFlag_",1,,,,"_sqlErrCode_",'"_sqlErrMsg_"')) AS Plan"
+		
+		#; --- Save new SQL Query after killing old "query" array first ---
+		kill $$$mtExplainQuery
+		set $$$mtExplainQuery=explainSQLStr
+		set:(mt("t")'="DEC") mt("t")="SEL"  // Set SQL Statement Type to <select statement>!
+	}
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+decl	; <decl> ::=  DECLARE <cursr> CURSOR FOR <selct> [ <forup> ]
+        ;           | DECLARE <cursr> CURSOR FOR <explain> [ <forup> ]
+	d cursr(1) $$$lexskip("CURSOR") $$$lexskip("FOR")
+ 	if value="EXPLAIN" { // --- Save 'DECLARE <cursr> CURSOR FOR' Information ---
+ 		new declStr,declSub
+ 		set declStr=""
+ 		for declSub=1:1:line-1 { set declStr=declStr_$s(declStr="":"",1:" ")_input(declSub) }
+ 		set declStr=declStr_$s(declStr="":"",1:" ")_$e(input(line),1,$f($$$UPPER(input(line)),"EXPLAIN")-8)
+ 		set $$$mtExplainDecl=declStr
+ 		do lext  // Skip over the 'EXPLAIN' token!
+ 		GOTO explain
+ 	} 
+	$$$lexcheckid("WITH") do cte(1)  // Skip over the CTE's <with clause> ::= WITH <with list>  [See 'sqlbnf.txt' for details]
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+selct	; <selct> ::= <query> [ <order> ] [row limiting clause] [ <forup> ]
+	#; PVA050: third argument added to query
+	if 'info,$$fplan^%qaqplansave() { QUIT } // PVA320
+	d query^%qaqpsq(0,0,0)
+	do:callname["view"&&(token="ID")&&(value="ORDER") error(143) d order,limit,offset,fetch // PVA243, PVA266
+	#;  <forup> ::= FOR READ ONLY | FOR UPDATE  ;  [ OF <clist> ] not supported
+	QUIT:'$$checkid("FOR")  ;  ignore defaults for now
+	i $$checkid("READ") d skip("ONLY") s mt("forup")="forread" QUIT
+	d skip("UPDATE") s $$$mtKForUpdateFlag($$$mtK)=1
+	s mt("forup")="forupdate"
+	#; DPV4934 - not used anywhere s:mcurs'="" mtc(mcurs,"forup")="forupdate"
+	#; AK561
+	s:$$checkid("NOWAIT") mt("nowait")=1  ;  Oracle extension, for MIT244
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ofc	; OPEN <cursr> | FETCH <cursr> [ <targt> ] | CLOSE <cursr>  ;  AK172
+	d cursr(0) s mtag=$$$MSQLModuleTag_$tr($e(val),"OFC","ofc") d targt:val="FETCH"  ;  AK024;AK172
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+rollb
+	#; JLF017
+	#; ROLLBACK [ WORK | TO SAVEPOINT savepointName ]
+	i '$$checkid("WORK") { i $$checkid("TO") { do skipid("SAVEPOINT") if $$check("ID") { d:"SYS"=$zcvt($e($g(mt("savept")),1,3),"U") error(302) s mt("savept")=$$$UPPER(value) } else { d error(301) }}}
+	#; JLF017-
+	s mtag=gtag_"label"  ;  transaction operations
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; JLF017
+savep
+	#; SAVEPOINT savepointName  - savepointName must not begin with "SYS"
+	if $$check("ID") { set mt("savept")=$$$UPPER(value) d:($zcvt($e(mt("savept"),1,3),"U")="SYS") error(302) } else { d error(301) }
+	#; Since SAVEPOINT is not currently recorded as a reserved word, mt("t") will be set to ID at this point.
+	#; Set mt("t")="SAV" so that bb^%qaqqt will call tp^%qaqcmn, which in turn will generate the code and will
+	#; also set the tag consistently for all transaction operations; thus, there is no need to set mtag here.
+	s mt("t")="SAV"
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; JLF017-
+insrt	;  <insrt> ::= INSERT INTO <tname> <asign>
+		#; PVA050: set csupq for, and call frmit instead of tname. 
+		#;         Also eliminate setting of $$$mtKAction(..) here. It is done in frmit.
+		#;         new%insqry
+	set mtag=gtag_"o"
+	if 'info,$$fplan^%qaqplansave() { QUIT } // PVA327
+	new csupq,frmit,%insqry,setcol
+	set csupq=0
+	#; AK839
+	i $$check("OR") { do skip("UPDATE") set mt("orupdate")=1 set mtc(0,0,"update privs")="" }
+	do iud if $$check("INTO")	// DPV2753 (INTO optional)
+	set setcol=""			//  prefix for SET fields, used in colmn()
+	n iudtarg s iudtarg=1 // PVA349: prohibit TVFs, JSON_TABLE, and <jtab> from being accepted
+	set frmit=$$frmit^%qaqpsq(),iudtarg=0
+	set $$$mtTarget="1^"_label
+	if frmit["2" { // INSERT target is a subquery (including CTE)
+		set $$$mtKIudSubquery($$$mtK)=1
+		if (callname'="A") || ($e($$$mtFromTableName($$$mtTarget),1,3)'="%%Q") { // if already find the actual target table
+			set $$$mtKViewName($$$mtK)=$$$mtFromTableName($$$mtTarget)
+		} else { // if still finding a subquery (only happens in A compile)
+			new subqtarg // subquery target
+			set subqtarg=$$$mtTarget
+			for {
+				quit:$e($$$mtFromTableName(subqtarg),1,3)'="%%Q" // actual target table found
+				set subqtarg=$e($$$mtFromTableName(subqtarg),4,*)_"^"_$lg($$$mtFromList($e($$$mtFromTableName(subqtarg),4,*)))
+			}
+			set $$$mtKViewName($$$mtK)=$$$mtFromTableName(subqtarg)
+		}
+	}
+	$$$lexcheckid("WITH") do cte(1)  // Parse the CTE's <with clause> of the generated <insert statement> from CREATE TABLE ... AS <with clause> <select statement>: <with clause> ::= WITH <with list>  [See 'sqlbnf.txt' for details]
+	do asign
+		#; check that the SELECT list is not greater than the INSERT list
+	if $l($p($g($$$mtSelectInto),"^",2),",")<$l($$$mtOutputVals($g($$$mtOutput(1))),",") d error(64)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+updat	; <updat> ::= UPDATE <tname> <asign> [ WHERE <werop> ]
+	if $$check("STATISTICS") do tname set info=0,(mt("t"),mt(0,0,"type"))="STATISTICS" QUIT  ;  AFH294	// DPV2841=
+		#;  <updat> ::= UPDATE <frmit> <asign> [ FROM <frmits> ] [ WHERE <werop> ]
+	new setcol set setcol=""  ;  prefix for SET fields, used in colmn()
+delet	;  <delet> ::= DELETE [ FROM ] <frmit> [ FROM <frmits> ] [ WHERE <werop> ]
+	set mtag=gtag_"o"
+	if 'info,$$fplan^%qaqplansave() { QUIT }
+	do iud
+	if mt("t")="DEL",$$check("FROM")  ;  optional for DELETE
+	new udf set udf = $$udfrom^%qaqpsq()  ;  process ahead FROM clause and target table name
+	do:mt("t")="UPD" asign
+	#; The optional FROM clause must for an UPDATE be immediately after the asignment statement, and
+	#; for a DELETE, after the target table (which we already parsed in udfrom())
+	#; udfrom() scans ahead without parsing, so we have to check that the next FROM it found
+	#; is right here.
+	if udf,token'="FROM" { new t set t="FROM" do error(1) }
+	do lexgo^%qaqpsq(switch)  ;  proceed to end of FROM clause, if any
+werop	; <werop> ::= CURRENT OF <cursr> [ AND <prdct> ] | <prdct>
+	new %inwerop set %inwerop=1	// This will signal HVar type handling that we are dealing with a parameter in the UPDATE WHERE clause
+	if $$check("WHERE") { if $$check("CURRENT") { do error(69):$g(setqexp) do skip("OF"),cursr(-1) quit:'$$check("AND") } do where^%qaqpslx }
+	$$$lexcheckid("%PARTITION") do partition^%qaqpslx
+	RETURN
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+truncate	// DPV2754
+	#;  <truncate> ::= TRUNCATE TABLE <frmit>
+	#;	Functionally the same as DELETE %NOTRIGGER FROM TABLE
+	set mtag=gtag_"o",mcurs=1_callname,m=1,$$$mtCorrParentQb(m)=0,$$$mtOutput(m)="^",$$$mtPActiveQbs=1,$$$mtP(m)=""
+	do skip("TABLE")
+	set $$$mtKNoTriggerFlag($$$mtK)=1,$$$mtKTruncateFlag($$$mtK)=1	// %NOTRIGGER flag	// TRUNCATE FLAG
+	do iud
+	do udfrom^%qaqpsq()  ;  process ahead FROM clause and target table name
+	set $$$mtTarget="1^"_label
+	set:info $li(mtc(0,0,"syspriv"),2)=1		// %NOTRIGGER priv flag
+	QUIT
+	
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+asign	; Assignment
+	#; <asign> ::= SET <LIST,set> | VALUES <array> |
+	#;                              [ ( <LIST,colmn> ) ] <valus>
+	#;           <set>   ::= <colmn> = <nuval>
+	#;           <valus> ::= <query> | VALUES ( <LIST,nuval> )
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	n osetcnt,si s osetcnt=1,si=0
+	i $$checkid("SET") n collist f  d setcol d:$d(collist(name)) error(377) s collist(name)="" d skip("="),nuval g quit:'$$check(",")
+	i $$check("(") n collist f si=1:1 { d setcol d:$d(collist(name)) error(377) s collist(name)="" i '$$check(",") { d skip(")") QUIT  }}
+		#;  INSERT-SELECT - insel perform some parsing trickery and the SELECT
+		#;      is processed, with q#=2 for info, 1 otherwise.
+		#;      SET $$$mtNewVals from mt("o",q#)
+		#; PVA050: third argument added to query; define %insqry
+	if mt("t")="INS",token="SELECT" {
+		new iqn,irn,ttype
+		set %inssel=1,%insqry=""
+		set iqn=$$$mtKViewName($$$mtK)
+		set ttype=$$$smdRVData(iqn)
+		if ttype'="" {
+			set irn=$p(ttype,$c(1),2),ttype=$p(ttype,$c(1),3)
+			if $$$smdShardMasterName(ttype,irn)'="" { set iqn=$$$smdShardMasterName(ttype,irn) }
+		}
+		set mtc(0,0,"inssel")=iqn
+		do insel^%qaqcmn,query^%qaqpsq(0,0,0),order
+		set:'extab $$$mtNewVals=$$$mtOutputVals($$$mtOutput($s($g(info):2,1:1)))
+		QUIT
+	}
+	If $$check("DEFAULT") d skip("VALUES") s $$$mtKInsertDefaultFlag($$$mtK)=1 QUIT  	// DPV2314=
+	d skip("VALUES")  ;  if no columns listed above, UPDATE must use array
+	i '$$check("(") d error(54):'$$param!$g($$$mtSelectInto),blist(1) QUIT
+	s valins=si
+	f si=si:-1 d nuval q:si=1  i '$$check(",") d error(62):si>0 q
+	s valins=valins-si+1   ; number of values to insert
+	d skip(")")
+	#;  *** should set up here missing target fields instead of in star^qo!!!
+quit	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+/// YWH002/YWH008/YWH015/YWH018/YWH019/YWH024/MRP1426
+///
+/// The following method will process the Common Table Extression's (CTE) <with clause>,
+/// defined with the following BNF, and save the CTE's lexical context information into 
+/// the SQL Parse Tree 'mt(...)' if the 'save' parameter is passed the value of one (1):
+///
+///    <with clause> ::= WITH <with list>
+///    <with list> ::= <with list element> [ { , <with list element> }... ]
+///    <with list element> ::= <with query name>  [ ( <with column list> ) ] AS <with query>
+///    <with column list> ::= <with column name> [ { , <with column name> }... ]
+///    <with query>  ::= ( <query> )
+///    <with query name> ::= <ident>
+///    <with column name> ::= <ident>
+///
+/// NOTE:
+///    CTEs are only supported over xDBC if %protocol>=69, because the client pre-parsers
+///    must first be updated to know if this is a SELECT or UPDATE <sql statement>
+///    type.  Without this client parsing information, the server might send a mismatch
+///    of metadata to the client for the <sql statement>.
+///
+cte(save)	; Common Table Expression!
+	#;--------------------------------------------------------------------------------
+	#; Parameters:
+	#;  save        - A flag to determine if the CTE's lexical context information
+	#;                should be saved in the SQL Parse Tree 'mt(...)':
+	#;                   0 = Don't Save | 1 = Save
+	#;
+	#; Variables:
+	#;  withQryName - The name specified for the <with query name> component of the
+	#;                CTE's <with clause>.  This value is always in UPPER case,
+	#;                whereas the 'withQryNameExact' variable is always set to the
+	#;                exact name specified within the <sql statement>.
+	#;  withColList - A $LIST(...) of all of the <with column name> values, if any
+	#;                are specified for the <with column list>.
+	#;  withQryPos  - The position of each token being processed within the CTE's
+	#;                <with query> statement.
+	#;--------------------------------------------------------------------------------
+	
+	if $$$SQLCompileOption("xDBC")=1,$$$SQLCompileOption("xDBCServerProtocol")<12 { new prot1,prot2 set prot1=$g(%protocol),prot2=69 do error(385) }
+	
+	new l1,m1,name,parenCnt,withColList,withQryName,withQryNameExact,withQryPos,withQryStmt
+	set withQryNameExact=lower,withQryName=value,withQryStmt=""
+	
+	$$$lexskipid($s(token="ID":withQryName,1:"<with query name>"))
+	if save,$d($$$mtCTEWithQueryNameNode(withQryName)) { do error2(382,withQryNameExact) } // ERROR: Duplicate <with query name> specified!
+	
+	if token="(",$$getSQLStmtType($$peekPast("(",2))="SELECT" { do error2(1,"AS") } // AS required before <with query> statement!
+	
+	if $$checkid("(") { // --- Support <with column list> ---
+		for { // --- Processs Each <with column name> ---
+			set withColList=$g(withColList)_$LB(lower)
+			$$$lexskipid($s(token="ID":value,1:"<with column name>"))
+			QUIT:'$$checkid(",")  // Finished processing <with column list>!
+		}
+		$$$lexskip(")")
+	}
+	$$$lexskip("AS")
+	
+	// --- Process the CTE's <with query> statement ---
+	if $g(inview)'="" { // currently within a view definition, code also appears in ctefrmit^%qaqpsq
+		set withQryName=withQryName_$c(1)_$p(inview,"^",2) // this CTE name only lives within this VIEW
+	} elseif callname["view" { // we are compiling a view
+		set withQryName=withQryName_$c(1)_$p(callname,$c(1),2) // this CTE name only lives within this VIEW
+	}
+.
+	$$$lexskip("(") do $i(parenCnt)  // Skip past the 1st open parenthesis '(' and bump the counter!
+	
+	if save { // --- Save the lexical context information at the beginning of CTE's <with query> definition ---
+		set $$$mtCTELexicalInfo(withQryName)=$$lexmark^%qaqpsq()
+		set:$d(withColList) $$$mtCTEColumnList(withQryName)=withColList
+	}
+	
+	if token'="(" { // --- The <with query>'s <query> must be a <select statement> ---
+		$$$lexskip("SELECT")
+		set withQryStmt="SELECT"
+	}
+	
+	for withQryPos=1:1 { // --- Process the CTE's <with query> statement ---
+		if token="(" { // --- Skip past the open parenthesis '(' ---
+			do lext
+			
+			if withQryStmt="",token'="(" { // --- The <with query>'s <query> must be a <select statement> ---
+				$$$lexskip("SELECT")
+				set withQryStmt="SELECT"
+			}
+			
+			CONTINUE:$i(parenCnt)  // Skip past the open parenthesis '(' and bump the counter!
+		}
+		elseif token=")" { do lext QUIT:$i(parenCnt,-1)<1  CONTINUE }  // Skip past the closing parenthesis ')' OR Quit when finished processing the <with query> statement!
+		
+		if save,$case(token,"?":1,":":1,:0) { // --- Save the CTE's <with query> parameters in case they are not referenced in the final <sql statement> ---
+			set name=$$varname^%qaqpop()
+			do mark^%qaqpslx
+			set $$$mtV($$$maxv+1)="x^"_name
+			// similar code also in var^%qaqpop for host variables
+			// record the beginning position of any parameter from CTE definitions in both mt("parm") and mt("cteparam")
+			// line number l1 and position number m1 (sometimes recorded as f during parsing) comes from mark^%qaqpslx
+			set $$$mtRecordParams(l1*100000+m1)=$$$maxv,$$$mtCTEParams=$g($$$mtCTEParams)_$lb($$$maxv) 
+		} else { // --- Check for the end of the CTE's <with query> or unballanced parenthesis ---
+			do:token=$c(1) error2(1,")") // if parenthesis not closed until <end-of-statement>
+			do lext
+		}
+	}
+	do:token=$c(1) error2(1,"<sql statement>")
+	if token="ID",$$getSQLStmtType(value)="" { do error2(1,",") }
+	
+	do:$$checkid(",") cte(save) // Process multiple CTE's <with list element> definitions!
+	
+	set:$g(mt("t"))="WIT" mt("t")=$e(token,1,3) // Reset statement type for further parsing!
+	
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+targt	; <targt> ::= INTO <LIST,param>
+	$$$lexcheckid("INTO") for  { do blist(2-$$param) $$$lexnotcheck(",",QUIT) } QUIT
+	$$$lexcheckid("%INTOLIST") do blist(2-$$param) set mt("into$list")=1 $$$lexcheck(",") do error(176)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// called from asign (INSERT/UPDATE assignment values), targt (FETCH ... INTO), and selct^%qaqpslx (SELECT ... INTO)
+param() ; $$:  1 if array (if last subscript missing)
+	#;  <param> ::= [:]<var> [ ( { <subs> , } [ <subs> ] ) ]
+	new %delid set %delid=0
+	set name=""
+	do var
+	if (token="(")&&($g($$$mtExplainInto,"*")="")&&$$explainSQLStmtIsNext() {} // Skip Over: EXPLAIN ... INTO <param> <left-paren> <explain sql statement> <right-paren>
+	else { $$$lexcheck("(") s name=name_"(" f  GOTO:$$check(")") aray d sub s name=name_token q:$$check(")")  $$$lexskip(",") }
+	$$$lexputval("i^"_name)
+	if $$$SQLCompileOption("xDBCVarTypes")'="",$case(mt("t"),"INS":0,"UPD":0,:1) { //},$e(name,1,6)="%qpar(" {
+		new len,varType
+		set varType=$$paramType^%qaqpop(+$p(name,"(",2),.len) 
+		if varType'="" {
+			do create^%qaqpdt(val,"var",varType,,,,name) 
+			if info {
+				if $d(len) { set $$$VTRomsinfo(val)=$$definfo^%qaqpif2(varType,len,len) }
+				elseif varType="%Library.Numeric" { set $$$VTRomsinfo(val)=$$definfo^%qaqpif2(varType,38,36,17),$$$VTRscale(val)=17 }	// DPV3198 (len 20, prec, 18, scale 9)
+				else { set $$$VTRomsinfo(val)=$$definfo^%qaqpif2(varType) }
+			}
+		}
+	}
+	if $e(name)'="%"&&($e(name)'="$")&&($zcvt(name,"l")'?1(1"i",1"r",1"s",1"m")1"%"1.E)&&('$$$%msqlvarIsLocalVar) {
+		if name'["(" { set sqlvarsThisStatement($p(name,"."))="" }  // regular variable
+		else {
+			set sqlvarsThisStatement($p($p(name,"("),"."))=""	// DPV2625 oref, not oref.prop(xxx)
+			;*** Handle lvar(lvar2)
+		}
+	}
+	if $g(info) { set mtc(0,0,"into")=$g(mtc(0,0,"into"))+1,mtc(0,0,"into",mtc(0,0,"into"))=name }
+	QUIT 0
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+/// While parsing the <explain> statement, check to see if we are parsing an actual 
+/// <param> OR <left-paren> <explain sql statement> <right-paren> based on tokens
+/// following a <left-paren> token...
+///
+///    <explain statement> ::= <explain>
+///    <explain> ::= EXPLAIN ... INTO <param> [ <left-paren> ] <explain sql statement> [ <right-paren> ]
+///    <explain sql statement> ::= { <selct> | <with clause> | <updat> | <delet> }
+///        -- <selct> denotes the SELECT Statement
+///        -- <with clause> denotes the WITH Statement (aka CTE)
+///        -- <updat> denotes the UPDATE Statement
+///        -- <delet> denotes the DELETE Statement
+///        -- <insrt>, which denotes the INSERT Statement, is not currently supported with <explain>
+///    <left-paren>  ::= ( [ <left-paren> ]
+///    <right-paren> ::= ) [ <right-paren> ]
+///
+explainSQLStmtIsNext()	; Peek Ahead Parsing...
+	new holdVals,lastToken
+	do holdcur^%qaqpsl2(.holdVals)     // Save Parsing Details!
+	for  { QUIT:'$$check("(") }        // Skip over all <left-paren> tokens
+	set lastToken=token
+	do setold^%qaqpsl2(.holdVals)      // Reset Parsing Details!
+	RETURN $s(",SELECT,WITH,UPDATE,DELETE,INSERT,"[(","_lastToken_","):1,1:0)  // { <left-paren> <explain sql statement> <right-paren> } OR { <param> (Complex Variable) }
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+aray	$$$lexputval("i^"_name)
+	if $case($e(name),"%":0,"$":0,:1),'$$$%msqlvarIsLocalVar { set sqlvarsThisStatement($p(name,"("))="" }
+	QUIT 1
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+sub	i token=9 s name=name_$$$SQLquoter(value) GOTO lext  ;  AK345
+	i token="ID",%delid=2 s name=name_$$$SQLquoter(lower) GOTO lext  ;  DPV1167
+var	// host variables for INTO clause and VALUES clause
+	If token="ID" {	// hvar without the ":", for some reason we support this...
+		s name=name_lower d lext 
+		if (name="i"&&($e(lower)="%") || (name="r"&&($e(lower)="%"))) { 	// Support i%prop/r%prop	// DPV2162 (qstruct)
+			if lower="%" {  // may be %propery name or a delimited property name
+				do lext
+					#; $zname(str,6) returns one if this str can be used as a regular property name
+				if '$zname(lower,6) { set lower="%"_$$$SQLquoter(lower) } else { set lower="%"_lower }
+			}
+			set name=name_lower
+			do lext
+			if $$check("(") {
+				set name=name_"("
+				For  { do sub set name=name_token quit:$$check(")")  do skip(",") }
+			}
+			set name=$$DotSyn^%qarmac(name,.qstruct,,,,1) 
+			QUIT
+		}
+		If token="." { 
+			For  { 
+				q:token'="."  
+				s name=name_"." 
+				d skip(".") 
+				if '$zname(lower,6) { set name=name_$$$SQLquoter(lower) } else { set name=name_lower }
+				d lext
+				If $$check("(") {  // Multidimentsional property oper.prop(...)
+					s name=name_"("
+					For  { d sub s name=name_token q:$$check(")")  d skip(",") }
+					q
+				}
+			}
+		}
+		QUIT
+	}
+		#; hvar with the leading ":"
+	s name=name_value $$$lexskip(":") 
+	if (name="i"&&($e(lower)="%") || (name="r"&&($e(lower)="%"))) { 	// Support i%prop/r%prop. <prop> may need to be a delimited identifier
+		if lower="%" { 
+			do lext
+			if token=9 { if '$zname(value,6) { set value="%"_$$$SQLquoter(value) } else { set value="%"_value } set name=name_value }  // delimited id support OFF and "..." is literal
+			else       { if '$zname(lower,6) { set lower="%"_$$$SQLquoter(lower) } else { set lower="%"_lower } set name=name_lower }
+		} // may be %prop name
+		else { set name=name_lower }
+		do lext
+		if ($s(info:$g(mtc(0,0,"only select star")),1:$g($$$mtOnlySelectStar))=1)&&(name="i%%sqlcol")&&(token="("){  set mt("%sqlcol")=1 QUIT }
+		if $$check("(") {
+			set name=name_"("
+			For  { do sub set name=name_token quit:$$check(")")  do skip(",") }
+		}
+		set name=$$DotSyn^%qarmac(name,.qstruct,,,1,1) 
+		QUIT
+	}
+	If token="." { //oref.property[.property...]
+		For  { 
+			q:token'="."  
+			s name=name_"." 
+			d skip(".")
+			if '$zname(lower,6) { set name=name_$$$SQLquoter(lower) } else { set name=name_lower }
+			d lext
+			If $$check("(") {  // Multidimentsional property oper.prop(...)
+				s name=name_"("
+				For  { d sub s name=name_token q:$$check(")")  d skip(",") }
+				q
+			}
+		}
+	}
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+nuval	; <nuval> ::= NULL | <scalx>  ;  *** allow expressions!
+	i $$checkid("NULL") d putval("t^") i 1
+	e  d  ; SET <field> = <value expression>
+	. n holdval
+	. s val=+$g(val)
+	. s holdval=val
+	. d scalx^%qaqpslx()
+		 #; PVA139: remove setting of obsolete mtc("ov") and mtc("oset")
+ 	. i mt("t")="UPD",$$IsAStream^%qaqpslx(val),'$$IsAStream^%qaqpslx(holdval) n setField s setField=$p($g($$$mtV(holdval)),"^",4) d error(303)	// DPV3158=
+	. s setqexp=$s($p($$$mtV(val),"^",4)'="":1,1:0)  ; Mark as SET <qry exp>
+	#; AK289
+	#;  append val to LIST(val#,) of new values for INSERT/UPDATE
+	s $$$mtNewVals=$g($$$mtNewVals)_val_","
+	#; AK289-
+	s val=$$$mtV(val) // DPV4934= d apndc($s($e(val)="t":$$quoter^%qaqcasl($p(val,"^",2,*)),1:$p(val,"^",2,*)))
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK637
+setcol	;  INSERT/UPDATE target column
+	s setcol=$$$mtTargetLabel  ;  force prefix in colmn()
+	s %sqlColPriv=$Case(mt("t"),"INS":"i","UPD":"u",:"")		// DPV3095 - %sqlColPriv defines the priv needed on the column later in colmn
+	if token'="%ID" && (token '= "ID") d skip("ID")	// PVA349: colmn expects token validation before it is called; not doing so 
+							#; produces weird parsing for bad syntax
+	d colmn^%qaqpsl2,flist(val) s %sqlColPriv=""
+	s setcol=""
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK637-
+	#; AK289
+flist(val)  ;  append val to LIST(val#,) of target fields for INSERT/UPDATE
+	#; AK637
+	i $p($$$mtV(val),"^",2,3)'=$$$mtTarget d error(21)
+	#; BJB275
+	i $$$mtV(val)["->" d error(21)
+	s $$$mtFList=$g($$$mtFList)_val_","
+	d blist(1)  ;  for now, keep it there as well
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK289-
+blist(p) ;  append val to $P(p) of $$$mtSelectInto
+	set $P($$$mtSelectInto,"^",p)=$P($g($$$mtSelectInto),"^",p)_val_","
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// 
+	// new = 1 if called from decl (DECLARE)
+	// new=0 if called from ofc (OPEN/FETCH/CLOSE)
+	// new=-1 if this is a WHERE CURRENT OF ... case
+cursr(new) ; new cursor if called from decl
+	set mcurs=$e(lower_"0",1,29)  ;  DPV852
+	if new=1 {	// DPV4032=
+		set $$$MSQLModuleTag="%"_mcurs
+		set mtc(mcurs,"modtag")=$$$MSQLModuleTag
+		if %msqlvar'["("&&(%msqlvar'["i%"),'$$$%msqlvarIsLocalVar {
+			new tCursorCnt
+			set tCursorCnt=$$GetCursorNumber^%SYS.SQLSRV()
+			set %msqlvar="%"_$e(mcurs,1,28-$l(tCursorCnt))_tCursorCnt
+		}
+		set mtc(mcurs,"modvar")=%msqlvar
+	} else {
+		if '$d(mtc(mcurs,"modtag")) {
+			if new=-1,$get(%msqlCurrentOf)'="" {
+				set mtc(mcurs,"rid")=%msqlCurrentOf_".""%%ROWID""()",mtc(mcurs,"o")=""
+			} else {
+				do error(52)
+			}
+		} else {
+			set $$$MSQLModuleTag=mtc(mcurs,"modtag")
+			if %msqlvar'["(",%msqlvar'["i%" set %msqlvar=mtc(mcurs,"modvar")
+		}
+	}
+	do skip("ID")
+	if $d(mtc(mcurs,"error")) {
+		new action
+		set action=$case(mt("t"),"OPE":"OPEN","FET":"FETCH","CLO":"CLOSE",1:"WHERE CURRENT OF")	// action used in error message
+		do error("52c")
+	}
+	if $d(mtc(mcurs,"o"))#2=$s(new=1:1,1:0) { do error(52) }
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+tname	;-- <tname> ::= [ <schema> <period> ] <table-name>
+	n tval,gvinput,viewschema,i,savlabel d stname^%qaqpsq(.tval)  ; Parse schema.table...
+		#; PVA050: emulate more of what frmit^%qaqpsq sets up so that new column parsing can work.
+		#;    (calling ddtab, setting mt("flbls",..)
+	s i=$$ddtab^%qaqpsq(.tval,.gvinput,.viewschema)
+	s $$$mtFromTableName(1_"^"_tval)=tval
+	s savlabel=$tr($p(tval,".",$l(tval,".")),$c(2),".")
+	s $$$mtFLabels(m,savlabel,1_"^"_tval)=$lb(tval,0)
+		#;  if external table, send the whole query to the DSN
+	#; DPV2060
+	#; DPV3121 - done in ddtab - n tinfo s tinfo=$$$GetRVIdxDataFromIQN(tval)
+	#; DPV3121 - done in ddtab - If 'info,tinfo'="",$lg(tinfo,3)=1 { n con s con=$p($$$SQLTabConnect($lg(tinfo,2)),",") s:con'="" extab=1,$$$mtDSNConnection=con }
+	#; DPV2060-
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+order(stmt=1)	; <order> ::= ORDER BY <LIST,ordir>
+	#; PVA180: Add stmt argument; flags whether called for statement or qterm
+	RETURN:'$$checkid("ORDER") // PVA204: checkid for non-reserved keyword
+	do skip("BY")
+	#; AK686
+	set:$$check("%IDADDED") mt("idadded",1)=1
+	#; AK353
+	GOTO:($d($$$mtUnion(1))&&stmt) unsort  ;  UNION - set mt("uns") instead of $$$mtS
+	new x set x = $g(m)
+	new m set m = $s(stmt:$p($$$mtV(val),"^",2), 1:x)
+	#; AK316
+	#; implicit state for agg (see qterm^%qaqpsq)
+	new laggs, levag
+	set laggs="", levag=0
+	for {
+		do ordir 
+		QUIT:'$$check(",")
+	}
+	#; bhav/ahav for any aggregates (see selex^%qaqpsq)
+	if $g($$$mtDistinct(m))="",laggs { do imply^%qaqpsq }
+	set $$$mtPAggList($$$mtP(m)) = $$$mtPAggList($$$mtP(m))_laggs
+		
+		// leave ORDER BY node completely undefined it nothing was specified
+	if stmt { 
+		if $g($$$mtSequencers)="" {
+			ZKILL $$$mtSequencers 	// zkill - make sure not to mess up any qb-specific ORDER BY in child subscripts
+			RETURN
+		}
+	} else { 
+		if $g($$$mtSequencersQb(m))="" {
+			KILL $$$mtSequencersQb(m) 
+			RETURN
+		}
+	}
+	#; AK316-
+	#; AK628
+	ZKILL:$g($$$mtOneRow(1)) $$$mtSequencers  ;  ORDER BY meaningless for "onerow"
+	RETURN
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK353
+unsort	n val  ;  set mt("uns") with position#'s
+	f  d unsit s $$$mtUnionOrderBy=$g($$$mtUnionOrderBy)_val_$s($$checkid("DESC"):"d",$$checkid("ASC")!1:"")_"," q:'$$check(",")
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; PVA163: add validation
+	#; PVA189: fix validation: don't look up non-identifier token
+unsit	i token=9 d error(5):(value'=(value\1)||(value<1)||(value>$ll($$$mtAlphaUpAliases(1)))) s val=value d lext QUIT  ;  ordinal position  
+	if token="ID" { s val=$lf($g($$$mtAlphaUpAliases(1)),value) do:callname'="tablist" error(6):'val } $$$lexskip("ID")  ;  must be unqualified field name  
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK353-
+	#; AK316
+ordir	;  <ordir> ::= <ordit> [ DESC | ASC ]
+	new orditem
+	do ordit
+	if "xt"[$$$mtVType($$$mtV(val)) { 	;  if constant (including host variable), this item may be skipped
+		new op
+		$$$lexanyid(" DESC ASC ",op)	// since item is ignored also skip its asc/desc; op is discarded and only here for lexing past asc/desc
+		RETURN
+	}
+	#; PVA180: handle stmt variable inherited from order
+	set orditem = val_$s($$checkid("DESC"):"d",$$checkid("ASC")!1:"")_","
+	if stmt {
+		set $$$mtSequencers=$g($$$mtSequencers)_orditem			// applies to entire statement result
+	} else {
+		set $$$mtSequencersQb(m)=$g($$$mtSequencersQb(m))_orditem		// applies to specific query block
+	}
+	RETURN
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK316-
+ordit	; <ordit> ::= <scalx> | <colmn>
+	#; PVA053: check for ambiguous ORDER BY reference, get closer to SQL99 behavior.
+	#; PVA050: unrelated bugfix: use upper cased 'value' rather than exact case 'lower'.
+	new holdvals,inorderby,pos
+	set inorderby = m
+	do:token=V error(12)
+	do holdcur^%qaqpsl2(.holdvals), lext
+	if (",)"_V[token) || $$anyid(" ASC DESC EXCEPT FETCH INTERSECT LIMIT OFFSET ORDER UNION ") {
+		// the ORDER BY item specified is a single token, e.g. column name
+		do setold^%qaqpsl2(.holdvals)
+		if token="ID" {		; PVA067: check token="ID" instead of variable 'lower'
+			set pos = $lf($g($$$mtAlphaUpAliases(m)),value)
+			do:(pos&&$lf($$$mtAlphaUpAliases(m),value,pos)) error(24) ; ambiguous
+			if pos, callname="findname" {	;  AK840 - ORDER BY fname - return location if names match
+				new floc set floc=""
+				do getloc^%qaqpsl2
+				do:floc'="" retloc^%qaqpsl2($p($$$mtOutputVals($$$mtOutput(m)),",",pos))
+			}
+			if pos { // token was column alias, set parsing context as  user specified via SELECT list position and fall through to ordpos() below for actual resolution				
+				set token=9, value=pos
+			} else {	// the token is not one of the column aliases so need scalx to resolve
+				do scalx^%qaqpslx()
+				RETURN
+			}
+		} elseif token'=9 { 	// if token type 9 then it's a SELECT list position, otherwise need scalx to resolve it
+			do scalx^%qaqpslx()
+			RETURN
+		} else {
+			do:$g(mt("idadded",1)) $i(value)  ; AK686
+		}
+	} else {
+		// user specified ORDER BY item expression
+		do setold^%qaqpsl2(.holdvals)
+		do scalx^%qaqpslx()
+		RETURN
+	}
+ordpos	; We are given a SELECT list position to ORDER BY
+	do:$$$mtOutputVals($$$mtOutput(m))="" error(22)  ;  cannot use integer if SELECT *
+	set val = $p($$$mtOutputVals($$$mtOutput(m)),",",value) 
+	do:'val error(5)
+	do lext
+	#;------ If points to "x AS V1" in the SELECT list, use x itself ----
+	set n = $$$mtV(val) 
+	set:$e(n)="s" val=$p(n,"^",4)
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+limit() [m,mt,val,value] PUBLIC {	; <limit> ::= LIMIT { <val spec> | ALL }
+	QUIT:'$$checkid("LIMIT") 
+	QUIT:$$checkid("ALL") // LIMIT ALL - no op
+.
+	// find the LIMIT number and store in mt
+	if $d(m) { // if in a query block
+		if '$d($$$mtTopArg(m)) { // avoid mixing of styles
+			set $$$mtTopStyle(m)="LIMIT" 
+		} elseif $$$mtTopStyle(m)'="LIMIT" {
+			do error(386)
+		}
+	}
+	do varcon^%qaqpslx 
+	if $d(m) {
+		set $$$mtTopArg(m)=val
+	} else { // apply to the whole query
+		do:$d($$$mtRowlimit) error(386) // avoid mixing of styles
+		set $$$mtRowlimit=val
+		set $$$mtRowlimitStyle="LIMIT"
+	}
+	
+	QUIT
+}
+fetch() [m,mt,token,val,value] PUBLIC {	; <fetch> ::= FETCH [ FIRST | NEXT ] <val spec> [ ROW | ROWS ] [ ONLY ] 
+	QUIT:'$$check("FETCH") 
+	$$$lexanyid(" FIRST NEXT ",op) // optional [ FIRST | NEXT ]
+.
+	// find the FETCH number and store in mt 
+	if $d(m) { // if in a query block
+		// avoid mixing of styles
+		if '$d($$$mtTopArg(m)) {
+			set $$$mtTopStyle(m)="ANSI"
+		} elseif $$$mtTopStyle(m)'="ANSI" {
+			do error(386) 
+		} 
+	}
+	do varcon^%qaqpslx 
+	if $d(m) {
+		set $$$mtTopArg(m)=val
+	} else { // apply to the whole query
+		do:$d($$$mtRowlimit) error(386) // avoid mixing of styles
+		set $$$mtRowlimit=val
+		set $$$mtRowlimitStyle="ANSI"
+	}
+	$$$lexanyid(" ROW ROWS ",op) // optional { ROW | ROWS }
+	$$$lexanyid(" ONLY ",op) // optional [ ONLY ]
+	QUIT
+}
+offset() [m,mt,token,val,value] PUBLIC {	// <offset> ::= OFFSET <val spec> [ ROW | ROWS ]
+	QUIT:'$$checkid("OFFSET")
+.
+	// find the OFFSET number and store in mt 
+	if $d(m){ // if in a query block
+		if '$d($$$mtTopArg(m)) { // no LIMIT syntax before, must be ANSI style =
+			set $$$mtTopStyle(m)="ANSI" 
+		} elseif $$$mtTopStyle(m)="TOP" { // OFFSET not compatible with TOP
+			do error(386) 
+		}
+	}	
+	do varcon^%qaqpslx
+	if $d(m) {
+		set $$$mtOffset(m)=val
+	} else { // apply to the whole query
+		do:$d($$$mtRowOffset) error(386) // avoid mixing of styles
+		set $$$mtRowOffset=val
+		set:$g($$$mtRowlimitStyle)'="" $$$mtRowlimitStyle="ANSI" // OFFSET without LIMIT, must be ANSI style
+	}	
+	$$$lexanyid(" ROW ROWS ",op) // optional { ROW | ROWS }
+	QUIT
+}
+iud	set mcurs=1_callname,m=1,$$$mtPActiveQbs=1
+	set $$$mtP(m)=""	// AK459=
+		#; PVA050: set the new $$$mtCorrParentQb(m) as well
+	set $$$mtCorrParentQb(m)=0 
+	set:mt("t")'="INS" $$$mtOutput(m)="^",$$$mtP(m)=""
+		#;  Support the %NO... options at most once in any order
+	if $$$mtKTruncateFlag($g($$$mtK))=1 { //Truncate
+		for {
+			if $$$mtKNoCheckFlag($$$mtK)'=1,$$check("%NOCHECK") { 
+				set $$$mtKNoCheckFlag($$$mtK)=1 
+			} elseif $$$mtKNoLockFlag($$$mtK)'=1,$$check("%NOLOCK") { 
+				set $$$mtKNoLockFlag($$$mtK)=1 
+			} elseif $$$mtKNoJournalFlag($$$mtK)'=1,$$checkid("%NOJOURN") {
+				set $$$mtKNoJournalFlag($$$mtK)=1
+			} else {
+				quit
+			}
+		}
+	} else { // ins/upd/del
+		for {
+			if $$check("%NOCHECK") {
+				set $$$mtKNoCheckFlag($$$mtK)=1
+			} elseif $$check("%NOLOCK") {
+				set $$$mtKNoLockFlag($$$mtK)=1
+			} elseif $$checkid("%NOINDEX") {
+				set $$$mtKNoIndexFlag($$$mtK)=1
+			} elseif $$checkid("%NOTRIGGER") {
+				set $$$mtKNoTriggerFlag($$$mtK)=1
+			} elseif $$checkid("%USECHECKVARIABLE") {
+				#;  %USECHECK is internally used by the SQL filer.  It means to simply pass the %check variable along and use those settings.
+				#;  This allows us to retain settings for nested filer calls, like when the filer deletes all the child rows in the table
+				set $$$mtKUseCheckVariable($$$mtK)=1
+			} elseif $$checkid("%NOJOURN") {
+				set $$$mtKNoJournalFlag($$$mtK)=1
+			} elseif mt("t")="UPD",$$checkid("%ILOCK") {
+				set $$$mtKILockFlag($$$mtK)=1
+			} elseif mt("t")="INS"||(mt("t")="UPD"),$$checkid("%NOSTREAM") {
+				set $$$mtKNoStream($$$mtK)=1
+			} elseif $$checkid("%OBJECTFILER") {
+				set $$$mtKObjectFiler($$$mtK)=1
+			} elseif $$checkid("%PROFILE") {
+				set mt("pTools")=1
+			} elseif $$checkid("%PROFILE_ALL") {
+				set mt("pTools")=2
+			} elseif $$checkid("%PROFILE_NONE") {
+				set mt("pTools")=-2
+			} elseif $$checkid("%NOFPLAN") {
+				set saveplan=0
+			} elseif $$checkid("%NORUNTIME") {
+				if $g(mt("doruntime")) {
+					set %msg="Cannot use both %NORUNTIME and %DORUMTIME keyword options."
+					do error(400)	
+				}
+				set mt("noruntime")=1
+			} elseif $$checkid("%DORUNTIME") {
+				if $g(mt("noruntime")) {
+					set %msg="Cannot use both %NORUNTIME and %DORUMTIME keyword options."
+					do error(400)	
+				}
+				set mt("doruntime")=1 // YCL201
+			} elseif mt("t")="INS",$$checkid("%DEFER") {
+				set $$$mtKDefer($$$mtK)=1
+			} else {
+				quit
+			}
+		}
+	}
+	if info,$g($$$mtK)'="" {
+		if $$$mtKNoCheckFlag($$$mtK)  { set $li(mtc(0,0,"syspriv"),1)=1	}	// %NOCHECK
+		if $$$mtKNoTriggerFlag($$$mtK) { set $li(mtc(0,0,"syspriv"),2)=1 }	// %NOTRIGGER
+		if $$$mtKNoIndexFlag($$$mtK)  { set $li(mtc(0,0,"syspriv"),3)=1 }	// %NOINDEX
+		if $$$mtKNoLockFlag($$$mtK)  { set $li(mtc(0,0,"syspriv"),4)=1 }	// %NOLOCK
+		if $$$mtKNoJournalFlag($$$mtK) { set $li(mtc(0,0,"syspriv"),12)=1 }	// %NOJOURN
+		if $$$mtKDefer($$$mtK) { set $li(mtc(0,0,"syspriv"),32)=1 }	// %DEFER
+	}
+	RETURN
+ 
+	#; PVA050: eliminate getlabel function; no longer used.  
+.
+UserDefinedFunction(procname,procarg=0) ;  
+ 
+		#; Called from colmn^%aqqpsl2
+		#; generate symbol-table entry for User Defined procedures (class method functions projected as procedures)
+		#;    <procedure name>(<expression>, { <expression>, ... } )
+		#;  At this point '<procedure name>(' has been parsed
+ 
+	new agdst,classname,i,list,methodname,package,param1mtv,param1Stmt,param1val,param5mtv,param5val,paramPos,paramPosNULL,PROCNAME,procs,pvstring,returncollation,returnmaxlen,returnprec,returnscale,returntype,saveusef,SCHEMA,schema,tAfterHaving,tArgPos,tConvertArgs,tReturnCol	// DPV2012 (New SCHEMA/PROCNAME)
+	
+	set agdst="",list=""
+	set saveusef=$g($$$mtCorrFieldUsed(m))	// mask correlated field usage (for udafs)
+	do dist^%qaqpslx(.agdst)	// In case this is a UDAF. This call may set list also, will set list if DISTINCT
+	
+	set pvstring=""
+	if token'=")" {	// parse arguments
+		for paramPos=1:1 { // --- Process All Parameters/Arguments ---
+			if token=")" {
+				do putval("v^UNDEFINEDARG")
+				set pvstring=pvstring_val_"^"
+				quit  // Last param in list is missing
+			}
+				#;  If ,, specified in parameter list, leave empty
+			if $$check(",") { 
+				do putval("v^UNDEFINEDARG")
+				set pvstring=pvstring_val_"^"  // Mark missing param as ***
+			}
+			else { do scalx^%qaqpslx() set pvstring=pvstring_val_"^" quit:'$$check(",")  }
+			set agdst=val_","	// *** Handle multiple args
+		}
+	}
+	
+	if procname="%SYSTEM.QUERY_PLAN" { // --- Process Special Parameters for the '%SYSTEM.QUERY_PLAN(...)' SP ---
+		if token=")",paramPos<5 { // --- Process Parameter(s) (paramPos+1) through 4 ---
+			for paramPosNULL=paramPos+1:1:4 { // --- Pad with EMPTY Parameter Values ---
+				do putval("v^UNDEFINEDARG")
+				set pvstring=pvstring_val_"^"
+			}
+			set agdst=val_","
+			// --- Process Parameter 5: callInfo ---
+			set param1val=+$p(pvstring,"^",1),param1mtv=$g($$$mtV(param1val)),param1Stmt=""
+			if $e(param1mtv,1,2)="t^" { set param1Stmt=$$getSQLStmtType($p(param1mtv,"^",2)) }
+			$$$lexputval("t^"_"$LB(""%SYSTEM.QUERY_PLAN"","""_$s($g(%caller)="DynamicStatement":"DYN",1:"EMB")_""","_$s(param1Stmt'="":""""_param1Stmt_"""",1:"""UNKNOWN""")_",0,"_$s($g(%caller)="DynamicStatement":1,$g(mt("t"))="DEC":1,1:0)_",1)")
+			set pvstring=pvstring_val_"^"
+		}
+		if paramPos>4 { // --- Ensure that Parameter 5 (callInfo) is Passed a Valid $LIST(...) ---
+			set param5val=+$p(pvstring,"^",5),param5mtv=$g($$$mtV(param5val))
+			if $e(param5mtv,1,3)'="t^$",$e(param5mtv,1,6)'="v^LIST" { // --- Reset Parameter 5's '$$$mtV(val)' Definition ---
+				set param1val=+$p(pvstring,"^",1),param1mtv=$g($$$mtV(param1val)),param1Stmt=""
+				if $e(param1mtv,1,2)="t^" { set param1Stmt=$$getSQLStmtType($p(param1mtv,"^",2)) }
+				set $$$mtV(param5val)="t^"_"$LB(""%SYSTEM.QUERY_PLAN"","""_$s($g(%caller)="DynamicStatement":"DYN",1:"EMB")_""","_$s(param1Stmt'="":""""_param1Stmt_"""",1:"""UNKNOWN""")_",0,"_$s($g(%caller)="DynamicStatement":1,$g(mt("t"))="DEC":1,1:0)_",1)"
+			}
+		}
+	}
+		#;  Now we need to look up this procedure to make sure it exists and to 
+		#;  get the return type of the procedure 
+	if procname="%SQL.SAMPLE" { // --- Process Stored Procedure '%SQL.SAMPLE(...)' ---
+		do putval("v^USERDEFINEDFUNCTION:%SQL.Sample:%New^^"_pvstring)
+		do create^%qaqpdt(val,"op","%Library.Integer",,,,"USERDEFINEDFUNCTION")
+		do skip(")")
+		RETURN
+	}
+	if extab||($g(callname)="recount")||($g(callname)="tablist") {
+		do putval("v^USERDEFINEDFUNCTION:Class:Method^^"_pvstring)
+		do create^%qaqpdt(val,"op","%Library.Integer",,,,"USERDEFINEDFUNCTION")
+		do skip(")")
+		RETURN
+	}
+	set procs=0
+	set schema=$$$AllButLastPiece(procname,"."),procname=$tr($$$LastPiece(procname,"."),$c(2),".")
+	if schema="" { 	// Unqualified name, resolve it
+		set procs=$$ResolveProcName(procname,.schema)
+		if procs=0 { do error(359) RETURN }  // Procedure not found
+		if procs>1 { do error(358) RETURN }  // More than one Procedure found
+		set:$g(saveplan)>0 mt("pdunqfunc",procname)=schema
+	} else { // schema is specified
+		set SCHEMA=$$$UPPER(schema),PROCNAME=$$$UPPER(procname)
+		if '$d($$$PROC($$$pPROC,SCHEMA,PROCNAME)) { do error(359) RETURN }  // Procedure not found
+	}
+	
+	if $g($$$PROCtype($$$pPROC,SCHEMA,PROCNAME))=$$$cPROCTYPEUDAF {	// User Defined Aggregate found
+		if $g(orderby)=1 { do error(73) }	// No aggregate in ORDER BY
+		if $g(where) { do error(19) }		// No aggregate in WHERE, GROUP BY, etc.
+		new class,udafrettype,udafval
+		set levag=levag+1  ;  aggregate nesting level
+		//$$$lexcheckid("%FOREACH") do commalist^%qaqpslx(SCHEMA_"."_PROCNAME,"User Defined Aggregate") set:agdst agdst=agdst_list
+		set tAfterHaving="" //$$$lexcheckid("%AFTERHAVING") set tAfterHaving=1
+		do putval("a^udaf"_$c(2)_SCHEMA_$c(2)_PROCNAME_"^^"_tAfterHaving_"^"_+pvstring_"^"_list_"^^^"_$tr($p(pvstring,"^",2,*),"^",","))
+		set udafval=val
+		set class=$g($$$PROCudaffinalizefunction($$$pPROC,SCHEMA,PROCNAME))
+		if class'="" {	// class is now $lb(class,method,SCHEMA,FUNCTION) for the UDAF finalize function
+			do putval("v^USERDEFINEDFUNCTION:"_$tr($lg(class,1),":^",$c(2,3))_":"_$tr($lg(class,2),":^",$c(2,3))_":"_$lg(class,3)_"."_$lg(class,4)_":"_udafval_"^^"_udafval_"^")
+				#; Now find the return value's type
+			set i=""
+			for  {
+				set i=$o($$$pPROC($lg(class,3),$lg(class,4)),$$$cPROCcolumn,i)) quit:i=""
+				if $$$PROCCOLtype($$$pPROC,$lg(class,3),$lg(class,4),i)=$$$SQLRETURNVALUE {
+					set returntype=$g($$$PROCCOLdatatype($$$pPROC,$lg(class,3),$lg(class,4),i))
+					set returncollation=$$$UPPER($g($$$PROCCOLPARM($$$pPROC,$lg(class,3),$lg(class,4),i,"COLLATION")))
+					if returncollation'="" {
+						set:$e(returncollation)="""" returncollation=$$$StripQuotes(returncollation)	// remove quotes
+						set:$e(returncollation)'="%" returncollation="%"_returncollation		// Make sure it has the proper SQL name
+					}
+					set returnmaxlen=$g($$$PROCCOLlength($$$pPROC,$lg(class,3),$lg(class,4),i))
+					set returnprec=$g($$$PROCCOLprecision($$$pPROC,$lg(class,3),$lg(class,4),i))
+					set returnscale=$g($$$PROCCOLscale($$$pPROC,$lg(class,3),$lg(class,4),i))
+					set tReturnCol=i
+					set $$$VTRcollation(val)=returncollation
+					if info {
+						set $p($$$VTRomsinfo(val),$c(1),2,6)=$g($$$PROCCOLodbctype($$$pPROC,SCHEMA,PROCNAME,tReturnCol))_$c(1)_returnmaxlen_$c(1)_returnprec_$c(1)_returnscale_$c(1)_2_$c(1,1,1,1,1,1,1)_returntype
+						set $p($$$VTRomsinfo(val),$c(1),16)=$p($$$VTRgetomsinfo(val),$c(1),2)
+					}
+					quit
+				}
+			}
+			do create^%qaqpdt(val,"op",returntype,,,,"USERDEFINEDFUNCTION")
+		}
+		$$$lexskip(")")
+		set:levag=1 laggs=laggs_udafval_","
+		set levag=levag-1
+		set $$$mtCorrFieldUsed(m)=saveusef	// fields in agg's should not affect "onerow"
+		set udafrettype=$$$PROCudafreturntype($$$pPROC,schema,procname)
+		do create^%qaqpdt(udafval,"agg",$p(udafrettype,"(",1),,,,"USERDEFINEDAGGREGATEFUNCTION")
+.
+			#; omsinfo = /2:ODBC Type#/3:LENGTH/4:PRECISION/5:SCALE/6:NULLABLE=2///////13:Cache' Type///16:ODBC Type#
+		if info {
+			new definfo
+			set definfo=$$definfo^%qaqpif2($p(udafrettype,"(",1))
+			set $p($$$VTRomsinfo(udafval),$c(1),2,6)=$p(definfo,$c(1),2,6)_$c(1,1,1,1,1,1,1)_$p(udafrettype,"(",1)
+			set $p($$$VTRomsinfo(udafval),$c(1),16)=$p(definfo,$c(1),2)
+			if $g(inview)="" {
+				set schema=$g($$$PROCschema($$$pPROC,SCHEMA,PROCNAME))
+				set procname=$g($$$PROCname($$$pPROC,SCHEMA,PROCNAME))
+				set mtc(0,0,"execute privs")=$g(mtc(0,0,"execute privs"))_$lb($lb(schema,procname,""))	// 3rd slot is usually classname, but there is no class for UDAFs
+					#; These entries will be used to purge the cached queries if the classes for the UDFs are uncompiled, or the UDAF is deleted
+				if $g($$$PROCudafinitializefunction($$$pPROC,SCHEMA,PROCNAME))'="" { set mtc(0,0,"udaf",$lg($$$PROCudafinitializefunction($$$pPROC,SCHEMA,PROCNAME)))="" }	// UDAF initialize function class
+				if $g($$$PROCudafiteratefunction($$$pPROC,SCHEMA,PROCNAME))'=""    { set mtc(0,0,"udaf",$lg($$$PROCudafiteratefunction($$$pPROC,SCHEMA,PROCNAME)))="" }		// UDAF initialize function class
+				if $g($$$PROCudafmergefunction($$$pPROC,SCHEMA,PROCNAME))'=""      { set mtc(0,0,"udaf",$lg($$$PROCudafmergefunction($$$pPROC,SCHEMA,PROCNAME)))="" }		// UDAF initialize function class
+				if class'="" { set mtc(0,0,"udaf",$lg(class))="" }	// UDAF finalize function class
+			}
+		}
+		RETURN
+	}
+	
+		#; We found the procedure, make sure it is a function procedure
+	if $g($$$PROCtype($$$pPROC,SCHEMA,PROCNAME))'=$$$cPROCTYPEFUNCTION { do error(357) RETURN }
+	
+		#; OK, and make sure it returns a value
+	if $g($$$PROCreturnval($$$pPROC,SCHEMA,PROCNAME))'=1 { do error(356) RETURN }
+	
+		#; Now find the return value's type
+	set i="",tArgPos=0,tReturnCol="",tConvertArgs=$$$SQLFunctionArgConversionG
+	for  {
+		set i=$o($$$pPROC(SCHEMA,PROCNAME),$$$cPROCcolumn,i)) quit:i=""
+		if $$$PROCCOLtype($$$pPROC,SCHEMA,PROCNAME,i)=$$$SQLRETURNVALUE {
+			set returntype=$g($$$PROCCOLdatatype($$$pPROC,SCHEMA,PROCNAME,i))
+			set returncollation=$$$UPPER($g($$$PROCCOLPARM($$$pPROC,SCHEMA,PROCNAME,i,"COLLATION")))
+			if returncollation'="" {
+				set:$e(returncollation)="""" returncollation=$$$StripQuotes(returncollation)	// remove quotes
+				set:$e(returncollation)'="%" returncollation="%"_returncollation		// Make sure it has the proper SQL name
+			}
+			set returnmaxlen=$g($$$PROCCOLlength($$$pPROC,SCHEMA,PROCNAME,i))
+			set returnprec=$g($$$PROCCOLprecision($$$pPROC,SCHEMA,PROCNAME,i))
+			set returnscale=$g($$$PROCCOLscale($$$pPROC,SCHEMA,PROCNAME,i))
+			set tReturnCol=i
+		}
+		elseif tConvertArgs,$case($$$PROCCOLtype($$$pPROC,SCHEMA,PROCNAME,i),$$$SQLPARAMINPUT:1,$$$SQLPARAMINPUTOUTPUT:1,$$$SQLPARAMOUTPUT:1,:0) {
+			set tArgPos=tArgPos+1
+			set val=$p(pvstring,"^",tArgPos)
+				// if the input argument to the function is a literal or host variable, define the type of the value to be the same as the argument defined in the function
+			do:val'=""&&($case($e($g($$$mtV(val))),"t":1,"x":1,:0)) create^%qaqpdt(val,"op",$g($$$PROCCOLdatatype($$$pPROC,SCHEMA,PROCNAME,i)),,,,"USERDEFINEDFUNCTION")
+		}
+	}
+	
+	set classname=$g($$$PROCclass($$$pPROC,SCHEMA,PROCNAME))
+	set methodname=$g($$$PROCprocedure($$$pPROC,SCHEMA,PROCNAME))
+	
+	// Record SQL <explain statement> 'type' - { SEL | UPD | DEL }
+ 	if 'info,methodname="GetSQLPlan",$e($g($$$mtV(+$p($g($$$mtV(+$p(pvstring,"^",5))),"^",4))),1,9)="t^EXPLAIN" { set $$$mtExplainType=mt("t") }
+ 	
+	if info,$g(inview)="" {
+		set schema=$g($$$PROCschema($$$pPROC,SCHEMA,PROCNAME))
+		set procname=$g($$$PROCname($$$pPROC,SCHEMA,PROCNAME))
+		set mtc(0,0,"execute privs")=$g(mtc(0,0,"execute privs"))_$lb($lb(schema,procname,classname))
+	}
+.
+	if $g($$$PROCexecute($$$pPROC,SCHEMA,PROCNAME))["%sqlcontext" { do putval("v^UNDEFINEDARG") set pvstring=val_"^"_pvstring } // Empty first parameter
+	
+	do putval("v^USERDEFINEDFUNCTION:"_$tr(classname,":^",$c(2,3))_":"_$tr(methodname,":^",$c(2,3))_":"_SCHEMA_"."_PROCNAME_":"_procarg_"^^"_pvstring)
+	do create^%qaqpdt(val,"op",returntype,,,,"USERDEFINEDFUNCTION")
+.
+		#; omsinfo = /2:ODBC Type#/3:LENGTH/4:PRECISION/5:SCALE/6:NULLABLE=2///////13:Cache' Type///16:ODBC Type#
+	if info {
+		set $p($$$VTRomsinfo(val),$c(1),2,6)=$g($$$PROCCOLodbctype($$$pPROC,SCHEMA,PROCNAME,tReturnCol))_$c(1)_returnmaxlen_$c(1)_returnprec_$c(1)_returnscale_$c(1)_2_$c(1,1,1,1,1,1,1)_returntype
+		set $p($$$VTRomsinfo(val),$c(1),16)=$p($$$VTRgetomsinfo(val),$c(1),2)
+	}
+	set $$$VTRcollation(val)=returncollation
+	do skip(")")
+	if ($g(anyofctx)>0) && ("%Library.List"[returntype) && $$check^%qaqpslx("=>") { // JLF015=
+		new savectx,val1,aoop,anyofLabel
+		set val1=val,anyofLabel="",aoop="%ANYOF",found=1
+		if '$$validANYOFOperand^%qaqpslx(val1) { new fn,ft set ft="Array",fn="=>" do error(37) }
+			#; We can't support labels for UDFs because, unlike f nodes, each UDF gets a different VAL.
+			#; i "%VALUE,%KEY"'[value { s anyofLabel=value d skipid(anyofLabel),skip(".") } else { s anyofLabel = "" d:anyofctx=2 error^%qaqpslx(29) } // tbd - define real error code here: label is required
+		if "%KEY"[value { set aoop="%ANYKEYOF" } 
+		elseif "%VALUE"[value { set aoop="%ANYOF" } 
+		else { do error^%qaqpslx(29) } // column not found: unregognized token follows "=>"
+		set val=val1,val=$$putunary^%qaqpslx(val,aoop),lcval=val
+		do skipid(value)				
+	}
+	RETURN
+	
+ResolveProcName(procname,schema) // Returns count of instances found 
+		#; procname - input - unqualified name
+		#; schema - output - (last) qualifying schema
+		new found,procs
+		set found=0,procs=0
+		if $g(%sqlSchemaPath)'="" {	// DPV3410=
+			for i=1:1:$ll(%sqlSchemaPath) {
+				set schema=$li(%sqlSchemaPath,i)
+				if $d($$$PROC($$$pPROC,$$$UPPER(schema),$$$UPPER(procname))) s procs=1,found=1,SCHEMA=$$$UPPER(schema),PROCNAME=$$$UPPER(procname) q
+			}
+		}
+		if 'found {
+			new schemalist
+			set schemalist=%defschema
+			for i=1:1:$ll(schemalist) {
+				set schema=$li(schemalist,i)
+				if $d($$$PROC($$$pPROC,$$$UPPER(schema),$$$UPPER(procname))) s procs=procs+1,SCHEMA=$$$UPPER(schema),PROCNAME=$$$UPPER(procname)
+			}
+		}
+	RETURN procs
+.
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; PVA050: new function getunqref; (belongs in qaqpslx, but that got too big). 
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+getunqref(lname,m,delid) ; find FROM item matching an unqalified arrow  left hand side (reference)
+			; lname (input) : reference name
+		; m (input) : query number of FROM clause to search
+		; delid (input) : whether lname was a delimited id
+		; return 1 if found, 0 if not.
+		;    error(27) issued with no return if found mor than once.
+		; implicit output: stref,sfitm,sqtbl,newname,qual
+	n found,tlabel,fitm,qtbl,tref,qtlbl
+	s found=0
+	s tlabel="" for  { s tlabel=$o($$$mtFLabelsSaveNode(m,tlabel)) q:tlabel="" 
+		s fitm="",fitm=$o($$$mtFLabels(m,tlabel,fitm),1,qtbl)
+		#; PVA131: pass fitm by reference
+		#; PVA149: Adjust for valref argument changes. 
+		s newname=lname
+		s qtlbl=$s($li(qtbl,2):$tr(tlabel,".",$c(2)),1:$li(qtbl))
+		if $$valref($li(qtbl),.newname,delid,m,qtlbl,.fitm,.tref) d:found&&(callname'="tablist") error(27) s found=1,stref=tref,sqtbl=$li(qtbl),sfitm=fitm,qual=$s($li(qtbl,2):$tr(tlabel,".",$c(2)),1:$li(qtbl))
+		#; PVA104: treat out of scope resolution as not found
+	if $lf($g($$$mtFromList(m)),$p(fitm,"^",2,*))<$g(firsttbl(m),1) s found=0
+		if found,"CRV ALV"[mt("t") quit
+	}
+	RETURN found
+	
+	#; PVA050: new function valref; (belongs in qaqpslx, but that got too big). 
+	#; PVA131: fitm now in/out argument
+	#; PVA149: unify lname and chaing args; eliminate newname argument
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+valref(qtbl,chain,delid,n,label,fitm,tref)
+	#; qtble - input - qualified table or view name to validate against (this name underlies a possible
+	#;                correlation name for table or view. This is a synthetic name for table subqueries.
+	#; chain - input -  the arrow chain so far. lname would be the colum reference
+	#;                  to the right of the rightmost arrow. NOTE: chain is chain of unqualified names, and follows that
+	#;                  convention, having "." not $c(2). The external 'name' variable is a qualified chain and uses $c(2).
+	#;         output - modified if %id used or single column idkey mapped to rowid
+	#; delid - input - 1: lname is delimited id, else 0
+	#; n     - input - source query number (corresponding to left most chain element). This 
+	#;                 is where =* conditions added. 
+	#; label - input - either correlation name or same as qtbl, that is, what should be used in ptln.
+	#; fitm - input - (any) $$$mtFromTableName(fitm) entry corresponding to qtbl. This is required.
+	#;      - output - if lname resolves to table field exposed by a merged view, the fitm it actually resolves to
+	#; tref - output - qualfied table name of referenced table
+	#; RETURN: 1 found, 0 not found ; in case of ambiguity, does not return.
+	n found,vnum,tbinf,irn,idb,idifn,ifn,kids,uqcol,isref,lname,newname,val1,val2,tmpchain,strname
+	s found=0,val="",lname=$$$LastPiece(chain,"->"),newname=lname,isref=0
+	#; PVA280: add %value, %key, %vid below
+	if 'delid,",%CLASSNAME,%TABLENAME,%VALUE,%KEY,%VID,"[(","_lname_",") QUIT 0 // these can't be references 
+	#; PVA149: fitm now required, not used as flag for when view validation is possible;
+	#;         So, must explicitly consider a views only for leftmost validation.
+	s vnum=$s($l(chain,"->")=1:$$getviewnum^%qaqpsl2(fitm),1:0)
+	if "CRV ALV"[mt("t")||(($g(callname)="tablist")) s found=1,tref=qtbl quit 1 ; all references are self references without dictionary ;-)	// DPV3441 (tablist)
+		#; Note: ptln() can only be used to validate the right hand side of the rightmost arrow
+		#;  because the validitation for b of a->b is completely different from the validation of
+		#;  b for a->b->c. Also, we validate and normalize id references as we parse an arrow chain,
+		#;  and only enter the complete arrow chain in ptln. What we could do, in the future, is 
+		#;  cache the lists of references and child tables to avoid excess dictionary access.
+	if vnum {
+		if 'delid,"%ID"=lname QUIT 0 ; never found for a view 
+		if "%ID"=lname,vnum<0 QUIT 0 ; ensure never match dummy %id added for streamed views. 
+		#; PVA149: will now support arrow syntax against streamed views
+		#;    must follow a view column to base table to validate whether it is a 
+		#;    reference (views 'inheriting' reference attribute of projected columns
+		#;    and supporting some arrow syntax is a new feature with pva050)  
+		#; Note: if a table subquery exports a reference ambiguously, e.g. SELECT A.C, B.C, ..
+		#;   where A.C is a reference, but two columns are called C, the following just 
+		#;   treats the view as not exporting C as a reference. This seems defensible, though
+		#;   different from the an attempt to refer to C as a column reference, which will
+		#;   produce an ambiguity error.
+		s:vnum<0 vnum=-vnum
+		s uqcol=$lg($g(%viewinfo("vcols",vnum,lname))) QUIT:uqcol="" 0
+		s val=$li(%viewinfo("vcols",vnum,lname),2) // PVA149: val needed later to add =*
+		s fitm=$p($p($$$mtV(val),"^",2,3),"->") //PVA131; PVA149: account for new arrow convention
+		s irn=$$$smdLoadGetIrn($p(uqcol,".",1,2))	// No need for table function check here, view can't be a table function
+		s lname=$tr($$$LastPiece(uqcol,"."),$c(2),".")
+	}
+	else {
+		s irn=$$$smdLoadGetIrn(qtbl,$g($$$mtTvf(+fitm,qtbl)))
+	}
+	s idb=$$$smdRowIDLogicalFields(1,irn),idifn=$$$smdRowIDField(1,irn)
+	if 'delid,("%ID"=lname||("%REALID"=lname)) { s ifn=idifn } // JMM1327=
+	else  { s ifn=$$$smdGetIfn(1,irn,lname) }
+	if ifn=idifn,idb]"",idb'["," s ifn=idb // allow ID to be used as a reference if it is based on a single field which is a reference (DPV2091 10/24/2003 - Updated - fix check of idb being  single field)
+	if $g($$$smd(1,irn,23))[("^"_ifn_",") s found=1,isref=1,tref=$$$UPPER($p($p($p($$$smd(1,irn,23),"^"_ifn_",",2),",",2),"^"))	// DPV2060-
+	if vnum g valrfend ; views don't have child tables 
+	if 'delid,("%ID"=lname||("%REALID"=lname)) g valrfend ; don't look for %ID as a child table     JMM1327=
+	s kids=$$$smdKids(1,irn)	// DPV2246
+	for i=1:1:$ll(kids) { if $tr(lname,".",$c(2))=$$$UPPER($p($li(kids,i),".",2)) d:found&&(callname'="tablist") error(27) s found=1,tref=$$$UPPER($li(kids,i)) }
+	
+valrfend	
+	if isref{
+		if ifn=idb,'info s ifn=idifn ; now we want to map this way for parse tree. We needed to go the other way to check if reference.
+		s newname=$$$smdGetFieldName(ifn),newname=$$$UPPER(newname)
+		s:vnum=0 $$$LastPiece(chain,"->")=newname
+		if 'delid,("%ID"=lname||("%REALID"=lname)) s $$$LastPiece(name,"->")=$tr(newname,".",$c(2))
+	}	
+	QUIT:'found found
+	n sname s sname=name
+		#; PVA052: record arrow referenced tables for SELECT privs in info compile and not in a view
+	if found,($g(inview)=""),('$d(mtc(0,0,"select privs",tref))) {
+		set mtc(0,0,"select privs",tref)=""
+		if '$d(mtc(0,0,"select privs",tref,"realname")) { do realname^%qaqpsq(tref) }
+	}
+		#; PVA149: Add =* implementing arrow syntax (and the required $$$mtV() entries)
+	if isref {
+		d column^%qaqpsl2(delid,n,n,label,chain,qtbl,fitm,vnum,val) s val1=val
+	#; AK840
+		d:floc'="" retloc^%qaqpsl2(val)  ;  for fname right before ->
+		d column^%qaqpsl2(0,n,n,label,chain_"->%ID",tref,fitm,0,"") 
+	}
+	else // child table
+	{
+		s tmpchain=chain,$$$LastPiece(tmpchain,"->")="%ID"
+		d column^%qaqpsl2(0,n,n,label,tmpchain,qtbl,fitm,0,"") s val1=val
+		s irn=$$$smdLoadGetIrn(tref)	// no need for table function check here, tvf can't be a child table
+		#; PVA227: need to apply $$$$UPPER to parentref name
+		d column^%qaqpsl2(0,n,n,label,chain_"->"_$$$UPPER($$$smdParentRefField(1,irn)),tref,fitm,0,"")
+	}
+	if '$d(impjns(val1,val)) { s val2=val d putlog("v^=*^^"_val1_"^"_val_"^") s impjns(val1,val2)=val_","_n,logic=0 }
+	s name=sname
+	QUIT found	
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	#; PVA050: new function arrow; (belongs in qaqpslx, but that got too big). 
+	#; PVA149: replace input arg lname with inout chain arg
+arrow(m,n,qtbl,label,chain,tref,fitm) ; parse, validate, create vals and maintain ptln for an arrow chain
+			#; Validity through the first reference is assumed. The parsing state should be that
+			#; check() has been called on the leftmost arrow.
+	#; m - input - query number of query directly containing reference
+	#; n - input - query number of possibly outer query the reference resolved to
+	#; qtbl - input - the fully qualified table or view (or synthetic table subquery) name the leftmost reference resolves to
+	#; label - input - either correlation name or same as qtbl, that is, what should be used in ptln.
+	#; chain - input -  the arrow chain so far. lname would be the colum reference
+	#;                  to the right of the rightmost arrow. NOTE: chain is chain of unqualified names, and follows that
+	#;                  convention, having "." not $c(2). The external 'name' variable is a qualified chain and uses $c(2).
+	#;         output - modified if %id used or single column idkey mapped to rowid
+	#; tref - input - the qualified table name referenced by the initial valid reference
+	#; fitm - input - $$$mtFromTableName(fitm) corresponding to label of query n. 
+	#; PVA149: adjust for various argument changes.
+	n delid,vnum,oval,irn
+	#; AK840
+	d:callname="findname" getloc^%qaqpsl2  ;  for fname right after 1st ->
+	s chain=chain_"->"_value,name=name_"->"_value,delid=(%delid=2) 
+	if " %CLASSNAME %ID %REALID %KEY %TABLENAME %VALUE %VID "[(" "_token_" ") { d lext } // PVA280 JMM1327=
+	else { d skip("ID")} // anything else invalid
+	for  {
+		if 'info,'$g(mt("shtop",m)) { set irn=$$smdLoadGetIrn^%qTable(tref) if irn,$$$smdSharded(1,irn)=1 { do setshard^%qaqpsq(m) } }  ;  AK1034	// Make sure irn is defined, tref might be something like "SQLUSER.tsq1%"
+		if $$check("->") {
+			if '$$valref(tref,.chain,delid,n,label,.fitm,.tref) { s name=name_"->" d error(29) }
+	#; AK840
+			d:callname="findname" getloc^%qaqpsl2  ;  for fname right after ->
+			s chain=chain_"->"_value,name=name_"->"_value,delid=(%delid=2) 
+		if " %CLASSNAME %ID %REALID %KEY %TABLENAME %VALUE %VID "[(" "_token_" ") { d lext } // PVA280 JMM1327
+		else { d skip("ID")} // anything else invalid
+		}
+		else { d:'$$valcol^%qaqpsl2(n,delid,tref,label,chain,"",.oval,.vnum) error(29) quit }
+	}
+	d column^%qaqpsl2(delid,m,n,label,.chain,tref,fitm,vnum,oval)
+	#; AK840
+	d:floc'="" retloc^%qaqpsl2(val)  ;  for fname right before ->
+	QUIT	
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	
+	
+	#; Prepare THROUGH statement; this means grabbing the associated foreign server,
+	#; executing a Prepare() with the query text and populating some local metadata structures
+	#; with the information returned from the external server
+through
+	RETURN:callname="tablist"
+	new serverClass, serverOriginal, serverSchema, serverSqlName, serverUpper
+	do check("FOREIGN")
+	do skipid("SERVER") // FOREIGN is optional, SERVER is not!
+	do ParseIdentifier^%qaqpDDLParser(.serverUpper, .serverOriginal)
+	set serverClass = $$LookUpClassName^%apiDDL2(serverOriginal)
+	if serverClass = "" {
+		// New SQLCODE error -245: Foreign server not found
+		do error2(245, serverOriginal)
+	}
+	// Check if the server explicitly disallows passthrough
+	if $PARAMETER(serverClass, "PASSTHROUGH") = 0 {
+		// New SQLCODE error -246: Cannot execute THROUGH statement on foreign server that does not support PASSTHROUGH
+		do error2(246, serverOriginal)
+	} else { // and check that the underlying FDW supports it
+		new fdwClass, isXdbcWrapper, memo
+		set fdwClass = $$getNewFdwClassNameFromOldClassName^%apiSQL($PARAMETER(serverClass, "FDWNAME"))	// might be pre-MJG338 fdw name
+		if fdwClass = "" {
+			do error2(248, serverOriginal)
+		}
+		set isXdbcWrapper = $$IsDerivedFromMemoized^%occLibrary(fdwClass, $$$FDWXdbcSuperClass, .memo)
+		if 'isXdbcWrapper, '$$IsDerivedFromMemoized^%occLibrary(fdwClass, $$$FDWSqlEnabledSuperClass, .memo) {
+			// New SQLCODE error -246: Cannot execute THROUGH statement on foreign server that does not support THROUGH
+			do error2(246, serverOriginal)
+		}
+	}
+	// get the full schema/server name for privilege checking later
+	set serverSchema = $$$comClassKeyGet(serverClass, $$$cCLASSsqlschemaname)
+	set serverSqlName = $$$comClassKeyGet(serverClass, $$$cCLASSsqltablename)
+	set:info mtc(0,0,"through-server") = serverSchema _ "." _ serverSqlName
+.
+	new queryText
+	// weird microsoft sql server thing where a CTE might need to have ;WITH at the start
+	if token = ";" {
+		do skip(";")
+		set queryText = ";"
+	} else {
+		set queryText = ""
+	}
+	// --- Making sure this is a <select statement> only OR a CTE <with clause> followed by a <select statement> ---
+	new cteLexInfo
+	if token="WITH" { // --- Process the CTE's <with clause> ---
+		set cteLexInfo=$$lexmark^%qaqpsq  // Save the CTE's current lexical context information!
+		do skip("WITH")
+		do cte(0) // Skip over the CTE's <with clause> ::= WITH <with list>  [See 'sqlbnf.txt' for details]
+	}
+	do:token'="SELECT" error2(1,"SELECT")  // Only <select statement>s (<selct>) are supported within the <through statement>! 
+	do:$d(cteLexInfo) lexgo^%qaqpsq(cteLexInfo)  // Restore the CTE's saved lexical context information!
+	// At this point we know the passthrough is supported. Now we have to take the remaining input provided and prepare it with the 
+	// foreign server. After a successful we'll fill out metadata and cache the prepared object to be used later
+	// First, grab the rest of this line, then grab any successive lines in the input in full
+	new fdwObject, lineNum, sc
+	#dim fdwObject As %SQL.FDW.Wrapper.BaseWrapper
+	set queryText = queryText_$e(sql, f, *) // f = first character of current token, should be SELECT
+	for lineNum=line+1:1:input-1 { // start from line+1 b/c we already copied the rest of this line above, go to input-1 b/c we always add IRIS-specific OPTIONS comment to an entirely new line
+		set queryText = queryText_$c(13,10)_input(lineNum)
+	}
+		// We need a config object for FDW instantiation
+	new config, serverConfig
+	set serverConfig = $CLASSMETHOD(serverClass, "serializeConfig")
+	set config = {}
+	set config.server = serverConfig
+	set config.tables = []	// no table is associated when doing passthrough
+	set config.sql = queryText
+	set config.sqlParameters = []
+	set fdwObject = $CLASSMETHOD(fdwClass, "%New", config)
+	if fdwObject = "" {
+		do error2(270,$system.Status.GetErrorText($g(%objlasterror)))
+	}
+	// Fill out the metadata structure in mtc(0,0) as needed -see %qaqpif2 for definition of mtc(0,0) nodes
+	new resultSetMetadata
+	#dim resultSetMetadata As %SQL.FDW.Metadata.ResultMetadata
+	if isXdbcWrapper {
+		new parameterMetadata 
+		#dim parameterMetadata As %XDBC.Gateway.ParameterMetaData
+		set parameterMetadata = fdwObject.getParameterMetaData()
+		if parameterMetadata.GetParameterCount() { 
+			do error(247)	// for now, there should not be parameters in a statement used via THROUGH! SQLCODE=-247 added for this
+		}
+	}
+	set resultSetMetadata = fdwObject.getMetadata()
+	if resultSetMetadata = "" {
+		set %msg = $$$FormatText($$$Text("Could not get result set metadata", "%SQL.Parser"))
+		do error(400)
+	}
+.
+	set:info mtc(0,0,"parameter") = 0
+	// mtc(0,0,"select",1..n) = $c(1) pieces
+	new i, irisType, label, length, odbcType, odbcTypeName
+	set:info mtc(0,0,"select") = resultSetMetadata.getColumnCount()
+	if info {
+		for i=1:1:mtc(0,0,"select") {
+			// these get reused a couple times
+			set label = resultSetMetadata.getColumnLabel(i)
+			set length = resultSetMetadata.getColumnDisplaySize(i)
+			set odbcType = resultSetMetadata.getColumnType(i)
+			set mtc(0,0,"select",i) = label_$c(1)_		// Fieldname (AS name if one is used)
+							label_$c(1,1)_ 	// Fieldname again (again AS clause name based on other code) and empty index
+							length_$c(1,1)_	// length (display size)
+							0_$c(1,1,1,1)_		// always 0, then irn / ifn / always null which don't apply for THROUGH
+							label_$c(1,1)_ 	// default title (AS label), then val # which doesn't apply
+							label_$c(1) 		// "select item text" so let's use the label again?. and 13th index is always NULL!
+			
+			// More info
+			// mtc(0,0,"select",1..n,1) = $c(1) pieces
+			// I put descriptors next to each index but you can see full description in %qaqpif2
+			set odbcTypeName = $$$UPPER(resultSetMetadata.getColumnTypeName(i))
+			set irisType = $p($$$GetSysDatatypes(odbcTypeName),"(") 
+			set:irisType="" irisType = $p($$$GetUserDatatypes(odbcTypeName),"(")
+			set:irisType="" irisType = odbcTypeName
+			set mtc(0,0,"select",i,1) = label_$c(1)_ 								// name
+								odbcType_$c(1)_ 							// ODBC type
+								length_$c(1)_ 								// length
+								resultSetMetadata.getPrecision(i)_$c(1)_ 	// precision
+								resultSetMetadata.getScale(i)_$c(1)_ 		// scale
+								1_$c(1)_									// nullable
+								0_$c(1)_									// readonly
+								label_$c(1)_								// label
+								resultSetMetadata.getSchemaName(i)_$c(1,1)_	// schema name, column qualifier (always null)
+								resultSetMetadata.getTableName(i)_$c(1)_	// table name
+								"*"_$c(1)_									// collation function (* = none)
+								irisType_$c(1,1,1)_							// IRIS datatype, projecting prop's name, projecting props' extent
+								odbcType_$c(1)_								// odbc type again
+								resultSetMetadata.getColumnName(i)_			// column name as defined in table
+								$c(1,1,1,1,1,1,1,1,1,1,1,1)					// 18-29 do not apply for THROUGH
+		}
+	}
+	if $g(%caller)="xDBC" {
+		#define ThroughStatementHandle %qsc(%qacn, 31)
+		set:$d(%qacn) $$$ThroughStatementHandle = fdwObject
+	} elseif info {
+		set mtc(0,0,"through-fdwObject") = fdwObject
+	}
+	// After we return from here, we're going to STOP compiling. All we need to do is return to whatever the caller of this info compile was
+	// and let them use the above metadata to proceed with executing. We pass the WHOLE prep/execution to the external source so there's
+	// nothing more for us to compile!
+	RETURN
+.
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	
+/// Determine the SQL Statement Type of any <sql statement> passed via the 'sql'
+/// parameter (either as a string or an array)...
+getSQLStmtType(&sql) [%msg,SQLCODE] PUBLIC {
+	new %msg,SQLCODE
+	set SQLCODE=0,%msg=""
+	set sqlStmtType=""
+ try {
+	do preparse^%qaqpreparser(.sql,,$c(10),,.sqlStmtType,,,,,,,,$LB(1))       // Supports 'sql' as a string with $c(10) as a new-line delimiter!
+	do:SQLCODE'=0 preparse^%qaqpreparser(.sql,,,,.sqlStmtType,,,,,,,,$LB(1))  // Re-process 'sql' without a new-line delimiter!
+ }
+ catch { }
+	RETURN sqlStmtType
+}
+.
+sqlStrEscape(str) {  ;  Escape cr/lf characters in this string so it is a valid string literal for SQL
+	RETURN $replace($replace(str,$char(13),"' || char(13) || '"),$char(10),"' || char(10) || '")
+}
+.
+#INCLUDE %qaqplex
+#include %stringreplace
+#include %quoter
+.
+---
+
+

@@ -1,0 +1,159 @@
+====
+qaqcas2
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqcas2^MAC^^^0
+%qaqcas2  // Generate MUMPS code from ASL (split from %aaasl*)
+	;; COMPONENTS :: SQL/CodeGeneration
+	#;
+#INCLUDE %msql
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Generate M Code from 'asl': Part 3
+	; Author:        Michael Pantaleo
+	; Date Started:  15 May 1996
+	; Maintenance History: [ XXXnnn (MM/DD/YY) - Description ]
+	;
+	;  BJB445  (03/23/2010) - Clean up all msqlvar arrays on CLOSE or error for SELECT
+	;  DPV2849 (01/25/2007) - More 999 -> $$$MaxStringLength changes
+	;  DPV2697 (07/12/2006) - Use $e(...,*) and $e(...,...,*) in SQL code
+	;  DPV2685 (06/29/2006) - Kill the transaction variables TS and TS2 at the end of UPD/DEL
+	;                         SQL Fix Prodlog 51799: Rollback does not work as we expect: ADODB+VB6
+	;  DPV2594 (02/22/2006) - Fix TCOMMIT when no rows where updated and auto_commit=off, but update did not start the transaction
+	;  DPV2426 (05/06/2005) - Fix UPDATE/DELETE of multiple rows to be within a single transaction when AUTOCOMMIT_ON
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  DPV1863 (10/25/2002) - Kill ("s") and ("t") variables if ODBC and filenum is TRUE
+	;  AK387   (08/03/1999) - EMIS: TOP, %ROWCOUNT
+	;  AK348   (01/13/1999) - CCS: Multirow INSERT - copy %insel
+	;  AK323   (07/10/98)   - Korea: Don't kill all ODBC acn info
+	;  DPV837  (05/13/98)   - Eliminate old datatype
+	;  DPV751  (06/24/97)   - Copy %aaa* to %qcg*.  Derived from %aaasl2
+	;  MRP570c (3/01/97)    - Replace '%mtpmode' with $zu(115) & Optimize TP for Windows NT & Windows 95 M platforms...
+	;  DPV710  (02/11/97)   - Allow code generation of lines up to 511 in length
+	;  MRP671  (02/11/97)   - System Wide Lock Timeout for SQL...
+	;  MIT063  (01/24/97)   - added #sqlcompile statement
+	;  DPV700  (01/23/97)   - Added new scratch variable to msqlvars
+	;  MRP665  (01/16/97)   - Fixed problems with call to 'extint^%aaasl1'
+	;  MRP643  (10/02/96)   - Modularize Embedded SQL Code: 'gvar' to '$$$MSQLModuleVariable'...
+	;  DPV676  (09/05/96)   - Fix line over 255 caused by MRP640
+	;  MRP640  (08/26/96)   - Fix Multiple ANDed LIKE :hostvar Problems...
+	;  MRP631  (07/25/96)   - Initialize INTO variables for COUNT(...)...
+	;  MRP625  (07/01/96)   - Use Map for qualifying IN conditions...
+	;  MRP622  (06/28/96)   - Check %STARTSWITH :hostvar for ext->int...
+	;  MRP570  (06/26/96)   - Transaction Processing...
+	;  MRP607  (05/15/96)   - Do appropriate Ext->Int Conversion for ORACLE functions (e.g. TO_DATE)
+	;                      --- Initial Creation of entire routine---
+	;    
+#ENDIF  ;-------------------------------------------------------------
+	$$$Abort  ;  Not an Entry Point!!
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+likepat(likepatl,likepatu) ; Set-Up all the calls to $$likepat for Host 
+	#;                   Variables...
+	n ii,log,val
+	#; ------ Spin Through All 'likepatl' First ------
+	f ii=1:1 s val=$p(likepatl,",",ii) q:'+val  d  ; Set-Up LIKE Pattern
+	. d setpat(val,likepatl,.likepatu)
+	#; ------ Spin Through All Logicals Second ------
+	s log=""
+	f  s log=$o($$$mtL(log)) q:'+log  d  ; ---Set-Up LIKE Pattern---
+	. i '+$$$mtLOpHostInfo($g($$$mtLOp(log))) q  ; Nothing to do...
+	. s val=$$$mtLOperand2($g($$$mtL(log))) q:'+val
+	. d setpat(val,likepatl,.likepatu)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setpat(val,likepatl,likepatu) ; Set-Up the call to $$likepat for proper vals...
+	n lv,origval,patstrt,sep
+	i (likepatu_",")[(","_(+val)_",") q  ; Already Processed...
+	s origval=+$$fldval(val) q:'+origval
+	s patstrt="",lv=$$$getVarName("patlv")
+	s:lv["(" lv=$e(lv,1,*-1)
+	s sep=$s(lv["(":",",1:"(")
+	i $g($$$mtVOp(+origval))'="" s patstrt=$$$mtVOp(+origval)
+	i patstrt="",$g($$$mtVOp2(+origval))'="" s patstrt=$$$mtVOp2(+origval)
+	QUIT:patstrt=""  ; This Should NEVER Happen!!!
+	QUIT:'+$p(patstrt,$c(1),3)  ; Not a Host Variable LIKE Pattern...
+	s line="s "_lv_sep_(+val)_")=$$likepat^%qaqpop("_$g(pti(+val))_","_$p(patstrt,$c(1),2)_")" $$$liin(.line)
+	s line="s "_lv_sep_(+val)_",1)="_$s($p(patstrt,$c(1),1+10)'="":"$s($e("_lv_sep_(+val)_"),1,2)="".E""!($e("_lv_sep_(+val)_"),1,2)=""1E""):"""",1:""""_$p("_lv_sep_(+val)_"),"""""""",2)_"""")",1:$g(pti(+val))) $$$liin(.line)
+	i (","_likepatl)[(","_(+val)_"*2,") d  ; --- Part 2 ---
+	. s line="s "_lv_sep_(+val)_",2)="
+	. s line=line_$s($p(patstrt,$c(1),pos+10)'="":"$s($e($p("_lv_sep_(+val)_"),"","",2,*),1,2)="".E""!($e($p("_lv_sep_(+val)_"),"","",2,*),1,2)=""1E""):"""",1:""""_$p($p("_lv_sep_(+val)_"),"","",2,*),"""""""")_"""")",1:$g(pti(+val))) $$$liin(.line)
+	d likepatu(+val)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+fldval(val) ; Return the 'val' for a "real" or M variable...
+	s info=$g($$$mtV(+val))
+	QUIT:info="" ""  ; Nothing to Return...
+	i ",f,x,"[(","_$e(info)_",") QUIT val  ; Found a Field or M variable
+	i $e(info)="v" QUIT $$fldval($p(info,"^",4))  ; Expression...
+	QUIT ""
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+likepatu(val) ; Put 'val' in the 'likepatu' list...
+	s likepatu=likepatu_val_","
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+oraetoi(vals) ;
+	n ii,info,jj,log,loginfo,val
+	f ii=1:1 s val=$p(vals,",",ii) q:val=""  d
+	. s info=$g($$$mtV(val))
+	. q:$e(info)'="e"                        ; Not a valid M Function...
+	. q:'$$orafunc^%qaqpslx($p(info,"^",5))  ; Not a valid ORACLE Function
+	. ; ------ Seach for Conditions were this is Used ------
+	. f jj=1:1:$$$maxl d  ; Maybe do ext->int...
+	.. s loginfo=$$$mtL(jj)
+	.. i $e(loginfo)="v",(("^"_$p(loginfo,"^",4,*))[("^"_val_"^")) d checkei(loginfo,jj,1)
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+checkei(loginfo,log,orafunc) ;
+	QUIT:mt("sqlcomp")'="%INTEXT"
+	i $e(loginfo)="v","'='<'>']IN"[$p(loginfo,"^",2)!($$$mtLOpOperator($g($$$mtLOp(log)))="?"&($e($p($g($$$mtLOp(log)),$c(1),11))'=""""))!(($p(loginfo,"^",2)="%STARTSWITH")&($e($g($$$mtV(+$p(loginfo,"^",5))))="x"))
+	e  QUIT  ; Don't check for Ext->Int Code... 
+	#;
+	#; ------ Check for Ext->Int code ------
+	#;
+	n cont,ifn,info,irn,mtval
+	s cont=1,orafunc=+$g(orafunc)
+	i $p(loginfo,"^",2)="IN" d  q:'cont  ; Only do Ext->Int for [Date & Time]..
+	. s info=$$$mtV($p(loginfo,"^",4))
+	. i $e(info)'="f" s cont=0 q  ; Nothing to do...
+	. s ifn=$p(info,"^",3),irn=$$$smdGetIrnFromIfn(+ifn)
+	#; DPV837
+	. i ",DATE,TIME,"'[(","_$$GetFieldCategory^%qaqcct(ifn)_",") s cont=0 q
+	s mtval=$p(loginfo,"^",4)
+	s j=$$$mtV($p(loginfo,"^",4)) 
+	i "fxt"[$e(j)||(orafunc&($e(j)="e")) d  ; ---Do ext->int code swap---
+	. s val=$p(loginfo,"^",5),k=$$$mtV(val) 
+	. s v=loginfo
+	. d:"tfxft"[($e(j)_$e(k))||("vfv"[($e(j)_$e(k)))||(orafunc&("efe"[($e(j)_$e(k)))) extint^%qaqcasl
+	. i $p(loginfo,"^",2)="IN" d  ; ---IN---
+	.. n pos 
+	.. f pos=6:1 s val=$p(loginfo,"^",pos) q:val=""  d  ; ---IN---
+	... s k=$$$mtV(val) 
+	... d:"tfxft"[($e(j)_$e(k))||("vfv"[($e(j)_$e(k)))||(orafunc&("efe"[($e(j)_$e(k)))) extint^%qaqcasl
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+extintls(val) ; Record the 'val's that have External->Internal code performed..
+	i +$g(extintls),$l(extintls(extintls))>500 s extintls=extintls+1
+	i $g(extintls(+$g(extintls)))="" s extintls=$g(extintls)+1,extintls(extintls)=","
+	s extintls(extintls)=extintls(extintls)_val_","
+	QUIT
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+msqlvars(cflag,err=0,type="k") ; Return a string of the M SQL Module Variables...
+	n line s line=""
+	i %msqlvar="i%%" QUIT line
+	i 'cflag d  QUIT line  ; --- Non-Cursor Based Queries ---
+	. i %msqlvar["(" d  QUIT  ; --- Handle Array Module Vars ---
+	.. s line=type_" %val"_$s($$$mtStatementType="INS":",%insert,%insel",1:"")
+.
+	#; --- else, Cursor Based Queries ---
+	  #;  for ODBC, enough to KILL the "d" node
+	If %msqlvar["(" {
+		s line=$select(%msqlvar["i%":"k",1:type)_" "_$$$MakeMSQLModuleVariable("d")
+		QUIT line
+	}
+	#; --- else, Handle Non-Array SQL Module Variable ---
+	s line=$select(%msqlvar["i%":"k",1:type)_" "
+	s line=line_$$$MakeMSQLModuleVariable("d")
+	QUIT line
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+.
+---

@@ -269,15 +269,16 @@ Class hi {
                 (write_argument
                   (expression
                     (expr_atom
-                      (class_parameter_ref
+                      (oref_chain_expr
                         (class_ref
                           (keyword_pound_pound_class)
                           (bracket)
                           (class_name)
                           (bracket))
-                        (parameter_name
-                          (member_name
-                            (identifier_segment_immediate)))))))))
+                        (oref_chain_segment
+                          (oref_parameter
+                            (member_name
+                              (identifier_segment_immediate))))))))))
             (statement
               (command_set
                 (keyword_set)
@@ -294,9 +295,8 @@ Class hi {
                     (expr_atom
                       (relative_dot_parameter
                         (oref_parameter
-                          (parameter_name
-                            (member_name
-                              (identifier_segment_immediate))))))))))
+                          (member_name
+                            (identifier_segment_immediate)))))))))
             (statement
               (command_if
                 (keyword_if)
@@ -304,9 +304,8 @@ Class hi {
                   (expr_atom
                     (relative_dot_parameter
                       (oref_parameter
-                        (parameter_name
-                          (member_name
-                            (identifier_segment_immediate))))))
+                        (member_name
+                          (identifier_segment_immediate)))))
                   (expr_tail
                     (binary_operator)
                     (expression

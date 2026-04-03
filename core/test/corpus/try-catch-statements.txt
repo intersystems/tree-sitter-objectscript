@@ -120,16 +120,17 @@ try catch tests
                   (write_device_control
                     (write_device_fflf)))))
             (statement
-              (macro
-                (macro_function
-                  (method_args
-                    (bracket)
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (bracket)))))
+              (command_macro
+                (macro
+                  (macro_function
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))
+                      (bracket))))))
             (else_block
               (keyword_else)
               (statement
@@ -212,15 +213,16 @@ try catch tests
                   (expr_atom
                     (system_defined_function
                       (built_in_func_with_pos_options
-                        (expression
-                          (expr_atom
-                            (oref_chain_expr
-                              (lvn
-                                (objectscript_identifier))
-                              (oref_chain_segment
-                                (oref_property
-                                  (property_name
-                                    (identifier_segment_immediate)))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (oref_chain_expr
+                                (lvn
+                                  (objectscript_identifier))
+                                (oref_chain_segment
+                                  (oref_property
+                                    (property_name
+                                      (identifier_segment_immediate))))))))
                         (method_arg
                           (expression
                             (expr_atom

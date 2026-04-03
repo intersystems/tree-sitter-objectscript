@@ -57,24 +57,6 @@ function build_command_rule_argumentful_block_allowed($, commandKeyword, command
  * @param {RuleOrLiteral} commandKeyword
  * @returns {RuleOrLiteral}
  */
-function build_command_rule_special_argumentless($, commandKeyword) {
-  return choice(
-      seq(
-          commandKeyword,
-          optional($.post_conditional),
-          $._argumentless_command_end,
-          repeat($.statement),
-          $._termination,
-      ),
-      seq(commandKeyword, optional($.post_conditional), $._termination),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
 function build_command_rule_argumentless($, commandKeyword) {
   return seq(
     commandKeyword,
@@ -173,6 +155,9 @@ module.exports = grammar(objectscript_expr, {
     $.html_marker_reversed,
     $.embedded_js_special_case,
     $.embedded_js_special_case_complete,
+    $.pound_if_special_case,
+    $.pound_if_special_case_else,
+    $.pound_if_special_case_else_if,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -384,10 +369,35 @@ module.exports = grammar(objectscript_expr, {
     pound_if: ($) =>
       seq(
           $.keyword_pound_if,
-        $.expression,
-        repeat(choice($.statement, $.pound_elseif)),
-        optional($.pound_else),
-          $.keyword_pound_endif,
+          choice(
+            seq(
+              $.expression,
+              repeat(choice($.statement, $.pound_elseif)),
+              optional($.pound_else),
+              $.keyword_pound_endif,
+            ),
+            seq(
+              $.pound_if_special_case,
+              $.keyword_pound_endif
+            ),
+            seq(
+              $.pound_if_special_case_else,
+              choice(
+                $.keyword_pound_else,
+                seq(
+                  $.keyword_pound_elseif,
+                  '0'
+                )
+              )
+            ),
+            seq(
+              $.pound_if_special_case_else_if,
+              $.keyword_pound_elseif,
+              $.expression,
+              repeat($.statement),
+              $.keyword_pound_endif,
+            ),
+        )
       ),
     pound_ifdef: ($) =>
       seq(
@@ -492,6 +502,7 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_property,
             $.relative_dot_method,
             $.system_defined_function,
+            $.macro,
           ),
           repeat1($.oref_chain_segment),
         ),
@@ -538,7 +549,7 @@ module.exports = grammar(objectscript_expr, {
           optional($.post_conditional),
           $._argumentless_command_end,
           repeat1(alias($.statement, $.do_statement_after)),
-          repeat1($.dotted_statement),
+          repeat($.dotted_statement),
           ),
         ),
         // DO with parameters
@@ -548,6 +559,7 @@ module.exports = grammar(objectscript_expr, {
           repeat_with_commas($.do_parameter),
         ),
       ),
+
     do_parameter: ($) =>
         seq(
             choice(
@@ -572,6 +584,8 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_property,
             $.relative_dot_method,
             $.parenthetical_expression,
+            $.macro,
+            $.extrinsic_function,
           ),
           repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
@@ -1198,11 +1212,9 @@ module.exports = grammar(objectscript_expr, {
         repeat_with_commas($.merge_argument),
       ),
     merge_argument: ($) => seq(
-      optional($._xecute_arg_invalid),
-      choice($.glvn, $.indirection),
+      $.set_target,
       '=',
-      optional($._xecute_arg_invalid),
-      choice($.glvn, $.indirection),
+      $.set_target,
     ),
 
     command_return: ($) =>
@@ -1244,8 +1256,7 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     command_continue: ($) =>
-        // Commands on the same line after CONTINUE are unreachable; parse them under CONTINUE.
-      build_command_rule_special_argumentless($, $.keyword_continue),
+      build_command_rule_argumentless($, $.keyword_continue),
     command_tcommit: ($) =>
       build_command_rule_argumentless($, $.keyword_tcommit),
     command_trollback: ($) =>
@@ -1603,7 +1614,7 @@ module.exports = grammar(objectscript_expr, {
       seq(
         '[',
         optional(
-          repeat_with_commas(choice($.objectscript_identifier, $.objectscript_identifier_special)),
+          repeat_with_commas(choice($.objectscript_identifier, $.objectscript_identifier_special, $.macro)),
         ),
         ']',
       ),
@@ -1656,6 +1667,18 @@ module.exports = grammar(objectscript_expr, {
         alias(token.immediate(')'), $.bracket),
 
       ),
+
+    command_macro: ($) => 
+      prec.right(seq(
+        $.macro,
+        optional($.post_conditional),
+        repeat(
+          seq(
+            ',',
+            $.do_parameter,
+          )
+        )
+      )),
 
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>

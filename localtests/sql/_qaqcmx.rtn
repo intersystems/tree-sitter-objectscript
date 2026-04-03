@@ -1,0 +1,873 @@
+====
+qaqcmx
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqcmx^MAC^^^0
+%qaqcmx	// code generation for non-SELECT statements
+	;; COMPONENTS :: SQL/CodeGeneration
+	#;
+#INCLUDE %msql
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Code generator for ext tables
+	;
+	;  AK892   (10/31/2013) - GWQ: Use correct view field names
+	;  AK889   (10/02/2013) - GWQ: Quote field name for first IDKEY field
+	;  AK785   (08/19/2010) - GWQ: Double-paren constants in GW queries
+	;  BJB507  (09/06/2011) - new M SQL Module Variables for Non Cursor based SQL Gateway queries
+	;  AK811   (05/19/2011) - Use unsubscripted locals as FOR loop variable
+	;  AK765   (12/23/2009) - GWQ: fix ORDER BY in subqueries
+	;  AK751   (10/01/2009) - GWQ: Don't generate TOP ALL for main query
+	;  AK745   (08/10/2009) - Fixes to DISTINCT/GROUP and external queries
+	;  AK762   (12/02/2009) - GWQ: fix overflow lines for long query
+	;  AK753   (10/14/2009) - Clear vvvd() in the old gateway CLOSE code
+	;  PVA183  (05/26/2009) - Pre-optimizer support for TOP...ORDER BY in subqueries 
+	;  AK729   (03/18/2009) - EXTQGEN: fix ORDER BY generation
+	;  DPV3337 (01/08/2009) - New isJDBC, tmp1, useCOAL properly
+	;  BJB399  (11/13/2008) - Only use Field Alias when needed for linked table queries
+	;  BJB394  (08/05/2008) - Linked table query over 4000 char get extra char
+	;  AK707   (07/01/2008) - Generate NOT[ correctly in linked queries
+	;  AK695   (03/19/2008) - Gateway SELECT code-generation improvements
+	;  DPV2849 (01/25/2007) - More 999 -> $$$MaxStringLength changes
+	;  DPV2697 (07/12/2006) - Use $e(...,*) and $e(...,...,*) in SQL code
+	;  JMM004  (11/02/2004) - Support INSERT INTO <tablename> DEFAULT VALUES
+	;  AK590   (12/30/2003) - EXTAB: FROM with multiple OUTER JOIN
+	;  DPV2114 (11/03/2003) - Don't set $ze="" in Generated SQL code
+	;  DPV2091 (10/16/2003) - Final ^mdd elimination
+	;  DPV2090 (10/10/2003) - Make mt public in buildIdList
+	;  DPV2060 (08/21/2003) - Eliminate ^mdd - Use new 'smd' macros
+	;  AK478   (06/15/2001) - EXTAB: use exact casing for field name
+	;  AK395   (?9/?3/1999) - External tables
+	;
+#ENDIF  ;-------------------------------------------------------------
+#define odbcgatewayHandle "%SQLGateway"
+ #;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+quoterU(x)
+ quit $$quoterU^%qaqcmh(x)
+ 
+getLPat(str) n lpat,jj s lpat=""
+ f  d  q:str=""
+ . i $e(str,1,2)="1E" s lpat=lpat_"_",$e(str,1,2)="" QUIT
+ . i $e(str,1,2)=".E" s lpat=lpat_"%",$e(str,1,2)="" QUIT
+ . f jj=3:1:$l(str)+2 i $e(str,jj)'="""",$l($e(str,1,jj),"""")#2 QUIT
+ . i $e(str,1,2)'="1"""!(jj>($l(str)+1)) s lpat="",str="" QUIT  ;  not from LIKE
+ . s @("lpat=lpat_"_$e(str,2,jj-1)),$e(str,1,jj-1)=""
+ if lpat="" QUIT ""
+ QUIT $$squoter(lpat)
+ 
+msconvert(op,arg1,arg2) PUBLIC {
+	set fdt = $p(op,":",2)
+	set ppos=$f(fdt,"(")
+	if ppos { set dt=$e(fdt,1,ppos-2) }
+	else    { set dt=fdt }
+	set pos=$f(fdt,"MAXLEN=") 
+	set len=+$e(fdt,pos,*)
+	if $g(useCAST)||$g(useCASTCHAR) {
+		QUIT:dt="%Library.Date" "CAST("_arg1_" AS DATE)" 
+		QUIT:dt="%Library.Time" "CAST("_arg1_" AS TIME)"
+		QUIT:dt="%Library.Integer" "CAST("_arg1_" AS INT)"
+		if $g(useCAST) { QUIT "CAST("_arg1_" AS VARCHAR"_$s(len:"("_len_")",1:"")_")" }
+		QUIT "CAST("_arg1_" AS CHAR)"
+	}
+	set sqltype=$case(dt,"%Library.Date":"DATE",
+	                     "%Library.Time":"TIME",
+	                     "%Library.TimeStamp":"TIMESTAMP",
+	                     "%Library.PosixTime":"POSIXTIME",
+	                     "%Library.DateTime":"DATETIME",
+	                     "%Library.Integer":"INTEGER",
+	                     "%Library.BigInt":"BIGINT",
+	                     "%Library.SmallInt":"SMALLINT",
+	                     "%Library.TinyInt":"TINYINT",
+	                     "%Library.Numeric":"NUMERIC",
+	                     "%Library.Float":"DOUBLE",
+	                     "%Library.Double":"DOUBLE",
+	                     :"VARCHAR")
+	if len,sqltype="VARCHAR" { set sqltype="VARCHAR("_len_")" }
+	QUIT "CONVERT("_sqltype_","_arg1_$s(arg2="":"",1:","_arg2)_")" 
+} 
+ 
+datediff() ;
+	  n arg
+	#; AK785
+	set arg = $tr(arg1, "'()")
+ 	  if arg="yy" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_YEAR,"_arg2_","_arg3_")}"
+ 	  if arg="mm" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_MONTH,"_arg2_","_arg3_")}"
+ 	  if arg="wk" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_WEEK,"_arg2_","_arg3_")}"
+ 	  if arg="dd" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_DAY,"_arg2_","_arg3_")}"
+ 	  if arg="hh" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_HOUR,"_arg2_","_arg3_")}"
+ 	  if arg="mi" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_MINUTE,"_arg2_","_arg3_")}"
+ 	  if arg="ss" QUIT "{fn TIMESTAMPDIFF (SQL_TSI_SECOND,"_arg2_","_arg3_")}"
+	  QUIT " DATEDIFF ("_arg_","_arg2_","_arg3_")"
+ 	
+ 
+dateadd() ;
+	  n arg
+	#; AK785
+	set arg = $tr(arg1, "'()")
+ 	  if arg="yy" QUIT "{fn TIMESTAMPADD (SQL_TSI_YEAR,"_arg2_","_arg3_")}"
+ 	  if arg="mm" QUIT "{fn TIMESTAMPADD (SQL_TSI_MONTH,"_arg2_","_arg3_")}"
+ 	  if arg="wk" QUIT "{fn TIMESTAMPADD (SQL_TSI_WEEK,"_arg2_","_arg3_")}"
+ 	  if arg="dd" QUIT "{fn TIMESTAMPADD (SQL_TSI_DAY,"_arg2_","_arg3_")}"
+ 	  if arg="hh" QUIT "{fn TIMESTAMPADD (SQL_TSI_HOUR,"_arg2_","_arg3_")}"
+ 	  if arg="mi" QUIT "{fn TIMESTAMPADD (SQL_TSI_MINUTE,"_arg2_","_arg3_")}"
+ 	  if arg="ss" QUIT "{fn TIMESTAMPADD (SQL_TSI_SECOND,"_arg2_","_arg3_")}"
+	  QUIT " DATEADD ("_arg_","_arg2_","_arg3_")"
+ 	
+	
+toper(op) 
+     QUIT:op="%EXACT" ""
+     QUIT:op="%ODBCIN" ""
+     QUIT:op="%STARTSWITH" "LIKE"
+     QUIT:op="'=" "<>"
+     QUIT:op="'<" ">="  
+     QUIT:op="'>" "<=" 
+	#; AK707
+	QUIT:op="'[" "NOT["  
+	QUIT:op="']" "NOT]" 
+	#; AK707-
+     //QUIT:op="%PLUS" "+" 
+     //QUIT:op="%MINUS" "-"
+     QUIT:op="_" "||" 
+     QUIT:op="&" "AND" 
+     QUIT:op="!" "OR" 
+     QUIT:op="'" "NOT" 
+     QUIT:op="%L2SW" "" 
+     QUIT:op="FOR SOME" "exists" 
+     QUIT op 
+     
+     // buildIdFromName is called from parseExtField and vertVal^%qaqcmh
+buildIdFromName(table,schema,alias="") 
+	new i,list,exp,extname,fieldlength,fieldname
+	set list=$$IDFields^%apiSQL(table,schema)                       // $List of field names which make up the RowID, or if no IdKey, the field name of the RowID itself
+	set extname=$$ExternalTableName^%apiSQL(schema_"."_table,$g(dnQ))
+	if extname'="" { set extname=extname_"." }
+	if alias'="" {
+		#; The only callers of buildIdFromName are parseExtField^%qaqcmx (5 call sites) and vertVal^%qaqcmh (1 call site)
+		#; The single call site from vertVal^%qaqcmh will always pass in the alias "T"_$piece($$$mtV(vIdx),"^",2)
+		#; which is never quoted.
+		set extname=$select(alias = ("T"_$piece($$$mtV(vIdx),"^",2)): alias, 1: $$quoterU(alias))_"."
+	}
+	set exp=$$genidkey(1,.fieldlength)
+	QUIT:$ll(list)=1 exp
+	s exp=$$genconv(exp,fieldlength)  ;  for concatenate, some systems require strings
+	if noconcat {  ;  some systems don't support {fn CONCAT(x,y)}
+		for i=2:1:$ll(list) {
+			set fieldname=$$genidkey(i,.fieldlength)
+			set exp=exp_"||'||'||"_$$genconv(fieldname,fieldlength)
+		}
+		QUIT "("_exp_")"  ;  must parenthesize for preceding operators
+	}
+	for i=2:1:$ll(list) { 
+		set fieldname=$$genidkey(i,.fieldlength)
+		set exp="{fn CONCAT({fn CONCAT("_exp_",'||')},"_$$genconv(fieldname,fieldlength)_")}"
+	}
+	QUIT exp
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+genidkey(pos,&fieldlength) ;
+	set fieldlength=""
+	QUIT extname_$$quoterU($$ddflow(schema_"."_table,$li(list,pos),.fieldlength))
+	#;  [public: extname,schema,table,list]
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+genconv(x,length=0)  ;  [public: nCONV,useCAST]
+	QUIT:$g(nCONV) x
+	QUIT:$g(useCAST) "CAST("_x_" AS VARCHAR"_$s(length:"("_length_")",1:"")_")"
+	QUIT:$g(useCASTCHAR) "CAST("_x_" AS CHAR)"
+	QUIT "{fn CONVERT("_x_", SQL_VARCHAR)}"
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+buildIdlist(idlist) [mt]  PUBLIC{
+	set node=$ORDER($$$mtFromTableName(""))
+	if node'="" {
+		set tmp=$$$mtFromTableName(node)
+		set tname=$PIECE(tmp,".",2)
+		set schema=$PIECE(tmp,".",1)
+		set fld=$$GetIdName(tname,schema)
+		if fld'="" s idlist(fld,tname,schema)=tmp    
+		set node=$ORDER($$$mtFromTableName(node))
+	}
+	while (node'="") {
+		set tmp=$$$mtFromTableName(node)
+		set tname=$PIECE(tmp,".",2)
+		set schema=$PIECE(tmp,".",1)
+		set fld=$$GetIdName(tname,schema)
+		if fld'="" s idlist(fld,tname,schema)=tmp     
+		set node=$ORDER($$$mtFromTableName(node))
+	}
+	QUIT
+}
+ 
+ 
+GetIdName(table,schema) [] PRIVATE {
+	i $g(table)="" QUIT ""
+	s:$g(schema)="" schema=$$$DefaultSchemaQ
+	s ext=$$$GetExtentNameFromTableName(schema,table) QUIT:ext="" ""
+	s extinfo=$$$EXTsqlinfo($$$rEXT,ext)
+	QUIT $$$SQLLocTableRowIDField(extinfo)	// Returns Name of the table's RowID field
+}
+ 
+	// exsel is the main entry point from %qaqqt for code generation of external query for non-SELECT/DECLARE statements
+	#; AK395
+exsel	new array,bindTSasString,bStream,cflag,chunksize,disconnectOnClose,dtp,ctr,datag,dnQ,dt,ext,extb,i,iarr,ib,icol,idlist,iot,isJDBC,jj,killtag,lines,line,mod,nCONV,needLEN,nm,numpars,odbcType,param,parms,prec,precp,qerrt,ReverseOJ,scale,scalep,sqlstr,st,tag,tagpre,tmp,uniStream,uv,useCAST,useCASTCHAR,useCOAL,val,vars,noconcat,sc,connectionName,nvl,prm
+	set sc= $$getFlags^%apiGTW($g($$$mtDSNConnection),.ReverseOJ,.isJDBC,.useCAST,.dnQ,.nCONV,.useCOAL, .needLEN, .uniStream,.useCASTCHAR,.noconcat,.nvl,.bindTSasString,.disconnectOnClose)
+	if 'sc {
+		set connectionName=$g($$$mtDSNConnection)
+		do error^%qaqperr(162)
+		QUIT
+	}
+	if isJDBC { do exsel^%qaqcmxj QUIT }
+ 
+	set uv=$$GetUV^%apiGTW()
+	set param=0
+	set tagpre=gtag,datag=0
+	do buildIdlist(.idlist)
+		#;---------- no need to copy if SQLCODE'=0 ----------
+	set cflag=mcurs'=""&'mcurs
+	set call=$s(cflag:$$$MSQLModuleTag,1:gtag),call=call_"o^"_$c(1)_call_"f^"_$c(1)_call_"c^"
+	set mod=1,lines=0,(line,tag)="",tag=$p($p(call,$c(1),1),"^") ;
+	set qerrt=gtag_"qe"
+	set killtag=gtag_"kl"
+	#; AK695
+	if 'cflag { $$$liin($$msqlvars^%qaqcas2(cflag,,"n")) }
+	$$$liin("set $zt="""_gtag_"err""")  ;  set error trap	// DPV2114 Don't set $ze="" in generated code
+	new verr,vsql,vhdbc,vhstmt,vgw,vcurs,vwide s verr=$$$getVarName("err"),vsql=$$$getVarName("sql"),vhdbc=$$$getVarName("hdbc"),vwide=$$$getVarName("wide")
+	set vhstmt=$$$getVarName("hstmt")  ;  for now (used in GenBind)
+	set vcurs=$$$getVarName("CursorState")
+	set vgw=$$$odbcgatewayHandle
+	$$$liin("set "_verr_"=0")
+		#; AK695-
+	set sqlstr=$$buildq^%qaqcmxc()
+	set chunksize=2000
+		#; AK762
+	for jj=1:chunksize:$l(sqlstr) { $$$liin("s "_vsql_"="_$s(jj>1:vsql_"_",1:"")_$$quoter($e(sqlstr,jj,jj+chunksize-1))) }
+	do sqlact(.sql,.iarr)
+	set bStream=$$bStream^%qaqcmxj()  // bStream = 1 if there is a stream parameter or field, or a binary field
+	$$$liin("set "_vhdbc_"=$$GetConnection^%apiGTW("""_$$$mtDSNConnection_"""),"_vhstmt_"="""""_","_vwide_"=%SQLGateway(""-uv"")&&$zbitget($zversion(0),1)")
+	$$$liin("if "_vhdbc_"="""" { set "_verr_"=-1 goto "_qerrt_ "}")
+	$$$liin("set "_vhstmt_"=$zf(-5,"_vgw_",5,"_vhdbc_")   // AllocStatement")  ; AllocStatement=5
+	$$$liin("if "_vhstmt_"="""" {")
+	$$$liin($c(9)_"set "_vhdbc_"=$$Reconnect^%apiGTW("""_$$$mtDSNConnection_"""),"_vhstmt_"=0")
+	$$$liin($c(9)_"set "_vhstmt_"=$zf(-5,"_vgw_",5,"_vhdbc_")   // AllocStatement")  ; AllocStatement=5
+	$$$liin($c(9)_"if "_vhstmt_"="""" { set "_verr_"=-1 goto "_qerrt_ "}")
+	$$$liin("}")
+	$$$liin("set SQLCODE=$s($g("_vcurs_"):-101,1:0) quit:SQLCODE'=0")
+	$$$liin("set "_verr_"=$zf(-5,"_vgw_",$s(%SQLGateway(""-uv""):37,1:3),"_vhstmt_","_vsql_") goto:"_verr_"'=0 "_qerrt_"   // Prepare[W]")            // PrepareW(37)/Prepare(3)
+	if 'bStream || ($G($$$mtStatementType)="DEC") || ($G($$$mtStatementType)="SEL") {
+		$$$liin("if "_verr_"'=0 { goto "_qerrt_" }")
+		if param {
+			$$$liin("new %sqlst,%sqlup set %sqlst=$zf(-5,"_vgw_",27,"_vhstmt_")   // DescribeParameters")                                      // DescribeParameters(27)
+			$$$liin("set "_verr_"=$zf(-5,"_vgw_",13)   // wasError") //This is the place where we need to fork for Access            // wasError(13)
+			$$$liin("if "_verr_"=0 {")
+			$$$liin($c(9)_"for %sqlup=2:1:$ll(%sqlst) {")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("pl")_",%sqlup-1)=$li($li(%sqlst,%sqlup),2)")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("pdt")_",%sqlup-1)=$li($li(%sqlst,%sqlup),1)")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("ps")_",%sqlup-1)=$li($li(%sqlst,%sqlup),3)")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("iot")_",%sqlup-1)=1")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("parms")_",%sqlup-1)=$li($li(%sqlst,%sqlup),2)")
+			$$$liin($c(9)_"}")
+			$$$liin("}")
+			$$$liin("if "_verr_"'=0 {")       // For cases where the driver manager does not support DescribeParameters
+			do GetTypes^%qaqcmxc(.dt,.prec,.scale,.numpars,.iot,.parms,.bindTSasString)
+			$$$liin($c(9)_"for %sqlup=1:1:"_numpars_" {")
+			$$$liin($c(9,9)_"set $li("_$$$getVarName("iot")_",%sqlup)=1")
+			$$$liin($c(9,9)_"set "_$$$getVarName("pdt")_"="_dt)
+			$$$liin($c(9,9)_"set "_$$$getVarName("pl")_"="_prec)
+			$$$liin($c(9,9)_"set "_$$$getVarName("ps")_"="_scale)
+			$$$liin($c(9,9)_"set "_$$$getVarName("parms")_"="_prec)
+			$$$liin($c(9)_"}")
+			$$$liin("}")
+			$$$liin("set "_verr_"=$zf(-5,"_vgw_",8,"_vhstmt_","_$$$getVarName("parms")_","_$$$getVarName("pdt")_","_$$$getVarName("ps")_","_$$$getVarName("iot")_","_$$$getVarName("pl")_")   // BindParameters")   // BindParameters(8)
+			$$$liin("if "_verr_"'=0 { goto "_qerrt_ "}")
+		}
+	}
+	else {
+ 		do GenBind^%qaqcmxc(vhstmt)
+	}
+	if mt("sqlcomp")="%Runtime" {
+		for j=1:1:param {
+	 		set tmp=$$getParamType^%qaqcmxj(param(j),.iarr)
+			if (tmp=-4)||(tmp=-1) { continue }
+			if tmp=9 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb($s($zu(115,5)=0:$s("_param(j)_"="""":"""",1:$zd("_param(j)_",3)),1:"_param(j)_")),"_j_")   // SetParameter") continue  }   // What to do in Display?   SetParameter(9)
+	 		if tmp=10 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb($s($zu(115,5)=0:$s("_param(j)_"="""":"""",1:$zt("_param(j)_")),1:"_param(j)_")),"_j_")   // SetParameter") continue  }    // SetParameter(9)
+			if tmp=-3 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",65,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameterBinary") continue }           // SetParameterBinary(65) SetParameter(9)
+			$$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameter")            // SetParameter(9)
+		}
+	}
+	if mt("sqlcomp")="" {
+		for j=1:1:param {
+	 		set tmp=$$getParamType^%qaqcmxj(param(j),.iarr)
+			if (tmp=-4)||(tmp=-1) { continue }
+			if tmp=9  { $$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb($s("_param(j)_"="""":"""",1:$zd("_param(j)_",3))),"_j_")   // SetParameter") continue }      // SetParameter(9)
+			if tmp=10 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb($s("_param(j)_"="""":"""",1:$zt("_param(j)_"))),"_j_")   // SetParameter") continue }        // SetParameter(9)
+			if tmp=-3 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",65,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameterBinary") }       // SetParameterBinary(65)
+			$$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameter")                            // SetParameter(9)
+		}
+	}
+	if (mt("sqlcomp")'=""),(mt("sqlcomp")'="%Runtime") {
+		for j=1:1:param {
+	 		set tmp=$$getParamType^%qaqcmxj(param(j),.iarr)
+			if (tmp=-4)||(tmp=-1) { continue }
+			if tmp=-3 { $$$liin("set "_verr_"=$zf(-5,"_vgw_",65,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameterBinary") }        // SetParameterBinary(65)
+			else      { $$$liin("set "_verr_"=$zf(-5,"_vgw_",9,"_vhstmt_",$lb("_param(j)_"),"_j_")   // SetParameter") }               // SetParameter(9)
+	 		$$$liin("if "_verr_"'=0 { goto "_qerrt_" }")
+		}
+	}
+	$$$liin("set "_verr_"=$zf(-5,"_vgw_",4,"_vhstmt_") goto:"_verr_"=-1 "_qerrt_"   // Execute")                 // Execute(4)
+	$$$liin("if "_verr_"=100 { set SQLCODE=100,"_verr_"=0 g "_$p($p(call,$c(1),3),"^")_" }")
+.
+	if bStream {
+		new first set first=1
+		for j=1:1:param {
+	 		set tmp=$$getParamType^%qaqcmxj(param(j),.iarr)
+			if (tmp=-4)||(tmp=-1) {
+				if first {
+					$$$liin("if "_verr_"=99 { set "_verr_"=$zf(-5,"_vgw_",55,"_vhstmt_"),"_verr_"=$li("_verr_") }   // ParamData")      // ParamData(55)
+					set first=0
+				}
+					if tmp=-1 { $$$liin("if "_verr_"=99 { set "_verr_"=$$setStream^%apiGTW("_vhstmt_","_param(j)_",0,"_$S('uniStream:0,1:vwide)_") }") }
+					if tmp=-4 { $$$liin("if "_verr_"=99 { set "_verr_"=$$setStream^%apiGTW("_vhstmt_","_param(j)_",1,"_vwide_") }") }
+			}
+		}
+	}
+	$$$liin("goto:"_verr_"<0 "_qerrt)
+	if ($G($$$mtStatementType)="DEC") $$$liin("quit")
+.
+		#; Fetch
+	do newvar^%qaqutility("rowcnt")
+	if ($G($$$mtStatementType)="SEL")||($G($$$mtStatementType)="DEC") {
+		set tag=$p($p(call,$c(1),2),"^")
+		set vars=""
+		$$$liin("set SQLCODE=$zf(-5,"_vgw_",7,"_vhstmt_")   // Fetch")
+		if $G($$$mtStatementType)="DEC" { $$$liin("if SQLCODE { set %ROWCOUNT=+$g("_$$$VarName("rowcnt")_") quit }") }
+		if $G($$$mtStatementType)="SEL" { $$$liin("if SQLCODE { set "_verr_"=SQLCODE,%ROWCOUNT=+$g("_$$$VarName("rowcnt")_") goto "_$p($p(call,$c(1),3),"^")_" }") }
+		do geterr
+		if $G($$$mtSelectInto)'="" {
+			s vars=$p($$$mtSelectInto,"^",2)
+			for i=1:1 {
+				quit:'$p(vars,",",i)
+				set tmp=iarr(0,0,"select",i)
+				set odbcType=""
+				if $p(tmp,$c(1),7)'="",$p(tmp,$c(1),8)'="" { set odbcType=$$$smdColxDBCType(1,$p(tmp,$c(1),7),$p(tmp,$c(1),8)) }
+				if (odbcType="LONGVARCHAR")||(odbcType="LONGVARBINARY") {
+					$$$liin("set "_$p($$$mtV($p(vars,",",i)),"^",2)_"=$$createTempStream^%apiGTW("_vhstmt_","_i_",$g(%qacn),"_(odbcType="LONGVARBINARY")_","_vwide_")")  ;copy stream, assign oid to var
+					// DPV4377 Not Needed, set in cached query... If $g(%caller)="xDBC" d liin("s %qobjhandle(%qacn,"_$p(mt("v",$p(vars,",",i)),"^",2)_")="_$p($$$mtV($p(vars,",",i)),"^",2))
+					if mcurs'="" { do apndc^%qaqcasl(",,"_$p($$$mtV($p(vars,",",i)),"^",2)) }
+					continue
+				}
+				$$$liin("set "_$p($$$mtV($p(vars,",",i)),"^",2)_"=$zf(-5,"_vgw_",$s("_vwide_":50,1:25),"_vhstmt_","_i_",$s("_vwide_":-8,1:1))   // GetData[W]")   // GetDataW(50) GetData(25)
+				do geterr
+				if mt("sqlcomp")="" {
+					do GenMethod($p(tmp,$c(1),8),$p(tmp,$c(1),7),"OdbcToLogical",$p($$$mtV($p(vars,",",i)),"^",2))
+				}
+				if mt("sqlcomp")="%Runtime" {
+					do GenMethod($p(tmp,$c(1),8),$p(tmp,$c(1),7),"ODBCToRuntime",$p($$$mtV($p(vars,",",i)),"^",2))
+				}
+				if mcurs'="" { do apndc^%qaqcasl(",,"_$p($$$mtV($p(vars,",",i)),"^",2)) }
+			}
+		}
+		if $G($$$mtSelectInto)="" {
+			new varcount
+			set varcount=$l($$$mtOutputVals($g($$$mtOutput(1))),",")-1
+			for i=1:1:varcount {
+				do newvar^%qaqutility("res"_i)
+				set tmp=iarr(0,0,"select",i)
+				set odbcType=""
+				if $p(tmp,$c(1),7)'="",$p(tmp,$c(1),8)'="" { set odbcType=$$$smdColxDBCType(1,$p(tmp,$c(1),7),$p(tmp,$c(1),8)) }
+				if (odbcType="LONGVARCHAR")||(odbcType="LONGVARBINARY") {
+					$$$liin("set "_$$$VarName("res"_i)_"=$$createTempStream^%apiGTW("_vhstmt_","_i_",$g(%qacn),"_(odbcType="LONGVARBINARY")_","_vwide_")")  ;copy stream, assign oid to var
+					// DPV4377 Not Needed, set in cached query... If $g(%caller)="xDBC" d liin("s %qobjhandle(%qacn,"_$$$VarName("res"_i)_")="_$$$VarName("res"_i))
+					if mcurs'="" { do apndc^%qaqcasl(",,"_$$$VarName("res"_i)) }
+					continue
+				}
+				$$$liin("set "_$$$VarName("res"_i)_"=$zf(-5,"_vgw_",$s("_vwide_":50,1:25),"_vhstmt_","_i_",$s("_vwide_":-8,1:1))   // GetData[W]")    // GetDataW(50) GetData(25)
+				do geterr
+				if mt("sqlcomp")="" {
+					do GenMethod($p(tmp,$c(1),8),$p(tmp,$c(1),7),"OdbcToLogical",$$$VarName("res"_i))
+				}
+				if mt("sqlcomp")="%Runtime" {
+					do GenMethod($p(tmp,$c(1),8),$p(tmp,$c(1),7),"ODBCToRuntime",$$$VarName("res"_i))
+				}
+				if mcurs'="" { do apndc^%qaqcasl(",,"_$$$VarName("res"_i)) }
+			}
+		}
+		$$$liin("set "_$$$VarName("rowcnt")_"=$g("_$$$VarName("rowcnt")_")+1,%ROWCOUNT=+$g("_$$$VarName("rowcnt")_")")
+		if $G($$$mtStatementType)="DEC" { $$$liin("quit") }
+	}
+.
+ 		#; Close
+	set tag=$p($p(call,$c(1),3),"^")
+	$$$liin("if $g("_vhdbc_")="""" { set SQLCODE=-221 goto "_killtag_" }")	 // GetConnection failed
+	$$$liin("if $g("_vhstmt_")="""" { set SQLCODE=-222 goto "_killtag_" }") // AllocateStatement failed
+	$$$liin("if "_verr_"=0 { set SQLCODE=0 }")
+	if ($G($$$mtStatementType)="SEL")||($G($$$mtStatementType)="DEC") {
+ 	$$$liin("set %ROWCOUNT="_$s(cflag||mcurs:"+$g("_$$$VarName("rowcnt")_")",1:"'SQLCODE"))
+	}
+	if ($G($$$mtStatementType)'="SEL"),($G($$$mtStatementType)'="DEC") {
+		$$$liin("if 'SQLCODE { set %ROWCOUNT=$zf(-5,"_vgw_",31,"_vhstmt_") }   // RowCount")       // RowCount(31)
+		$$$liin("if 'SQLCODE,'%ROWCOUNT { set SQLCODE=100 }")
+	}
+	$$$liin("if SQLCODE'=-400 { set "_verr_"=$zf(-5,"_vgw_",16,"_vhstmt_") }   // DropStatement")           // DropStatement(16)
+	$$$liin("if SQLCODE'=-400,"_verr_"'=0 { set %msg=$li($zf(-5,"_vgw_",12,"_vhdbc_","_vhstmt_")) }   // GetSQLErrors")     // GetSQLErrors(12)
+	$$$liin("if SQLCODE=-400,##class(%Library.SQLGatewayConnection).IsTextNetworkError($g(%msg)) { set SQLCODE=-461 }")
+	$$$liin("if SQLCODE=-400 { set:$g(%msg)[""SQLCODE: <"" SQLCODE=$p($p(%msg,""SQLCODE: <"",2),"">"",1) }")
+	set tag=killtag
+		#; AK695
+		#; AK753
+	$$$liin("kill "_vcurs_","_$$$getVarName("ps")_","_$$$getVarName("parms")_","_$$$getVarName("pdt")_","_$$$getVarName("pl")_","_$$$getVarName("iot")_","_$$$getVarName("parloop")_","_vhstmt_","_$$$getVarName("rlist"))
+	// we increment the connection name anytime something grabs the connection so we should decrement it when done
+	$$$liin("do $i(%SQLGateway("""_$$$mtDSNConnection_""",""activeconnections""), -1)")
+	// Users can specify that a SQL Gateway connection is such that it should disconnect after no linked tables are using that connection anymore,
+	// first we will check if there are any active uses of it though
+	if $g(disconnectOnClose) {
+		// the %OnClose of the %GTWConnection object (the type of object that %SQLGateway(name) is) will send a disconnect signal to the server so just kill it
+		$$$liin("if ($g(%SQLGateway("""_$$$mtDSNConnection_""", ""activeconnections"")) < 1) { kill %SQLGateway("""_$$$mtDSNConnection_""")}")
+	}
+	$$$liin("quit")
+.
+		#; SQL error
+	set tag=qerrt
+		#; AK695
+	$$$liin("set %msg=$s($g("_vhstmt_")="""":""Connection error"","_verr_"=-1:$li($zf(-5,"_vgw_",12,"_vhdbc_","_vhstmt_")),1:""Gateway error""),SQLCODE=-400 goto "_$p($p(call,$c(1),3),"^")_"   // GetSQLErrors")       // GetSQLErrors(12)
+	set tag=gtag_"err"  ;  Set-Up Error Trap
+		#; AK695
+	$$$liin("set $zt="""",SQLCODE=-400,%msg=$ze,"_verr_"=-3 goto "_$p($p(call,$c(1),3),"^"))
+	QUIT
+	
+geterr  ;  check for ODBC "last-error"
+	$$$liin("set "_verr_"=$zf(-5,"_vgw_",13) goto:"_verr_"'=0 "_qerrt_"   // WasError")            // WasError(13)
+	QUIT
+.
+.
+sqlact(sqltmp,iarr) ; SQL parse/compile
+ #; action - "parse" = parse SQL statement & return info, "compile" = compile cached query
+ #; rtn   - cached query routine name (NULL if "parse")
+ #; .sqltmp  - array of complete SQL text (NULL if "compile")
+ #; .mtc     - array of parse information
+ n backgrnd,comperr,error,mcurs,mtag,mtc,omsrc,pathout,%qsccerr
+ s comperr="%qsccerr",@comperr=0,sqltmp=+$g(sqltmp),%msg="",omsrc=0,backgrnd=1,error=""
+ d comp^%qaqqt("query",.sqltmp,"info","",0,"","%qsc(%qacn",,,$g(packages))
+ m iarr=mtc
+ QUIT 
+ 
+ #;
+skipws(str,i) 
+ f   q:$e(str,i)'=" "  s i=i+1
+ q       
+skipdts(str,i) 
+ i $e(str,i,i+2)="ts " s i=i+3 q 1
+ i $e(str,i,i+1)="t " s i=i+2 q 1
+ i $e(str,i,i+1)="d " s i=i+2 q 1
+ q 0
+ 
+	#; AK395-
+ #;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+fromAlias(mt, queryNum, lblName)
+ new node,ret
+ set ret="1"
+ set node=$ORDER($$$mtFromTableName(""))
+ while (node'="") {
+         if $PIECE(node,"^",1)=queryNum,$$$mtFromTableName(node)=lblName set ret="0" 
+  
+         set node=$ORDER($$$mtFromTableName(node))
+ }
+ quit ret
+threeargfn(op) 
+ QUIT "{fn "_op_"("_arg1_","_arg2_","_arg3_")}"
+twoargfn(op) 
+ QUIT "{fn "_op_"("_arg1_","_arg2_")}"
+oneargfn(op) 
+ QUIT "{fn "_op_"("_arg1_")}"
+zeroargfn(op) 
+ QUIT "{fn "_op_"()}"
+vertVal(mt, vIdx)
+	QUIT $$vertVal^%qaqcmh(.mt,vIdx)
+	
+	// called from parseInsert and parseUpdate and vertVal^%qaqcmh
+	// fieldOnly=1 if called from parseInsert or parseUpdate, I use this condition to check if the field is readonly
+parseExtField(mt, vIdx, fieldOnly=0)
+	QUIT:vIdx="" ""
+	QUIT:$d($$$mtV(vIdx))=0 ""
+	new arg1,arg2,arg3,dist,func,i,len,op,qn,res,sn1,tf,tmp,tmp1,tname,tn1,tt,v,val
+	set v=$$$mtV(vIdx),res="",tt=0
+	QUIT:$$$mtVType($$$mtV(vIdx))'="f" ""      // Only works on fields
+	set tmp=$PIECE($$$mtV(vIdx),"^",3) ;!!!!!!
+	set tf=$PIECE($$$mtV(vIdx),"^",4)
+	if tmp'="" { set tt=$$fromAlias(.mt, $PIECE($$$mtV(vIdx),"^",2), tmp) }
+	if tt {
+		set qn=$PIECE($$$mtV(vIdx),"^",2) 
+ 		set tmp1=$$$mtFromTableName(qn_"^"_tmp)
+	} else {
+		set tmp1=tmp
+	}
+	if $l(tmp1,".")>1 {
+		set sn1=$p(tmp1,".",1)
+		set tn1=$p(tmp1,".",2)
+	} else {
+		set tn1=tmp1,sn1=""
+	}
+	if ((tn1'="") && (sn1="") && $d(idlist(tf,tn1)))||((tn1'="") && (sn1'="") && $d(idlist(tf,tn1,sn1)))||((tn1="") && (sn1="") && $d(idlist(tf))) {
+		if tmp="" {
+			new i,j
+			set i=$o(idlist(tf,"")),j=$o(idlist(tf,i,""))
+			QUIT $$buildIdFromName(i,j)  ;do more!!!!
+		}
+		set qn=$PIECE($$$mtV(vIdx),"^",2) 
+		if tt {
+			new i,j,tmps,tmpt
+			if tmp1'=""{
+				set tmps=$p(tmp1,".",1)
+				set tmpt=$p(tmp1,".",2)
+				QUIT $$buildIdFromName(tmpt,tmps,tmp)
+			}
+			s i=$o(idlist(tf,"")),j=$o(idlist(tf,i,""))
+			QUIT $$buildIdFromName(i,j,tmp)
+		}
+		new schema,tbn
+		if tmp["."{
+			set tbn=$p(tmp,".",2)
+			set schema=$p(tmp,".",1)
+		} else {
+			set tbn=tmp
+			set schema=""
+		}
+		if $d(idlist(tf,tbn)){
+			if schema=""{
+				new i
+				set i=$o(idlist(tf,tbn,""))
+				QUIT $$buildIdFromName(tbn,i)
+			}
+			if $d(idlist(tf,tbn)){
+				QUIT $$buildIdFromName(tbn,schema)
+			}
+		}
+	}
+	set tf=$$fieldlow(vIdx,.readonly)  ;correct case
+	if fieldOnly {
+		if readonly { do error(138) } // error message 138 uses tf variable
+		set tmp=""
+	}
+	if tmp'="" {
+		set tt=$$fromAlias(.mt, $PIECE($$$mtV(vIdx),"^",2), tmp)
+		if tt="0" {
+			set tname=$$ExternalTableName^%apiSQL(tmp,$g(dnQ))
+			if tname="" { set tname=$PIECE(tmp,".",2) }
+		}
+		if tt="1" { set tname=$$quoterU(tmp) }
+		QUIT tname_"."_$$quoterU(tf)
+	}
+	if tmp="" { QUIT $$quoterU(tf) }
+	QUIT ""
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK478
+	// fieldlow called from parseExtField
+fieldlow(val,&readonly) n v,m,frmit,fname,jj,flow  ;  $$:  exact-case name of "f" val
+	s v=$$$mtV(val),m=$p(v,"^",2),frmit=$p(v,"^",3),fname=$p(v,"^",4)
+	i frmit'="" QUIT $$tflow(m,frmit,fname,.readonly)
+	s jj=m_"^"
+	f  s jj=$o($$$mtFromTableName(jj)) QUIT:+jj'=m  s flow=$$tflow(m,$p(jj,"^",2,*),fname,.readonly) QUIT:flow'=""
+	QUIT flow
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// tflow called from fieldlow
+tflow(m,tname,fname,&readonly) n nn,as  ;  exact-case field name from FROM-item tname, if found
+	s tname=$$$mtFromTableName(m_"^"_tname)  ;  get the table name
+	QUIT:tname'?1"%%Q"1.n $$ddflow(tname,fname,,.readonly)  ;  look in DD
+	#;  for a virtual stream, look for alias or original field name
+	s m=$e(tname,4,*),nn=$lf($$$mtAlphaUpAliases(m),fname)
+	QUIT:'nn ""  ;  not found in this one
+	QUIT "C"_nn
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	// ddflow is called from tflow and genidkey
+ddflow(tname,fname,&fieldlength,&readonly) [] PUBLIC {
+	set ext=$$$GetExtentNameFromIQN(tname) QUIT:ext="" fname
+	set field=$g($$$EXTsqlcolumnidx($$$rEXT,ext,fname))	// field is exact field name
+	QUIT:field="" fname  	// Not found
+	set fieldinfo=$$$EXTSQLCOLsqlinfo($$$rEXT,ext,field)	// See if External Field Name defined
+	set extfield=$$$SQLLocColExternalFieldName(fieldinfo)
+	set readonly=$$$SQLLocColReadOnly(fieldinfo)
+	set fieldlength=$$$SQLLocColMaxLength(fieldinfo)
+	if fieldlength="" { set fieldlength=$$definfo^%qaqpif2($$$SQLLocColDatatype(fieldinfo)),fieldlength=$p(fieldlength,$c(1),3) }
+	QUIT:extfield'="" extfield
+	QUIT field	// No External name, just return field
+}
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK478-
+checkLike(val,op) ;
+ n val1,val2,v1,v2,v
+ if op '="AND" quit ""
+ if $DATA($$$mtL($PIECE(val,"^",4)))=0 quit ""
+ if $DATA($$$mtL($PIECE(val,"^",5)))=0 quit ""
+ set val1=$$$mtL($PIECE(val,"^",4))
+ set val2=$$$mtL($PIECE(val,"^",5))
+ if $PIECE(val1,"^",2)'="%PATTERN" quit ""
+ if $PIECE(val2,"^",2)'="%STARTSWITH" quit ""
+ s v1=$g($$$mtV($PIECE(val1,"^",5)))
+ if $p(v1,"^",2)'="%L2PAT" quit $$vertVal(.mt, $PIECE(val1,"^",4))_" LIKE "_$$getLPat($PIECE(v1,"^",2))
+ s v2=$g($$$mtV($PIECE(val2,"^",5)))
+ if $p(v2,"^",2)'="%L2SW" quit ""
+ if $p(v2,"^",4)'=$p(v1,"^",4) quit ""
+ if $p(v2,"^",4)="" quit ""
+ if $DATA($$$mtV($p(v2,"^",4)))=0 quit ""
+ quit $$vertVal(.mt, $PIECE(val1,"^",4))_" LIKE "_$$vertVal(.mt,$p(v2,"^",4))
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+parseCond(mt, logNum, queryNum)
+ QUIT $$parseCond^%qaqcmh(.mt, logNum, queryNum)
+ 
+parseFrom(mt, queryNum)
+ QUIT $$genfrom^%qaqcmh(queryNum)
+.
+parseExtFrom(mt, queryNum)
+ new res,node,tname,first
+ s first=1
+ set res=" from ", node=$ORDER($$$mtFromTableName(""))
+ 
+ while ($PIECE(node,"^",1)'=queryNum) {
+          set node=$ORDER($$$mtFromTableName(node))
+ }       
+ while (node'="") {
+   	if $PIECE(node,"^",1)'=queryNum QUIT
+    if '$$isJoin(.loj,queryNum,$PIECE(node,"^",2)){
+    	if first s first=0
+        e  set res=res_" , "
+        s res = res_$$parseExtFromNode(.mt, node)
+    }
+    set node=$ORDER($$$mtFromTableName(node))
+ }
+ s res=res_$$genLojFrom^%qaqcmxc(.loj,.mt,queryNum, first)
+ quit $s(res=" from ":"",1:res)
+.
+parseExtFromNode(&mt, node) [ dnQ ] {
+	if $PIECE(node,"^",2)=$$$mtFromTableName(node) {
+		set tname=$$ExternalTableName^%apiSQL($PIECE(node,"^",2),$g(dnQ))
+		if tname="" { set tname=$PIECE(node,".",2) }
+		RETURN " "_tname
+	} elseif ($e($$$mtFromTableName(node),1,3)="%%Q") {
+		RETURN " ("_$$parseSelect(.mt,+$e($$$mtFromTableName(node),4,*))_") "_$$quoterU($PIECE(node,"^",2)) ;remove as
+	} else {
+		set tname=$$ExternalTableName^%apiSQL($$$mtFromTableName(node),$g(dnQ))
+		set tlbl=$PIECE(node,"^",2)
+		if tlbl="" { set tlbl=$PIECE(node,".",2) }
+		RETURN " "_tname_" "_$$quoterU(tlbl) ;remove as
+	}
+}
+.
+parseWhere(mt, queryNum)
+ QUIT $$parseWhere^%qaqcmh(queryNum)
+         
+parseSelect(mt, queryNum)
+ QUIT $$gensel^%qaqcmh(queryNum)
+.
+parseUpdate(mt, queryNum) [oper,target,queryNum] public {
+	set first=1
+ 
+		// just generate these clauses for comparison to eliminate redundant "FROM" clause, unsupported on some DBs (e.g. Oracle)
+	set targetFrom = " from "_$$parseTarget(.mt)
+	set secondFrom = $$parseFrom(.mt,queryNum)
+ 
+	set res="update "_$$parseTarget(.mt)_" set "
+	set parIdxLst=$$$mtSelectInto, valIdxLst=$g($$$mtNewVals)
+	if valIdxLst="" { new oper,target set oper="UPDATE",target=$$parseTarget(.mt) do error(155) }  // error 155 refernces oper and target variables
+	set ii=1
+.
+	set vIdx=$PIECE(parIdxLst,",",ii)
+	while (vIdx'="") {
+		if first { set first=0 } else { set res=res_" , " }
+		set res=res_$$parseExtField(.mt,vIdx,1 /* field name only */)_" = "
+		set vIdx=$PIECE(valIdxLst,",",ii)
+		set res=res_$$removeExact^%qaqcmh($$vertVal(.mt,vIdx))  ;  AK1087
+		set ii=ii+1
+		set vIdx=$PIECE(parIdxLst,",",ii)
+	}
+	if targetFrom'=secondFrom { set res = res _ secondFrom }
+	set res=res_" "_$$parseWhere(.mt,queryNum)
+	QUIT res
+}
+ 
+parseDelete(mt, queryNum) [queryNum] public {
+ set targetFrom = " from "_$$parseTarget(.mt)
+ set secondFrom = $$parseFrom(.mt,queryNum)
+ set statement = "delete"_targetFrom
+ if targetFrom '= secondFrom {
+ 	s statement = statement_secondFrom
+ }
+ s statement = statement _ $$parseWhere(.mt,queryNum)
+ quit statement
+}
+ 
+parseInsert(mt, queryNum)
+	new res,parIdxLst,valIdxLst,vIdx,ii,first,orupdate,target
+ 
+	set first=1
+	set parIdxLst=$g($$$mtSelectInto)
+	set target=$$parseTarget(.mt)
+	set orupdate=$s(+$g(mt("orupdate")):"or update ",1:"")
+	if parIdxLst'="" {
+		set res="insert "_orupdate_"into "_target_" ("
+		set ii=1
+		set vIdx=$PIECE(parIdxLst,",",ii)
+		while (vIdx '="") {
+			if first s first=0	
+			e  set res=res_" , "
+			set res=res_$$parseExtField(.mt,vIdx,1 /* field name only */)
+			set ii=ii+1
+			set vIdx=$PIECE(parIdxLst,",",ii)
+		}
+		if $g($$$mtNewVals)="" set res = res_")"
+		e  set res=res_" ) values ("
+	}
+ 
+	if parIdxLst="",$g($$$mtNewVals)'="" set res="insert "_orupdate_"into "_target_" values ("
+	if parIdxLst="",$g($$$mtNewVals)="" set res="insert "_orupdate_"into "_target
+ 
+	if $g($$$mtNewVals)'=""{
+		set valIdxLst=$$$mtNewVals
+		set ii=1
+		set vIdx=$PIECE(valIdxLst,",",ii)
+		s first=1
+		while (vIdx'="") {
+			if first s first=0
+			e  set res=res_" , "                 
+			set res=res_$$removeExact^%qaqcmh($$vertVal(.mt,vIdx))
+			set ii=ii+1
+			set vIdx=$PIECE(valIdxLst,",",ii)
+		}
+ 
+		set res=res_" )"
+	}
+	if $g($$$mtNewVals)="" {
+		// If flag is set indicating there are no field values to set/copy,
+		// then generate "insert into <tablename> default values".  See DPV2314 for
+		// explanation of this flag.   JMM004
+		if $$$mtKInsertDefaultFlag($$$mtK)=1 { set res=res_" default values" }  // JMM004
+		else {
+			// if we get here, we only support INSERT SELECT, give an error if they attempt to insert values from an array
+			if '$g(%inssel) { new oper set oper="INSERT"_$s(orupdate'="":" OR UPDATE",1:"") do error(155) }  // error 155 refernces oper and target variables
+			set res=res_" "_$$parseSelect(.mt,2)
+		}
+	}
+	QUIT res
+ 
+ 
+ 
+parseQuery(mt) 
+ if $$$mtStatementType="SEL"!($$$mtStatementType="DEC") quit $$parseSelect(.mt,1)_$$forUpdate(.mt)
+ if $$$mtStatementType="UPD" quit $$parseUpdate(.mt,1)
+ if $$$mtStatementType="DEL" quit $$parseDelete(.mt,1)
+ if $$$mtStatementType="INS" quit $$parseInsert(.mt,1)
+ quit ""
+ 
+parseTarget(mt) PUBLIC {
+	RETURN $$parseExtFromNode(.mt, $$$mtTarget)
+}
+ #;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+forUpdate(mt)
+ n res set res=""
+ if $g(mt("forup"))'="forupdate" quit res 
+ s res=" for update"
+ if $g(mt("nowait")) s res=res_" nowait"
+ quit res
+ 
+	#;*** GenMethod refers to irn/ifn which comes out of the mtc().
+	#;*** I need to fix this in the future by adding extent/fieldname to mtc() or having 
+	#;*** GetMethodCode use the temp structure.
+GenMethod(ifn,irn,method,val,rval)  
+ n code 
+ if $g(rval)="" s rval=val
+ i method="RuntimeToLogical" d  q 
+	#; MIT091
+ . n olcall,dlcall,bf s (olcall,dlcall)="",bf=0
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"OdbcToLogical") s olcall="$zu(115,5)=1:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"DisplayToLogical") s dlcall="$zu(115,5)=2:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i olcall="",dlcall="" QUIT
+ . s line="s "_val_"=$s("
+ . i olcall'="" s line=line_olcall,bf=1 
+ . i dlcall'="" s line=line_$s(bf:",",1:"")_dlcall,bf=1 
+ . s line=line_",1:"_rval_")"
+ . $$$liin(.line)
+ i method="LogicalToRuntime" d  q 
+ . n olcall,dlcall,bf s (olcall,dlcall)="",bf=0
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"LogicalToOdbc") s olcall="$zu(115,5)=1:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"LogicalToDisplay") s dlcall="$zu(115,5)=2:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i olcall="",dlcall="" QUIT
+ . s line="s "_val_"=$s("
+ . i olcall'="" s line=line_olcall,bf=1 
+ . i dlcall'="" s line=line_$s(bf:",",1:"")_dlcall,bf=1 
+ . s line=line_",1:"_rval_")"
+ . $$$liin(.line)
+	#; MIT091-
+ i method="ODBCToRuntime" d  q 
+ . n olcall,dlcall,bf s (olcall,dlcall)="",bf=0
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"OdbcToLogical") s olcall="$zu(115,5)'=1:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i $$GetMethodCode^%qaqcdt(irn,ifn,.code,"LogicalToDisplay") s dlcall="$zu(115,5)=2:$$"_$$tagnam^%qaqcdt("s")_"("_rval_")"
+ . i olcall="",dlcall="" QUIT
+ . i olcall'="" s line="s "_val_"=$s("_olcall_",1:"_rval_")" 
+ . i dlcall'="" s line=line_" s "_val_"=$s("_dlcall_",1:"_rval_")"
+ . $$$liin(.line)
+ i '$$GetMethodCode^%qaqcdt(irn,ifn,.code,method) QUIT
+ $$$liin("s "_val_"=$s("_rval_"="""":"""",1:$$"_$$tagnam^%qaqcdt("s")_"("_rval_"))")
+ 
+ QUIT
+joinstat(loj,mt)
+	#; AK590
+	#;  set loj("rl",qn,rt,lt) and loj("rl",qn,rt)=LIST(cond,)
+	n i,rf,lf,rv,lv,rt,lt,qn
+	for i=1:1 q:'$d($$$mtL(i))  i $$$mtLOperator($$$mtL(i))="=*" d
+	. s lf=$$$mtLOperand1($$$mtL(i)),lv=$$$mtV(lf)
+	. s rf=$$$mtLOperand2($$$mtL(i)),rv=$$$mtV(rf),qn=$p(rv,"^",2),rt=$p(rv,"^",3)
+	. s loj("rl",qn,rt)=$g(loj("rl",qn,rt))_i_","  ;  list of conditions
+	. s:$e(lv)="f" lt=$p(lv,"^",3),loj("rl",qn,rt,lt)=""  ;  not if constant
+	#; AK590-
+	QUIT 
+tlname(qn,alias,mt)
+	n ind,val,tname,res
+	s res=""
+	s ind = qn _"^"_alias
+	if '$d($$$mtFromTableName(ind)) QUIT alias
+	s val=$$$mtFromTableName(ind)
+	
+	                  if ($e(val,1,3)="%%Q") {
+ 
+                         set res=res_" ("_$$parseSelect(.mt,+$e(val,4,*))_") "_$$quoterU($PIECE(ind,"^",2)) ;remove as
+                         QUIT res
+                 }
+ 
+	
+                   if alias=$$$mtFromTableName(ind) {
+                         set tname=$$ExternalTableName^%apiSQL(alias,$g(dnQ))
+                         
+                         if tname="" set tname=$$quoterU($PIECE(alias,".",2))
+                         s res=tname
+                 }
+                   if alias'=$$$mtFromTableName(ind) {
+                         set tname=$$ExternalTableName^%apiSQL($$$mtFromTableName(ind),$g(dnQ))
+                         set tlbl=alias
+                         if tlbl="" set tlbl=$PIECE(alias,".",2)
+ 
+                         set res=res_tname_" "_$$quoterU(tlbl) ;remove as
+                   }
+	
+	QUIT res
+isJoin(loj,qn,table)
+	#; AK590
+	quit:$d($$$mtOnRoot(qn)) 1
+	QUIT $d(loj("rl",qn))
+	#; AK590-
+ltJoin(qn,lt,loj,mt)  ;  $$:  return generated text for lt, and
+	n rt s rt=""  ;  remove it from left-side of loj()
+	f  s rt=$o(loj("rl",qn,rt)) q:rt=""  KILL loj("rl",qn,rt,lt)
+	QUIT $$tlname(qn,lt,.mt)
+genOn(conds,mt)  ;  $$:  return generated conditions with AND
+	n res,jj,vv s res =""
+	f jj=1:1:$l(conds,",")-1 s vv=$$$mtL($p(conds,",",jj)),res=res_" AND "_$$vertVal(.mt, $p(vv,"^",4))_" = "_$$vertVal(.mt, $p(vv,"^",5))
+	QUIT $e(res,6,*)  ;  remove the first " AND "
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+qd2(val)
+	QUIT:val["." val
+	QUIT $$quoterU(val)
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#INCLUDE %fcalpha
+	#; AK395
+#INCLUDE %quoter
+squoter(x) ; $$ Func to wrap single quotes around x, x may already contain quotes
+ QUIT:x=+x x n a,i s a="" f i=1:1:$l(x,"'") s a=a_"'"_$p(x,"'",i)_"'"
+ QUIT a
+	#; AK395-
+error(e) goto ^%qaqperr
+---

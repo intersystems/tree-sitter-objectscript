@@ -1,0 +1,277 @@
+====
+qarCopyTable
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qarCopyTable^MAC^^^0
+%qarCopyTable(query,table,display,schemapath="",injectIdentity="",&rowcount="",&rowid="")	//
+	;; COMPONENTS :: SQL/Runtime
+	#;
+#INCLUDE %msql
+	#;
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Utility to take the results of a query and create 
+	;                a new table
+	; Author:        David Van De Griek
+	; Date:          July 22, 1999
+	; Maintenance History: [ XXXnnn (MM/DD/YY) - Description ]
+	;
+	;  DPV3192 (06/11/2008) - Set error=0 if there are no errors.
+	;  DPV2906 (04/17/2007) - Allow multiple runs of copy table to occur at the same time
+	;  STC1094 (10/28/2006) - Add routine change audit
+	;  DPV2220 (06/01/2004) - Fix QueryToTable with fields having VALUELIST type parameter
+	;                         SQL Fix ProdLog 36816: QueryToTable gets hung up on tables with value lists
+	;  DPV2198 (03/17/2004) - Use $Username instead of %msql, use new privilege global
+	;  DPV2090 (10/09/2003) - Completion of ^mdd elimination
+	;  DPV1988 (05/09/2003) - Eliminate ^mdd references
+	;  DPV1894 (12/11/2002) - New some variables:  flist, intolist, SQLCODE, %ROWID
+	;  DPV1859 (10/22/2002) - Create table using Object types
+	;  DPV1505 (03/08/2001) - Add support for ^rINDEX global
+	;  DPV1487 (01/19/2001) - Change Library.%Numeric to %Library.Numeric.  Report error from CreateTable call.
+	;  DPV1431 (10/24/2000) - Changed all %Date to %Library.Date, %Time[Stamp] to %Library.Time[Stamp], etc
+	;  DPV1330 (06/22/2000) - Support schema.table
+	;  DPV1111 (07/22/1999) - Creation of new utility
+	;
+	;-------------------------------------------------------------
+	;                     I N F O R M A T I O N
+	;-------------------------------------------------------------
+	;
+	;  This utility takes a query and the name of a new table and
+	;  executes the query.  The results of the query are turned
+	;  into a new table of name 'table'.  
+	;  Parameter definitions:
+	;      query:    The query text to execute.
+	;                 query con be of the format:
+	;                  query="sql text"
+	;                  OR
+	;                  query = # of lines
+	;                  query(1) = sql line 1
+	;                  query(n) = sql line n
+	;      table:    Name of the new SQL table to generate
+	;      display:  0/1 flag to determine if output should be
+	;                displayed on the terminal.
+	;		schemapath = [optional[ schema path to use for query
+	;		injectIdentity = $list(column#, columnname, precision)
+	;		This is implemented due to a TSQL feature of SELECT ... INTO where one of the columns can define an
+	;		identity column that is not from the original table.
+	;		rowcount - PBR, returns the number of rows inserted into the new table
+	; 		rowid - PBR, returns the ROwID value of the last row inserted.
+	;
+	;   mtc(0,0,"select",1..n) = $c(1) pieces:
+	;        1) name
+	;        2) description
+	;        3) datatype
+	;        4) width
+	;        5) repeating
+	;        6) intoex
+	;        7) irn
+	;        8) ifn
+	;        9) ---
+	;       10) default
+	;       11) title for report
+	;
+	;   mtc(0,0,"select",1..n,1) = $c(1) pieces:
+	;        1) Name
+	;        2) ODBC Type
+	;        3) Length
+	;        4) Precision
+	;        5) Scale
+	;        6) NULLABLE
+	;        7) Unused
+	;        8) Column Label (same as Name)
+	;        9) Column Schema Name
+	;       10) Column Qualifier Name - NULL
+	;       11) Column Table Name
+	;       12) Collation funcion (or * if none) // PVA007
+	;       13) Column's Cach Datatype		     // DPV1670
+	;       14) Projecting Property name		 // DPV2083
+	;       15) Projecting Property's Extent	 // DPV2090
+	;       16) ODBC Type (same as 2)
+	;-------------------------------------------------------------
+#ENDIF  ;
+	#;
+	return:($get(query)="") $$$ERROR($$$GeneralError, "query cannot be empty")
+	return:($get(table)="") $$$ERROR($$$GeneralError, "table cannot be empty")
+	new ch,flist,intolist,mtc,SQLCODE,%msg,sc,%objlasterror,%sqlSchemaPath
+	set table=$$ExtQualifiedName^%apiSQL(table)
+	if $d(query)=1 set query(1)=query,query=1
+	set display=''$g(display)
+	set:$g(schemapath)'="" schemapath=$$$UPPER(schemapath)	// need to make sure this is the uppercase name of the schema
+	set sc = $$$OK
+	try {
+		if display { write !,"Preparing query..." }
+		$$$ThrowOnError($$Prepare(.query,.mtc,$g(schemapath)))
+		if display { write !,"Creating class..." }
+		set ch = $$CreateTable^%apiDDL(table,"",$$$aid,"","","",.SQLCODE)
+		if ('ch) {
+			set sc = $$$ERROR($$$SQLCode, SQLCODE, $get(%msg, $$sqlcode(SQLCODE)))
+			if display { do $system.Status.DisplayError(sc) }	
+			return sc
+		}
+		$$$ThrowOnError($$AddColumnsFromRSMetaData(ch,.mtc,.flist,.intolist,$g(injectIdentity)))
+		if display { write !, "Compiling class..." }
+		set sc = $$compile^%apiDDL(table,ch,.SQLCODE)
+		if $$$ISERR(sc) { do Close^%apiDDL(ch) return sc }
+		if display { write !,"Copying data..." }
+		$$$ThrowOnError($$CopyData(.query,table,flist,intolist,.rowcount,.rowid,$g(schemapath)))
+	} catch {
+		if display { do $system.Status.DisplayError(sc) }
+	}
+	return sc
+.
+Prepare(&sql,&mtc,schemapath="")
+		#; This entry point will prompt for an SQL statement and then 'Prepare' it
+		#; It will leave any variables defined by the Prepare normally looked at by the Server
+	new err,backgrnd,data,j,mcurs,mtag,%qscqry,pathout,sqlin,%switch
+	if $get(schemapath)'="" { set %sqlSchemaPath = $lb(schemapath) }
+	set %qscqry=1, %switch="ODBC", backgrnd=1
+	kill mtc
+	do comp^%qaqqt("query",.sql,"info","",0,"","%qsc(%qscacn")
+	if $get(SQLCODE) < 0 {
+		if display {
+			write !!,"An error occurred during compilation of the SQL statement..."
+			write !,"SQLCODE = " _ SQLCODE , ?18, $$sqlcode(SQLCODE)
+			write:($get(err)'="") !,"err = " _ err
+			write:($get(%msg)'="") !,"%msg = " _ %msg
+		}
+		quit $$$ERROR($$$SQLCode, SQLCODE, $get(%msg))
+	}
+	QUIT $$$OK
+	
+AddColumnsFromRSMetaData(ch,&mtc,&flist,&intolist,injectIdentity="") ;
+	#define CloseTableAndReturnOnError(%expr) set tSC = %expr  if ('tSC) { do Close^%apiDDL(ch)  return $select($get(SQLCODE)<0: $$$ERROR($$$SQLCode, SQLCODE, $get(%msg)), 1: tSC) }
+.
+	new dt,extent,fieldname,colname,fldinfo,i,icol,idicol,idname,idprec,j,p,params,property,%ROWCOUNT,tSC
+	kill flist,intolist	
+	if injectIdentity'="" {
+		set $lg(idicol,idname,idprec)=injectIdentity
+	} else {
+		set idicol=""
+	}
+	set icol=1
+	for i=1:1:mtc(0,0,"select") {
+		if idicol,i=idicol { // inject identity column here
+			set icol=icol+1
+			set idprec=(10**idprec)-1 // idprec is now MAXVAL
+			$$$CloseTableAndReturnOnError($$AddColumn^%apiDDL(ch,idname,"Identity column","%Library.Numeric(MAXVAL="_idprec_",MINVAL=1,SCALE=0)",0,"","","",0,icol,1,,,,,,,,.SQLCODE))
+		}
+		set colname=$p(mtc(0,0,"select",i),$c(1))			##; Query column name
+		set fieldname=$p(mtc(0,0,"select",i),$c(1),2)		##; Field name
+		set dt=$p(mtc(0,0,"select",i,1),$c(1),13)
+		set property=$p(mtc(0,0,"select",i,1),$c(1),14)	##; Name of the property that projected this field
+		set params=""
+		if property'="" { s extent=$p(mtc(0,0,"select",i,1),$c(1),15),fldinfo=$g($$$EXTSQLCOLsqlinfo($$$rEXT,extent,fieldname)) }
+		else {
+			set fldinfo=""
+			if dt="%Library.String"||(dt="%Library.Binary") { set params="MAXLEN="_$p(mtc(0,0,"select",i,1),$c(1),3) }
+			if dt="%Library.Numeric"||(dt="%Library.Decimal") { set params="MAXVAL="_$$maxval^%apiSQL($p(mtc(0,0,"select",i,1),$c(1),4),$p(mtc(0,0,"select",i,1),$c(1),5))_",MINVAL="_$$minval^%apiSQL($p(mtc(0,0,"select",i,1),$c(1),4),$p(mtc(0,0,"select",i,1),$c(1),5))_",SCALE="_$p(mtc(0,0,"select",i,1),$c(1),5) }
+		}
+		if fldinfo'="" {
+			new val set p=$$$SQLLocColTypeParameters(fldinfo)
+			for j=1:1:$ll(p) {
+				if $p($lg(p,j),"=",2)'="" {
+					set val=$p($lg(p,j),"=",2)
+					set:val["," val=$$quoter(val)
+					set params=params_$e(",",params'="")_$p($lg(p,j),"=")_"="_val
+				}
+			}
+		}
+		if $g(params)'="" { set dt=dt_"("_params_")" }
+		set icol=icol+1
+		// AddColumn(class,fldname  ,desc,typeinfo,req,keytype,defvalue,collate,multiln,colnum="",identity,&computecode="",transient=0,calculated=0,reftab,matchtyp,updrule,delrule,tocol,SQLCODE,alteradd,&pBEDefine)
+		$$$CloseTableAndReturnOnError($$AddColumn^%apiDDL(ch,colname,"",dt,0,"","","",0,icol,,,,,,,,,,.SQLCODE))
+		set $p(flist,",",i)=$$quoter2(colname),$p(intolist,",",i)=":d("_i_")"
+	}
+	if idicol>mtc(0,0,"select") { // inject identity column here, after all other columns
+		set icol=icol+1
+		set idprec=(10**idprec)-1 // idprec is now MAXVAL
+		$$$CloseTableAndReturnOnError($$AddColumn^%apiDDL(ch,idname,"Identity column","%Library.Numeric(MAXVAL="_idprec_",MINVAL=1,SCALE=0)",0,"","","",0,icol,1,,,,,,,,.SQLCODE))
+	}
+	QUIT $$$OK
+ 
+ 
+CopyData(query,table,flist,intolist,&rowcount="",&rowid="",schemapath="",nojourn=0,useinssel=0) ;
+	return $$SQLCopyTableData^%SYS.SECURITY(.query,table,flist,intolist,.rowcount,.rowid,schemapath,nojourn,useinssel)
+	
+	// Called from CopyData->SQLCopyData^%SYS.SECURITY
+	// table should be an iqn (internal qualified name)
+CopyData2(query,table,flist,intolist,&rowcount,&rowid,schemapath="",nojourn=0,useinssel=0) ;
+	new code,i,line,mtc,sc,SQLCODE
+		#; Here we need to get any include files for clases that project the tables/views in the query to make sure
+		#; they are included in this temp routine
+	set SQLCODE=-$$ParseSQL^%SYS.SQLSRV(.query)
+	if 'SQLCODE {  // If the query fails here, simply ignore and don't include any includes  If a real issue, it will fail later
+		new class,classes,include,includes,irn,qtable,ttype
+		set qtable=""
+		for  {
+			set qtable=$o(mtc(0,0,"table",qtable)) quit:qtable=""
+			set class=$p(mtc(0,0,"table",qtable),$c(1),5)
+			if class'="" {
+				set ttype=$p(mtc(0,0,"table",qtable),$c(1),1),irn=$p(mtc(0,0,"table",qtable),$c(1),2)
+				if '$$$smdIsATVF(ttype,irn) {
+					set classes(class)=""
+					merge includes=$$$comClassKeyRaw(class,$$$cCLASSincludecodeall)
+				}
+			}
+		}
+		set includes=""
+		for  {
+			set includes=$order(includes(includes)) quit:includes=""
+			set:includes'="%occSqlfunc" code($i(line))="#include "_includes
+		}
+	}
+	set code($i(line))=$c(9)_"new d,%msg,%ROWCOUNT,%ROWID,SQLCODE"
+	set code($i(line))=$c(9)_"set rowcount=0,$ze="""""
+	if $get(schemapath) '= "" {
+		set %sqlSchemaPath=$lb(schemapath)
+		set code($i(line))="#sqlcompile path="_schemapath
+	}
+	set:$data(%mmmsqlcomp) code($i(line))="#sqlcompile select = " _ %mmmsqlcomp
+	if 'useinssel {
+		set code($i(line))=$c(9)_"&sql(DECLARE CopyTable CURSOR FOR"
+		for i=1:1:query { set code($i(line))=$c(9,9)_query(i) }
+		set code($i(line))=$c(9)_")"
+		set code($i(line))=$c(9)_"&sql(OPEN CopyTable)"
+		set code($i(line))=$c(9)_"if SQLCODE<0 { set sc = $$Error^%apiOBJ(5540,SQLCODE,$get(%msg,$$sqlcode^%qarCopyTable(SQLCODE))) RETURN }"
+		set code($i(line))=$c(9)_"for {"
+		set code($i(line))=$c(9)_$c(9)_"kill d &sql(FETCH CopyTable INTO "_intolist_") quit:SQLCODE"
+		set code($i(line))=$c(9)_$c(9)_"&sql(INSERT %NOLOCK %NOCHECK "_$s(nojourn:"%NOJOURN ",1:"")_"INTO "_table_" ("_flist_") VALUES ("_intolist_"))"
+		set code($i(line))=$c(9)_$c(9)_"if SQLCODE<0 { set rowcount=0,rowid="""" quit } else { set rowcount=rowcount+1,rowid=%ROWID }"
+		set code($i(line))=$c(9)_"}"
+		set code($i(line))=$c(9)_"if SQLCODE<0 { set sc = $$Error^%apiOBJ(5540,SQLCODE,$get(%msg,$$sqlcode^%qarCopyTable(SQLCODE))) &sql(CLOSE CopyTable) RETURN }"
+		set code($i(line))=$c(9)_"&sql(CLOSE CopyTable)"
+		set code($i(line))=$c(9)_"if SQLCODE<0 { set sc = $$Error^%apiOBJ(5540,SQLCODE,$get(%msg,$$sqlcode^%qarCopyTable(SQLCODE))) }"
+	} else {	// INSERT / SELECT will be used when executing a CTAS statement
+		set code($i(line))=$c(9)_"&sql(lock table "_$$quoter2($$$SchemaFromIQN(table))_"."_$$quoter2($$$TableFromIQN(table))_" in exclusive mode)"
+		set code($i(line))=$c(9)_"if SQLCODE<0 { set sc = $$Error^%apiOBJ(5540,SQLCODE,$get(%msg,$$sqlcode^%qarCopyTable(SQLCODE))) RETURN }"
+		if nojourn {
+				#; If %NOJOURN was specified, we will add it to the INSERT and also specify the ML_PARALLEL option in the hopes theat parallel will be used.
+			set code($i(line))=$c(9)_"&sql(insert %nocheck %nolock %nojourn /*#OPTIONS {""DML_PARALLEL"":1} */ into "_$$quoter2($$$SchemaFromIQN(table))_"."_$$quoter2($$$TableFromIQN(table))
+		} else {
+			set code($i(line))=$c(9)_"&sql(insert %nocheck %nolock into "_$$quoter2($$$SchemaFromIQN(table))_"."_$$quoter2($$$TableFromIQN(table))
+		}
+		for i=1:1:query { set code($i(line))=$c(9,9)_query(i) }
+		set code($i(line))=$c(9)_")"
+		set code($i(line))=$c(9)_"if SQLCODE<0 { set sc = $$Error^%apiOBJ(5540,SQLCODE,$get(%msg,$$sqlcode^%qarCopyTable(SQLCODE))) do unlock RETURN }"
+		set code($i(line))=$c(9)_"set rowcount=$g(%ROWCOUNT),rowid=$g(%ROWID)"
+		set code($i(line))=$c(9)_"do unlock RETURN"
+		set code($i(line))="unlock"_$c(9)_"&sql(unlock table "_$$quoter2($$$SchemaFromIQN(table))_"."_$$quoter2($$$TableFromIQN(table))_" in exclusive mode)"
+	}
+	set code($i(line))="RETURN"
+	set code(0)=line
+	try {
+		set sc = $$$OK
+		do RunTempCode^%SYS.SQLSRV(.code,,.sc,.SQLCODE,.%msg,"Query To Table")
+		if $$$ISERR(sc) { // It's possible for sc to be defined but SQLCODE and %msg were not set.
+			set:(SQLCODE=0) SQLCODE = $system.Status.StatusToSQLCODE(sc, .%msg)
+		} elseif $get(SQLCODE)<0 { // If sc was not set to an error, but SQLCODE indicates an error.
+			set sc = $$$ERROR($$$SQLCode, SQLCODE, $get(%msg, $$sqlcode(SQLCODE)))
+		}
+	} catch ex {
+		set sc = ex.AsStatus()
+	}
+	RETURN sc
+ 
+#INCLUDE %sqlcode
+#INCLUDE %quoter
+---

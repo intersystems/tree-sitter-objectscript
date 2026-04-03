@@ -56,7 +56,7 @@ const STATEMENT_RULE_NAMES = [
   'pound_ifndef',
   'pound_import',
   'pound_include',
-  'macro',
+  'command_macro',
   'tag',
   'tag_with_params',
   'procedure',

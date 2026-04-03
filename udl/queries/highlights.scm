@@ -35,7 +35,7 @@
 
 [
   (property_name)
-  (parameter_name)
+  (oref_parameter)
   (sql_field_identifier)
 ] @variable.member
 

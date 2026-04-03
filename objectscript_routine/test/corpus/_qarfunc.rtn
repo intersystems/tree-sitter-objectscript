@@ -1,0 +1,3293 @@
+====
+qarfunc
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qarfunc^MAC^^^0
+%qarfunc	// Run-time Function APIs
+	;; COMPONENTS :: SQL/Runtime
+	#;
+#INCLUDE %msql
+#INCLUDE %sqlx
+	#;
+#IF 0   ;---------------------------------------------------------------------
+	; Description:   Run-Time Function APIs
+	; Author:        David Van De Griek
+	; Date Started:  December 14, 1999
+	; Maintenance History: [ XXXnnn (MM/DD/YY) - Description ]
+	;
+	;  BJB420  (09/10/2009) - Correct Matches translation for Informix ?->1E *->.E
+	;  DPV3335 (01/06/2009) - Implement support for TO_TIMESTAMP Scalar function
+	;  DPV3334 (01/06/2009) - Implement support for INSTR Scalar function
+	;  DPV3277 (10/01/2008) - Report error if Julian date is beyond 9999-12-31
+	;  DPV3253 (09/02/2008) - Informix DATETIME arithmetic
+	;  DPV3246 (08/14/2008) - Improve performance of CONCAT
+	;  DPV3203 (06/24/2008) - SQL: Corrections for TODATE with jpww LOCALE 
+	;  DPV3187 (06/10/2008) - CONVERT function fixes for 2-digit years and time with milliseconds
+	;  DPV3186 (06/09/2008) - Correct TO_DATE() function when using non-default date separator
+	;  DPV3176 (05/29/2008) - INFORMIX:  MATCHES Support
+	;  DPV3172 (05/27/2008) - INFORMIX:  Correct concatenation
+	;  DPV3152 (05/09/2008) - TSQL: Improved support for CONVERT
+	;  DPV3151 (05/09/2008) - Correct TSQLBIT functions on Integer values
+	;  DPV3099 (02/13/2008) - Use ConvertDATETIMEToTIMESTAMP for CAST(string AS DATETIME/TIMESTAMP)
+	;  DPV3097 (01/28/2008) - Improve performance of datediff
+	;  DPV3058 (10/22/2007) - Implement support for LAST_DAY() function
+	;  DPV3024 (09/24/2007) - Fix ROUND() function to return type of first argument, fix truncation
+	;  DPV3011 (08/31/2007) - Support "w" as alias for weekday/dw in DATE* functions
+	;  DPV3009 (08/29/2007) - SQL Fix:  Corrections and Enhancements for TO_DATE() and TO_CHAR()
+	;  DPV2997 (08/15/2007) - SQL Fix:  Correct TO_CHAR(val,'J') - Julian dates - ProdLog 58165:TO_CHAR returns inco...>
+	;  DPV2979 (07/20/2007) - Update REPEAT/REPLICATE function for proper ''/NULL/<negative num> behavior
+	;  DPV2955 (06/13/2007) - Fixes for CONVERT, default date to 1900-01-01
+	;                         SQL Fix ProdLog 47050: <ZCONV> occurs when MS SQL Server CONVERT for invalid argument
+	;  DPV2937 (05/23/2007) - Support TSQL implicit conversion of string to datetime
+	;  DPV2907 (04/17/2007) - Support CONVERT to CHAR from DATETIME
+	;  DPV2899 (04/03/2007) - Fix TO_DATE(n,'J') for dates prior to 1841 via xDBC
+	;  DPV2844 (03/19/2007) - Handle all supported datepart values
+	;                         SQL Fix ProdLog 54093: STS/SQLTIMESTAMP working with functions <> DATEPART
+	;  DPV2879 (03/13/2007) - Truncate numeric value to DATEADD to be integer
+	;                         SQL Fix ProdLog 56759: $system.SQL.DATEADD does not truncate value to integer
+	;  DPV2876 (03/09/2007) - Allow TO_DATE(...,'MMDDYYYY')
+	;                         SQL Fix ProdLog 56688: Allow TO_DATE(...,'MMDDYYYY')
+	;  DPV2875 (03/09/2007) - Fix DATEADD('yy') on a leap day
+	;                         SQL Fix ProdLog 56720: compaint on $SYSTEM.SQL.DATEADD behaviour
+	;  DPV2851 (01/31/2007) - Implement $TSQL_RAND() function
+	;  DPV2790 (11/08/2006) - Fixes for TSQL bitwise operators - work with proper type and sign.
+	;                         SQL Fix ProdLog 54245: Significant bit difference in bitwise operation
+	;  DPV2788 (11/06/2006) - Normalize datediff part argument to lower case
+	;                         SQL Fix ProdLog 52945, 43323 - TSQL DATEDIFF(DAY,arg2,arg3) returns zero
+	;  DPV2766 (10/19/2006) - Change TO_DATE to only support conversion of string to date
+	;  DPV2747 (09/28/2006) - TSQL:  Implement support for TSQL bitwise operators &, |, ^, and ~
+	;  DPV2746 (09/27/2006) - TSQL: Implement OBJECT_ID() function
+	;  DPV2743 (09/22/2006) - TSQL: Implement support for TSQL function INDEX_COL
+	;  DPV2724 (09/01/2006) - Enhancments and Fixes to CONVERT.  SMALLDATETIME, CHAR; Column metadata
+	;  BJB324  (08/04/2006) - Support convert(DATETIME, getdate()) 
+	;  DPV2700 (07/13/2006) - More CONVERT to datetime fixes to make compatible with Sybase/SQL Server
+	;                         SQL Fix ProdLog 51390: CONVERT(DATETIME....) problems
+	;  DPV2697 (07/12/2006) - Use $e(...,*) and $e(...,...,*) in SQL code
+	;  DPV2693 (07/10/2006) - SQL Fix ProdLog 50239: Diffent Convert function behaviour with SQL Server
+ 	;  DPV2686 (07/05/2006) - Implement scalar function REPLACE
+	;  DPV2680 (06/23/2006) - TSQL:  Fix CHARINDEX
+	;  DPV2649 (05/15/2006) - SQL Enhancement: Support CONVERT() from INT to VARCHAR
+	;  DPV2646 (05/10/2006) - Support DATEADD and DATEDIFF with dw and dy dateparts
+	;  DPV2627 (04/28/2006) - Update for TSQL Like Pattern
+	;  DPV2615 (04/07/2006) - Add support for scalar function CHARINDEX and STUFF
+	;  DPV2614 (04/04/2006) - Fix the ROUND function
+	;                         SQL Fix ProdLog 49968:  SQL ROUND function
+	;  DPV2596 (02/23/2006) - Fix MSCONVERT conversion to TIMESTAMP - Use format 1 for time, not 3
+	;  DPV2574 (01/17/2006) - Support BIGINT in CONVERT
+	;                         SQL Fix ProdLog 41412: Support for Parameters for DECIMAL Datatype
+	;  DPV2466 (07/26/2005) - Use $ZTIME(time,3) format for AM/PM
+	;  DPV2430 (05/16/2005) - Fix TO_CHAR with numeric->string conversions
+	;                         SQL Fix ProdLog 43129:  $$toChar returns leading zeroes with a space.
+	;  DPV2396 (03/21/2005) - Fix dtout for styles 111 and 112
+	;                         SQL Fix ProdLog 38659:  TSQL: <Illegal Value>DateFromString+12^%qarfunc
+	;  DPV2321 (11/10/2004) - Use new %SYS.CONFIG API for SQL Configuration settings
+	;  LFT1320 (11/02/2004) - Laura Tillem, %SYS.NLS
+	;  DPV2288 (09/15/2004) - Add Support for STR(float-expr[, length [, decimal ]])
+	;  DPV2216 (05/19/2004) - SQL Enhancement:  Add Support for CONVERT(BIT,n)
+	;  DPV2206 (04/08/2004) - Support CONVERT(varchar(x),<StreamField>)
+	;                         SQL Implement ProdLog 36589:  Add the ability to convert character stream data to String data via the Convert() function
+	;  DPV2202 (03/21/2004) - Support msconvert to DOUBLE
+	;                         SQL Fix ProdLog 36358:  Query does not Add up
+	;  DPV2192 (03/10/2004) - Fixes for datepart, dateadd, datediff with non-default formats/date separators
+	;  DPV2181 (03/09/2004) - Fix CONVERT(INT,...), handle the INTEGER type, not just INT
+	;  DPV2169 (02/09/2004) - Allow the default format returned by TO_DATE() to be configurable
+	;  DPV2168 (02/09/2004) - Fix some conversions in ConvertLogicalDate when TimeStamp is passed in
+	;  DPV2167 (02/09/2004) - Support formats 'YYYYMMDD' and 'DDMMYYYY' in TO_DATE
+	;  DPV2166 (02/09/2004) - Fix Julian Dates
+	;                         SQL Fix ProdLog 35124:  SQL function TO_CHAR(nnnnnnnnnn,"J") returns wrong result
+	;                         SQL Fix ProdLog 35472:  TO_CHAR and TO_DATE Julian date wrong
+	;  DPV2121 (11/10/2003) - Add support for TimeStamp values in TO_DATE and TO_CHAR
+	;  DPV2076 (09/27/2003) - Fix TO_DATE with non-default DateSeparator and DateFormat
+	;  DPV2073 (09/16/2003) - Pass WeekOfYear a $H format date value
+	;  DPV2056 (08/07/2003) - Fix SQL WEEK Function when non-default date format and/or separator used
+	;  DPV2048 (07/21/2003) - Fix WeekOfYear function for years which Jan 1 is a Sunday
+	;  DPV1978 (04/29/2003) - Fix calculation of WEEK function (Create WeekOfYear function)
+	;  BJB257  (02/14/2003) - Change datepart("wk",...) to match SQL server amd Sybase behavior 
+	;  DPV1935 (02/12/2003) - Fix DATEPART("wk",...) calculation
+	;  DPV1920 (01/28/2003) - Add support for MS SQL Server style CONVERT(datatype, expression [,style]) function
+	;  DPV1608 (10/31/2001) - Allow 1 or 2 character month/day specification in timestamp format in datepart
+	;                         Handle +$H dates over 99999
+	;                         When adding months/quarters, don't specify day beyond the end of the month
+	;  DPV1541 (05/17/2001) - Report error if bad value passed to TO_DATE/TO_CHAR
+	;  DPV1489 (01/24/2001) - Fix TIMESTAMPADD when adding time intervals of hours, minutes, and seconds.
+	;  DPV1463 (12/01/2000) - Support YYYYMMDD and DDMMYYYY formats for TO_CHAR and TO_DATE
+	;  DPV1428 (10/20/2000) - Support ODBC date format as input for date functions
+	;  DPV1387 (08/30/2000) - Fix fmt param for todate if value is "", Fix tochar with Julian date format
+	;  DPV1339 (07/12/2000) - Implement REPEAT function here
+	;  DPV1316 (05/31/2000) - Support Oracle TO_CHAR function
+	;  DPV1315 (05/25/2000) - Fixes for TO_DATE function
+	;  DPV1288 (04/03/2000) - Fix for NULL dates
+	;  DPV1280 (03/17/2000) - Fix some Y2K problems
+	;  DPV1219 (12/14/1999) - Initial implementation of routine
+	;                         DECODE, TODATE came from %qarorac - now obsolete
+	;
+	;    
+	;*				$ZU( 122 , PropNum, PropertyVal )
+	;*
+	;*			which gets/sets the localization values for the data
+	;*			conversion functions defined in the Localization
+	;*			Control Block (LCB).
+	;*
+	;*			The following PropNum values are currently supported:
+	;*
+	;*			      0  -  locale table
+	;*			      1  -  date format
+	;*			      2  -  year option
+	;*			      3  -  time format
+	;*			      4  -  time precision
+	;*			      5  -  numeric group size
+	;*			      6  -  decimal separator
+	;*			      7  -  numeric group separator
+	;*			      8  -  date separator
+	;*			      9  -  time separator
+	;*			     10  -  plus sign
+	;*			     11  -  minus sign
+	;*			     12  -  word for "AM"
+	;*			     13  -  word for "PM"
+	;*			     14  -  word for "NOON"
+	;*			     15  -  word for "MIDNIGHT"
+	;*			   * 16  -  list of month name abbreviations
+	;*			   * 17  -  list of full month names
+	;*			   * 18  -  list of weekday name abbreviations
+	;*			   * 19  -  list of full weekday names
+	;*			     20  -  date range lower limit	  [RAM650]
+	;*			     21  -  date range upper limit	  [RAM650]
+	;*			     22  -  currency                      [JLC1282]
+	;*
+	;*			* The abbreviations and full names of the months and
+	;*			  weekdays have the same format as the second parameter
+	;*			  to the $ZDATE function.  That is, the first character
+	;*			  of the value must be the delimiter which is used to
+	;*			  delimit each of the names in the list.
+#ENDIF  ;---------------------------------------------------------------------
+	$$$Abort  ; Not an Entry Point!!
+.
+#define DateFormat $ZU(122,1)
+#define TimeFormat $ZU(122,3)
+#define DecimalSeparator $ZU(122,6)
+#define DateSeparator $ZU(122,8)
+#define TimeSeparator $ZU(122,9)
+ 
+ 
+dateadd(part,number="",edate="")	//
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function adds an interval to a specified date.  It takes three
+	#; arguments - the datepart, a number, and a date.  The result is a
+	#; datetime value equal to the date plus the number of dateparts.
+	#;
+	#; PARMETERS:
+	#;    part   - Can be either the full name or the abbreviation as
+	#;             indicated in the table in the 'dartpart' function.
+	#;             dateparts supported for dateadd are:
+	#;                 year            yy
+	#;                 quarter         qq
+	#;                 month           mm
+	#;                 week            wk
+	#;                 dayofyear       dy
+	#;                 day             dd
+	#;                 hour            hh
+	#;                 minute          mi
+	#;                 second          ss
+	#;                 millisecond     ms
+	#;                 microsecond     mcs
+	#;                 nanoseconds     ns
+	#;    number - Any numeric value. 
+	#;    edate - The given date-time (e.g. Oct 18 1966 11:30AM)
+	#;            edate can be in any of the following formats:
+	#;              - ODBC Timestamp:  YYYY-MM-DD HH:MM:SS
+	#;              - MS SQL Server & Sybase String formats:
+	#;                         Dates formats:
+	#;                               mm<del>dd<del>[yy]yy
+	#;                                  <del> = '/' | '-' | '.'
+	#;                               dd Mmm[mm][,] [yy]yy
+	#;                               dd [yy]yy Mmm[mm]
+	#;                               yyyy Mmm[mm] [dd] OR yyyy [dd] Mmm[mm]
+	#;                         Time formats:
+	#;                               HH:MM[:SS:SSS][{AM|PM}]
+	#;                               HH:MM[:SS.S]
+	#;                               HH[' ']{AM|PM}
+	#;                 May be '<date>' '<date> or <time>' '<time> or <date>
+	#;              - $H format (55555,44444)
+	#;              - +$H format (55555 - same as 55555,00000)
+	#;		        - %PosixTime value
+	#;
+	#; RETURNS: The date produced by adding the specified number of 
+	#;          specified date parts to the date. 'number'
+	#;          can be any numeric type; the value is truncated to an
+	#;          integer.  
+	#;          Calculated date/time is always returned in our TIMESTAMP format, unless edate was a %PosixTime value.
+	#;	    If edate is a %PosixTime, a %PosixTime value is returned
+	#;---------------------------------------------------------------------
+	QUIT:edate="" ""
+	QUIT:number="" ""   // Return NULL if either date or number is NULL
+	new posix
+	set posix=$$$sqlxPosixTimeIsValid(+edate)	// posix=1 if edate is a %PosixTime value
+	set number=$normalize(number,-1)
+	set part=$$$LOWER(part)
+	if posix {	// %PosixTime - easier computations :)
+		new posixtime
+		set posixtime=$$$sqlxPosixTimeDecode(+edate)
+		if $case(part,"second":1,"ss":1,"s":1,:0) { set posixtime=posixtime+number }				// add seconds to posixtime
+		elseif $case(part,"minute":1,"mi":1,"n":1,:0) { set posixtime=posixtime+(number*60) }		// add minutes to posixtime
+		elseif $case(part,"hour":1,"hh":1,"h":1,:0) { set posixtime=posixtime+(number*3600) }		// add hours to posixtime
+		elseif $case(part,"day":1,"dd":1,"d":1,"dayofyear":1,"dy":1,"y":1,"weekday":1,"dw":1,"w":1,:0) { set posixtime=posixtime+(number*86400) }	// add days to posixtime
+		elseif $case(part,"week":1,"wk":1,"ww":1,:0) { set posixtime=posixtime+(number*604800) }	// add weeks to posixtime
+		elseif $case(part,"millisecond":1,"ms":1,:0) { set posixtime=posixtime+(number/1000) }		// add milliseconds to posixtime
+		elseif $case(part,"microsecond":1,"mcs":1,:0) { set posixtime=posixtime+(number/1000000) }	// add microseconds to posixtime
+		elseif $case(part,"nanoseconds":1,"ns":1,:0) { set posixtime=posixtime+(number/1000000000) }	// add nanoseconds to posixtime
+		else { set edate=##class(%Library.PosixTime).LogicalToOdbc(edate) goto dateaddcont }
+		QUIT $$$sqlxPosixTimeEncode(+posixtime)
+		
+	}
+dateaddcont	;
+	new dadd,date,datesep,day,dh,hour,minute,month,name,newdate,second,th,time,year
+	set datesep=$$$DateSeparator
+	set dadd="",name=$$datepart($g(part),edate,.date,.time,0,"DATEADD")
+	set:time="00:00:00" time="00:00:00"
+	set part=$zcvt(part,"L")
+	set:time["."&&($$$DecimalSeparator'=".") time=$tr(time,".",$$$DecimalSeparator)  // Make sure milliseconds is SS,ssss, where , is $$$DecimalSeparator
+	i part="year"||(part="yy")||(part="yyyy") {
+		s month=$p(date,datesep,1),day=$p(date,datesep,2),year=$tr($justify($p(date,datesep,3)+number,4)," ","0")
+		i day>28,+month=2 s day=28+$s(year>1600&&'+$e(year,*-1,*)&&'(year#400):1,'(year#4)&&+$e(year,*-1,*):1,1:0)
+		s date=month_datesep_day_datesep_year
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+		QUIT:posix ##class(%Library.PosixTime).OdbcToLogical(dadd)
+		QUIT dadd
+	}
+	i part="quarter"||(part="qq")||(part="q") {
+		s month=$p(date,datesep,1),day=$p(date,datesep,2),year=$p(date,datesep,3)
+		s month=month+(3*number)
+		i month<1 { s year=year-(month\-12)-1,month=month#-12 s:month<1 month=12+month }
+		else { s year=year+(month\12)-'(month#12),month=month#12 s:'month month=12 }
+		i day=31,+month'=2 s day=$case(+month,4:30,6:30,9:30,11:30,:31)
+		i day>28,+month=2 s day=28+$s(year>1600&&'+$e(year,*-1,*)&&'(year#400):1,'(year#4)&&+$e(year,*-1,*):1,1:0)
+		s date=month_datesep_day_datesep_$tr($j(year,4)," ",0)
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+		QUIT:posix ##class(%Library.PosixTime).OdbcToLogical(dadd)
+		QUIT dadd
+	}
+	i part="month"||(part="mm")||(part="m") {
+		s month=$p(date,datesep,1),day=$p(date,datesep,2),year=$p(date,datesep,3)
+		s month=month+number
+		i month<1 s year=year-(month\-12)-1,month=month#-12 s:month<1 month=12+month
+		e  s year=year+(month\12)-'(month#12),month=month#12 s:'month month=12
+		i day=31,+month'=2 s day=$case(+month,4:30,6:30,9:30,11:30,:31)
+		i day>28,+month=2 s day=28+$s(year>1600&&'+$e(year,*-1,*)&&'(year#400):1,'(year#4)&&+$e(year,*-1,*):1,1:0)
+		s date=month_datesep_day_datesep_$tr($j(year,4)," ",0)
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+		QUIT:posix ##class(%Library.PosixTime).OdbcToLogical(dadd)
+		QUIT dadd
+	}
+	i part="week"||(part="wk")||(part="ww") {
+		s dh=$zdh(date,1,,,,,-672045,,"") QUIT:dh="" ""  		// Bad Value
+		s dh=dh+(number*7)
+		s date=$zd(dh,1,,,,,-672045,,"") QUIT:dh="" ""  		// Bad Value
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" 	// Bad Value
+		s dadd=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	i part="day"||(part="dd")||(part="d")||(part="dayofyear")||(part="dy")||(part="y")||(part="weekday")||(part="dw")||(part="w") {	// DPV2647=	// DPV3011
+		s dh=$zdh(date,1,,,,,-672045,,"") q:dh=""  ; Bad Value
+		s dh=dh+number
+		s date=$zd(dh,1,,,,,-672045,,"") q:dh=""   ; Bad Value
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	i part="hour"||(part="hh")||(part="h") {
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=3600*number  ; Number of seconds we are adding
+		s second=$p(dh,",",2)+dadd
+		s dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		s dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	i part="minute"||(part="mi")||(part="n") {
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=60*number  ; Number of seconds we are adding
+		s second=$p(dh,",",2)+dadd
+		s dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		s dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	i part="second"||(part="ss")||(part="s") {
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=number  ; Number of seconds we are adding
+		s second=$p(dh,",",2)+dadd
+		s dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		s dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	i part="millisecond"||(part="ms") {
+		s dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" "" ; Bad Value
+		s dadd=number  ; Number of milliseconds we are adding
+		s second=$p(dh,",",2)+(dadd/1000)
+		s dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		s dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		QUIT dadd
+	}
+	if part="microsecond"||(part="mcs") {
+		set dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"")
+		RETURN:dh="" "" ; Bad Value
+		set dadd=number  ; Number of microseconds we are adding
+		set second=$p(dh,",",2)+(dadd/1000000)
+		set dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		set dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		RETURN dadd
+	}
+	if part="nanosecond"||(part="ns") {
+		set dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"")
+		RETURN:dh="" "" ; Bad Value
+		set dadd=number  ; Number of nanoseconds we are adding
+		set second=$p(dh,",",2)+(dadd/1000000000)
+		set dadd=(dh+(second\86400)-((second<0)&&(second#86400)))_","_(second#86400)
+		set dadd=$zdatetime(dadd,3,,$l($p(dadd,".",2)),,,,,-672045)
+		RETURN dadd
+	}
+	s SQLCODE=-8,%msg=$$$FormatText($$$Text("'%1' is not a recognized DATEADD option","%SQL.Function"),part) ZTRAP "DADD"
+	QUIT ""
+ 
+ 
+datediff(part="",edate1="",edate2="") 	// Sybase 'datediff' Function...
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function calculates the number of date parts between two
+	#; specified dates.  It takes three arguments.  The first is a date
+	#; part.  The second and third are dates.  The result is a signed
+	#; integer value equal to edate2-edate1, in 'dateparts'.  For example,
+	#; the number of weeks between Sunday, January 4 and Sunday, January
+	#; 11 is one.
+	#;
+	#;    part   - Can be either the full name or the abbreviation as
+	#;             indicated in the table in the 'datepart' function.
+	#;             dateparts supported for datediff are:
+	#;                 year            yy
+	#;                 month           mm
+	#;                 week            wk
+	#;                 day             dd
+	#;                 hour            hh
+	#;                 minute          mi
+	#;                 second          ss
+	#;                 millisecond     ms
+	#;                 microsecond     mce
+	#;                 nanosecond      ns
+	#;			Note we do not yet support quarter/qq, but SQL Server does.
+	#;    edate1 - The 1st date (e.g. Oct 18 1966 11:30AM)
+	#;    edate2 - The 2nd date (e.g. Oct 18 1966 11:30AM)
+	#;
+	#;
+	#; RETURNS: 'edate2' - 'edate1' measured in the specified date part.
+	#;          Return type is INTEGER
+	#;---------------------------------------------------------------------
+	RETURN:(edate1="")||(edate2="") ""   // Return NULL if either date is NULL
+		#; These two lines have %PosixTime LogicalToOdbc code in-lined here to avoid the overhead of a method call
+	new factor,time,val
+	if $$$sqlxPosixTimeIsValid(+edate1) { set val=$zu(1073741925,+edate1),time=(val#86400),edate1=$zdatetime((val\86400+47117-((val<0)&&(time)))_","_time,3,1,$l($p(val,".",2)),,,,,-672045) }
+	if $$$sqlxPosixTimeIsValid(+edate2) { set val=$zu(1073741925,+edate2),time=(val#86400),edate2=$zdatetime((val\86400+47117-((val<0)&&(time)))_","_time,3,1,$l($p(val,".",2)),,,,,-672045) }
+	set part=$$$LOWER(part)
+	try {
+		goto @part
+	} catch {
+		if $ze["<NOLINE>" { set SQLCODE=-8,%msg=$$$FormatText($$$Text("'%1' is not a recognized DATEDIFF option","%SQL.Function"),part) ZTRAP "DDIF" }
+		set SQLCODE=-400,%msg=$$$FormatText($$$Text("Unexpected error in DATEDIFF:  ","%SQL.Function"),$ze) ZTRAP "DDIFF"
+	}
+	RETURN ""
+year	
+yy	
+yyyy	QUIT $$datepart(part,edate2,,,0)-$$datepart(part,edate1,,,0,"DATEDIFF")
+.
+month	
+mm	
+m	QUIT ($$datepart("yy",edate2,,,0,"DATEDIFF")-$$datepart("yy",edate1,,,0,"DATEDIFF")*12)+($$datepart("mm",edate2,,,0,"DATEDIFF")-$$datepart("mm",edate1,,,0,"DATEDIFF"))
+	
+quarter
+qq
+q  QUIT ($$datepart("yy",edate2,,,0,"DATEDIFF")-$$datepart("yy",edate1,,,0,"DATEDIFF")*4)+($$datepart("qq",edate2,,,0,"DATEDIFF")-$$datepart("qq",edate1,,,0,"DATEDIFF"))
+week	
+wk	
+ww	new date1,date2
+	do datepart("wk",edate2,.date1),datepart("wk",edate1,.date2)
+	QUIT ($zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045))\7	// DPV2192 - use format 1
+.
+day	
+dd	
+d	
+dayofyear	
+dy	
+y	
+weekday	
+dw	
+w	QUIT:edate1?1.7n&&(edate2?1.7n) (edate2-edate1)			// optimization for when both values are just dates
+	new date1,date2
+	do datepart("dd",edate2,.date1),datepart("dd",edate1,.date2)
+	QUIT $zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045)
+.
+hour	
+h
+hh	QUIT:edate1?1.7n&&(edate2?1.7n) (edate2-edate1)*24		// optimization for when both values are just dates
+	new date1,date2,time1,time2,value
+	do datepart("hh",edate2,.date1,.time1),datepart("hh",edate1,.date2,.time2)
+	set value=($zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045))*24  ; Number of hours for date difference	// DPV2192 - use format 1
+	QUIT value+(time1-time2)
+.
+minute	
+mi
+n	QUIT:edate1?1.7n&&(edate2?1.7n) (edate2-edate1)*24*60		// optimization for when both values are just dates
+	new date1,date2,time1,time2,value
+	do datepart("mi",edate2,.date1,.time1),datepart("mi",edate1,.date2,.time2)
+	set value=($zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045))*24*60  ; Number of minutes for date difference	// DPV2192 - use format 1
+	QUIT value+((time1-time2)*60)+($p(time1,":",2)-$p(time2,":",2))
+.
+second	
+ss	
+s	QUIT:edate1?1.7n&&(edate2?1.7n) (edate2-edate1)*24*60*60	// optimization for when both values are just dates
+	new date1,date2,time1,time2,value
+	do datepart("yy",edate2,.date1,.time1),datepart("yy",edate1,.date2,.time2)
+	s value=($zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045))*24*60*60  ; Number of seconds for date difference	// DPV2192 - use format 1
+	QUIT value+((time1-time2)*60*60)+(($p(time1,":",2)-$p(time2,":",2))*60)+($p($p(time1,":",3),".",1)-$p($p(time2,":",3),".",1))
+.
+millisecond
+ms	set factor=1000 goto subsecondcont
+microsecond	
+mcs	set factor=1000000 goto subsecondcont
+nanosecond	
+ns	set factor=1000000000
+subsecondcont
+	RETURN:edate1?1.7n&&(edate2?1.7n) ((edate2-edate1)*24*60*60*factor)				// optimization for when both values are just $horolog dates
+		// define date1/date2/time1/time2  
+		// date# values will be in date format 1 with $$$DateSeparator delimiter
+		// time# values will be in HH:MM:SS[.sss] format
+	new date1,date2,time1,time2,value
+	if edate2?1.7n { set date1=$zd(edate2,1),time1="00:00:00" }												// +$H format
+	elseif (edate2?1.7n1","1.5n)||(edate2?1.7n1","1.5n1"."1.9n) { set date1=$zd(edate2,1,,,,,-672045),time1=$zt($p(edate2,",",2),1,$l($p(edate2,".",2))) } 	// $H/$zu(188) format
+	else { do datepart("yy",edate2,.date1,.time1) }														// some other format
+	if edate1?1.7n { set date2=$zd(edate1,1,,,,,-672045),time2="00:00:00" } 										// +$H format	
+	elseif (edate1?1.7n1","1.5n)||(edate1?1.7n1","1.5n1"."1.9n) { set date2=$zd(edate1,1,,,,,-672045),time2=$zt($p(edate1,",",2),1,$l($p(edate1,".",2))) } 	// $H/$zu(188) format
+	else { do datepart("yy",edate1,.date2,.time2) }														// some other format
+	set value=($zdh(date1,1,,,,,-672045)-$zdh(date2,1,,,,,-672045))*24*60*60*factor										// Number of milliseconds, microseconds, or nanoseconds for date difference
+	RETURN value+((time1-time2)*60*60*factor)+((($p(time1,":",2)-$p(time2,":",2)))*60*factor)+$normalize(($p(time1,":",3)-$p(time2,":",3))*factor,0)
+ 
+datetrunc(part="",edate="") ; DATE_TRUNC Function
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function produces a date truncated to the specified date part
+	#; 
+	#;    part   - Can be either the full name or the abbreviation as
+	#;             indicated in the table in the 'datepart' function.
+	#;             dateparts supported for datediff are:
+	#;                 year            yyyy, yy
+	#;                 quarter         qq, q
+	#;                 month           mm, m
+	#;                 week            wk, ww
+	#; 				   weekday         dw
+	#; 				   dayofyear	   dy	
+	#;                 day             dd, d
+	#;                 hour            hh, h
+	#;                 minute          mi, n
+	#;                 second          ss, s
+	#;                 millisecond     ms
+	#;                 microsecond     mcs
+	#;                 nanosecond      ns
+	#; 
+	#;    edate - The date to be truncated
+	#;
+	#;
+	#; RETURNS: edate truncated to a precision/granularity specified by part
+	#;---------------------------------------------------------------------
+.
+	QUIT:edate=""||(part="") ""
+	new posix,dtrunc,datesep,decsep,dh,date,time,day,month,year
+	set posix=$$$sqlxPosixTimeIsValid(+edate)	// posix=1 if edate is a %PosixTime value
+	set datesep=$$$DateSeparator,decsep=$$$DecimalSeparator,dtrunc="",part=$$$LOWER(part)
+	do datepart("day",edate,.date,.time)
+	set month=$p(date,datesep,1),day=$p(date,datesep,2),year=+$p(date,datesep,3)
+	set:time["."&&(decsep'=".") time=$tr(time,".",decsep) 
+	if (part="week")||(part="wk")||(part="ww")||(part="weekday")||(part="dw")||(part="w"){ ; week and weekday are functionally equivalent for DATE_TRUNC
+		set date=month_datesep_day_datesep_year
+		set dtrunc=$$dateadd("day",-$$datepart("weekday",date)+1,date)
+		QUIT:posix ##class(%Library.PosixTime).OdbcToLogical(dtrunc)
+		QUIT dtrunc
+	}
+	elseif part="year"||(part="yy")||(part="yyyy") {
+		set date="01"_datesep_"01"_datesep_year,time="00:00:00"
+	}
+	elseif part="quarter"||(part="qq")||(part="q") {
+		set month=$case(+month,1:1,2:1,3:1,4:4,5:4,6:4,7:7,8:7,9:7,10:10,11:10,12:10,:1),time="00:00:00"
+		set date=month_datesep_"01"_datesep_year
+	}
+	elseif part="month"||(part="mm")||(part="m") {
+		set date=month_datesep_"01"_datesep_$$datepart("year",edate),time="00:00:00"
+	}else{
+		set date=month_datesep_day_datesep_year
+		if part="day"||(part="dd")||(part="d")||(part="dayofyear")||(part="dy")||(part="y"){ ; day and dayofyear are functionally equivalent for DATE_TRUNC
+			set time="00:00:00"
+		}
+		elseif part="hour"||(part="hh")||(part="h"){
+			set $p(time,":",2,3)="00:00"
+		}
+		elseif part="minute"||(part="mi")||(part="n") {
+			set $p(time,":",3)="00"
+		}
+		elseif part="second"||(part="ss")||(part="s") {
+			set time=$p(time,decsep)
+		}
+		elseif part="millisecond"||(part="ms") {
+			set time=$p(time,decsep)_decsep_$e($p(time,decsep,2),1,3)
+		}
+		elseif part="microsecond"||(part="mcs") {
+			set time=$p(time,decsep)_decsep_$e($p(time,decsep,2),1,6)
+		}
+		elseif part="nanosecond"||(part="ns") {
+			set time=$p(time,decsep)_decsep_$e($p(time,decsep,2),1,9)
+		}else{
+			set SQLCODE=-8,%msg=$$$FormatText($$$Text("'%1' is not a recognized DATE_TRUNC option","%SQL.Function"),part) ZTRAP "DTRC"
+		}
+	}
+	set dh=$zdatetimeh(date_" "_time,1,,,,,,-672045,,"") QUIT:dh="" ""
+	set dtrunc=$zdatetime(dh,3,,$l($p(time,".",2)),,,,,-672045)
+	QUIT:posix ##class(%Library.PosixTime).OdbcToLogical(dtrunc)
+	QUIT dtrunc
+.
+datepart(part="",edate="",&date,&time,directCall=1,function="DATEPART")	; MS SQL Server & Sybase 'datepart' Function...
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function produces the specified date part (the first argument)
+	#; of the specified date (the second argument) as an integer.
+	#;
+	#; PARMETERS:
+	#;    part  - Can be either the full name or the abbreviation as
+	#;            indicated in the table below.
+	#;    edate - The given date-time (e.g. Oct 18 1966 11:30AM)
+	#;            edate can be in any of the following formats:
+	#;              - ODBC Timestamp:  YYYY-MM-DD HH:MM:SS
+	#;              - MS SQL Server & Sybase String formats:
+	#;                         Dates formats:
+	#;                               mm<del>dd<del>[yy]yy
+	#;                                  <del> = '/' | '-' | '.'
+	#;                               dd Mmm[mm][,] [yy]yy
+	#;                               dd [yy]yy Mmm[mm]
+	#;                               yyyy Mmm[mm] [dd] OR yyyy [dd] Mmm[mm]
+	#;                         Time formats:
+	#;                               HH:MM[:SS:SSS][{AM|PM}]
+	#;                               HH:MM[:SS.S]
+	#;                               HH[' ']{AM|PM}
+	#;                 May be '<date>' '<date> or <time>' '<time> or <date>
+	#;              - $H format (55555,44444)
+	#;              - +$H format (55555 - same as 55555,00000)
+	#;		- %PosixTime
+	#;                               
+	#;    date  - [Passed back by Reference]
+	#;    time  - [Passed back by Reference]
+	#; 
+	#;    part          Abbrev.  Return Values
+	#;    -----------   -------  -------------
+	#;    year          yy       1840-9999
+	#;    quarter       qq       1-4
+	#;    month         mm       1-12
+	#;    dayofyear     dy       1-366
+	#;    day           dd       1-31
+	#;    week          wk       1-53
+	#;    weekday       dw       1-7(Sun.-Sat.)
+	#;    hour          hh       0-23
+	#;    minute        mi       0-59
+	#;    second        ss       0-59
+	#;    millisecond   ms       0-999
+	#;    microsecond   mcs      0-999999
+	#;    microsecond   ns       0-999999999
+	#;    sqltimestamp  sts      SQL_TIMESTAMP  * ISC Extension *
+	#;
+	#; If the year is given with two digits, the %DATE utility's
+	#; sliding date window is used (if applicable) to determine
+	#; the century.
+	#;
+	#; RETURNS: An integer value for the specified part of a 'datetime'
+	#;          value.
+	#;---------------------------------------------------------------------
+	QUIT:edate=""||(part="") ""
+	set date="JAN 1 1900",time="00:00:00" ; -- DEFAULT --  (Time: 12AM)
+	new datesep,dd,doy,mm,saveedate,savepart,yy
+	set dd="",mm="",yy="",datesep=$$$DateSeparator,savepart=part
+	set saveedate=edate
+	set part=$zcvt(part,"L")
+		#; Convert any %PosixTime logical value to %TimeStamp
+	if $$$sqlxPosixTimeIsValid(+edate) { 
+		new val 
+		set val=$zu(1073741925,+edate),time=(val#86400) 
+		set edate=$zdatetime((val\86400+47117-((val<0)&&(time)))_","_time,1,1,$l($p(time,".",2)),,4,,,-672045) // Puts %PosixTime logical in Puts +$H/$H format in MM/DD/YYYY HH:MM:SS format
+		set date=$p(edate," ",1),time=$p(edate," ",2)
+		goto gotdate
+	}
+	else { set edate=$$$UPPER(edate) }
+	if edate?1.7n||(edate?1.7n1","1.5n)||(edate?1.7n1","1.5n1"."1.9n) { // Puts +$H/$H format in MM/DD/YYYY HH:MM:SS format
+		set edate=$zdatetime(edate,1,1,$l($p(edate,".",2)),,4,,,-672045)
+	}
+	elseif edate?4n1"-"1.2n1"-"1.2n1(1" ",1"T")2n.e { // Puts %TimeStamp format in MM/DD/YYYY HH:MM:SS format	// DPV2192 (put 4 for in yearopt)
+		set edate=$zdatetimeh(edate,3,,,,,,-672045,,"err")
+		if edate="err" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid input to %3() function: datepart='%1', datetime value='%2')","%SQL.Function"),savepart,saveedate,function) ZTRAP "DPT2" }
+		set edate=$zdatetime(edate,1,1,$l($p(edate,".",2)),,4,,,-672045)
+	} 
+	elseif edate?4n1"-"1.2n1"-"1.2n {        // Puts ODBC Date format in MM/DD/YYYY HH:MM:SS format  ; DPV1428 // DPV2192 (put 4 for in yearopt)
+		set edate=$zdatetimeh(edate,3,,,,,,-672045,,"err")
+		if edate="err" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid input to %3() function: datepart='%1', datetime value='%2')","%SQL.Function"),savepart,saveedate,function) ZTRAP "DPT2" }
+		set edate=$zdatetime(edate,1,1,0,,4,,,-672045)
+	}
+	if edate[":"||(edate["AM")||(edate["PM") {  ; --- Get Time ---
+		if edate?1.2n1":".e { set time=$p(edate," "),date=$p(time," ",2,*) }  // <time>' '<date>
+		elseif edate?.e1.2n1":".e { set time=$p(edate," ",$l(edate," ")),date=$p(edate," ",1,$l(edate," ")-1) }  // <time> last ' ' piece, <date> everything else
+		elseif edate?1.2n1"AM".e||(edate?1.2n1"PM".e) { set time=$p(edate," "),date=$p(edate," ",2,*) }  // HH{AM|PM}' '<date>
+		elseif edate?.e1.2n1"AM".e||(edate?.e1.2n1"PM".e) { set time=$p(edate," ",$l(edate," ")),date=$p(edate," ",1,$l(edate," ")-1) }  // <time> last ' ' piece, <date> everything else with AM/PM
+		elseif edate?1.2n1" "1"AM".e||(edate?1.2n1" "1"PM".e) { set time=$p(edate," ",1,2),date=$p(edate," ",3,*) }  // <time>' '<date>
+		elseif edate?.e1.2n1" "1"AM".e||(edate?.e1.2n1" "1"PM".e) { set time=$tr($p(edate," ",$l(edate," ")-1)," "),date=$p(edate," ",1,$l(edate," ")-2) }  //<time> last ' ' piece, <date> everything else with AM/PM
+	}
+	else { set date=edate }
+	set:($$$DecimalSeparator'=".")&&(time[$$$DecimalSeparator) time=$tr(time,$$$DecimalSeparator,".")  // Make sure milliseconds is SS.ssss
+	if time["AM" { set time=$s(+time=12:0,1:+time)_$s($p(time,":",2)'="":":",1:"")_$p($p(time,"AM"),":",2,*) }
+	if time["PM" { set time=$s(+time<12:time+12,1:+time)_$s($p(time,":",2)'="":":",1:"")_$p($p(time,"PM"),":",2,*) }
+	set:$e(time,*)=":" time=time_"00"
+	set date=$tr(date,datesep_"-.\?,","/////")	// DPV2192=
+	set:date="" date="01/01/1900"
+	if date["/",date'?.e3a.e {  // --- Traditional Format: mm/dd/[yy]yy
+		set mm=$p(date,"/",1),dd=$p(date,"/",2),yy=$p(date,"/",3)
+	}
+	else {  // --- Other Date Formats ---
+		if date["/" {  // --- Modify Format ---
+			set date=$tr(date,"/"," ")
+			if date?2n1" "3a.e { set yy=$p(date," "),yy=$s(yy<50:20,1:19)_yy,date=yy_" "_$p(date," ",2,*) }
+		}
+		if date?1a.e,$l(date," ")=3 {  // --- 1ST Date Format: Mmm[mm] [dd][,] [yy]yy ---
+			set mm=$e($p(date," "),1,3),date=$p(date," ",2,*)
+			if date?4n.e { set yy=$p(date," "),dd=+$p(date," ",2) }
+			else { set dd=+$p(date," "),yy=+$p(date," ",2) }
+		}
+		elseif date?1.2n1" "3a.e||(date?1.2n1" "1.4n1" "3a.e) {  // --- 2ND Format: dd Mmm[mm][,] [yy]yy OR dd [yy]yy Mmm[mm] ---
+			set dd=+$p(date," "),date=$p(date," ",2,*)
+			if date?1a.e { set mm=$e($p(date," "),1,3),yy=+$p(date," ",2,*) }
+			else { set yy=+$p(date," "),mm=$e($p(date," ",2,*),1,3) }
+		}
+		elseif date?4n.e,$l(date," ")=3 {  // --- 3RD Format: yyyy Mmm[mm] [dd] OR yyyy [dd] Mmm[mm]
+			set yy=$p(date," "),date=$p(date," ",2,*)
+			if date?1a.e { set mm=$e($p(date," "),1,3),dd=+$p(date," ",2,*) }
+			else { set dd=+$p(date," "),mm=$e($p(date," ",2,*),1,3) }
+		}
+		elseIf date?2.4n3a.e { set yy=+$p(date," "),mm=$e($p(date," ",2),1,3),dd=+$p(date," ",3) }
+	}
+		#;*** AMBIGUOUS: Mmm[mm] [yy]yy dd  OR  [yy]yy Mmm[mm] dd ***
+	set:'mm&&(mm'="") mm=$l($p(",JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC,",","_$$$UPPER(mm)_","),",")	// DPV2192 (UPPER)
+	set mm=$e("00",1,2-$l(mm))_mm,dd=$e("00",1,2-$l(dd))_dd
+	set date=mm_"/"_dd_"/"_yy
+	if 'mm||('dd)||('yy) { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid input to %3() function: datepart='%1', datetime value='%2')","%SQL.Function"),savepart,saveedate,function) ZTRAP "DPT2" }
+	if $l(yy)<4 {	// Find correct century.  maybe use sliding date window
+		new x set x=$$GetProcWindow^%DATE()
+		if x="0^0"||(x="1^0") { set date=$zd($zdh(date,1,,,,,-672045),1,,4) }
+		else { set date=$zd($zdh(date,1,,3,+x,$p(x,"^",2),-672045),1,,4) }
+	}
+gotdate	;
+	set:datesep'="/" date=$tr(date,"/",datesep)	// Use default date separator
+	try {
+		goto @("dp"_part)
+	} catch {
+		if directCall { set SQLCODE=-8,%msg=$$$FormatText($$$Text("'%1' is not a recognized %2 option","%SQL.Function"),part,function) ZTRAP "DPRT" }
+	}
+	QUIT ""
+dpsts
+dpsqltimestamp
+	QUIT $p(date,datesep,3)_"-"_$p(date,datesep,1)_"-"_$p(date,datesep,2)_" "_$p(time,":",1,2)_":"_$p($p(time,":",3),".")
+dpyear
+dpyy
+dpyyyy	QUIT +$p(date,datesep,3)
+dpquarter
+dpqq
+dpq	set mm=$p(date,datesep) QUIT +$s(mm/3'>1:1,mm/3'>2:2,mm/3'>3:3,1:4)
+dpmonth
+dpmm
+dpm	QUIT +$p(date,datesep,1)
+dpweek
+dpwk
+dpww	QUIT $$WeekOfYear($zdh(date,1,,,,,-672045))	// DPV2073= Turn date into +$H format
+dpday
+dpdd
+dpd	QUIT +$p(date,datesep,2)
+dpdayofyear
+dpdy
+dpy	QUIT $zdateh(date,1,,,,,-672045)-$zdateh("01"_datesep_"01"_datesep_($p(date,datesep,3)),1,,,,,-672045)+1
+dpweekday
+dpdw
+dpw	QUIT $$DayOfWeek($zdh(date,1,,,,,-672045))
+dphour
+dph
+dphh	QUIT +$p(time,":",1)
+dpminute
+dpmi
+dpn	QUIT +$p(time,":",2)
+dpsecond
+dpss
+dps	QUIT +$p($p(time,":",3),".",1)
+dpmillisecond
+dpms	QUIT +$e($p(time,".",2)_"000",1,3)		// # milliseconds.  Don't return 38 for .380, it needs to be 380.  Truncate, don't round (matches SQL Server behavior)
+dpmicrosecond
+dpmcs	QUIT +$e($p(time,".",2)_"000000",1,6)		// # microsecons  Don't return 38 for .380, it needs to be 380000.  Truncate, don't round (matches SQL Server behavior)
+dpnanosecond
+dpns	QUIT +$e($p(time,".",2)_"000000000",1,9)	// # nanoseconds  Don't return 38 for .380, it needs to be 380000000.  Truncate, don't round (matches SQL Server behavior)
+ 
+ 
+datename(part="",edate="")	; Sybase 'datename' Function...
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function produces the specified 'datepart' (the first argument)
+	#; of the specified date (the second argument) as an integer.  Takes
+	#; either a 'datetime' or 'smalldatetime' value as it's second 
+	#; argument.
+	#;
+	#; PARMETERS:
+	#;    part  - Can be either the full name or the abbreviation as
+	#;            indicated in the table in the 'dartpart' function.
+	#;    edate - The given date-time (e.g. Oct 18 1966 11:30AM)
+	#;            edate can be in any of the following formats:
+	#;              - ODBC Timestamp:  YYYY-MM-DD HH:MM:SS
+	#;              - MS SQL Server & Sybase String formats:
+	#;                         Dates formats:
+	#;                               mm<del>dd<del>[yy]yy
+	#;                                  <del> = '/' | '-' | '.'
+	#;                               dd Mmm[mm][,] [yy]yy
+	#;                               dd [yy]yy Mmm[mm]
+	#;                               yyyy Mmm[mm] [dd] OR yyyy [dd] Mmm[mm]
+	#;                         Time formats:
+	#;                               HH:MM[:SS:SSS][{AM|PM}]
+	#;                               HH:MM[:SS.S]
+	#;                               HH[' ']{AM|PM}
+	#;                 May be '<date>' '<date> or <time>' '<time> or <date>
+	#;              - $H format (55555,44444)
+	#;              - +$H format (55555 - same as 55555,00000)
+	#;		- %PosixTime
+	#;
+	#; RETURNS: The name of the specified part (such as the month "June") 
+	#;          of a 'datetime' value, as a character string. If the
+	#;          result is numeric, such as "23" for the day, it is still
+	#;          returned as a character string.
+	#;---------------------------------------------------------------------
+	RETURN:edate="" ""
+	RETURN:part="" ""
+	new date,name,time
+	if $$$sqlxPosixTimeIsValid(+edate) { set edate=##class(%Library.PosixTime).LogicalToOdbc(edate) }
+	set name=$$datepart(part,edate,.date,.time,0,"DATENAME")
+	set part=$zcvt(part,"L")
+	if part="year"||(part="yy")||(part="yyyy")   { RETURN name }
+	if part="quarter"||(part="qq")||(part="q")   { RETURN name }
+	if part="month"||(part="mm")||(part="m")     { RETURN $p($zu(122,17)," ",name+1) }
+	if part="week"||(part="wk")||(part="ww")     { RETURN name }
+	if part="day"||(part="dd")||(part="d")       { RETURN name }
+	if part="dayofyear"||(part="dy")||(part="y") { RETURN name }
+	if part="weekday"||(part="dw")||(part="w")   { RETURN $p($zu(122,19)," ",name+1) }
+	if part="hour"||(part="hh")||(part="h")      { RETURN name }
+	if part="minute"||(part="mi")||(part="n")    { RETURN name }
+	if part="second"||(part="ss")||(part="s")    { RETURN name }
+	if part="millisecond"||(part="ms")           { RETURN name }
+	if part="microsecond"||(part="mcs")          { RETURN name }
+	if part="nanosecond"||(part="ns")            { RETURN name }
+	set SQLCODE=-8,%msg=$$$FormatText($$$Text("'%1' is not a recognized DATENAME option","%SQL.Function"),part) ZTRAP "DNAM"
+	RETURN ""
+ 
+ 
+tochar(val,fmt)	; Oracle Function...
+	#;   Return a formatted string, converted from the number/date in val
+	#;   We determine whether val is a number or string by the fmt specified
+	QUIT:val="" ""  ; Nothing to do...
+	#;  If no format is specified, just return the number
+		#; DPV3649=
+		#;	If there is no format, we probably should not just QUIT +val_"", but instead QUIT val
+		#;	Aviel and I had a long discussion about this today (06/03/2010).  
+		#;	val can be numeric, date[time], or string
+		#;	if val is numeric, we will just assume the numeric value is already cononical and and return that value
+		#;	if the val is string we plan on a future change that would not get here for to_char(string)
+		#;	if the val is a date[time] we plan on a future change that would not get here for to_char(date)
+	QUIT:$g(fmt)="" val
+	n FMT s FMT=$$$UPPER(fmt)
+		#; The format only contains time components
+	if (FMT["HH")||(FMT="MI")||(FMT["SS")||(FMT="AM")||(FMT="PM") && '(FMT["Y"||(FMT["MM")||(FMT["RR")||(FMT["DD")||(FMT="J")||(FMT="MON")||(FMT="MONTH")||(FMT="D")) QUIT $$ConvertLogicalTime(val,fmt,"TO_CHAR")  ; Converting from +$p($H,",",2) or TimeStamp to specified time format	// DPV3682=
+	i FMT["Y"||(FMT["MM")||(FMT["RR")||(FMT["DD")||(FMT="J")||(FMT["HH")||(FMT="MI")||(FMT["SS")||(FMT="MON")||(FMT="MONTH")||(FMT="AM")||(FMT="PM")||(FMT="D") QUIT $$ConvertLogicalDate(val,fmt,"TO_CHAR")  ; Converting from +$H or TimeStamp to specified date format	// DPV2168=
+	#;  val is a logical number, we will convert to the numeric format specified in fmt
+	n char,grpsep,hasdec,i,int,intfmt,j,mantfmt,mantissa,origval,p,pad0,piece,retval,retval2,scale,upnum
+	s upnum="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",origval=val,piece="",retval="",retval2=""
+	#;
+	#;  Some rules about number formats:
+	#;   -  If a number format model does not contain the MI, S, or PR format elements,
+	#;       negative return values automatically contain a leading negative sign and
+	#;       positive values automatically contain a leading space.
+	#;   -  A number format model can contain only a single decimal character (D) or
+	#;       period (.), but it can contain multiple group separators (G) or commas (,).
+	#;   -  A number format model must not begin with a comma (,).
+	#;   -  A group separator or comma cannot appear to the right of a decimal character
+	#;       or period in a number format model.
+	#;
+	new decsep
+	if FMT["D" { set fmt=$tr(FMT,"D","."),decsep=$tr($fn(.1,","),"10") } else { set fmt=FMT,decsep="." } ; Turn D into "." (for now, will turn into decsep below)
+	s:val<0&&(fmt'["S") fmt="S"_fmt
+	If val["." { s scale=$l($tr($p(fmt,".",2),"SMIB","")),val=$normalize($decimal(val),scale) }	// Need $decimal in case this is a double value
+	s hasdec=(fmt["."),int=+$p(val,"."),intfmt=$p(fmt,"."),mantissa=$p(val,".",2),mantfmt=$p(fmt,".",2),retval=""
+	i $l($tr(int,"-",""))>$l($tr(intfmt,"$GSBFM","")) s retval=$e("################################################################################",1,$l($tr(fmt,"SFM",""))+1) QUIT retval
+	#;  First, format the integer part
+	s p=$l(int) f i=$l(intfmt):-1:1 s char=$e(intfmt,i) d  q:char=""  ; Resolve Number format for integer part...
+	. i char="9" s j=$e(int,p) d  q
+	.. i int=0 d  	// If integer is 0
+	... s j=$s(i=$l(intfmt)&&'hasdec:0,$e(intfmt,1,i-1)["0":0,1:" ")	// one's position and no decimal, use 0
+	... s j=$s(j=0&&(origval<0)&&(fmt'["S"):$s(j=0:"-0",1:" -"),1:j)	// if integer is 0, use ' ' or ' -'
+	.. e  d
+	... s:j="" j=$s($e(intfmt,1,i-1)["0":"0",origval<0&&(retval'["-")&&(fmt'["S"):" -",1:" ")     ; if out of number, use '0' or ' ' or '-'
+	... s:$e(intfmt,1,i-1)'["9"&&($e(intfmt,1,i-1)'["0") j=$s(origval'<0||(fmt["S")||(retval["-")||(j["-"):"",1:" -")_j  ; if last '9' and '-' not already added, add minus sign to number if no 'S'
+	... s:j="-"&&($e(intfmt,1,i-1)["0") j=0
+	... s:j="-"&&(retval["-"||(mantfmt["S"))&&($e(intfmt,1,i-1)["9") j=" "
+	... s:j="-"&&(retval["-"||(mantfmt["S"))&&($e(intfmt,1,i-1)["$") j=""
+	.. s retval=$s(($e(intfmt,1,i-1)'["9")&&($e(intfmt,1,i-1)'["0")&&($e(fmt,$l(fmt))'="S"):" ",1:"")_j_retval,p=p-1
+	.. //i i=1&&(intfmt["90")&&((retval["-")||(intfmt["S"))&&($e(retval)=" ") s retval=$e(retval,2,$l(retval))
+	. i char="0" s j=$e(int,p) d  q
+	.. s:j=""||(j="-")||(j=0&&(i=$l(intfmt))) j=0,pad0=1
+	.. s:($e(intfmt,1,i-1)'["0")&&(origval<0) j=$s(j||($e(int,p-1))||(fmt["S"):j,j=0:"-0",1:"-")  ; If integer is 0 and at left-most '0' in format, maybe add '-'
+	.. s retval=$s(($e(intfmt,1,i-1)'["9")&&($e(intfmt,1,i-1)'["0")&&(origval'<0):" ",1:"")_j_retval,p=p-1 q
+	. i char="," s retval=$s((j||(j=0))&&(($e(intfmt,1,i-1)["0")||($e(int,p)?1n)):",",$e(intfmt,1,i-1)["9":" ",1:"")_retval q
+	. i char="$" d  q
+	.. i retval["-",$e(retval,*)'="-" s retval=$p(retval,"-")_"-$"_$p(retval,"-",2) q
+	.. s retval=$p(retval," ",1,$l(retval," ")-1)_" $"_$p(retval," ",$l(retval," "))
+	. i char="G" s:'$d(grpsep) grpsep=$e($tr($fn(1000,","),"10")) s retval=$s((j||(j=0))&&(($e(intfmt,1,i-1)["0")||($e(int,p)?1n)):grpsep,$e(intfmt,1,i-1)["9":" ",1:"")_retval q  ; grpsep contains the group sepeartor for the default locale
+	. i char="S" d  q
+	.. i $g(pad0)&&(i=1)&&(intfmt["90")&&((retval["-"))&&($e(retval)=" ") s retval=$e(retval,2,*)
+	.. i retval'[" " s retval=$s(origval<0:$e("-",retval'["-"),1:"+")_retval q
+	.. s retval=$p(retval," ",1,$l(retval," ")-1)_$s(retval["-":" ",origval<0:"-",1:"+")_$p(retval," ",$l(retval," "))
+	. i char="B" f j=1:1:$l(retval) { q:$e(retval,j)?1n&&($e(retval,j)'=0)  s:$e(retval,j)=0 $e(retval,j)=" " }
+	. ; do nothing for format code 'FM' here
+	//s:retval'<0 retval=" "_retval
+	#;  Now process mantissa
+	i hasdec s p=1 f i=1:1:$l(mantfmt) s char=$e(mantfmt,i) d  q:char=""
+	. i char="9" s j=$e(mantissa,p) s:j="" j=0 s retval2=retval2_j,p=p+1 q
+	. i char="0" s j=$e(mantissa,p) s:j=""||(j=0&&(i=$l(mantfmt))) j=0 s retval2=retval2_j,p=p+1 q
+	. i char="S" s retval2=retval2_$s(origval<0:"-",1:"+") q
+	s:retval2'="" retval=retval_decsep_retval2
+	i val=0,fmt["B",$tr(retval," 0.","")="" s retval=$tr(retval,"0.","  ")
+	//i $e(fmt,$l(fmt))="S",$e(retval)=" " s retval=$e(retval,2,$l(retval))
+	set:retval["- " retval=$replace(retval,"- "," -")
+	QUIT $s(fmt'["FM":retval,1:$tr(retval," "))
+ 
+ 
+todate(date,fmt)	; Sybase Omni-Server: Oracle Function...
+		#; ------ Return Date in Logical format ------ 
+	n datesep,saveDate s saveDate=date
+	s datesep=$$$DateSeparator
+	s date=$s($p(date,$c(1),2)'="":$p(date,$c(1),2),1:$p(date,$c(1)))
+	QUIT:date="" ""  ; Nothing to do...
+	i '$d(fmt) n fmt 
+	i $g(fmt)="" s fmt=$$$GetTODATEDefaultFormat s:fmt="" fmt="DD MON YYYY"	// DPV2169=
+	i (date?1.N&&($l(date)<8)) {
+		If $tr(fmt,"j","J")="J" QUIT $$Julian(date)  ; Julian Date...
+		if $$$UPPER(fmt)?1.2(1"YYYY",1"MM",1"DD",1"YY",1"RR",1"RRRR",1"DDD") {}	// Continue on, pure numbers, but not logical %Date value
+		else { QUIT:date<2980013 +date } // Date already in a $H format, probably converting from number or string with number
+	}
+		#;  Date is in date string format (fmt),we will convert to +$H format
+	n char,del,doy,i,jan1,leapYear,oradate,p1,piece,saveFmt,today,year
+		#; oradate is in the format "DD Mmm YYYY". it is the date we build that will get passed to $ZDH
+	s today=$zd(+$h,2),oradate="01 "_$p(today," ",2,3),piece="",saveFmt=fmt
+	s date=$$$UPPER(date),fmt=$$$UPPER(fmt),del=""
+	s fmt=$zstrip(fmt,"<>W"),date=$zstrip(date,"<>W")		// strip leading/trailing white space from date and format
+	s fmt=$zstrip(fmt,"=W")						// reduce multiple spaces to single space in format
+	s date=$zstrip(date,"=W")					// reduce multiple spaces to single space in date string
+	For i=1:1 {
+		s char=$e(fmt,i)
+		i char'="",char?1(1U,1N) { s piece=piece_char } Else { s del=$s(char="":$c(255),1:char) }
+		i del'="",piece="" s date=$p(date,del,2,*) s del="" q:char=""  continue
+		i del=""||(piece="") q:char=""  continue  ; Nothing to do yet...
+		s p1=$p(date,del),date=$p(date,del,2,*)
+		i piece="MONTH" {
+			new xxx		// Translate the full month name to the abbreviation name, which is not always the first 3 letters in all locales
+			set xxx=$zdh($p(p1," ")_" 1, 2000",9,,,,,-672045,,"XXX")	// xxx is now $h format, get the month abbreviation next
+			set $p(oradate," ",2)=$p($zd(xxx,5,,,,,-672045,,"XXX")," ",1)	// Any errors will be caught later
+			set del="",piece="" q:char=""
+			continue
+		}
+		i piece="MON" s $p(oradate," ",2)=$$$UPPER($e(p1))_$$$LOWER($e(p1,2,*)) s del="",piece="" q:char=""  continue
+		i piece="MM" s p1=$zstrip($p($zd($zdh($e(p1,1,2)_datesep_"01"_datesep_"2000",1),5)," ",1),"<>W"),$p(oradate," ",2)=p1 s del="",piece="" q:char=""  continue
+		i piece="DD" s $p(oradate," ")=$tr($j($e(p1,1,2),2)," ","0") s del="",piece="" q:char=""  continue
+		i piece="DDD" {	
+				#; grab the doy now and process it below.  We can't process until we have the year in case it is a leap year
+			s doy=$tr($j($e(p1,1,3),3)," ","0"),del="",piece="" q:char=""  continue
+		}
+		i piece="YY" s $p(oradate," ",3)=p1 s del="",piece="" q:char=""  continue
+		i piece="YYYY" s $p(oradate," ",3)=p1 s del="",piece="" q:char=""  continue
+		i piece="RRRR" if $l(p1)=2 { s piece="RR" } else { s $p(oradate," ",3)=p1 s del="",piece="" q:char=""  continue  }  	// DPV3009
+		i piece="YYYYMM" s oradate=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," ",1),oradate="01 "_oradate_" "_$e(p1,1,4) s del="",piece="" q:char=""  continue	// DPV3009=
+		i piece="RR" {
+			n d,currentYear s d=p1,currentYear=$e($zd(+$h,3),1,4)
+			if d<50 { if $e(currentYear,3,4)<50 { s d=$e(currentYear,1,2)_d } else { s d=($e(currentYear,1,2)+1)_d }}
+			else    { if $e(currentYear,3,4)<50 { s d=($e(currentYear,1,2)-1)_d } else { s d=$e(currentYear,1,2)_d }}
+			s $p(oradate," ",3)=d s del="",piece="" q:char=""  continue
+		}
+		i $e(piece,1,8)="YYYYMMDD" s oradate=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," ",1),oradate=$e(p1,7,8)_" "_oradate_" "_$e(p1,1,4) s del="",piece="" q:char=""  continue	// DPV2167=
+		i $e(piece,1,8)="YYYYDDMM" s oradate=$p($zd($zdh($e(p1,7,8)_datesep_"01"_datesep_"2000",1),5)," ",1),oradate=$e(p1,5,6)_" "_oradate_" "_$e(p1,1,4) s del="",piece="" q:char=""  continue	// DPV3009=
+		i $e(piece,1,8)="DDMMYYYY" s oradate=$p($zd($zdh($e(p1,3,4)_datesep_"01"_datesep_"2000",1),5)," ",1),oradate=$e(p1,1,2)_" "_oradate_" "_$e(p1,5,8) s del="",piece="" q:char=""  continue	// DPV2167=
+		i $e(piece,1,8)="MMDDYYYY" s oradate=$p($zd($zdh($e(p1,1,2)_datesep_"01"_datesep_"2000",1),5)," ",1),oradate=$e(p1,3,4)_" "_oradate_" "_$e(p1,5,8) s del="",piece="" q:char=""  continue	// DPV2876=
+		i $e(piece,1,6)="MMYYYY" {
+			new m,y set m=$e(p1,1,2),y=$e(p1,3,6)
+			if m<1||(m>12) s SQLCODE=-400,%msg=$$$Text("Error in input to TO_DATE().  MM must be between 1 and 12","%SQL.Function") GOTO IllegalValuePassedToTODATE
+			if y<1||(y>9999) s SQLCODE=-400,%msg=$$$Text("Error in input to TO_DATE().  YYYY must be between 1 and 9999","%SQL.Function") GOTO IllegalValuePassedToTODATE
+			set m=$zstrip($p($zd($zdh(m_datesep_"01"_datesep_"2000",1),5)," ",1),"<>W"),$p(oradate," ",2)=m
+			set $p(oradate," ",3)=y
+			set del="",piece="" quit:char=""  continue
+		}
+		s del="",piece=""  ; NO Action...
+		q:char=""  
+	}
+		#; If doy is set, we had a DDD code.  DDD might have been before YY[YY] in the format string, so we may not have known it was a leap year.
+	If $d(doy) {
+		s year=$p(oradate," ",3) s:year="" year=+$zd($h,3)
+		s jan1=$zdh(year_"-01-01",3,,,,,-672045)
+		s leapYear=''$zdh(year_"-02-29",3,,,,,-672045,,"0")
+		if doy<1||(doy>(365+leapYear)) s SQLCODE=-400,%msg=$$$Text("Error in input to TO_DATE().  Day of year must be between 1 and 365 (366 for leap year)","%SQL.Function") GOTO IllegalValuePassedToTODATE
+		new d s d=$zd(jan1+doy-1,2,,,,,-672045),$p(oradate," ",1,2)=$p(d," ",1,2)
+	}
+	new qval
+	set qval=$ZDH(oradate,2,,,,,-672045,,"<ILLEGAL INPUT PASSED TO SQL FUNCTION TO_DATE():  TO_DATE("_saveDate_","_fmt_")>")
+	if qval["<ILLEGAL" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid input to TO_DATE() function:  TO_DATE(%1,%2)","%SQL.Function"),saveDate,fmt) GOTO IllegalValuePassedToTODATE }
+	RETURN qval
+IllegalValuePassedToTODATE ZTRAP "DATE"
+IllegalValuePassedToTOCHAR ZTRAP "CHAR"
+ 
+ConvertLogicalDate(date,fmt,loc)	;
+	#;  Called by tochar...
+	       #; date is in +$H format or $H format (with time) or $NOW() format ($H with a decimal fraction), we will convert it to the specified format in fmt
+	       #; or Date might be in %TimeStamp format (with a time)
+	i $tr(fmt,"j","J")="J" QUIT:loc="TO_CHAR" $$JulianToChar(date) QUIT $$Julian(date)  ; Julian Date...
+	n char,datesep,i,oradate,PIECE,piece,sdate,time,upnum,xxx s time=""
+	s oradate="",piece="",upnum="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	s datesep=$$$DateSeparator
+	if date?4N1"-"1.2N1"-"1.2N1" "1.2N1":"1.2N1":".e {	// TIMESTAMP Format
+		s time=$zth($p(date," ",2)) // Should be in 24H time format, now it is in $H format
+		s sdate=$p(date,"-",2)_datesep_$p($p(date," "),"-",3)_datesep_$p(date,"-")
+		s date=$zdh(sdate,1,,,,,-672045)
+	}
+	elseif date?1.N1","1.N.(1"."1.N) {	// $H or $NOW()
+		set sdate=$zd($p(date,","),1,,4,,,-672045,,"<ILLEGAL DATE VALUE PASSED TO SQL FUNCION "_loc_"()>")
+		if sdate["<ILLEGAL" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal Date value pass to SQL function %1","%SQL.Function"),loc) GOTO IllegalValuePassedToTOCHAR
+		set time=$p(date,",",2) 	// time is now it is in $H format
+	}
+	elseif 0,date?1.N,date>1401230,date<82991232 {	// %FilemanDate
+		set date=$zdh(date+17000000,8)	// Convert logical %FilemanDate to logical %Date
+		s sdate=$zd(date,1,,4,,,,,"<ILLEGAL DATE VALUE PASSED TO SQL FUNCION "_loc_"()>")
+	}
+	elseif 0,date?1.N1"."1.6N,date>1401230,date<82991232 {	// %FilemanTimeStamp
+		set time=$p(date,".",2)
+		set date=$zdh($p(date,".")+17000000,8)	// Convert logical %FilemanTimeStamp to logical %Date/%Time
+		s sdate=$zd(date,1,,4,,,,,"<ILLEGAL DATE VALUE PASSED TO SQL FUNCION "_loc_"()>")
+	}
+	else {				// +$H
+		s sdate=$zd(date,1,,4,,,-672045,,"<ILLEGAL DATE VALUE PASSED TO SQL FUNCION "_loc_"()>")
+		i sdate["<ILLEGAL" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal Date value pass to SQL function %1","%SQL.Function"),loc) GOTO IllegalValuePassedToTOCHAR
+	}
+	         #; date is now in +$H format, sdate is now in MM/DD/YYYY format
+	f i=1:1 s char=$e(fmt,i) d  q:char=""  ; Resolve Date format...
+	. i char'="",upnum[$$$UPPER(char) s piece=piece_char q
+	. i char'="",piece="" s oradate=oradate_char q  ; Just add whatever the character is
+	. s PIECE=$$$UPPER(piece)
+	. i PIECE="MONTH" s oradate=oradate_$p($zd(date,9,,,,,-672045)," ")_char s piece="" q
+	. i PIECE="MON" s oradate=oradate_$p($zd(date,7,,,,,-672045)," ")_char s piece="" q
+	. i PIECE="MM" s oradate=oradate_$p(sdate,datesep)_char s piece="" q
+	. i PIECE="D" s oradate=oradate_($$DayOfWeek(date))_char s piece="" q
+	. i PIECE="DY" s oradate=oradate_$zd(date,11,,,,,-672045)_char s piece="" q
+	. i PIECE="DAY" s oradate=oradate_$zd(date,12,,,,,-672045)_char s piece="" q
+	. i PIECE="DD" s oradate=oradate_$p(sdate,datesep,2)_char s piece="" q
+	. i PIECE="DDD" s oradate=oradate_$zd(date,14,,,,,-672045)_char s piece="" q  					// DPV3009
+	. i PIECE="Y" s oradate=oradate_$e($p(sdate,datesep,3),4)_char s piece="" q
+	. i PIECE="YY"||(PIECE="RR") s oradate=oradate_$e($p(sdate,datesep,3),3,4)_char s piece="" q
+	. i PIECE="YYY" s oradate=oradate_$e($p(sdate,datesep,3),2,4)_char s piece="" q
+	. i PIECE="YYYY"||(PIECE="RRRR") s oradate=oradate_$p(sdate,datesep,3)_char s piece="" q  		// DPV3009
+	. i PIECE="YYYYMM" s oradate=oradate_$e($zd(date,8,,,,,-672045),1,6)_char s piece="" q				// DPV3009
+	. i PIECE="YYYYMMDD" s oradate=oradate_$zd(date,8,,,,,-672045)_char s piece="" q
+	. i PIECE="YYYYMMDDHH24MISS" s oradate=oradate_$zd(date,8,,,,,-672045)_$tr($zt(time,1),":")_char s piece="" q
+	. i PIECE="DDMMYYYY" s xxx=$zd(date,8,,,,,-672045),oradate=oradate_$e(xxx,7,8)_$e(xxx,5,6)_$e(xxx,1,4)_char s piece="" q
+	. i PIECE="HH"||(PIECE="HH12") s oradate=oradate_$p($zt(time,4),":")_char s piece="" q
+	. i PIECE="HH24" s oradate=oradate_$p($zt(time,2),":")_char s piece="" q
+	. i PIECE="MI" s oradate=oradate_$p($zt(time,1),":",2)_char s piece="" q
+	. i PIECE="SS" s oradate=oradate_$p($zt(time,1),":",3)_char s piece="" q
+	. i PIECE="HH24MISS" s oradate=oradate_$tr($zt(time,1),":")_char s piece="" q
+	. i PIECE="SSSSS" s oradate=oradate_time_char s piece="" q
+	. i PIECE="AM"||(PIECE="PM") s oradate=oradate_$e($zt(time,3),9,10)_char s piece="" q  	// DPV2466=
+	. s oradate=oradate_piece_char s piece="" q  ; NO Action...
+	QUIT oradate
+ 
+ConvertLogicalTime(datetime,fmt,loc)	;
+	#;  Called by tochar...
+	       #; datetime could be in any of these formats: %TimeStamp, $H (IBA133) or +$p($H,",",2), or HH:MM:SS (DPV3942).
+		   #; We will convert it to the specified format in fmt
+	new char,FMT,i,oratime,PIECE,piece,stime,tTimeFormat,upnum,xxx
+	set oratime="",piece="",upnum="AHIMPS124"
+	if datetime?4N1"-"1.2N1"-"1.2N1" "1.2N1":"1.2N1":".e { // datetime is in "YYYY-MM-DD HH:MM:SS.sss"
+		set datetime=$p($p(datetime,":",1,2)_":"_$e($p(datetime,":",3),1,2)," ",2)	// Remove DATE portion, Strip anything after the :SS portion of the time, may include stripping fracional seconds.
+		set datetime=$zth(datetime,1,,1)		// datetime should be in $H format
+		set stime=$zt(datetime,1,,,1)		// Put stime in 24H Format 1 (ODBC) format HH:MM:SS
+	} elseif datetime[",",$zdt(datetime,,,,,,,,-672045,,"ERROR",1)'="ERROR" {	// datetime is in Logical $h format and includes the date portion
+		set stime=$ztime($p(datetime,",",2),1,,,1)
+	} elseif $isvalidnum(datetime,9,0,86399.999999999) {	// datetime is is Logical format
+		set stime=$ztime(datetime,1,,"<ILLEGAL DATE/TIME VALUE PASSED TO SQL FUNCION "_loc_"()>",1)
+		if stime["<ILLEGAL" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal Date/Time value (%1) passed to SQL function %2","%SQL.Function"),datetime,loc) GOTO IllegalValuePassedToTOCHAR }
+	} elseif $zth(datetime,,"ERROR")'="ERROR" {		// See if datetime is in the current locale's display value, by default this is HH:MM:SS
+		set datetime=$ztimeh(datetime)			// Put datetime in Logical format
+		set stime=$ztime(datetime,1,,,1)		// Put stime in HH:MM:SS
+	} elseif $zth(datetime,1,"ERROR",1)'="ERROR" {	// See if datetime is in the ODBC format, allow it regardless of the locale, this is HH:MM:SS
+		set datetime=$ztimeh(datetime,1,,1)		// Put datetime in Logical format
+		set stime=$ztime(datetime,1,,,1)		// Put stime in HH:MM:SS
+	} else {	// Illegal datetime value
+		set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal Date/Time value (%1) passed to SQL function %2","%SQL.Function"),datetime,loc) GOTO IllegalValuePassedToTOCHAR
+	}
+	         #; datetime is now in +$p($H,",",2) format, stime is now in HH:MM:SS format, 24HR clock
+	set FMT=$$$UPPER(fmt)
+	for i=1:1 {
+		set char=$e(fmt,i)		// Resolve datetime format...
+		if $e(FMT,i,i+4)="SSSSS"	{ set piece="SSSSS",i=i+4 }
+		elseif $e(FMT,i,i+3)="HH24"	{ set piece="HH24",i=i+3 }
+		elseif $e(FMT,i,i+3)="HH12"	{ set piece="HH12",i=i+3 }
+		elseif $e(FMT,i,i+1)="HH"	{ set piece="HH",i=i+1 }
+		elseif $e(FMT,i,i+1)="MI"	{ set piece="MI",i=i+1 }
+		elseif $e(FMT,i,i+1)="SS"	{ set piece="SS",i=i+1 }
+		elseif $e(FMT,i,i+1)="AM"	{ set piece="AM",i=i+1 }
+		elseif $e(FMT,i,i+1)="PM"	{ set piece="AM",i=i+1 }
+		elseif char'=""			{ set oratime=oratime_char continue }	// Just add whatever the character is
+			#; --
+		if piece="HH"||(piece="HH12")	{ set oratime=oratime_$p($zt(datetime,4,,,1),":"),piece=""  }
+		elseif piece="HH24"		{ set oratime=oratime_$p(stime,":"),piece="" }
+		elseif piece="MI"		{ set oratime=oratime_$p(stime,":",2),piece="" }
+		elseif piece="SS"		{ set oratime=oratime_$p(stime,":",3),piece="" }
+		elseif piece="SSSSS"		{ set oratime=oratime_time,piece="" }
+		elseif piece="AM"		{ set oratime=oratime_$e($zt(datetime,4),6,7),piece="" }
+		else 				{ set oratime=oratime_piece_char,piece="" } ; NO Action...
+		quit:char=""
+	}
+	QUIT oratime
+.
+ 
+.
+totimestamp(string,fmt="",posixtime=0)	[] PUBLIC {
+		#; TO_TIMESTAMP - Oracle Function...
+		#; ------ Convert timestamp value from string and return %TimeStamp or %PosixTime in Logical format ------ 
+	s saveString=string
+	s datesep=$$$DateSeparator
+	set tDecimalSeparator=$$$DecimalSeparator
+	set tTimeSeparator=$$$TimeSeparator
+	s string=$s($p(string,$c(1),2)'="":$p(string,$c(1),2),1:$p(string,$c(1)))
+	QUIT:string="" ""  ; Nothing to do...
+	i fmt="" s fmt="DD MON YYYY HH:MI:SS"	// *** correct default???  s fmt=$$$GetTODATEDefaultFormat s:fmt="" fmt="DD MON YYYY"
+	s oradate="",piece="",saveFmt=fmt
+	//s string=$$$UPPER(string)
+	set fmt=$$$UPPER(fmt),del=""
+	s fmt=$zstrip(fmt,"<>W"),string=$zstrip(string,"<>W")		// strip leading/trailing white space from date and format
+	s fmt=$zstrip(fmt,"=W")						// reduce multiple spaces to single space in format
+	s string=$zstrip(string,"=W")					// reduce multiple spaces to single space in date string
+	s time="00"_tTimeSeparator_"00"_tTimeSeparator_"00",date="01 "_$p($zd(63188,2)," ",2)_" "_+$zd(+$h,3)	// 63188 is 01/01/2014
+		#; We want to get the date portion of the timestamp value into the date variable in the format DD Mon YYYY
+	For i=1:1 {
+		s char=$e(fmt,i)
+		if char="A",$e(fmt,i+1,i+3)=".M." s piece="A.M.",char=".",i=i+3 continue
+		if char="P",$e(fmt,i+1,i+3)=".M." s piece="P.M.",char=".",i=i+3 continue
+		i char'="",char?1(1U,1N) { s piece=piece_char } Else { s del=$s(char="":$c(255),1:char) }
+		i del'="",piece="" s string=$p(string,del,2,*) s del="" q:char=""  continue
+		i del=""||(piece="") q:char=""  continue  ; Nothing to do yet...
+		s p1=$p(string,del),string=$p(string,del,2,*)
+			// Cache' date functions using Month format ,may be in any case, at least for English locale, Checz locale complains if case is not correct, so son't force a case here.
+		i piece="MONTH" { set tmp=$p($zd($zdh(p1_" 1, 2000",9),5)," "),$p(date," ",2)=tmp,del="",piece="" quit:char=""  continue  }
+			// Cache' date functions using Mon format must have first capital followed by lower case
+		i piece="MON" { set $p(date," ",2)=$$$UPPER($e(p1))_$$$LOWER($e(p1,2,*)),del="",piece="" quit:char=""  continue  }
+		i piece="MM" { set p1=$zstrip($zd($zdh($e(p1,1,2)_datesep_"01"_datesep_"2000",1),5),"<>W"),$p(date," ",2)=$p(p1," "),del="",piece="" quit:char=""  continue  }
+		i piece="DD" s $p(date," ")=$tr($j($e(p1,1,2),2)," ","0") s del="",piece="" q:char=""  continue
+		i piece="DDD" {	
+				#; grab the doy now and process it below.  We can't process until we have the year in case it is a leap year
+			s doy=$tr($j($e(p1,1,3),3)," ","0"),del="",piece="" q:char=""  continue
+		}
+		i piece="YY" s $p(date," ",3)=p1 s del="",piece="" q:char=""  continue
+		i piece="YYYY" s $p(date," ",3)=p1 s del="",piece="" q:char=""  continue
+		i piece="RRRR" if $l(p1)=2 { s piece="RR" } else { s $p(date," ",3)=p1 s del="",piece="" q:char=""  continue  }  	// DPV3009
+		i piece="YYYYMM" { set tmp=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," "),$p(date," ",2)=tmp,$p(date," ",3)=$e(p1,1,4),del="",piece="" quit:char=""  continue  }
+		i piece="RR" {
+			s d=p1,currentYear=$e($zd(+$h,3),1,4)
+			if d<50 { if $e(currentYear,3,4)<50 { s d=$e(currentYear,1,2)_d } else { s d=($e(currentYear,1,2)+1)_d }}
+			else    { if $e(currentYear,3,4)<50 { s d=($e(currentYear,1,2)-1)_d } else { s d=$e(currentYear,1,2)_d }}
+			s $p(date," ",3)=d s del="",piece="" q:char=""  continue
+		}
+		i piece="YYYYMMDDHHMISS" {
+			set tmp=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,7,8)_" "_tmp_" "_$e(p1,1,4)
+			set tmp=$p(time,tDecimalSeparator,1),$p(tmp,tTimeSeparator,1)=$e(p1,9,10),$p(tmp,tTimeSeparator,2)=$e(p1,11,12),$p(tmp,tTimeSeparator,3)=$e(p1,13,14),$p(time,tDecimalSeparator,1)=tmp
+			set del="",piece="" quit:char=""  continue
+		}
+		i piece="YYYYMMDDHHMI" {
+			set tmp=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,7,8)_" "_tmp_" "_$e(p1,1,4)
+			set $p(time,tTimeSeparator,1)=$e(p1,9,10),$p(time,tTimeSeparator,2)=$e(p1,11,12)
+			set del="",piece="" quit:char=""  continue
+		}
+		i piece="YYYYMMDDHH" {
+			set tmp=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,7,8)_" "_tmp_" "_$e(p1,1,4)
+			set $p(time,tTimeSeparator,1)=$e(p1,9,10)
+			set del="",piece="" quit:char=""  continue
+		}
+		i $e(piece,1,8)="YYYYMMDD" { set tmp=$p($zd($zdh($e(p1,5,6)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,7,8)_" "_tmp_" "_$e(p1,1,4),del="",piece="" quit:char=""  continue  } // DPV2167=
+		i $e(piece,1,8)="YYYYDDMM" { set tmp=$p($zd($zdh($e(p1,7,8)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,5,6)_" "_tmp_" "_$e(p1,1,4),del="",piece="" quit:char=""  continue  } // DPV3009=
+		i $e(piece,1,8)="DDMMYYYY" { set tmp=$p($zd($zdh($e(p1,3,4)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,1,2)_" "_tmp_" "_$e(p1,5,8),del="",piece="" quit:char=""  continue  } // DPV2167=
+		i $e(piece,1,8)="MMDDYYYY" { set tmp=$p($zd($zdh($e(p1,1,2)_datesep_"01"_datesep_"2000",1),5)," "),date=$e(p1,3,4)_" "_tmp_" "_$e(p1,5,8),del="",piece="" quit:char=""  continue  } // DPV2876=
+			#; time components
+		i piece="HHMISS" { set tmp=$p(time,tDecimalSeparator,1),$p(tmp,tTimeSeparator,1)=$e(p1,1,2),$p(tmp,tTimeSeparator,2)=$e(p1,3,4),$p(tmp,tTimeSeparator,3)=$e(p1,5,6),$p(time,tDecimalSeparator,1)=tmp,del="",piece="" quit:char=""  continue  }
+		i piece="HHMI" { set $p(time,tTimeSeparator,1)=$e(p1,1,2),$p(time,tTimeSeparator,2)=$e(p1,3,4) set del="",piece="" quit:char=""  continue  }
+		i piece="HH24" s $p(time,tTimeSeparator,1)=p1 s del="",piece="" q:char=""  continue
+		i piece="HH12"||(piece="HH") s $p(time,tTimeSeparator,1)=p1 s del="",piece="" q:char=""  continue
+		i piece="MI" s $p(time,tTimeSeparator,2)=p1 s del="",piece="" q:char=""  continue
+		i piece="SS" { set tmp=$p(time,tDecimalSeparator,1),$p(tmp,tTimeSeparator,3)=p1,$p(time,tDecimalSeparator,1)=tmp,del="",piece="" quit:char=""  continue }
+		i piece="FF" s $p(time,tDecimalSeparator,2)=p1,precision=$l(p1) s del="",piece="" q:char=""  continue
+		i piece="AM"||(piece="A.M.")||(piece="PM")||(piece="P.M.") s ampm=$$$LOWER($tr(p1,"."))
+		s del="",piece=""  ; NO Action...
+		q:char=""  
+	}
+		#; If doy is set, we had a DDD code.  DDD might have been before YY[YY] in the format string, so we may not have known it was a leap year.
+	If $d(doy) {
+		s year=$p(date," ",3) s:year="" year=+$zd($h,3)
+		s jan1=$zdateh(year_"-01-01",3,,,,,-672045)
+		s leapYear=''$zdateh(year_"-02-29",3,,,,,-672045,,"0")
+		if doy<1||(doy>(365+leapYear)) s SQLCODE=-400,%msg=$$$FormatText($$$Text("Error in input to TO_%1().  Day of year must be between 1 and 365 (366 for leap year)","%SQL.Function"),$s(posixtime:"POSIXTIME",1:"TIMESTAMP")) GOTO IllegalValuePassedToTOTIMESTAMP
+		s d=$zdate(jan1+doy-1,2,,,,,-672045),$p(date," ",1,2)=$p(d," ",1,2)
+	}
+	if $d(ampm) {
+		if ampm="am",$p(time,tTimeSeparator)=12 { set $p(time,tTimeSeparator,1)="00" }
+		elseif ampm="pm",$p(time,tTimeSeparator)<12 { set $p(time,tTimeSeparator,1)=$p(time,tTimeSeparator)+12 }
+	}
+	set:'$g(precision) precision=""
+	set qval=$zdatetimeh(date_" "_time,2,1,,,,,-672045,,"<ILLEGAL INPUT PASSED TO SQL FUNCTION TO_"_$s(posixtime:"POSIXTIME",1:"TIMESTAMP")_"()")
+	if qval["<ILLEGAL" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal input to SQL function TO_%1():  TO_%1('%2','%3')","%SQL.Function"),$s(posixtime:"POSIXTIME",1:"TIMESTAMP"),saveString,fmt) GOTO IllegalValuePassedToTOTIMESTAMP
+	set qval=$zdatetime(qval,3,1,precision,,,,,-672045,,"<ILLEGAL INPUT PASSED TO SQL FUNCTION TO_"_$s(posixtime:"POSIXTIME",1:"TIMESTAMP")_"()")
+	if qval["<ILLEGAL" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal input to SQL function TO_%1():  TO_%1('%2','%3')","%SQL.Function"),$s(posixtime:"POSIXTIME",1:"TIMESTAMP"),saveString,fmt) GOTO IllegalValuePassedToTOTIMESTAMP
+	RETURN $s(posixtime:##class(%Library.PosixTime).OdbcToLogical(qval),1:qval)
+.
+IllegalValuePassedToTOTIMESTAMP if posixtime { ZTRAP "PTTA" } else { ZTRAP "TSTA" }
+}
+.
+	#; Converts some provided value into a $vector at runtime
+	#; NOTE: this is basically a copy of %Vector:Odbc/DisplayToLogical() methods, but with the ability to truncate/pad and convert the type
+	#; any changes to the logic of actually converting a string input to a $vector should likely also be made in those methods!
+	#; Parameters:
+	#; 	input    - Value to be converted to a $vector. May be a string in the format 'item1,item2,...,itemN' or '[item1,item2,...,itemN]' or may already be a $vector. In the latter case,
+	#; 			 the $vector will be padded/truncated as needed based on the length argument.
+	#; 	type   - DECIMAL, DOUBLE, INT, INTEGER, FLOAT, TIMESTAMP or STRING. Default to FLOAT.
+	#; 	targetLength - (optional) If specified, defines whether the provided value will be padded with NULLs or truncated to fit the given length.
+	#; 			  If not specified, the returned $vector will contain as many elements as are present in the provided input argument.
+tovector(input="", type="FLOAT", targetLength="") [SQLCODE, %msg] PUBLIC {
+	RETURN:input="" ""
+	set vec = "", type=$case($$$UPPER(type),"FLOAT":"xf32","INT":"integer",:$$$LOWER(type))
+	try {
+		if $isvector(input) { // $vector, pad or truncate
+			// first know if we need to cast to a different type
+			if $vop("type", vec) '= type {
+				set vec = $vop("convert", input, type)
+			} else {
+				set vec = input
+			}
+		} elseif ($isobject(input) && ($classname(input) = "%Library.DynamicArray") || (type = "string")) { // dynamic array
+			if ($isobject(input)) {							// already a DynamicArray
+				set iterator = input.%GetIterator()	
+			} else {
+				// Just a string to a STRING vector, will be slower than $vop("fromstring"), but "fromstring" will result
+				// in [s1, s2 , s3] becoming $v("s1", " s2 ", " s3"). STRING is not a main use case - so it's probably easiest to
+				// just do this
+				set iterator = {}.%FromJSON("["_$zstrip(input, "<>W", "[]")_"]").%GetIterator()
+			}
+			while iterator.%GetNext(.key, .value, .jsonElementType) {
+				QUIT:(targetLength'=""&&(key+1>targetLength)) // no sense in continuing, it will be truncated anyway
+				// The JSON type will be null if JSON null was the input e.g. [1, 2, null, 4], and this is distinct from an all caps NULL which would fail to be
+				// translated to a JSON array because NULL != null. The latter case would throw a parsing error in the %FromJSON() call and be handled by the
+				// catch
+				if (jsonElementType = "null") {
+					set %msg = $$$FormatText($$$Text("Failed to convert %1 to logical vector value: Cannot insert NULL into vector","%SQL.Function"), $e(input,1,100))
+					// The below call will effectively be setting SQLCODE + a ztrap call, but want to keep conversion error handling centralized in that method
+					do ##class(%Library.Vector).HandleConversionError("", input)
+				}
+				set $vector(vec,key+1,type) = value
+			}
+		} else {	// string of numerics, fastest + most common case
+			/* 
+				Whitespace isn't significant for non-strings and [1,   4   ,5] will trip up the $vop to return [1,0,5] because it will treat the second
+				element as the string "   4   " coerced to 0 for the numeric type, so we should totally strip spaces for numerics. We can't do the same for strings
+				because there may be significant spaces internal to each string entry
+				
+				A note on messy NULL handling - Originally, we would use {}.%FromJSON to get a dynamic array for this logic. This would ONLY allow
+			 	a lowercase null (i.e. JSON 'null') such as [1,2,null,4] but would throw an error for e.g. [1,2,NULL,4] because it's not a JSON 'null'. So since that error was
+			 	unavoidable, we disallowed NULL altogether, which also meant checking if any element type in %FromJSON() output was 'null'. You'd be fine if 
+			 	the "NULL" was quoted b/c that's a string vs. trying to input a null, so we allowed that in SQL too. When we moved to using $find() I tried to maintain 
+			 	the NULL behavior by saying that, if something contained a double quote we would use %FromJSON() and get the same error handling (needed to use %FromJSON() anyway
+			 	because of commas in the $find() loop), and otherwise we could just check the entire text for a NULL and consider that an error.
+.
+				With $vop("fromstring") that is no longer a working paradigm. This below couple lines is an attempt to enforce the same previous null behavior
+			*/
+			set strippedInput = $zstrip(input, "*W", "[]")
+			if ((","_$zcvt(strippedInput, "U")_",") [ (",NULL,")) {
+				set %msg = $$$FormatText($$$Text("Failed to convert %1 to logical vector value: Cannot insert NULL into vector","%SQL.Function"), $e(input,1,100))
+				do ##class(%Library.Vector).HandleConversionError("", input)	
+			}
+.
+			// 2-bit flag value in the fifth position is set to 3, i.e. the 1-bit and 2-bit are both set ((1 * 2^0) + (1 * 2^1))
+			//		1 bit - (set) Empty elements in the list are empty elements in the vector
+			//					Example: input of "1,,2,3" is a vector of $v(1,,2,3)
+			//		2 bit - (set) Remove the quotes that wrap around delimited string elements, and do not treat commas within substrings as delimiters
+			//					Example: input of "element1,""element2"",""element,three"",element4" would be a vector of: ("element1","element2","element,three","element4")
+			set vec = $vop("fromstring", strippedInput, type, ",", 3)
+		}
+		// now do length adjustments
+		if targetLength '= "" {
+			set length = $vop("length", vec)
+			if targetLength < length { // vector too big, truncate it
+				set $bit(bit, targetLength+1) = 1
+				set vec = $vop("mask", vec, $bitlogic(~bit))
+			} elseif targetLength > length { // vector too small, pad it
+				set $vector(vmax, targetLength, type) = ""
+				set vec = $vop("vset", $vop("set", vmax, ""), vec)
+			}
+		}
+	} catch ex {
+		do ##class(%Library.Vector).HandleConversionError(ex, input)
+	}
+	RETURN vec
+}
+embedding(text="", configName="",embeddingModelName="") [SQLCODE, %msg] PUBLIC {
+	try {
+		// Validate inputs
+		if (text="") || (text=$c(0)) { 
+			set SQLCODE=-400, %msg =$$$Text("No text input provided to EMBEDDING. Usage: EMBEDDING(<text> [, <configName> ])", "%SQL.Function")
+			throw
+			}
+		if ((configName="") && (embeddingModelName="")){
+			set SQLCODE=-280, %msg = $$$Text("%Embedding.Config name not found. Provide it in EMBEDDING(<input>,<name>) or use a column of datatype %Library.Embedding that has a MODEL specified.", "%SQL.Function")
+			throw
+		}
+		if ((configName'="") && (embeddingModelName'="") && (configName'=embeddingModelName)){ 
+			set SQLCODE=-280, %msg = $$$FormatText($$$Text("%Embedding.Config '%1' provided in EMBEDDING does not match %Embedding.Config '%2' found in the %Library.Embedding column.", "%SQL.Function"),configName,embeddingModelName)
+			throw
+		}
+		// Retrieve corresponding %Embedding.Config configuration
+		set vec = "", embeddingClass = "", configName = $s(configName="":embeddingModelName, 1:configName)
+		set configList = $g(^rINDEXSQL("Embedding",configName)) // $lb(<Configuration>,<EmbeddingClass>,<VectorLength>,<Description>)
+		if configList = "" { 
+			set SQLCODE=-280, %msg = $$$FormatText($$$Text("%Embedding.Config '%1' does not exist. Create a configuration by adding an entry to the %Embedding.Config table.", "%SQL.Function"),configName)
+			throw
+		}
+		set $lg(configuration,embeddingClass)=configList
+		// Call embedding function from embeddingClass to get vector
+		set vec  = $classmethod(embeddingClass,"Embedding", text, configuration) 
+	} catch ex {
+		if (SQLCODE'<0){
+			set SQLCODE=-400, %msg = $$$FormatText($$$Text("Error when creating embedding: %1","%SQL.Function"),$$GetErrorText^%apiOBJ(ex.AsStatus()))
+		}
+		ztrap "SQER"
+	}
+	RETURN vec
+} 
+.
+UnixTimeStamp(date="") [] PUBLIC {
+	#;---------------------------------------------------------------------
+	#;                     I N F O R M A T I O N
+	#;---------------------------------------------------------------------
+	#; This function produces takes a datetime value and returns a Unix Time format for the datetime.
+	#;  The Unix Time value returned is a %Numeric value of the argument as seconds since '1970-01-01 00:00:00'.
+	#;
+	#; PARMETERS:
+	#;    date - The given date-time
+	#;            date can be in any of the following formats:
+	#;              - %Timestamp:  YYYY-MM-DD HH:MM:SS.ssssss
+	#;		- %PosixTime value
+	#;              - %Date value.  +$H format (55555 - same as 55555,00000)
+	#;              - $H or $zu(188) format (55555,44444[.ssssss])
+	#;
+	#; RETURNS: a %Numeric value of the argument as seconds since '1970-01-01 00:00:00'.
+	#;---------------------------------------------------------------------
+	QUIT:date="" ""
+	if $$$sqlxPosixTimeIsValid(+date) { QUIT ##class(%Library.PosixTime).LogicalToUnixTime(date) }	// date is a %PosixTime
+	if date?0.1"-"1.7n || (date?0.1"-"1.7n1","1.5n) || (date?0.1"-"1.7n1","1.5n1"."1.n) {		// date is a +$H, $H, or $zu(188) format
+		QUIT (date-47117)*86400+$p(date,",",2)							// return Unix timestamp value
+	}
+		// Assume it is a %TimeStamp value, return error if it is not
+	set val=$zdatetimeh(date,3,,,,,,-672045,,"error")  ; Puts %TimeStamp $zu(188) format (local time)
+	if val="error" {
+		set %msg=$$$FormatText($$$Text("Illegal input value passed to UNIX_TIMESTAMP() : UNIX_TIMESTAMP(%1)","%SQL.Function"),date)
+		ZTRAP "DUTS"
+	}
+	QUIT (val-47117)*86400+$p(val,",",2)				// return Unix timestamp value
+}
+.
+.
+JulianToChar(date) [] PUBLIC {	// DPV2997
+	QUIT:date="" ""
+		#; Converting from %Date to %String, copy Oracle's behavior for Julian dates, return a string that is the number of days since January 1, 4712 BC.
+	QUIT:date?1.7N $tr($j(date+2393471,7)," ","0")  ; shortcut for $h dates
+		#; OK, since we don't support negative logical date values, we assume any earlier values are in YYYY-MM-DD format
+		#; Or we can assume they came from timestamp datatype
+	if date?0.1"-"1.4n1"-"1.2n1"-"1.2n.e {	// Convert ODBC format time (or timestamp value) to Juliun Date
+		s:$e(date)'="-" Y=$p(date,"-"),M=$p(date,"-",2),D=+$p(date,"-",3)	// positive year
+		s:$e(date)="-" Y=-$p(date,"-",2),M=$p(date,"-",3),D=+$p(date,"-",4)	// BC year
+		s M1=(M-14)\12,Y1=Y+4800
+ 			#; In 1968 in a letter to the editor of Communications of the ACM (CACM, volume 11, number 10, October 1968, p.657) 
+ 			#; Henry F. Fliegel and Thomas C. Van Flandern presented an algorithm for converting Dates to Julian Days
+			#;
+			#; The Julian day (jd) is computed from Gregorian day, month and year (d, m, y) as follows:
+			#;
+ 			#; jd = ( 1461 * ( y + 4800 + ( m - 14 ) / 12 ) ) / 4 +
+			#;       ( 367 * ( m - 2 - 12 * ( ( m - 14 ) / 12 ) ) ) / 12 -
+			#;       ( 3 * ( ( y + 4900 + ( m - 14 ) / 12 ) / 100 ) ) / 4 +
+			#;       d - 32075
+			#;
+			#; Division is to be understood as in integer arithmetic, with the remainders discarded.
+			#;
+		s J = ( 1461 * ( Y1 + M1 ) ) \ 4 + (( 367 * ( M - 2 - ( 12 *  M1 ) ) ) \ 12 ) - (( 3 * ( ( Y + 4900 + M1 ) \ 100 ) ) \ 4 ) + D - 32075
+		s:J<2299151 J=J+10	// Adjust for 10 missing days in October 1582
+		f y=1500:-100:-4900 {	// Adjust for leap years
+			continue:y#400=0
+			if (Y=y&&(M<3))||(Y<y) { s J=J-1 } else { q  }
+		}
+		s:J<59 J=J+1
+		QUIT $tr($j($fn(J,"",0),7)," ",0)
+	}
+	s %msg=$$$FormatText($$$Text("Illegal input value passed to TO_CHAR() : TO_CHAR(%1,'J')","%SQL.Function"),date)
+	ZTRAP "DJUL"
+	QUIT ""
+}
+.
+floor(val) RETURN $$$floor(val)
+.
+ceiling(val) RETURN $$$ceiling(val)
+.
+ 
+Julian(date) [] PUBLIC {	// DPV2166+
+		#; Return the Oracle Default Format given a Julian Date...
+		#;  Thanks to Robert Cemper who supplied this code
+	i +date=0||(date>5373484) s %msg=$$$Text("Invalid Julian Date value.  Julian date must be between 1 and 5373484","%SQL.Function") ZTRAP "DJUL"	// DPV3277=
+	s:date["." date=+$p(date,".")	// Remove fractional part of day
+	QUIT:date>2393470 date-2393471  ; shortcut for $h dates
+	i date>2299160 { d greg(date,.y) } else { d jul(date,.y) }
+	QUIT y
+}
+ 
+greg(date,y) [] PRIVATE {
+		#; dates after 15oct1528 ; transpose it by 400y to $h space and back
+	s y=$zd(date-2247374,3,,4),$p(y,"-")=$p(y,"-")-400 QUIT
+}
+ 
+jul(date,y) [] PRIVATE {
+		#; dates before 4 oct 1528
+			#; checked against U.S. Naval Observatory at:
+			#; http://aa.usno.navy.mil/data/docs/JulianDate.html
+	i date<32 s y="-4712-01-"_$e("0",date<10)_date QUIT
+	i date<60 s y="-4712-02-"_$e("0",(date-31)<10)_(date-31) QUIT
+	s y(4)=4*365+1,a(0)=date-1721058,a("b")=a(0)<0	 					; virtual point 0
+	s (a("d"),r(4))=a(0)#y(4),a(4)=a(0)\y(4)+(a("b")*(r(4)=0-1)),a("f")=(r(4)<366)+28 s:date<60 a("f")=28
+	f a=366,365,365 q:a("d")<a  i $i(a(1)),$i(a("d"),-a)
+	s a("y")=a(4)*4+$g(a(1))
+	s a("m")=1
+	f a=31,a("f"),31,30,31,30,31,31,30,31,30,31 { q:a("d")<a  i $i(a("m")),$i(a("d"),-a)  } s:date>31 a("d")=a("d")+1
+	s y=a("y")_"-"_$e("0",a("m")<10)_a("m")_"-"_$e("0",a("d")<10)_a("d")
+ 	QUIT
+}	// DPV2166-
+ 
+ 
+FormatJulian(date,fmt) [] PUBLIC {
+		#;  Given a ODBC format date value, which is probably from a Julian date before 12/31/1840, convert it to the format requested
+	if date[" " { set date=$p(date," ",1) } // remove any time portion
+	QUIT:fmt=3 date
+	s neg=0 s:$e(date)="-" neg=1,date=$e(date,2,*)
+	s ds=$$$DateSeparator
+	s:fmt=-1 fmt=$$$DateFormat
+	QUIT:fmt=0||(fmt=2) $p(date,"-",3)_" "_$p($zd($zdh("2007-"_$p(date,"-",2)_"-01",3),0)," ",2)_" "_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=1 $p(date,"-",2)_ds_$p(date,"-",3)_ds_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=4 $p(date,"-",3)_ds_$p(date,"-",2)_ds_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=5||(fmt=6) $p($zd($zdh("2007-"_$p(date,"-",2)_"-01",3),0)," ",2)_" "_+$p(date,"-",3)_$e(",",fmt=5)_" "_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=7 $p($zd($zdh("2007-"_$p(date,"-",2)_"-01",3),0)," ",2)_" "_$p(date,"-",3)_" "_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=8 $e("-",neg)_$tr(date,"-")
+	QUIT:fmt=9 $p($zd($zdh("2007-"_$p(date,"-",2)_"-01",3),9)," ",1)_" "_+$p(date,"-",3)_", "_$e("-",neg)_$p(date,"-")
+	QUIT:fmt=13 +$p(date,"-",3)_ds_+$p(date,"-",2)_ds_(($e("-",neg)_$p(date,"-"))+543)
+	QUIT date
+}
+ 
+ 
+WeekOfYear(date) [] PUBLIC {
+		#; Given a Date value, return the week of the year (1-53) the day is in
+		#; date is expected to be in the format +$H (DPV2056 changed to $H, was MM/DD/YYYY)
+	QUIT:$g(date)="" ""
+	//if $$$sqlxPosixTimeIsValid(date) { set date=##class(%Library.PosixTime).LogicalToDate(date) }
+	if $$$WeekISO8601 QUIT $$WeekOfYearISO8601(date)
+	set doy=(date-$zdateh(($p($zdate(date,3,,,,,-672045),"-"))_"-01-01",3,,,,,-672045))+1	// doy is now the Day of Year
+	set doy=doy+(6-$zdate(date,10,,,,,-672045))  // DPV2048 Changed 7 to 6 (0-6)
+	QUIT $s(doy>372:54,1:doy\7+(''(doy#7)))
+}
+ 
+WeekOfYearISO8601(date) [] PRIVATE {
+		#; Given a Date value, return the week of the year (1-53) the day is in
+		#; date is expected to be in the format +$H (DPV2056 changed to $H, was MM/DD/YYYY)
+		#; International standard ISO-8601 (mentioned in section 6.6) assigns a
+		#; number to each week of the year. A week that lies partly in one year
+		#; and partly in another is assigned a number in the year in which most
+		#; of its days lie. This means that
+		#; 
+		#; Week 1 of any year is the week that contains 4 January,
+		#; 
+		#; or equivalently
+		#; 
+		#; Week 1 of any year is the week that contains the first
+		#; Thursday in January.
+		#; 
+		#; Most years have 52 weeks, but years that start on a Thursday and leap
+		#; years that start on a Wednesday have 53 weeks.
+		#; 
+.
+		#; First we convert date to a Julian date
+	set jd=$$JulianToChar(date)
+.
+		#; Then perform the following calculations (in which the divisions are
+		#; integer divisions in which the remainder is discarded):
+		#; 
+		#; d4 = (J+31741 - (J mod 7)) mod 146097 mod 36524 mod 1461
+		#; L = d4/1460
+		#; d1 = ((d4-L) mod 365) + L
+		#; WeekNumber = d1/7+1
+		
+	set d4 = ((( jd + 31741 - (jd # 7)) # 146097) # 36524) # 1461
+	set l = d4 \ 1460
+	set d1 = ((d4 - l) # 365) + l
+	QUIT (d1 \ 7) + 1
+}
+ 
+repeat(val="",num="")	[] PUBLIC {
+	   #; Return the string with val repeated num times
+	   QUIT:num<0||(num="")||(val="") "" 	// If num is negative, num is NULL, or value is NULL; NULL is returned.
+	   QUIT:num=0||(val=$c(0)) $c(0)	// If num is 0, EmptyString is returned (MS SQL Server Compatibility level setting of 70 or higher).  If val is EmptyString, just return EmptyString
+	   QUIT $replace($j("",num)," ",val)
+	}
+ 
+ 
+lpad(str="",len=0,padstr=" ")	[] PUBLIC {
+	   #; Return the string with left padding of len characters using padstr
+	   QUIT:str=""||(+len=0) ""
+	   set:padstr="" padstr=" "
+	   set:str=$c(0) str=""
+	   QUIT:padstr=" " $extract($justify(str,len),1,len)
+	   set lenstr=$l(str)
+	   QUIT $e($e($replace($j("",((len-lenstr)/$l(padstr))+1)," ",padstr),1,len-lenstr)_str,1,len)
+}
+.
+rpad(str="",len=0,padstr=" ")	[] PUBLIC {
+	   #; Return the string with right padding of len characters using padstr
+	   QUIT:str=""||(+len=0) ""
+	   set:padstr="" padstr=" "
+	   set:str=$c(0) str=""
+	   set lenstr=$l(str)
+	   QUIT:padstr=" " $extract(str_$justify("",len-lenstr),1,len)
+	   QUIT $e(str_$e($replace($j("",((len-lenstr)/$l(padstr))+1)," ",padstr),1,len-lenstr),1,len)
+}
+msconvert(val="",fromDT="",toDT="",style="",streamtype=0,tsqlmode=0) [] PUBLIC {	// DPV1920+
+	    #;  MS SQL Server style CONVERT function
+	    #;  Parameters:
+	    #;    val    - the value to convert
+	    #;    fromDT  - the SQL datatype of the value to be converted
+	    #;    toDT - the SQL datatype with, optional type parameters, to convert the value to
+	    #;    style  - If converting to VARCHAR, a style code to use for date/time/numeric formating
+	    #;    streamtype - ODBC datatype value (-1/-4) of the val if the value is a stream oref
+	    #;    tsqlmode - called from TSQL code (Sybase or MSSQL dialect)
+	    
+	QUIT:val="" ""
+	if style="" {
+		if val?1.2n1"/"1.2n1"/"1.2n1" ".e { set style=1 }
+		elseif val?1.2n1"/"1.2n1"/"1.4n1" ".e { set style=101 }
+		elseif val?1.2n1"."1.2n1"."1.2n1" ".e { set style=2 }
+		elseif val?1.4n1"."1.2n1"."1.2n1" ".e { set style=102 }
+		elseif val?1.2n1"."1.2n1"."1.4n1" ".e { set style=104 }
+		elseif val?1.2n1"-"1.2n1"-"1.2n1" ".e { set style=5 }
+		elseif val?1.2n1"-"1.2n1"-"1.4n1" ".e { set style=105 }
+		elseif val?1.4n1"-"1.2n1"-"1.4n1"T"1.2n1":"1.2n1":"1.2n.e   { set style=23 }
+		elseif val?1.4n1"-"1.2n1"-"1.2n1" "   { set style=140 }
+		else { s style=0 }
+	}
+		#; if fromDT and/or toDT are TSQL system created by sp_ddtype, convert them to their define TSQL datatype
+	set:fromDT'="" fromDT=$$TSQLUserType(fromDT)
+	set:toDT'="" toDT=$$TSQLUserType(toDT)
+	set convparam=$p(toDT,"(",2,*),toDT=$p(toDT,"(")
+	If convparam["MAXLEN" { s maxlen=+$p(convparam,"MAXLEN=",2) } Else { if toDT="CHAR",'convparam { set maxlen=30 } else { set maxlen=$$$MaxStringLength }}
+	If convparam["SCALE" { s scale=+$p(convparam,"SCALE=",2) } Else { s scale="" }
+	If convparam["MAXVAL" { s maxval=+$p(convparam,"MAXVAL=",2) } Else { s maxval="" }
+	If convparam["MINVAL" { s minval=+$p(convparam,"MINVAL=",2) } Else { s minval="" }
+	set:fromDT="" fromDT="VARCHAR"
+	if fromDT="CHAR" {
+		set fromDT="VARCHAR"
+	}
+	set savefromDT=fromDT,fromDT=$p(fromDT,"(")
+	set:fromDT="CHAR" fromDT="VARCHAR"
+	set fromDT=$$$UPPER(fromDT),toDT=$$$UPPER(toDT)
+	If streamtype {	// DPV2206+
+		s stream=##class(%Stream.Object).%Open(val)
+		i $$$ISERR(stream) s SQLCODE=-400,%msg=$$$Text("Unable to open Stream object in CONVERT(...,<StreamField>)","%SQL.Function") GOTO CONVERTError
+		s x=stream.Read(.maxlen)
+		k stream
+		QUIT x
+	}	// DPV2206-
+	If toDT="VARCHAR" {
+		If convparam s maxlen=+convparam	// Might be VARCHAR(10) (sic)
+		If fromDT="DATE" {													// Convert DATE type to VARCHAR
+			if val?4n1"-"2n1"-"2n1" ".e { set val=$zdateh($p(val," ",1),3,,,,,-672045) }							// TIMESTAMP value input, convert to logical DATE
+			s x=$$dtout(val,,style,maxlen)
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT x
+		}
+		ElseIf fromDT="TIME" {													// Convert TIME type to VARCHAR
+			s x=$$dtout(+$H,val,style,maxlen)
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT x
+		}
+		ElseIf fromDT="TIMESTAMP"||(fromDT="DATETIME") {									// Convert TIMESTAMP type to VARCHAR
+			  #;  val might be a datetime, a date, or a time
+			set saveval=val
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+			else { set:val?2N1":"2N1":"2N.e val="1900-01-01 "_val }		// time only
+			set x=$zdatetimeh(val,3,3,,,,-672045)	// translate to $H value
+			set y=$$dtout(+x,$p(x,",",2),style,maxlen)
+			if y="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal %1 value (%2) passed to SQL CONVERT() function","%SQL.Function"),fromDT,saveval) GOTO CONVERTError
+			QUIT y
+		}
+		ElseIf $case(fromDT,"INTEGER":1,"INT":1,"BIGINT":1,"SMALLINT":1,"TINYINT":1,:0) {					// Convert INT type to VARCHAR
+			QUIT $e(val,1,maxlen)
+		}
+		ElseIf $case(fromDT,"DOUBLE":1,"NUMERIC":1,"DECIMAL":1,:0) {										// Convert NUMERIC type to VARCHAR
+			QUIT $e(val,1,maxlen)
+		}
+		ElseIf fromDT="VARCHAR" {												// Convert VARCHAR to VARCHAR of a different length
+			QUIT $e(val,1,maxlen)
+		}
+	}
+	If toDT="CHAR" {
+		If convparam s maxlen=+convparam	// Might be CHAR(10) (sic)
+		If fromDT="DATE" {													// Convert DATE type to VARCHAR
+			if val?4n1"-"2n1"-"2n1" ".e { set val=$zdh($p(val," ",1),3,,,,,-672045) }							// TIMESTAMP value input, convert to logical DATE
+			s x=$$dtout(val,,style,maxlen)
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT x_$j(" ",maxlen-$l(x))	// May need to pad spaces
+		}
+		ElseIf fromDT="TIME" {													// Convert TIME type to VARCHAR
+			s x=$$dtout(+$H,val,style,maxlen)
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT x_$j(" ",maxlen-$l(x))	// May need to pad spaces
+		}
+		ElseIf fromDT="TIMESTAMP"||(fromDT="DATETIME") {									// Convert TIMESTAMP type to VARCHAR // DPV2907
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+			s x=$zdatetimeh(val,3,3,,,,-672045)	// translate to $H value
+			s y=$$dtout(+x,$p(x,",",2),style,maxlen)
+			If y="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIMESTAMP value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT y_$j(" ",maxlen-$l(y))	// May need to pad spaces
+		}
+		ElseIf $case(fromDT,"INTEGER":1,"INT":1,"BIGINT":1,"SMALLINT":1,"TINYINT":1,:0) {					// Convert INT type to VARCHAR
+			s val=$e(val,1,maxlen)
+			QUIT val_$j(" ",maxlen-$l(val))	// May need to pad spaces
+		}
+		ElseIf fromDT="DOUBLE"||(fromDT="NUMERIC") {										// Convert NUMERIC type to VARCHAR
+			s val=$e(val,1,maxlen)
+			QUIT val_$j(" ",maxlen-$l(val))	// May need to pad spaces
+		}
+		ElseIf fromDT="VARCHAR" {										// Convert VARCHAR to VARCHAR of a different length
+			set val=$e(val,1,maxlen)
+			QUIT val_$j(" ",maxlen-$l(val))	// May need to pad spaces
+		}
+	}
+	If toDT="DATE" {
+		If fromDT="VARCHAR" {													// Convert VARCHAR type to DATE
+			s d=$$DateFromString(val,style)
+			If d="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT d
+		}
+		ElseIf fromDT="TIMESTAMP" {												// Convert TIMESTAMP type to DATE
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+			s x=$zdatetimeh(val,3,3,,,,,-672045,,"ERROR")	// translate to $H value
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIMESTAMP value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT +x
+		}
+	}
+	If toDT="TIME" {
+		If fromDT="VARCHAR" {													// Convert VARCHAR type to TIME
+			s t=$$TimeFromString(val,style)
+			If t="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT $p(t,".")
+		}
+		ElseIf fromDT="TIMESTAMP" {												// Convert TIMESTAMP type to TIME
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+			s x=$zdatetimeh(val,3,3,,,,,-672045,,"ERROR")	// translate to $H value
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIMESTAMP value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT $p($p(x,",",2),".")
+		}
+	}
+	If toDT="TIMESTAMP"||(toDT="DATETIME")||(toDT="DATETIME2")||(toDT="SMALLDATETIME") {
+		If fromDT="VARCHAR" {													// Convert VARCHAR type to TIMESTAMP
+			set saveval=val
+			if tsqlmode {
+					// In tsql, converting from varchar should not use the style to dictate what the char format was.
+					// style is only used when converting datetime to another type, liek char
+					// But Want to leave behavior for IRIS SQL compatible.
+				set val=$$ConvertDATETIMEToTIMESTAMP(val)  // val should now be a %TimeStamp
+				set d=$$DateFromString(val,140)
+				if d="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),saveval) GOTO CONVERTError
+				set t=$$TimeFromString(val,140)
+				if t="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),saveval) GOTO CONVERTError }
+				set dt=$zdatetime(d_","_t,3,1,$l($p(t,".",2)),,,,,-672045,,"ERROR")
+				if dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE/TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),saveval) GOTO CONVERTError }
+			} else {
+				set d=$$DateFromString(val,style)
+				if d="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+				set t=$$TimeFromString(val,style)
+				if t="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+				set dt=$zdatetime(d_","_t,3,1,$l($p(t,".",2)),,,,,-672045,,"ERROR")
+				if dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE/TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			}
+			QUIT dt
+		}
+		ElseIf $case(fromDT,"INTEGER":1,"BIGINT":1,:0)&&(style=12||(style=112)) {									// Convert [YY]YYMMDD type to TIMESTAMP
+			s d=$$DateFromString(val,style)
+			If d="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			s t=$$TimeFromString(val,style)
+			If t="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			s dt=$zdatetime(d_","_t,3,1,$l($p(t,".",2)),,,,,-672045,,"ERROR")
+			If dt="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE/TIME value (%1,%2) passed to SQL CONVERT() function","%SQL.Function"),d,t) GOTO CONVERTError
+			QUIT dt
+		}
+		ElseIf fromDT="DATE" {
+			if val?4n1"-"2n1"-"2n1" ".e { set val=$zdh($p(val," ",1),3,,,,,-672045) }							// TIMESTAMP value input, convert to logical DATE
+			s x=$zdatetime(val_",0",3,1,,,,,,-672045,,"ERROR")										// Convert DATE type to TIMESTAMP
+			If x="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1,0) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT x
+		}
+		ElseIf fromDT="TIME" {
+			s dt=$zdatetime("21550,"_val,3,1,,,,,,-672045,,"ERROR")	// Default date is Jan 01 1900					// Convert TIME type to TIMESTAMP
+			If dt="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1,%2) passed to SQL CONVERT() function","%SQL.Function"),+$H,val) GOTO CONVERTError
+			QUIT dt
+		}
+		ElseIf fromDT="TIMESTAMP"||(fromDT="DATETIME")||(fromDT="DATETIME2")||(fromDT="SMALLDATETIME") {
+			set saveval=val
+				// Assume we already have a %TimeStamp or %PosixTime value.  Convert to the proper style
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+				// We should now have a %TimeStamp value in val
+			set dt=$zdatetimeh(val,3,1,,,,,,,-672045,"ERROR")										// Convert DATE type to TIMESTAMP
+			If dt="ERROR" s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATETIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError
+			QUIT $zdatetime(dt,3,1,$l($p(val,".",2)))
+		}
+		ElseIf fromDT="TIMESTAMP" {
+			if $$$sqlxPosixTimeIsValid(+val) { set val=##class(%Library.PosixTime).LogicalToOdbc(val) }
+			QUIT val
+		}
+	}
+	If toDT="POSIXTIME" {
+		If fromDT="VARCHAR" {													// Convert VARCHAR type to TIMESTAMP
+			set d=$$DateFromString(val,style)
+			if d="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			set t=$$TimeFromString(val,style)
+			if t="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			set dt=$zdatetime(d_","_t,3,1,$l($p(t,".",2)),,,,,-672045,,"ERROR")
+			if dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE/TIME value (%1,%2) passed to SQL CONVERT() function","%SQL.Function"),d,t) GOTO CONVERTError }
+			QUIT ##class(%Library.PosixTime).OdbcToLogical(dt)
+		}
+		elseif $case(fromDT,"INTEGER":1,"BIGINT":1,:0)&&(style=12||(style=112)) {									// Convert [YY]YYMMDD type to TIMESTAMP
+			set d=$$DateFromString(val,style)
+			if d="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			set t=$$TimeFromString(val,style)
+			if t="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal TIME value (%1) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			set dt=$zdatetime(d_","_t,3,1,$l($p(t,".",2)),,,,,-672045,,"ERROR")
+			if dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE/TIME value (%1,%2) passed to SQL CONVERT() function","%SQL.Function"),d,t) GOTO CONVERTError }
+		  	QUIT ##class(%Library.PosixTime).OdbcToLogical(dt)
+		}
+		elseif fromDT="DATE" {
+			if val?4n1"-"2n1"-"2n1" ".e { set val=$zdh($p(val," ",1),3,,,,,-672045) }					// TIMESTAMP value input, convert to logical DATE
+			set dt=$zdatetime(val_",0",3,1,,,,,,-672045,,"ERROR")								// Convert DATE type to TIMESTAMP
+			If dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1,0) passed to SQL CONVERT() function","%SQL.Function"),val) GOTO CONVERTError }
+			QUIT ##class(%Library.PosixTime).OdbcToLogical(dt)
+		}
+		elseif fromDT="TIME" {
+			set dt=$zdatetime("21550,"_val,3,1,,,,,,-672045,,"ERROR")	// Default date is Jan 01 1900			// Convert TIME type to TIMESTAMP
+			If dt="ERROR" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal DATE value (%1,%2) passed to SQL CONVERT() function","%SQL.Function"),+$H,val) GOTO CONVERTError }
+			QUIT ##class(%Library.PosixTime).OdbcToLogical(dt)
+		}
+		elseif fromDT="TIMESTAMP" {
+			QUIT ##class(%Library.PosixTime).OdbcToLogical(val)
+		}
+	}
+	If toDT="INT"||(toDT="INTEGER")||(toDT="SMALLINT")||(toDT="TINYINT")||(toDT="BIGINT") {	// DPV2181= (INTEGER)	// DPV2574 (BIGINT)	// Convert any type to INT
+		QUIT +$p(val,".")
+	}
+	If toDT="NUMERIC"||(toDT="DECIMAL") {												// Convert any type to NUMERIC/DECIMAL
+		if convparam { // Has a PRECISION and maybe a SCALE
+				#;  Probably got here from a TSQL procedure in procedure context.  
+				#;  Otherwise the type info has normally been already converted to use Cache type parameters
+				#;  
+			s scale="" s:convparam["," scale=+$p(convparam,",",2)
+			s prec=+convparam
+			if scale'="" {
+				set qval=$fn(val,"",scale)
+				if '$isvalidnum(qval,scale,$$minval(prec,scale),$$maxval(prec,scale)) s SQLCODE=-400,%msg=$$$FormatText($$$Text("Arithmetic overflow during explicit conversion of %1 value '%2' to a %3 value","%SQL.Function"),fromDT,val,toDT) GOTO CONVERTError
+				QUIT qval 
+			}
+			else { QUIT $fn(val,"") }
+		}
+		elseif scale { // If here, we have a convparam with SCALE= in it.  Maye have MAXVAL and MINVAL too.
+			set qval=$fn(val,"",scale)
+			if '$isvalidnum(qval,scale,minval,maxval) s SQLCODE=-400,%msg=$$$FormatText($$$Text("Arithmetic overflow during explicit conversion of %1 value '%2' to a %3(%4) value.","%SQL.Function"),fromDT,val,toDT,convparam) GOTO CONVERTError
+			QUIT qval
+		}
+		QUIT +val
+	}
+	If toDT="DOUBLE" {	// DPV2202 (DOUBLE)											// Convert any type to DOUBLE
+		QUIT $double(val)
+	}
+	If toDT="BIT" {	// DPV2216+
+		QUIT:val="" ""
+		QUIT:$$$UPPER(val)="TRUE" 1
+		QUIT:$$$UPPER(val)="FALSE" 0
+		if $isvalidnum(val) {
+			QUIT:val 1
+			QUIT 0
+		}
+		s SQLCODE=-400,%msg=$$$FormatText($$$Text("Illegal BIT value (%1) passed to SQL CONVERT() function","%SQL.Function"),$s(val=$c(0):"<EMPTY STRING>",1:val)) GOTO CONVERTError
+	}
+ 
+	s SQLCODE=-400,%msg=$$$Text("Illegal call to SQL CONVERT() function","%SQL.Function") GOTO CONVERTError
+ 
+CONVERTError ZTRAP "CONV"
+ 
+	}
+.
+	// Given a TSQL datatype, see if this is a user defined type added by sp_addtype.  If it is, return the system type it is defined as
+	// If there is no defined tsql usertype, return the type passed in
+TSQLUserType(dt) [] PUBLIC {
+	set tsqltype=$o(^rINDEXSQL("tsql","systypes","NameIndex",$$$SQLUPPER(dt),""))
+	if tsqltype {
+		set tsqltype=$lg($g(^rINDEXSQL("tsql","systypes",1,tsqltype)),2)
+		if tsqltype'="" { set dt=$$$UPPER(tsqltype) }
+	}
+	RETURN dt
+}	
+	
+dtout(d,t=0,s,max=$$$MaxStringLength) [] PUBLIC {
+		#;  Do the conversion to the output format of the given date (d), time (t), and style (s)
+		#;  date and time values are in Logical format
+		#;  All Sybase conversion where checked against actual Sybase bahvioe on Heath on July 22, 2019 by DPV5579
+	if s=0||(s=100) {														// mon dd yyyy hh:mmAM (or PM)   MSSQL & Sybase
+		set x=$zdate(d,7,,4,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		set y=$ztime(t,4,,"ERROR") RETURN:y="ERROR" "ERROR"
+		RETURN $e(x_" "_y,1,max)
+	}
+	if s=1||(s=101) { RETURN $e($zdate(d,1,,$s(s=1:2,1:4),,,-672045,,"ERROR"),1,max) }						// mm/dd/yy[yy]   	MSSQL & Sybase
+	if s=2||(s=102) {														// yy[yy].mm.dd   	MSSQL & Sybase
+		set x=$zdate(d,1,,$s(s=2:2,1:4),,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		RETURN $e($p(x,"/",3)_"."_$p(x,"/")_"."_$p(x,"/",2),1,max)
+	}
+	if s=3||(s=103) { RETURN $e($zdate(d,4,,$s(s=3:2,1:4),,,-672045,,"ERROR"),1,max) }						// dd/mm/yy[yy]  	MSSQL & Sybase
+	if s=4||(s=104) { RETURN $e($tr($zdate(d,4,,$s(s=4:2,1:4),,,-672045,,"ERROR"),"/","."),1,max) }					// dd.mm.yy[yy]  	MSSQL & Sybase
+	if s=5||(s=105) { RETURN $e($tr($zdate(d,4,,$s(s=5:2,1:4),,,-672045,,"ERROR"),"/","-"),1,max) }					// dd-mm-yy[yy]   	MSSQL & Sybase
+	if s=6||(s=106) { RETURN $e($zdate(d,2,,$s(s=6:2,1:4),,,-672045,,"ERROR"),1,max) }						// dd mon yy[yy]  	MSSQL & Sybase
+	if s=7||(s=107) {														// Mon dd, yy[yy] 	MSSQL & Sybase
+		set x=$zdate(d,5,,,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		RETURN $e($p(x," ",1,2)_" "_$s(s=7:$e($p(x," ",3),3,4),1:$p(x," ",3)),1,max)
+	}
+	if s=8||(s=108) { RETURN $e($ztime(t,1,,"ERROR"),1,max) }									// hh:mm:ss      			 MSSQL & Sybase
+	if s=9||(s=109) {														// mon dd yyyy hh:mi:ss:mmmAM (or PM)   MSSQL & Sybase
+		set x=$zdate(d,7,,4,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		set y=$ztime(t,3,3,"ERROR") RETURN:y="ERROR" "ERROR"
+		RETURN $e(x_" "_$tr(y,".",":"),1,max)
+	}
+	if s=10||(s=110) { RETURN $e($tr($zdate(d,1,,$s(s=10:2,1:4),,,-672045,,"ERROR"),"/","-"),1,max)	}				// mm-dd-yy[yy]  			 MSSQL & Sybase
+	if s=11||(s=111) {														// yy[yy]/mm/dd  			 MSSQL & Sybase
+		set datesep=$$$DateSeparator
+		set x=$zdate(d,1,,$s(s=11:2,1:4),,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		RETURN $e($p(x,datesep,3)_"/"_$p(x,datesep,1)_"/"_$p(x,datesep,2),1,max)
+	}
+	if s=12 {															// yy[yy]mmdd    			 MSSQL & Sybase
+		set datesep=$$$DateSeparator
+		set x=$zdate(d,1,,2,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		RETURN $e($p(x,datesep,3)_$p(x,datesep,1)_$p(x,datesep,2),1,max)
+	}
+	if s=112 { RETURN $e($zdate(d,8,,$s(s=12:2,1:4),,,-672045,,"ERROR"),1,max) }
+	if s=13||(s=113) {														// dd mon yyyy hh:mm:ss:mmm(24h)	MSSQL (Sybase is yy/dd/mm !!!!!!!!)
+		set x=$zdate(d,7,,4,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		QUIT $e($p(x," ",2)_" "_$p(x," ")_" "_$p(x," ",3)_" "_$tr($zt(t,1,3,"ERROR"),".",":"),1,max)
+	}
+	if s=14||(s=114) { RETURN $e($ztime(t,1,3,"ERROR"),1,max) }									// hh:mi:ss:mmm(24h)			MSSQL (Sybase ismm/yy/dd !!!!!)
+	if s=15   {															// dd/yy/mm				Sybase
+		set x=$e($zdate(d,8,,,,,,,"ERROR"),1,max) RETURN:x="ERROR" "ERROR"
+		RETURN $e(x,7,8)_"/"_$e(x,3,4)_"/"_$e(x,5,6)
+	}
+	If s=115 {															// dd/yyyy/mm				Sybase
+		set x=$e($zdate(d,8,,,,,,,"ERROR"),1,max) RETURN:x="ERROR" "ERROR"
+		RETURN $e(x,7,8)_"/"_$e(x,1,4)_"/"_$e(x,5,6)
+	}
+	if s=16||(s=116) {														// mon dd yyyy HH:mm:ss				Sybase
+		set x=$zdate(d,7,,4,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		set y=$ztime(t,1,0,"ERROR") RETURN:x="ERROR" "ERROR"
+		RETURN $e(x_" "_y,1,max)
+	}
+	if s=17||(s=117) { RETURN $e($ztime(t,4,,"ERROR"),1,max) }									// hh:mmAM					Sybase
+	if s=18||(s=118) { RETURN $e($ztime(t,2,,"ERROR"),1,max) }									// hh:mm					Sybase
+	if s=19          { RETURN $e($tr($ztime(t,3,3,"ERROR"),".",":"),1,max) }							// hh:mm:ss:zzzAM				Sybase
+	If s=20||(s=120) QUIT $e($zdt(d_","_t,3,1,,,,,,-672045,,"ERROR"),1,max)							 	// yyyy-mm-dd hh:mi:ss(24h)			MSSQL (Sybase is hh:mm:ss:zzz, and has no 120 !!!!!!!)
+	If s=21||(s=121) QUIT $e($zdt(d_","_t,3,1,3,,,,,-672045,,"ERROR"),1,max)							// yyyy-mm-dd hh:mi:ss.mmm(24h)			MSSQL (Sybase is yy/mm/dd HH:mm:ss (21) or yyyy/mm/dd HH:mm:ss (121)
+	If s=22||(s=122) { 													 	// [yy]yy/mm/dd HH:mm AM (or PM)		Sybase
+		set datesep=$$$DateSeparator
+		set x=$zdate(d,8,,,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		set y=$ztime(t,4,,"ERROR") RETURN:y="ERROR" "ERROR"
+		RETURN $e($e(x,$s(s=22:3,1:1),4)_"/"_$e(x,5,6)_"/"_$e(x,7,8)_" "_y,1,max)
+	}
+	If s=23||(s=123) {								 						// [yy]yy-mm-ddTHH:mm:ss			Sybase
+		  set x=$e($zdate(d,8,,,,,,,"ERROR"),1,max) RETURN:x="ERROR" "ERROR"
+		  set y=$ztime(t,1,,"ERROR") RETURN:y="ERROR" "ERROR"
+		  RETURN $e($e(x,$s(s=23:3,1:1),4)_"-"_$e(x,5,6)_"-"_$e(x,7,8)_"T"_y,1,max)
+	}
+	If s=126 QUIT $e($tr($zdt(d_","_t,3,1,3,,,,,-672045,,"ERROR")," ","T"),1,max)						 	// yyyy-mm-ddThh:mi:ss.mmm(24h, no spaces)	MSSQL
+	If s=130 QUIT $e($tr($zdt(d_","_t,2,3,3,,,,,-672045,,"ERROR"),".",":"),1,max)							// dd mon yyyy hh:mi:ss:mmmAM			MSSQL
+	If s=131 QUIT $e($tr($zdt(d_","_t,4,3,3,,,,,-672045,,"ERROR"),".",":"),1,max)							// dd/mm/yyyy hh:mi:ss:mmmAM			MSSQL
+	if s=36||(s=136) { RETURN $e($ztime(t,3,6,"ERROR"),1,max) }									// hh:mm:ss.zzzzzzAM(PM)			Sybase (new in AES 16.0, not in 15.7)
+	if s=37||(s=137) { RETURN $e($ztime(t,1,6,"ERROR"),1,max) }									// hh:mm.ss.zzzzzz				Sybase (new in AES 16.0, not in 15.7)
+	if s=38||(s=138) {														// mon dd [yy]yy hh:mm:ss.zzzzzzAM(PM)		Sybase (new in AES 16.0, not in 15.7)
+		  set x=$zd(d,7,,$s(s=38:2,1:4),,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		  set y=$ztime(t,3,6,"ERROR") RETURN:y="ERROR" "ERROR"
+		  RETURN $e(x_" "_y,1,max)
+	}
+	if s=39||(s=139) {														// mon dd [yy]yy HH:mm:ss.zzzzzz		Sybase (new in AES 16.0, not in 15.7)
+		  set x=$zd(d,7,,$s(s=39:2,1:4),,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		  set y=$ztime(t,1,6,"ERROR") RETURN:y="ERROR" "ERROR"
+		  RETURN $e(x_" "_y,1,max)
+	}
+	if s=40||(s=140) {														// yyyy-mm-dd hh:mm:ss.zzzzzz			Sybase (new in AES 16.0, not in 15.7)
+		  set x=$zd(d,3,,,,,-672045,,"ERROR") RETURN:x="ERROR" "ERROR"
+		  set:s=40 x=$e(x,3,*)
+		  set y=$ztime(t,1,6,"ERROR") RETURN:y="ERROR" "ERROR"
+		  RETURN $e(x_" "_y,1,max)
+	}
+	// If any other stype, return the same as 101 (Seems to match Sybase behavior
+	RETURN $e($zdate(d,1,,4,,,-672045,,"ERROR"),1,max) 
+}
+	
+DateFromString(val,s) [] PUBLIC {
+		#;  Do the conversion from the input format in string (val) of the style (s) and convert to a logical Date format
+		#;  Maybe there was only a time given, check that first
+	set saveval=val
+	set val=$ZStrip(val,"<>W")
+	if val="",saveval'="" { RETURN 21550 }  //1900-01-01
+	If $e(val,1,3)?2N1":"||($$$UPPER(val)?1.2N." "1(1"PM",1"AM"))||(val=$c(0)) { QUIT 21550 }
+	If (s=101||(s=102)||(s=110)||(s=111))&&($p(val," ")?4N1"-"2N1"-"2N) QUIT $zdh($p(val," "),3,,4,,,-672045,,"ERROR")		// These formats also allow yyyy-mm-dd on Sybase and MS SQL Server 
+	If s=0||(s=100) {																// mon dd yyyy hh:miAM (or PM)
+		s $p(val," ")=$$$UPPER($e($p(val," ")))_$$$LOWER($e($p(val," "),2,3))
+		QUIT $zdh($p(val," ",1,3),7,,$s(s=100:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=1||(s=101) {																// mm/dd/yy[yy]
+		s y=$p(val,"/",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val,"/",3)=y }
+		QUIT $zdh(val,1,,$s(s=101:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=2||(s=102) {																// yy[yy].mm.dd
+		s y=$p(val,".")
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } }
+		s x=$p(val,".",2)_"/"_$p(val,".",3)_"/"_y
+		QUIT $zdh(x,1,,$s(s=102:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=3||(s=103) {																// dd/mm/yy[yy]
+		s y=$p(val,"/",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val,"/",3)=y }
+		QUIT $zdh(val,4,,$s(s=103:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=4||(s=104) {																// dd.mm.yy[yy]
+		s y=$p(val,".",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val,".",3)=y }
+		QUIT $zdh($tr(val,".","/"),4,,$s(s=104:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=5||(s=105) {																// dd-mm-yy[yy]
+		s y=$p(val,"-",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val,"-",3)=y }
+		QUIT $zdh($tr(val,"-","/"),4,,$s(s=105:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=6||(s=106) {																// dd mon yy[yy]
+		s $p(val," ",2)=$$$UPPER($e($p(val," ",2)))_$$$LOWER($e($p(val," ",2),2,3))
+		s y=$p(val," ",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val," ",3)=y }
+		QUIT $zdh(val,2,,$s(s=106:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=7||(s=107) {																// Mon dd, yy[yy]
+		s $p(val," ")=$$$UPPER($e($p(val," ")))_$$$LOWER($e($p(val," "),2,3))
+		s y=$tr($p(val,",",2)," ")
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } }
+		QUIT $zdh($p(val,",")_" "_y,7,,$s(s=107:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=9||(s=109) s $p(val," ")=$$$UPPER($e($p(val," ")))_$$$LOWER($e($p(val," "),2,3)) QUIT $zdh($p(val," ",1,3),7,,4,,,-672045,,"ERROR")	// mon dd yyyy hh:mi:ss:mmmAM (or PM)
+	If s=10||(s=110) {																// mm-dd-yy[yy]
+		s y=$p(val,"-",3)
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } s $p(val,"-",3)=y }
+		QUIT $zdh($tr(val,"-","/"),1,,$s(s=110:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=11||(s=111) {																// yy[yy]/mm/dd
+		s y=$p(val,"/")
+		if $l(y)=2 { if y<50 { s y=20_y } else { s y=19_y } }
+		s x=$p(val,"/",2)_"/"_$p(val,"/",3)_"/"_y QUIT $zdh(x,1,,$s(s=111:4,1:2),,,-672045,,"ERROR")
+	}
+	If s=12||(s=112) {																// yy[yy]mmdd
+		QUIT:s=112 $zdh(val,8,,4,,,-672045)
+		if $l(val)=6 { s y=$e(val,1,2) if y<50 { s y=20_y } else { s y=19_y } } else { s y=$e(val,1,4) }
+		QUIT $zdh($e(val,3,4)_"/"_$e(val,5,6)_"/"_y,1,,2,,,-672045,,"ERROR")
+	}
+	If s=13||(s=113) s $p(val," ",2)=$$$UPPER($e($p(val," ",2)))_$$$LOWER($e($p(val," ",2),2,3)) QUIT $zdh($p(val," ",1,3),2,,4,,,-672045,,"ERROR")	// dd mon yyyy hh:mm:ss:mmm(24h)
+	If s=20||(s=120) QUIT $zdh($p(val," "),3,,4,,,-672045,,"ERROR")											// yyyy-mm-dd hh:mi:ss(24h)
+	If s=21||(s=121) QUIT $zdh($p(val," "),3,,4,,,-672045,,"ERROR")											// yyyy-mm-dd hh:mi:ss.mmm(24h)
+	If s=126 QUIT $zdh($p(val,"T"),3,,4,,,-672045,,"ERROR")												// yyyy-mm-ddThh:mi:ss.mmm(24h, no spaces)
+	If s=130 s $p(val," ",2)=$$$UPPER($e($p(val," ",2)))_$$$LOWER($e($p(val," ",2),2,3)) QUIT $zdh($p(val," ",1,3),2,,4,,,-672045,,"ERROR")		// dd mon yyyy hh:mi:ss:mmmAM
+	If s=131 QUIT $zdh($p(val," "),4,,4,,,-672045,,"ERROR")												// dd/mm/yyyy hh:mi:ss:mmmAM
+	if s=140 { QUIT $zdh($p(val," "),3,,4,,,-672045,,"ERROR") }											// yyyy-mm-dd hh:mi:ss.mmmmmm(24h)
+	QUIT 21550  	// Default to Jan 01, 1900
+}
+ 
+TimeFromString(val,s) [] PUBLIC {
+	    #;  Do the conversion from the input format in string (val) of the style (s) and convert to a logical Time format
+	  s val=$ZStrip($$$UPPER(val),"<>W")
+	  set noDate=0 set:$e(val,1,3)?2N1":"||(val?1.2N." "1(1"PM",1"AM")) noDate=1
+	  set:val?1.2N." "1(1"PM",1"AM") val=$s($e(val,*-1)="A":+val_":00:00",1:val+$s(val<12:12,1:0)_":00:00")						// convert HPM or HHPM to time format 1
+	  set:val?1.2N1":"2N1(1"PM",1"AM") val=$tr($s($e(val,*-1)="A":$p(val," ",1,2)_":00",1:val+$s(val<12:12,1:0)_":"_$p(val,":",2)_":00"),"AMP")	// convert HH:MM[PM] to time format 1
+	  if (s=20||(s=21)||(s=120)||(s=121))&&(val["T") set val=$p(val,"T",1)_" "_$p(val,"T",2,*)							// Convert ISO8601 format to ODBC format
+	  If s=0||(s=100) s x=$s('noDate:$p(val," ",4),1:val) s:x="" x="00:00:00.000" QUIT $zth(x,4,"ERROR")						// mon dd yyyy hh:miAM (or PM)
+	  If s=1||(s=101) s x=$p(val," ",2,6) s:x="" x="00:00:00.000" QUIT $zth(x,1,"ERROR")								// hh:mm:ss
+	  If s=8||(s=108) QUIT $zth(val,1,"ERROR")													// hh:mm:ss
+	  If s=9||(s=109) s x=$s('noDate:$p(val," ",4),1:val) s:x="" x="00:00:00:000" s ms=$p(x,":",4)/1000 QUIT $zth($p(x,":",1,3)_$s(ms'=0:ms,1:""),3,"ERROR")		// mon dd yyyy hh:mi:ss:mmmAM (or PM)
+	  If s=13||(s=113) s x=$s('noDate:$p(val," ",4),1:val) s:x="" x="00:00:00:000" s ms=$p(x,":",4)/1000 QUIT $zth($p(x,":",1,3)_$s(ms'=0:ms,1:""),1,"ERROR")		// dd mon yyyy hh:mm:ss:mmm(24h)
+	  If s=14||(s=114) QUIT $zth($p(val,":",1,3)_($p(val,":",4)/1000),1,"ERROR")									// hh:mi:ss:mmm(24h)
+	  If s=20||(s=120) s x=$s('noDate:$p(val," ",2),1:val) s:x="" x="00:00:00.000" QUIT $zth(x,1,"ERROR")						// yyyy-mm-dd hh:mi:ss(24h)
+	  If s=21||(s=121) s x=$s('noDate:$p(val," ",2),1:val) s:x="" x="00:00:00.000" QUIT $zth(x,1,"ERROR")						// yyyy-mm-dd hh:mi:ss.mmm(24h)
+	  If s=126 s x=$s('noDate:$p(val,"T",2),1:val) s:x="" x="00:00:00.000" QUIT $zth(x,1,"ERROR")					 		// yyyy-mm-ddThh:mi:ss.mmm(24h, no spaces)
+	  If s=130 s x=$p(val," ",4-$s(noDate:3,1:0)) s:x="" x="00:00:00" s ms=$p(x,":",4)/1000 QUIT $zth($p(x,":",1,3)_$s(ms'=0:ms,1:""),3,"ERROR")	// dd mon yyyy hh:mi:ss:mmmAM
+	  If s=131 s x=$p(val," ",2-noDate) s:x="" x="00:00:00" s ms=$p(x,":",4)/1000 QUIT $zth($p(x,":",1,3)_$s(ms'=0:ms,1:""),3,"ERROR")		// dd/mm/yyyy hh:mi:ss:mmmAM
+	  if s=140 { set x=$s('noDate:$p(val," ",2),1:val) set:x="" x="00:00:00.000" QUIT $zth(x,1,"ERROR") }				 		// yyyy-mm-dd hh:mi:ss.mmmmmm(24h)
+	  QUIT 0  	// Default to midnight
+	}	// DPV1920-
+	
+#DEFINE MaxNum 999999999999999999
+	#;  These are the max/min integers supported by Cache' (64-bit signed)
+#DEFINE MaxCacheInt 9223372036854775807
+#DEFINE MinCacheInt -9223372036854775808
+maxval(p,s) [] PRIVATE {
+		#;  Function:     maxval^%apiSQL(precision,scale) - COPY
+		#;  Description:  Funtion to return the value for MAXVAL for the
+		#;                Cache' numeric datatypes given a precision and 
+		#;                scale.
+		#;  Parameters:
+		#;     1. p - precision, required
+		#;     2. s - scale, optional
+		#;-------------------------------------------------------------------
+	i '$g(s) { QUIT:p>18 $$$MaxCacheInt QUIT $e($$$MaxNum,1,p) }	// Precision, no scale specified
+	QUIT:(p-s)>18 $$$MaxCacheInt_"."_$e($$$MaxNum,1,s)
+	QUIT $e($$$MaxNum,1,p-s)_"."_$e($$$MaxNum,1,s)  		// Precision & Scale specified
+}
+ 
+ 
+minval(p,s) [] PRIVATE {
+		#;  Function:     minval^%apiSQL(precision,scale) - COPY
+		#;  Description:  Funtion to return the value for MINVAL for the
+		#;                Cache' numeric datatypes given a precision and 
+		#;                scale.
+		#;  Parameters:
+		#;     1. p - precision, required
+		#;     2. s - scale, optional
+		#;-------------------------------------------------------------------
+	i '$g(s) { QUIT:p>18 $$$MinCacheInt QUIT "-"_$e($$$MaxNum,1,p) }	//Precision, no scale specified
+	QUIT:(p-s)>18 $$$MinCacheInt_"."_$e($$$MaxNum,1,s)
+	QUIT "-"_$e($$$MaxNum,1,p-s)_"."_$e($$$MaxNum,1,s)			// Precision & Scale specified
+}
+ 
+.
+GREATEST(val...) [] PUBLIC {
+		#; Return the GREATEST value, the one that Sorts After every other value
+		#; If any values are NULL, return NULL
+	set ans=$g(val(1)) QUIT:ans=""||'$g(val) ""
+	set null=0
+	for i=2:1:val if $g(val(i))="" { set null=1 quit  } set:val(i)]]ans ans=val(i)
+	QUIT:null ""
+	QUIT ans
+}
+ 
+LEAST(val...) [] PUBLIC {
+		#; Return the LEAST value, the one that Sorts After every other value
+		#; If any values are NULL, return NULL
+	set ans=$g(val(1)) QUIT:ans=""||'$g(val) ""
+	set null=0
+	for i=2:1:val if $g(val(i))="" { set null=1 quit  } set:val(i)']]ans ans=val(i)
+	QUIT:null ""
+	QUIT ans
+}
+.
+	// Given any number of key/value pairs in args, return a JSON string with ABSENT ON NULL behavior
+	// nullBehave = 0 means NULL ON NULL (default), 1 means ABSENT ON NULL
+	// args are keys, values, and flag alternating.  
+	// flag=1 means this is numeric, 
+	// flag=2 means boolean, 
+	// flag=3 means JSON_OBJECT
+	// flag=4 means JSON_ARRAY
+	// flag=0 means string or other
+JSONOBJECT(nullBehave=0,args...) [] PUBLIC {
+	try {
+		set return={}
+		for i=1:3:args {
+			set key=args(i),value=args(i+1),flag=args(i+2)
+			if value="" {
+				continue:nullBehave
+				do return.%Set(key,"","null")
+				continue
+			}
+			if flag=2 {	// boolean
+				do return.%Set(key,value,"boolean")
+				continue
+			}
+			elseif flag=3 {   // nested object
+				try	  { set value=##class(%DynamicObject).%FromJSON(value) } 
+				catch exp {
+					set %msg="Unexpected error occurred in JSON_OBJECT() function execution of <JSON_OBJECT>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp
+				}
+			}
+			elseif flag=4 {   // nested array
+				try	  { set value=##class(%DynamicArray).%FromJSON(value) }
+				catch exp { 
+					set %msg="Unexpected error occurred in JSON_OBJECT() function execution of <JSON_ARRAY>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp
+				}
+			}
+			do return.%Set(key,$case(flag,1:+value,2:+value,:value))
+		}
+		RETURN return.%ToJSON()
+	}
+	catch exp {	// Use SQL Runtime error reporting
+		set:%msg="" %msg="Unexpected error occurred in JSON_OBJECT() function execution.  $ZError = "_$ze ZTRAP "JOBJ"
+	}
+}
+.
+	// Given any number of values in args, return a JSON_ARRAY with appropriate NULL behavior
+	// nullBehave = 0 means NULL ON NULL (default), 1 means ABSENT ON NULL
+	// args are values and flag alternating.
+	// flag=1 means this is numeric, 
+	// flag=2 means boolean, 
+	// flag=3 means JSON_OBJECT
+	// flag=4 means JSON_ARRAY
+	// flag=0 means string or other
+JSONARRAY(nullBehave=0,args...) [] PUBLIC {
+	try {
+		set return=[]
+		for i=1:2:args {
+			set value=args(i),flag=args(i+1)
+			if value="" {		// Handle null values
+				do:'nullBehave return.%Set(return.%Size(),"","null")	// NULL ON NULL behavior
+				continue
+			}
+			if flag=2 {	// boolean
+				do return.%Set(return.%Size(),value,"boolean")
+				continue
+			}
+			elseif flag=3 { 	// nested object
+				try	  { set value=##class(%DynamicObject).%FromJSON(value) } 
+				catch exp { set %msg="Unexpected error occurred in JSON_ARRAY() function execution of <JSON_OBJECT>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp }
+			}
+			elseif flag=4 { 	// nested array
+				try	  { set value=##class(%DynamicArray).%FromJSON(value) }
+				catch exp { set %msg="Unexpected error occurred in JSON_ARRAY() function execution of <JSON_ARRAY>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp }
+			}
+			do return.%Push($case(flag,1:+value,2:+value,:value))
+		}
+		RETURN return.%ToJSON()
+	}
+	catch exp {	// Use SQL Runtime error reporting
+		set:%msg="" %msg="Unexpected error occurred in JSON_ARRAY() function execution.  $ZError = "_$ze ZTRAP "JARY"
+	}
+}
+.
+	// Given a $list value in the list argument, return a JSON ARRAY containing values that coorespond with the list elements
+	// flag=1 means this is numeric, 
+	// flag=2 means boolean, 
+	// flag=3 means JSON_OBJECT
+	// flag=4 means JSON_ARRAY
+	// flag=0 means string or other
+	// We only care about 3,4 for this function
+JSONARRAYAGG(list,flag) [] PUBLIC {
+	try {
+		set return=[]
+		set ptr=0
+		while $listnext(list,ptr,value) {
+			if flag=3 { 	// nested object
+				try	  { set value=##class(%DynamicObject).%FromJSON(value) } 
+				catch exp { set %msg="Unexpected error occurred in JSON_ARRAYAGG() function execution of <JSON_OBJECT>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp }
+			}
+			elseif flag=4 { 	// nested array
+				try	  { set value=##class(%DynamicArray).%FromJSON(value) }
+				catch exp { set %msg="Unexpected error occurred in JSON_ARRAYAGG() function execution of <JSON_ARRAY>.%FromJSON("_value_")."_exp.Name_" :: "_exp.Location throw exp }
+			}
+			do return.%Push(value)
+		}
+		RETURN return.%ToJSON()
+	}
+	catch exp {	// Use SQL Runtime error reporting
+		set:%msg="" %msg="Unexpected error occurred in JSON_ARRAYAGG() function execution.  $ZError = "_$ze ZTRAP "JARY"
+	}
+}
+.
+ROUND(val="",len="",trunc=0) [] PUBLIC {	// DPV2614=
+	#;    From TSQL Docs:
+	#;     ROUND ( numeric_expression , length [ , function ] )
+	#;     	numeric_expression
+	#;     		Is an expression of the exact numeric or approximate numeric data type category, except for the bit data type.
+	#;      length
+	#;     		Is the precision to which numeric_expression is to be rounded. length must be tinyint, smallint, or int. 
+	#;		When length is a positive number, numeric_expression is rounded to the number of decimal places specified by length. 
+	#;		When length is a negative number, numeric_expression is rounded on the left side of the decimal point, as specified by length.
+	#;      function
+	#;     		Is the type of operation to perform. function must be tinyint, smallint, or int. When function is omitted or has a value of 0 (default), 
+	#;		numeric_expression is rounded. When a value other than 0 is specified, numeric_expression is truncated.
+	#;
+	QUIT:val="" "" QUIT:len="" "" 
+	set declen=$l($p(val,".",2))
+	set len=$number(len,0)	// Round len to the nearest integer
+	if trunc {
+		QUIT:len>0&&(val[".") +($p(val,".")_"."_$e($p(val,".",2),1,len))
+		QUIT:len=0&&(val[".") +$p(val,".")
+		if len<0 set z="",$p(z,"0",-len+1)="",v=$e($p(val,"."),1,*-(-len))_z QUIT +v
+		QUIT +val
+	}
+	else { QUIT $num($decimal(val),len) }
+}
+ 
+STUFF(sourceStr="",start="",length="",replaceStr="") [] PUBLIC {
+ 
+		#; STUFF(...NULL...) = NULL
+	If (sourceStr="") || (start="") || (length="") || (replaceStr="") { Quit "" }
+	
+		#; Canonical forms
+	s:sourceStr=$c(0) sourceStr="" s start=+start,length=+length s:replaceStr=$c(0) replaceStr=""
+	
+		#; StartPos/ReplaceLength<0 => ""  OR  StartPos>SourceString length => ""
+	Quit:(start<0)||(length<0)||(start>$l(sourceStr)) $c(0)
+	
+	s result=$e(sourceStr,1,start-1)_replaceStr_$e(sourceStr,start+length,*)
+	Quit $s(result="":$c(0),1:result)
+}
+ 
+STR(exp="",len=10,dec=0) [] PUBLIC {	// DPV2288=
+	#;  Transact-SQL Reference
+	#;   STR
+	#;     Returns character data converted from numeric data.
+	#;  Syntax
+	#;     STR ( float_expression [ , length [ , decimal ] ] )
+	#;  Arguments
+	#;     float_expression
+	#;        Is an expression of approximate numeric (float) data type with a decimal point.
+	#;     length
+	#;        Is the total length, including decimal point, sign, digits, and spaces. The default is 10.
+	#;     decimal
+	#;        Is the number of places to the right of the decimal point.
+	#;  Return Types
+	#;     char
+	#;  Remarks
+	#;     If supplied, the values for length and decimal parameters to STR should be positive. 
+	#;     The number is rounded to an integer by default or if the decimal parameter is 0. 
+	#;     The specified length should be greater than or equal to the part of the number before the 
+	#;      decimal point plus the number's sign (if any). 
+	#;     A short float_expression is right-justified in the specified length, and a long float_expression 
+	#;      is truncated to the specified number of decimal places. 
+	#;     For example, STR(12,10) yields the result of 12, which is right-justified in the result set. 
+	#;     However, STR(1223, 2) truncates the result set to **. String functions can be nested.
+	#;
+	QUIT:exp="" ""
+	If dec=0 { s exp=$p(exp,".") } Else { s exp=$p(exp,".")_"."_$e($p(exp,".",2)_"000000000000000000000000000000000000000000000000000000000000000",1,dec) }
+	If $l(exp)>len QUIT $e("********************************************************************************",1,len)	// Expression longer than length
+	QUIT $justify(exp,len)
+}
+ 
+	#;  Return 1 if exp LIKE pat ESCAPE esc
+	#;  Supports TSQL LIKE patterns
+TSQLLIKE(exp="",pat="",esc="",caseSensitive=1) [] PUBLIC {
+	QUIT:exp=""||(pat="") 0
+	s:caseSensitive exp=$$$UPPER(exp),pat=$$$UPPER(pat)
+	s cosPat=$$PatternTSQLToCOS(pat,,.easy)
+	If easy { QUIT exp?@cosPat }
+	Else {
+		#; TODO!
+	}
+	QUIT ""
+}
+ 
+ 
+PATINDEX(pat="",str="") [] PUBLIC {
+	QUIT:str="" ""  QUIT:pat="" ""
+	s cosPat=$$PatternTSQLToCOS(pat,,.easy)
+	If easy{
+		QUIT:str'?@cosPat 0
+		s:$e(cosPat,1,2)=".E" cosPat=$e(cosPat,3,*)
+		s str2=str f pos=1:1 q:str2?@cosPat  s str2=$e(str2,2,*) q:str2=""
+		i str2'="" QUIT pos
+	}
+	Else {
+		#; TODO!
+	}
+	QUIT ""
+}
+ 
+.
+PatternInformixToCOS(pat,esc="",easy=1) [] PUBLIC {
+	#;  Given a MATCHES search pattern, translate it into a COS pattern
+	#;   The MATCHES operator supports wildcard characters in the quoted string.
+	#;   Wildcard   Effect
+	#;	*	Matches any string of zero or more characters
+	#;	?	Matches any single character
+	#;   [ . . . ]	Matches any of the enclosed characters, including ranges, as in [a-z]. 
+	#;		Characters within the brackets cannot be escaped.
+	#;	^	As first character within the brackets, matches any character that is not listed. Thus, [^abc] matches any character except a, b, or c.
+	#;	\	Removes the special significance of the next character (to match a literal \ or any other wildcard by specifying \\ or\* or \? and so forth)	
+	
+	set cos="",q="" set:esc="" esc="\"
+	For n=1:1 {
+		s char=$e(pat,n) q:char=""
+		i "?*"[char s cos=cos_q_$s(char="*":".E",1:"1E"),q="" Continue	//BJB420
+		If char="[" s cos=cos_q_$$RangeOrSet($e(pat,n+1,$f(pat,"]",n)-2),.easy),n=$f(pat,"]",n)-1,q="" continue  	// DPV2627, reset q
+		s:char=esc n=n+1,char=$e(pat,n) s cos=cos_$s(q="":"1""",1:"")_$s(char="""":"""""",1:char),q=""""
+	}
+	QUIT cos_q
+}
+.
+PatternTSQLToCOS(pat,esc="",easy=1) [] PUBLIC {
+	#;  Given a TSQL search pattern, translate it into a COS pattern
+	#;     % - Matches any string of zero or more characters.
+	#;     _ - Matches a single character.
+	#;     [specifier] - Brackets enclose ranges or sets, such as [a-f] or [abcdef]. specifier can take two forms:
+	#;		rangespec1-rangespec2:
+	#;			rangespec1 indicates the start of a range of characters.
+	#;			- is a special character, indicating a range.
+	#;			rangespec2 indicates the end of a range of characters.
+	#;		set:
+	#;			can be composed of any discrete set of values, in any order, such as [a2bR].The range [a-f], 
+	#;			and the sets [abcdef] and [fcbdae] return the same set of values.
+	#;			Specifiers are case-sensitive.
+	#;	[^specifier] - A caret (^) preceding a specifier indicates non-inclusion. [^a-f] means "not in the range a-f"; [^a2bR] means "not a, 2, b, or R."
+	
+	s cos="",q=""
+	For n=1:1 {
+		s char=$e(pat,n) q:char=""
+		i "_%"[char s cos=cos_q_$s(char="%":".E",1:"1E"),q="" Continue
+		If char="[" s cos=cos_q_$$RangeOrSet($e(pat,n+1,$f(pat,"]",n)-2),.easy),n=$f(pat,"]",n)-1,q="" continue  	// DPV2627, reset q
+		s:char=esc n=n+1,char=$e(pat,n) s cos=cos_$s(q="":"1""",1:"")_$s(char="""":"""""",1:char),q=""""
+	}
+	QUIT cos_q
+}
+.
+.
+RangeOrSet(exp,easy) [] PRIVATE {
+	i exp="0-9" q "1N"
+	i exp="^0-9" q "1(1A,1C,1P)"
+	i exp="A-Z" q "1U"
+	i exp="^A-Z" q "1(1C,1L,1N,1P)"
+	i exp="a-z" q "1L"
+	i exp="^a-z" q "1(1C,1U,1N,1P)"
+	i exp="a-zA-Z0-9" q "1(1A,1N)"
+	i exp="^a-zA-Z0-9" q "1(1C,1P)"
+	i exp'["-",exp'["^" s val="1(" f i=1:1:$l(exp) { s val=val_"1"""_$e(exp,i)_"""," } s val=$e(val,1,*-1)_")" q val
+	i exp'="^" {
+		s val="1("
+		f i=1:1:$l(exp) {
+			i $e(exp,i+1)="-",$e(exp,i+2)'="" {	// Range
+				i $e(exp,i,i+2)="0-9" s val=val_"1N,",i=i+2 continue
+				i $e(exp,i,i+2)="A-Z" s val=val_"1U,",i=i+2 continue
+				i $e(exp,i,i+2)="a-z" s val=val_"1L,",i=i+2 continue
+				i $e(exp)?1N f j=$e(exp):1:$e(exp,i+2) { s val=val_"1"""_j_"""," } s i=i+2 continue
+				i $e(exp)?1A s j=$a(exp) f  { s val=val_"1"""_$c(j)_"""," s j=j+1 q:j>$a(exp,3)  } s i=i+2 continue
+			}
+			Else { s val=val_"1"""_$e(exp,i)_"""," }
+		}
+		s val=$e(val,1,*-1)_")" q val
+	s easy=0
+	}
+	q ""
+}
+ 
+TransformMatches(pLeft,pMatches,pNegated,pEsc) [] public {
+	set:$e(pMatches,*-1,*)="**" pMatches=$e(pMatches,1,*-1)	// Change <something** to <something>*
+	set pNegated = ''$Get(pNegated)
+	set pEsc = $Get(pEsc,"\")
+		// * or ** IS NOT NULL (IS NULL if negated)
+	if pMatches = "*" { quit pLeft _ " IS "_$Case(pNegated,0:"NOT ",:"")_"NULL" }
+		// Check for a constant leader in pMatches
+	set tConstant = "", tEquality = 1
+	for tPtr=1:1:$Length(pMatches) {
+		set tChar = $e(pMatches,tPtr) if "?*["[tChar { if (tChar = "*") && (tPtr = $Length(pMatches)) { set tEquality = -1 } else { set tEquality = 0 } quit }
+		set:tChar=pEsc tPtr = tPtr + 1, tChar = $extract(pMatches,tPtr)
+		set tConstant = tConstant _ tChar
+	}
+	if tEquality '= 1 {
+			// constant followed by wildcards - %STARTSWITH and %MATCHES
+		if tConstant '= "" { quit pLeft _ $Case(pNegated,0:" %STARTSWITH '",:" NOT %STARTSWITH '") _ tConstant _ $Case(tEquality,0:"' AND " _ pLeft _ $Case(pNegated,0:" %MATCHES '",:" NOT %MATCHES '") _ pMatches _ "'",:"'") }
+		else { quit pLeft _ $Case(pNegated,0:"",:" NOT") _ " %MATCHES '" _ pMatches _ "'" }
+	}
+	else { quit pLeft _ $Case(pNegated,0:" = '",:" <> '") _ tConstant _ "'" }
+	quit pLeft _ $Case(pNegated,0:"",:" NOT") _ " %MATCHES '" _ pMatches _ "'"
+}
+.
+	#;  Return 1 if exp MATCHES pat ESCAPE esc
+	#;  Supports Informix MATCHES patterns
+CanMatchesUseLike(pat="",esc="",likePattern) [] PUBLIC {
+		#; pat is the MATCHES pattern/wildcard.
+		#; esc is the escape character
+		#; likePattern is passed by reference and will return the Like Pattern if one can be used
+		#; Function returns 1 if LIKE can be used, -1 if <Field> IS NOT NULL can be used, otherwise 0
+		
+	set useLike=1,likePattern=""	// Assume we can use LIKE until proven othewise
+	QUIT:pat="*"||(pat="") -1  	// if empty pattern or '*' pattern, do not use like; use <Field> IS NOT NULL - Helps optimizer use Index
+	set:esc="" esc="\"
+	for i=1:1:$l(pat) {
+		set c=$e(pat,i),likeChar=c
+		if c=esc { 
+			set c2=$e(pat,i+1)
+			if c2="[" set likePattern=likePattern_"[",i=i+1 continue
+			if c2="]" set likePattern=likePattern_"]",i=i+1 continue
+			if c2="^" set likePattern=likePattern_"^",i=i+1 continue
+			if c2="?" set likePattern=likePattern_"?",i=i+1 continue
+			if c2="*" set likePattern=likePattern_"*",i=i+1 continue
+			set likePattern=likePattern_likeChar_$e(pat,i+1),i=i+1 continue
+		}
+		if c="[" { set useLike=0 quit  }
+		if c="*" { set likeChar="%" }
+		elseif c="?" { set likeChar="_" }
+		elseif c="%" { set likeChar=esc_c }
+		elseif c="_" { set likeChar=esc_c }
+		set likePattern=likePattern_likeChar
+	}
+	set:'useLike likePattern=""
+	QUIT useLike
+}
+.
+	#;  Return 1 if exp MATCHES pat ESCAPE esc
+	#;  Supports Informix MATCHES patterns
+XSQLMATCHES(exp="",pat="",esc="",caseSensitive=1) [] PUBLIC {
+	QUIT:exp=""||(pat="") 0
+	s:caseSensitive exp=$$$UPPER(exp),pat=$$$UPPER(pat)
+	s cosPat=$$PatternInformixToCOS(pat,,.easy)
+	If easy { QUIT exp?@cosPat }
+	Else {
+		#; TODO!
+	}
+	QUIT ""
+}
+.
+PatternXSQLToCOS(pat,esc="",easy=1) [] PUBLIC {
+	#;  Given a XSQL search pattern, translate it into a COS pattern
+	s cos="",q=""
+	For n=1:1 {
+		s char=$e(pat,n) q:char=""
+		i "_%"[char s cos=cos_q_$s(char="%":".E",1:"1E"),q="" Continue
+		i char="*" s cos=cos_q_".E",q="" Continue
+		If char="[" s cos=cos_q_$$RangeOrSet($e(pat,n+1,$f(pat,"]",n)-2),.easy),n=$f(pat,"]",n)-1,q="" continue
+		s:char=esc n=n+1,char=$e(pat,n) s cos=cos_$s(q="":"1""",1:"")_$s(char="""":"""""",1:char),q=""""
+	}
+	QUIT cos_q
+}
+	
+.
+TSQLBITLOGIC(oper=1,val1="",val2="",val1Type="INT") [] PUBLIC {	// DPV2747=
+	QUIT:val1="" "" QUIT:oper<3&&(val2="") ""
+	s val1Type=$$$UPPER($e(val1Type,1,3))
+	s b1=$factor(val1),b2=$factor(val2)
+	If val1Type="INT" { 
+		if oper=1 { s bans=$bitlogic(b1&b2,8) }		// BITWISE AND
+		elseif oper=2 { s bans=$bitlogic(b1|b2,8) }	// BITWISE OR
+		elseif oper=3 { s bans=$bitlogic(b1^b2,8) }	// BITWISE EXCLUSIVE OR
+		elseif oper=4 { s bans=$bitlogic(~b1,8) }	// BITWISE NOT
+		s ans=0 f i=$bitcount(bans):-1:1 { s:$bit(bans,i) ans=ans+(2**(i-1)) }
+	}
+	elseIf val1Type="BIT" { 
+		if oper=1 { s bans=$bitlogic(b1&b2,1) }		// BITWISE AND
+		elseif oper=2 { s bans=$bitlogic(b1|b2,1) }	// BITWISE OR
+		elseif oper=3 { s bans=$bitlogic(b1^b2,1) }	// BITWISE EXCLUSIVE OR
+		elseif oper=4 { s bans=$bitlogic(~b1,1) }	// BITWISE NOT
+		s ans=0 f i=$bitcount(bans):-1:1 { s:$bit(bans,i) ans=ans+(2**(i-1)) }
+	}
+	Else {
+		s len=$s(val1Type="SMA":16,1:32)
+		if oper=1 { s bans=$bitlogic(b1&b2,len) }	// BITWISE AND
+		elseif oper=2 { s bans=$bitlogic(b1|b2,len) }	// BITWISE OR
+		elseif oper=3 { s bans=$bitlogic(b1^b2,len) }	// BITWISE EXCLUSIVE OR
+		elseif oper=4 { s bans=$bitlogic(~b1,len) }	// BITWISE NOT
+		s ans=0 f i=$bitcount(bans)-1:-1:1 { s:$bit(bans,i) ans=ans+(2**(i-1)) } s:$bit(bans,len)=1 ans=(-2**(len-1))+(ans)
+	}
+	QUIT ans
+}
+ 
+	#;  Returns the name of the indexed column in the specified table or view.
+TSQLINDEXCOL(objectName="",indexId="",keyNumber="",userId="") [c,callname,f,fsave,pprev,lineprev,input,line,lower,mask,more,mt,mtc,p,rtname,sql,sqlline1,token,V,value] PUBLIC {
+		#; objectName	- is the name of a table or view. The name can be fully qualified 
+		#;		  (that is, it can include the database and owner name). It must be enclosed in quotes.
+		#; indeId	- is the number of object_name's index. This number is the same as the value of sysindexes.indid.
+		#; keyNumber	- is a key in the index. This value is between 1 and sysindexes.keycnt for a clustered 
+		#;		  index and between 1 and sysindexes.keycnt+1 for a nonclustered index.
+		#; userId	- UNUSED and UNSUPPORTED AT THIS TIME
+		#;                is the owner of object_name. If you do not specify user_id, it defaults to the caller's user ID.
+	
+	QUIT:objectName=""||(indexId="")||(indexId=0)||(indexId=255)||(keyNumber="") ""
+		#; Find the objectId from the ObjectName
+		#; I'll actually call the SQL parser to parse the objectName string
+	n %delid,%context,c,callname,f,fsave,%inMLComment,lineprev,input,line,lower,mask,more,mt,mtc,p,pprev,rtname,sql,sqlline1,token,V,value
+	s line=0,more=0,f=0,p=0,sql=objectName,input=sql,$$$mtPActiveQbs="",V=$c(1),callname="",rtname="(Source)",sqlline1=1,%context=$system.Context.SQLCompile(),%delid=%context.DelimitedIdentifiers
+	Do first^%qaqpsq,lext^%qaqpsq
+	s idvalue="",idlower="",defused=0,sdelid=0,tdelid=0
+	s schema="",tablename="" f  s schema=tablename,tablename=lower d skip^%qaqpsq("ID") q:'$$check^%qaqpsq(".")  i $$check^%qaqpsq(".") s schema=tablename,tablename=""
+	s:schema="" schema=$$$DefaultSchemaCGQ,defused=1  ; default schema name
+	s objectId=$o(^oddSQL(schema,tablename,"tsql",1,"")) QUIT:objectId="" ""
+	QUIT $lg($lg(^oddTSQL(objectId,"idx",indexId),9),+keyNumber)
+}
+ 
+	#;  Returns the name of the indexed column in the specified table or view.
+TSQLOBJECTID(objectName="",objectType="") [c,callname,f,fsave,pprev,lineprev,input,line,lower,mask,more,mt,mtc,p,prevtoken,rtname,sql,sqlline1,token,V,value] PUBLIC {
+		#; objectName	- is the name of a table or view. The name can be fully qualified 
+		#;		  (that is, it can include the database and owner name). It must be enclosed in quotes.
+		#; objectType	- Is the schema-scoped object type. object_type is either varchar or nvarchar. If object_type is varchar, it is implicitly converted to nvarchar. For a list of object types, see the type column in sys.objects (Transact-SQL).
+		#;		Object type:
+		#;		AF = Aggregate function (CLR)
+		#;		C = CHECK constraint
+		#;		D = DEFAULT (constraint or stand-alone)
+		#;		F = FOREIGN KEY constraint
+		#;		FN = SQL scalar function
+		#;		FS = Assembly (CLR) scalar-function
+		#;		FT = Assembly (CLR) table-valued function
+		#;		IF = SQL inline table-valued function
+		#;		IT = Internal table
+		#;		P = SQL Stored Procedure
+		#;		PC = Assembly (CLR) stored-procedure
+		#;		PG = Plan guide
+		#;		PK = PRIMARY KEY constraint
+		#;		R = Rule (old-style, stand-alone)
+		#;		RF = Replication-filter-procedure
+		#;		S = System base table
+		#;		SN = Synonym
+		#;		SO = Sequence object
+		#;		SQ = Service queue
+		#;		TA = Assembly (CLR) DML trigger
+		#;		TF = SQL table-valued-function
+		#;		TR = SQL DML trigger
+		#;		TT = Table type
+		#;		U = Table (user-defined)
+		#;		UQ = UNIQUE constraint
+		#;		V = View
+		#;		X = Extended stored procedure
+	
+	QUIT:objectName="" ""
+		#; Find the objectId from the ObjectName
+		#; I'll actually call the SQL parser to parse the objectName string
+	new %delid,%context,c,callname,f,fsave,pprev,lineprev,input,line,lower,mask,more,mt,mtc,p,prevtoken,rtname,sql,sqlline1,token,V,value
+	set line=0,more=0,f=0,p=0,sql=objectName,input=sql,$$$mtPActiveQbs="",V=$c(1),callname="",rtname="(Source)",sqlline1=1,%context=$system.Context.SQLCompile(),%delid=%context.DelimitedIdentifiers
+		#; when called from TSQL, the objectName may very well be in the form [schema].[name] or [name] or schema . [name] or ...
+		#; If we have brackets, we'll remove them now.
+	if $e(objectName)["["||($e(objectName,*)="]") {
+		if objectName'["[["&&(objectName'["]]") { set objectName=$tr(objectName,"[]"),sql=objectName }	// Easy case, no actual [ or ] in the name(s)
+		else { set objectName=$replace(objectName,"[[",$c(1,1)),objectName=$replace(objectName,"]]",$c(2,2)),objectName=$tr(objectName,$c(1,2)_"[]","[]") }
+	}
+	do first^%qaqpsq,lext^%qaqpsq
+	set idvalue="",idlower="",defused=0,sdelid=0,tdelid=0
+	set schema="",tablename=""
+	if $g(^%SYS("tsql","OWNER_AS_SCHEMA"))=1 {	// Handle database.owner.table as database_owner.table
+		set database=""
+			// parse database.owner.table where database, and owner might be missing, but database may be there without owner (db..table)
+		set tablename=lower
+		do skip^%qaqpsq("ID")
+		if $$check^%qaqpsq(".") {
+			if $$check^%qaqpsq(".") { // second "." piece is empty
+				set database=tablename,owner=$$$LOWER($username),tablename=lower do skip^%qaqpsq("ID")
+			} else {	// at least owner.table specified
+				set owner=tablename,tablename=lower do skip^%qaqpsq("ID")
+				if $$check^%qaqpsq(".") {	// database.owner.table specified
+					set database=owner,owner=tablename,tablename=lower do skip^%qaqpsq("ID")
+				}
+			}
+		}
+		if database'="" { set schema=database_"_"_owner }
+		else { set schema=owner }
+	} else {
+		for  {
+			set schema=tablename,tablename=lower 
+			do skip^%qaqpsq("ID")
+			quit:'$$check^%qaqpsq(".")
+			set:$$check^%qaqpsq(".") schema=tablename,tablename=""
+		}
+	}
+	set:schema="" schema=$$$DefaultSchemaCGQ,defused=1  ; default schema name
+		#; for many objectTypes we can't look directly into ^oddSQL(schema,tablename) because we are looking for something different, like maybe schema.fkname
+		#; So we need to loop over ^oddTSQL and look for a match
+	if $case(objectType,"F":1,"K":1,:0) {
+		set tId=""
+		for  {
+			set tId=$o(^oddTSQL(tId),1,tData) quit:tId=""
+			if $lg(tData,1)=schema,$lg(tData,5)=tablename,$lg(tData,3)=objectType { quit  }
+		}
+		QUIT:tId'="" tId
+	}
+	
+	set objectId=$o(^oddSQL(schema,tablename,"tsql",1,""))
+	if objectType'="",objectId,$$$UPPER($lg($g(^oddTSQL(objectId)),3))'=$$$UPPER(objectType) { QUIT "" } // not the correct objectType
+	QUIT objectId
+}
+ 
+ 
+ 	#;  Return 1 if exp LIKE pat ESCAPE esc
+	#;  Supports TSQL LIKE patterns
+TSQLPLUS(op,nargs,args...) [] PUBLIC {
+	#; s anynull=0,arg="" f i=1:1:nargs i $g(args(i))="" s anynull=1 q
+	#; QUIT:anynull ""
+		#;  MS SQL Server TSQL treats NULL in concatenation as empty strings.  Eventually this will be configurable, but for now
+		#;  we support SQL Server behavior.
+	s retVal=""
+	If op="+" {
+		f i=1:1:nargs { If $g(args(i))="" { s retVal="" q  } s retVal=retVal+args(i) }	// TODO: report error if arg cannot be converted to a number
+	}
+	Else { // ||
+		f i=1:1:nargs s retVal=retVal_$s($g(args(i))="":"",args(i)'=$c(0):args(i),1:"")
+		s:retVal="" retVal=$c(0)
+	}
+	QUIT retVal
+}
+ 
+ 
+TSQLRAND(seed=1000000001) [] PUBLIC {	// DPV2851
+		#;  Returns a random float value from 0 through 1, seed is ignored
+	//QUIT:seed="" ""
+	RETURN $random(10000000001)/10000000000
+}
+ 
+ 
+CHARINDEX(string="",find="",pos=1) [] PUBLIC {	// DPV2680
+		#;  Returns the starting position of the specified expression in a character string. 
+	QUIT:string=""||(find="") ""
+	s retVal=$find(string,find,pos) s:retVal retVal=retVal-$l(find)
+	QUIT retVal
+}
+ 
+CONCAT(nargs,args...) [] PUBLIC {	// DPV3172
+	#; Assume nargs is a positive integer, no error checking
+	s retVal="",anyNull=0
+loop	QUIT:$g(args($i(i)))="" "" s:args(i)'=$c(0) retVal=retVal_args(i) GOTO:i<nargs loop QUIT:retVal="" $c(0) QUIT retVal
+}
+.
+CONCATCHAR(fixed=0,nargs,args...) [] PUBLIC {	// DPV3172
+	#; Assume nargs is a positive integer, no error checking
+	s retVal="",anyNull=0
+	for i = 1:2:nargs*2 {
+		if $g(args(i)) = "" { set anyNull=1 quit }
+		if args(i) '= $char(0) { set value = args(i) } else { set value = "" }
+		if (fixed)&&($get(args(i+1))) { 
+			set $extract(value,args(i+1)+1) = " "
+			set value=$extract(value,1,args(i+1)+1)	// in case value was longer than specified length
+			set retVal = retVal _ $extract(value,1,*-1) 
+		} 
+		else { set retVal = retVal _ value }
+	}
+	quit $Select('anyNull:$Select(retVal'="":retVal,1:$Char(0)),1:"")
+}
+.
+REPLACE(str,replace,with) [] PUBLIC {	// DPV2686
+	QUIT:str=""||(replace="")||(with="") ""
+	s:with=$c(0) with=""
+	s str=$replace(str,replace,with)
+	QUIT $s(str'="":str_"",1:$c(0))
+}
+ 
+ConvertDATETIMEToTIMESTAMP(val,dateFormat="mdy",noError=0,startDate="Jan 01 1900",returnPosix=0,ztrapOnError=0) [SQLCODE] PUBLIC {
+		#;  given a TSQL DATETIME value, return a TIMESTAMP value
+		#;  dateFormat = The order of the dateparts (month/day/year) for entering datetime or smalldatetime data. 
+		#;               Valid parameters include mdy, dmy, ymd, ydm, myd, and dym. The U.S. English default is mdy.
+		#;  ztrapOnError - 1/0 flag.  If TRUE, if an error is encountered the code will ztrap to trigger an SQL error
+		#;                   
+		#;
+		#;  val may contain a date, date-time, or time.  First I'll separate the date and time values
+		
+	if $g(val)=""||($$$LOWER(val)="null") { RETURN "" }
+	RETURN:val=$c(0) $c(0)  // For Informix, there may be an emptystring allowed here, if so just return the emptystring
+	if $$$sqlxPosixTimeIsValid(+val) {
+		RETURN:returnPosix +val		// Value is a PosixTime and we are returning a PosixTime.  Nothing to do.
+		set val=##class(%Library.PosixTime).LogicalToOdbc(val)
+	}
+ 	#; Check if the value is already a valid TIMESTAMP value, if so, just return it
+ 	#; We don't use a minval=-672045 here for this optimization check because then something like "02-12-08" reports as being a valid date in the year 0002
+ 	set val=$tr(val,$c(160)," ")
+ 	if $zdatetimeh(val,3,,,,,,,,"")'="" {
+ 		if returnPosix { RETURN ##class(%Library.PosixTime).OdbcToLogical(val) }
+ 		if val?4N1"-"2N1"-"2N { RETURN val_" 00:00:00" } // Turn ODBC DATE into %TimeStamp
+ 		if val["T" { set val=$tr(val,"T"," ") }
+ 		set val=$zstrip(val,">W",$s(val[".":"0",1:"")) // strip trainling whitespace and traling 0's if there is a decimal
+ 		RETURN $zstrip(val,">W",".") // strip any trailing "." after trailing 0's were stripped
+ 	} 
+	set saveVal=val
+	set val=$tr(val,$c(9,44),"  ")			// change tabs, commas to spaces
+	set val=$zstrip(val,"<>W")			// strip leading and trailing whitespace
+	for  { quit:val'["  "  set val=$$strrep(val,"  "," ",1)	} // reduce any multiple spaces to a single space
+	set VAL=$$$UPPER(val)
+	set:dateFormat="" dateFormat="mdy"
+	if val[":" { 
+		set time=$p(val,":",2,4),date=$p(val,":"),time=$tr($e(date,*-1,*)_":"_time," "),date=$e(date,1,*-2)
+		set:$e(date,*)="T" date=$e(date,1,*-1)	// Support potential "T" delimiter detween date and time value
+	}
+		#;                                     if space b4 PM       time last 5 chars	                             no space, time last 4 chars
+	elseif $Case($e(VAL,*-1,*),"AM":1,"PM":1,:0) { if $e(val,*-2)=" " { s time=$e(VAL,*-4,*),date=$e(val,1,*-5) } else { s time=$e(VAL,*-3,*),date=$e(val,1,*-4) } s:time[" " time=$tr(time," ") }
+	else { set date=val,time="" }
+	set date=$zstrip(date,"<>W"),time=$zstrip(time,"<>W")
+	set:date="" date=startDate s:time="" time="00:00:00"
+ 
+		#;
+		#;	These are the valid alphabetic formats for SQL Server date data (characters enclosed in brackets are optional): 
+		#;	Apr[il] [15][,] 1996	*
+		#;	Apr[il] 15[,] [19]96 	*
+		#;	Apr[il] 1996 [15]	*
+		#;	
+		#;	[15] Apr[il][,] 1996 
+		#;	15 Apr[il][,][19]96 
+		#;	15 [19]96 apr[il]
+		#;	[15] 1996 apr[il]	*
+		#;	
+		#;	1996 APR[IL] [15]	*
+		#;	1996 [15] APR[IL]	*
+		#;	
+		#;	If you specify only the last two digits of the year, values less than the last two digits of the value 
+		#;      of the two digit year cutoff configuration option are in the same century as the cutoff year. 
+		#;      Values greater than or equal to the value of this option are in the century that precedes the cutoff year. 
+		#;      For example, if two digit year cutoff is 2050 (default), 25 is interpreted as 2025 and 50 is interpreted as 1950. 
+		#;      To avoid ambiguity, use four-digit years.
+		#;	
+		#;	If the day is missing, the first day of the month is supplied.
+ 
+	set p1=$p(date," "),p2=$p(date," ",2),p3=$p(date," ",3)
+.
+	if $tr($$$UPPER(date),"AMP")?.E1A.E {	// Alphabetic format
+		if $e(date)?1A { s month=p1 if p2?4N { s year=p2,day=p3 s:day="" day="01" } else { s day=p2,year=p3 s:$l(year)=2 year=$s(year<50:"20",1:"19")_year } }
+		elseif p1?4N { s year=p1 if $e(p2)?1A { s month=p2,day=p3 s:day="" day="01" } else { s day=p2,month=p3 } }
+		elseif p1?1.2N { s day=p1 if $e(p2)?1A { s month=p2,year=p3 } else { s year=p2,month=p3 } s:$l(year)=2 year=$s(year<50:"20",1:"19")_year }
+		set dateInt=$zdateh(day_" "_$$$UPPER($e(month))_$$$LOWER($e(month,2,3))_" "_year,2,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME")
+		if dateInt["ERROR" {
+			RETURN:noError ""
+			set SQLCODE=-400,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+	 		if ztrapOnError ZTRAP "DAT2"
+			RETURN dateInt
+		}
+		set dateOut=$zdate(dateInt,3,,,,,-672045)
+	}
+ 
+		#;	Microsoft® SQL Server? 2000 allows you to specify date data with a numeric month specified. For example, 5/20/97 represents the twentieth day of May, 1997. 
+		#;	When using numeric date format, specify the month, day, and year in a string with slash marks (/), hyphens (-), or periods (.) as separators. 
+		#;	This string must appear in the following form:
+		#;	
+		#;	number separator number separator number [time] [time]
+		#;	
+		#;	These numeric formats are valid:
+		#;	
+		#;	[0]4/15/[19]96 -- (mdy)
+		#;	[0]4-15-[19]96 -- (mdy)
+		#;	[0]4.15.[19]96 -- (mdy)
+		#;	[04]/[19]96/15 -- (myd)
+		#;	
+		#;	15/[0]4/[19]96 -- (dmy)
+		#;	15/[19]96/[0]4 -- (dym)
+		#;	[19]96/15/[0]4 -- (ydm)
+		#;	[19]96/[04]/15 -- (ymd)
+		#;	
+		#;	When the language is set to us_english, the default order for the date is mdy. 
+		#;	You can change the date order with the SET DATEFORMAT statement, which can also affect the date order, depending on the language.
+		#;	
+		#;	The setting for SET DATEFORMAT determines how date values are interpreted. 
+		#;	If the order does not match the setting, the values are not interpreted as dates (because they are out of range), or the values are misinterpreted. 
+		#;	For example, 12/10/08 can be interpreted as one of six dates, depending on the DATEFORMAT setting:   mdy, dmy, ymd, ydm, myd, and dym
+		#;	
+ 
+ 	elseif date?4N1"-".E,dateFormat'="ymd" {
+	 	if date?4N1"-"2N1"-"2N { set dateOut=date }								// date already in timestamp format
+	 	elseif date?4N1"-"1N1"-"2N { set dateOut=$p(date,"-",1)_"-"_"0"_$p(date,"-",2,3) }			// date already in YYYY-M-DD timestamp format, convert to ODBC format
+	 	elseif date?4N1"-"2N1"-"1N { set dateOut=$p(date,"-",1,2)_"-0"_$p(date,"-",3) }				// date already in YYYY-MM-D timestamp format, convert to ODBC format
+	 	elseif date?4N1"-"1N1"-"1N { set dateOut=$p(date,"-",1)_"-0"_$p(date,"-",2)_"-0"_$p(date,"-",3) }	// date already in YYYY-M-D timestamp format, convert to ODBC format
+	 	else { set dateOut=date }	// Some other format, if $zdateh can't convert it we will report an error
+	 	set dateInt=$zdateh(dateOut,3,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME")    // This simply validates the dateOut to make sure it is a valid date
+	 	if dateInt["ERROR" { 
+	 		RETURN:noError ""
+	 		set SQLCODE=-400,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+	 		if ztrapOnError ZTRAP "DAT2"
+	 		RETURN dateOut
+	 	}
+	 	//set dateOut=$zstrip($zstrip(dateOut,">","0"),">",".")  // normalize
+ 	}
+	elseif date["/"||(date[".")||(date["-") {
+		set date=$tr(date,".-","//")		// normalize to "/" separator
+		set p1=$p(date,"/"),p2=$p(date,"/",2),p3=$p(date,"/",3)
+			#; some date input values are allowed regardless of the dateFormat
+			#; If the first date part in a separated string is four digits, Adaptive Server interprets the string as yyyy-mm-dd format.
+		if $l(p1)=4 { set dateOut=$zdateh(p2_"/"_p3_"/"_p1,1,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="mdy" { s:$l(p3)=2 p3=$s(p3<50:"20",1:"19")_p3 s dateOut=$zdateh(p1_"/"_p2_"/"_p3,1,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="dmy" { s:$l(p3)=2 p3=$s(p3<50:"20",1:"19")_p3 s dateOut=$zdateh(p1_"/"_p2_"/"_p3,4,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="ymd"	{ s:$l(p1)=2 p1=$s(p1<50:"20",1:"19")_p1 s dateOut=$zdateh(p3_"/"_p2_"/"_p1,4,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="ydm"	{ s:$l(p1)=2 p1=$s(p1<50:"20",1:"19")_p1 s dateOut=$zdateh(p2_"/"_p3_"/"_p1,4,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="myd"	{ s:$l(p2)=2 p2=$s(p2<50:"20",1:"19")_p2 s dateOut=$zdateh(p3_"/"_p1_"/"_p2,4,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		elseif dateFormat="dym"	{ s:$l(p2)=2 p2=$s(p2<50:"20",1:"19")_p2 s dateOut=$zdateh(p1_"/"_p3_"/"_p2,4,,,,,-672045,,"ERROR:  Cannot perform implicit conversion to DATETIME") }
+		else { /* TODO - report error here */ }
+	 	if dateOut["ERROR" {
+	 		RETURN:noError ""
+	 		set SQLCODE=-400,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+	 		if ztrapOnError ZTRAP "DAT2"
+	 		RETURN dateOut
+	 	} else {
+		 	set dateOut=$zdate(dateOut,3,,,,,-672045)
+	 	}
+	}
+		
+		#;	Unseparated String Format
+		#;	Microsoft® SQL Server? 2000 allows you to specify date data as an unseparated string. The date data can be specified with 
+		#;	four, six, or eight digits, an empty string, or a time value without a date value.
+		#;	
+		#;	The SET DATEFORMAT session setting does not apply to all-numeric date entries (numeric entries without separators). 
+		#;	Six- or eight-digit strings are always interpreted as ymd. The month and day must always be two digits.
+		#;	
+		#;	This is the valid unseparated string format:
+		#;	
+		#;	[19]960415
+		#;	
+		#;	A string of only four digits is interpreted as the year. The month and date are set to January 1. When specifying only four digits, you must include the century.
+		#;	
+ 
+	elseif date?4.8N {
+		if $l(date)=8     { set dateOut=$zdateh(date,8,,,,,-672045,,"ERROR") }
+		elseif $l(date)=6 { set dateOut=$zdateh($s($e(date,1,2)<50:"20",1:"19")_date,8,,,,,-672045,,"ERROR") }
+		elseif $l(date)=4 { set dateOut=$zdateh(date_"0101",8,,,,,-672045,,"ERROR") }
+		else { set dateOut="ERROR" }
+		if dateOut="ERROR" {
+			set SQLCODE=-104,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+			RETURN dateOut
+		} else {
+			set dateOut=$zdate(dateOut,3,,,,,-672045)
+		}
+	}
+	elseif $isvalidnum(date) { // $Horolog value
+		set dateOut=$zdate(date,3,,,,,-672045,,,"ERROR")
+		if dateOut="ERROR" { 
+			set SQLCODE=-104,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+			RETURN dateOut
+		}
+	}
+	else {
+		set SQLCODE=-104,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper date value.","%SQL.Function"),saveVal)
+		RETURN "ERROR"
+	}	
+	
+		#; Now convert the time
+		#;
+		#;	Time Formats
+		#;	Microsoft® SQL Server? 2000 recognizes the following formats for time data. Enclose each format with single quotation marks (').
+		#;	
+		#;	14:30
+		#;	14:30[:20:999]
+		#;	14:30[:20.9]
+		#;	4am
+		#;	4 PM
+		#;	[0]4[:30:20:500]AM
+		#;	
+		#;	You can specify a suffix of AM or PM to indicate if the time value is before or after 12 noon. The case of AM or PM is ignored.
+		#;	
+		#;	Hours can be specified using either a 12-hour or 24-hour clock. This is how the hour values are interpreted: 
+		#;	
+		#;	The hour value of 0 represents the hour after midnight (AM), regardless of whether or not you specify AM. You cannot specify PM when the hour equals 0.
+		#;	
+		#;	Hour values from 1 through 11 represent the hours before noon if neither AM nor PM is specified. 
+		#;	They also represent the hours before noon when AM is specified. They represent hours after noon if PM is specified.
+		#;	
+		#;	The hour value 12 represents the hour that starts at noon if neither AM nor PM is specified. If AM is specified, it represents the hour that starts at midnight. 
+		#;	If PM is specified, it represents the hour that starts at noon. For example: 12:01 is 1 minute after noon, as is 12:01 PM, while 12:01 AM is 1 minute after midnight. 
+		#;	Specifying 12:01 AM is the same as specifying 00:01 or 00:01 AM.
+		#;	
+		#;	Hour values from 13 through 23 represents hours after noon if AM or PM is specified. They also represent the hours after noon when PM is specified. 
+		#;	You cannot specify AM when the hour value is from 13 through 23.
+		#;	
+		#;	An hour value of 24 is not valid, use 12:00 AM or 00:00 to represent midnight. 
+		#;	Milliseconds can be preceded by either a colon (:) or a period (.). If preceded by a colon, the number means thousandths-of-a-second. 
+		#;	If preceded by a period, a single digit means tenths-of-a-second, two digits mean hundredths-of-a-second, and three digits mean thousandths-of-a-second. 
+		#;	For example, 12:30:20:1 indicates twenty and one-thousandth seconds past 12:30; 12:30:20.1 indicates twenty and one-tenth seconds past 12:30.
+		#;	
+	
+	if $p(time,":",4)'="" { s sss=$$$UPPER($p(time,":",4)) s ampm=$s(sss["AM":"AM",sss["PM":"PM",1:""),sss=+sss s:sss'=0 sss=sss/1000 s time=$p(time,":",1,3)_$s(sss[".":"",1:".")_sss_ampm }
+	if time?1.2N2A { set timeOut=+time_":00:00"_$e(time,*-1,*) }
+	elseif time?1.2N1":"2N { s timeOut = time_":00" }
+	else { set timeOut = time }
+	set precision=$tr($p(time,".",2),"AMP") set:precision precision=$l(precision)
+	if timeOut["M" { 
+		set timeInt=$zth(timeOut,3,"ERROR:  Cannot perform implicit conversion to DATETIME - improper TIME value.  Value: "_saveVal)
+		if timeInt["ERROR" {
+			RETURN:noError ""
+			set SQLCODE=-400,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper time value.","%SQL.Function"),saveVal)
+	 		if ztrapOnError { ZTRAP "DAT2" }
+			RETURN timeInt
+		}
+		set timeOut=$zt(timeInt,1,precision)
+	}
+	else { 
+		set timeInt=$zth(timeOut,1,"ERROR:  Cannot perform implicit conversion to DATETIME - improper TIME value.  Value: "_saveVal)
+		if timeInt["ERROR" {
+			RETURN:noError ""
+			set SQLCODE=-400,%msg=$$$FormatText($$$Text("ERROR:  Cannot perform conversion of datatime value '%1', improper time value.","%SQL.Function"),saveVal)
+	 		if ztrapOnError { ZTRAP "DAT2" }
+			RETURN timeInt
+		}
+		set timeOut=$zt(timeInt,1,precision)
+	}
+	if returnPosix { RETURN ##class(%Library.PosixTime).OdbcToLogical(dateOut_" "_timeOut) }
+	set:timeOut["." timeOut=$zstrip($zstrip(timeOut,">","0"),">",".")
+	RETURN dateOut_" "_timeOut
+}
+ 
+dayname(date="") [] PUBLIC {
+	try {
+		if $$$sqlxPosixTimeIsValid(+date) { set date=##class(%Library.PosixTime).LogicalToOdbc(date) }
+		set returnVal=$s(date="":"",date=+date||(date?1.7N1","1.5N)||(date?1.7N1","1.5N1".".N):$zdate(date,12,,,,,-672045),1:$zdate($zdateh($p(date," "),3,,,,,-672045),12,,,,,-672045))
+	}
+	catch {	s SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid argument passed to {fn DAYNAME(%1)} function.  A logical %Date, %TimeStamp, or %PosixValue value was expected.","%SQL.Function"),$s(date=+date:date,1:"'"_date_"'")) ZTRAP "DYNM" }
+	QUIT returnVal
+}
+.
+		#;  LAST_DAY returns the date of the last day of the month for date 'date'.
+lastday(date="") [] PUBLIC {
+	set $zt="lastdayError"
+	if (date?4n1"-"1.2n1"-"1.2n.e) { set extDate=$zdate($zdatetimeh(date,3,,,,,,-672045,,"ILLEGAL DATE OR TIMESTAMP VALUE"),3,,,,,-672045,,"ILLEGAL DATE OR TIMESTAMP VALUE") }	// %TimeStamp format
+	elseif $$$sqlxPosixTimeIsValid(+date) { set extDate=##class(%Library.PosixTime).LogicalToOdbc(date) }										// %PosixTime
+	elseif date?0.1"-"1.7N,date<2980014 { set extDate=$zdate(date,3,,,,,-672045,,"ILLEGAL DATE VALUE") }										// Logical %Date value
+	elseif date?1.7N1","1.5N.e,date<2980014 { set extDate=$zdate(date,3,,,,,-672045,,"ILLEGAL DATE VALUE") }									// $H or $ZTS value
+	else { s SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid date value passed to SQL function LAST_DAY(%1).  A logical %Date or %TimeStamp value was expected.","%SQL.Function"),$s(date=+date:date,1:"'"_date_"'")) GOTO IllegalValuePassedToLASTDAY }
+	if extDate["<ILLEGAL" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid date value passed to SQL function LAST_DAY(%1).  A logical %Date, %PosixTime, or %TimeStamp value was expected.","%SQL.Function"),$s(date=+date:date,1:"'"_date_"'")) GOTO IllegalValuePassedToLASTDAY }
+	set month=$piece(extDate,"-",2),day=$case(month,"01":31,"02":28,"03":31,"04":30,"05":31,"06":30,"07":31,"08":31,"09":30,"10":31,"11":30,"12":31,:32)
+	if month="02" {
+		set year=$piece(extDate,"-",1)
+			#; leap year : if year is a multiple of 4 and year is NOT a multiple of 100 except if year is a multiple of 400
+     		set:(((year#4)=0) && ((year#100)'=0))||((year#400)=0) day=29
+	}
+	set datesep=$$$DateSeparator
+	set ret=$zdateh(month_datesep_day_datesep_$p(extDate,"-",1),1,,,,,-672045,,"ILLEGAL DATE OR TIMESTAMP VALUE")
+	if ret["<ILLEGAL" { set SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid date value passed to SQL function LAST_DAY(%1).  A logical %Date, %PosixTime, or %TimeStamp value was expected.","%SQL.Function"),$s(date=+date:date,1:"'"_date_"'")) GOTO IllegalValuePassedToLASTDAY }
+	RETURN ret
+ 
+lastdayError	; Got an error calculating LAST_DAY
+	set $zt="",SQLCODE=-400,%msg=$$$FormatText($$$Text("Invalid date value passed to SQL function LAST_DAY(%1).  A logical %Date, %PosixTime, or %TimeStamp value was expected.","%SQL.Function"),$s(date=+date:date,1:"'"_date_"'")) ZTRAP "LSTD"
+	RETURN
+ 
+IllegalValuePassedToLASTDAY set $zt="" ZTRAP "LSTD"
+}
+.
+	#; InformixAdd is used to perform addition of DATETIME+DATETIME, DATETIME+INTERVAL, etc. for Informix converted code
+	#;   v1 = first value (left hand side)
+	#;   v2 = second value (right hand side)
+	#;   t1 = type of first value
+	#;   t2 = type of second value
+	#;  An assumption is made that all values passed in are valid and not NULL
+	#;  First pass of this feature only supports operations we see in the BFP application
+InformixAdd(v1,v2,t1,t2) [SQLCODE] PUBLIC {
+	QUIT:v1=""||(v2="") ""
+	if t1="DATE",t2="DATE" { QUIT v1+v2 }		     // INTERVAL OF DAYS
+	if t1="DATETIME YEAR TO YEAR" {
+		if t2="INTERVAL YEAR TO YEAR" { // YYYY - YYYY
+			QUIT v1+v2		// INTERVAL OF YEARS
+		}
+	}
+	if t1="DATETIME YEAR TO DAY" {
+		if t2="INTERVAL DAY TO DAY" {
+			if v1["-" QUIT $zd($zdh(v1,3)+v2,3)  // v1 is date in ODBC format, convert to logical date, add days, return in ODBC date format. 
+			QUIT v1+v2                           // v1 is date in logical format, add days, return in logical date format.
+		}
+		if t2="INTERVAL MONTH TO MONTH" {
+			QUIT $p($$dateadd("mm",v2,$zdh(v1,3))," ")
+		}
+	}
+	if t1="DATETIME YEAR TO MINUTE" {
+		if t2="INTERVAL DAY TO DAY" {
+			s d1=$zdh($p(v1," "),3),time1=$zth($p(v1," ",2),2),d3=d1+v2
+			QUIT $zd(d3,3)_" "_$zt(time1,2)
+		}
+	}
+	if t1="DATETIME YEAR TO SECOND" {
+		if t2="INTERVAL DAY TO DAY" {
+			s d1=$zdh($p(v1," "),3),time1=$zth($p(v1," ",2)),d3=d1+v2
+			QUIT $zd(d3,3)_" "_$zt(time1)
+		}
+	}
+	if t1="DATETIME HOUR TO MINUTE" {
+		if t2="INTERVAL HOUR TO HOUR" {	// HH:MM + H
+			set val=$zth(v1,2)+(v2*60*60)			// v1 is HH:MM convert to logical time (0 seconds), add seconds (v2*60*60)
+			if val>86399 s SQLCODE=-400,%msg=$$$Text("Result of a datetime computation (HH:MM + HH) is out of range","%SQL.Function") GOTO InformixAddError	// went beyond 23:59:59 - error
+			QUIT $zt(val,2)					// return in time in format HH:MM
+		}
+	}
+	if t1="TIMESTAMP"||(t1="DATETIME YEAR TO SECOND") {
+		if t2="INTERVAL DAY TO DAY" {
+			QUIT $zd($zdh($p(v1," "),3)-v2,3)_" "_$p(v1," ",2)
+		}
+	}
+	QUIT v1+v2
+	
+InformixAddError	ZTRAP "IFXA"
+}
+.
+.
+	#; InformixSubstract is used to perform subtraction of DATETIME-DATETIME, DATETIME-UNIT, etc. for Informix converted code
+	#;   v1 = first value (left hand side)
+	#;   v2 = second value (right hand side)
+	#;   t1 = type of first value
+	#;   t2 = type of second value
+	#;  An assumption is made that all values passed in are valid and not NULL
+	#;  First pass of this feature only supports operations we see in the BFP application
+InformixSubtract(v1,v2,t1,t2) [SQLCODE] PUBLIC {
+	QUIT:v1=""||(v2="") ""
+	if t1="DATE",t2="DATE" { QUIT v1-v2 }		     // INTERVAL OF DAYS
+	if t1="DATETIME YEAR TO YEAR" {
+		if t2="INTERVAL YEAR TO YEAR" { // YYYY - YYYY
+			QUIT v1-v2		// INTERVAL OF YEARS
+		}
+	}
+	if t1="DATETIME YEAR TO DAY" {
+		if t2="INTERVAL DAY TO DAY" {
+			if v1["-" QUIT $zd($zdh(v1,3)-v2,3)  // v1 is date in ODBC format, convert to logical date, subtract days, return in ODBC date format. 
+			QUIT v1-v2                           // v1 is date in logical format, subtract days, return in logical date format.
+		}
+		if t2="INTERVAL MONTH TO MONTH" {
+			QUIT $p($$dateadd("mm",-v2,$zdh(v1,3))," ")
+		}
+	}
+	if t1="DATETIME YEAR TO MINUTE" {
+		if t2="DATETIME YEAR TO MINUTE" {
+			s d1=$zdh($p(v1," "),3),time1=$zth($p(v1," ",2),2)
+			s d2=$zdh($p(v2," "),3),time2=$zth($p(v2," ",2),2)
+			if time1<time2 { if d1>d2 { s time3=(time1+86400)-time2,d1=d1-1 } else { s sign="-",time3=time2-time1 }} else { s time3=time1-time2 }
+			if d1<d2 { s sign="-",d3=d2-d1 } else { s d3=d1-d2 }
+			QUIT $j($g(sign)_d3,9)_" "_$zt(time3,2)
+		}
+	}
+	if t1="DATETIME HOUR TO MINUTE" {
+		if t2="INTERVAL HOUR TO HOUR" {	// HH:MM - H
+			set val=$zth(v1_":00")-(v2*60)			// v1 is HH:MM convert to logical time (0 seconds), subtract minutes (v2*60)
+			if val<0 for  q:val'<0  set val=86400-(-val)	// went to previous day(s)
+			QUIT $p($zt(val),":",1,2)			// return in time in format HH:MM
+		}
+	}
+	if t1="TIMESTAMP" {
+		if t2="INTERVAL DAY TO DAY" {
+			QUIT $zd($zdh($p(v1," "),3)-v2,3)_" "_$p(v1," ",2)
+		}
+	}
+	QUIT v1-v2
+}
+.
+.
+instr(string="",substring="",position=1,occurrence=1) [] PUBLIC {	// DPV3334
+	/*
+		The INSTR function searches string for substring. The function returns an integer indicating the position of the character in string 
+		that is the first character of this occurrence. 
+.
+		position is an nonzero integer indicating the character of string where SQL begins the search. 
+		If position is negative, then it counts backward from the end of string and then searches backward from the resulting position.
+.
+		occurrence is an integer indicating which occurrence of string we should search for. 
+		If occurrence is greater than 1, then the database searches for the second occurrence beginning with the second character in the 
+		first occurrence of string, and so forth.  An occurrence of less than 1 is treated the same as 1.
+.
+		The value returned is of INTEGER datatype.
+		** At this time Cache' does not support string and substring of type CLOB or NCLOB
+.
+		The default values of both position and occurrence are 1, meaning it begins searching at the first character of string for the first occurrence 
+		of substring. The return value is relative to the beginning of string, regardless of the value of position, and is expressed in characters. 
+		If the search is unsuccessful (if substring does not appear occurrence times after the position character of string), then the return value is 0.
+	*/
+	QUIT:string=""||(substring="") ""
+	QUIT:'position 0				// Mimic Oracle behavior
+	set substringLen=$l(substring)
+	if position>0 {					// Look from the beginning of the string
+		set val=$find(string,substring,position) 	// Find first occurrence
+		QUIT:'val 0 					// substring not found
+		QUIT:occurrence=1 val-substringLen		// Just wanted the first occurrence
+		f i=2:1:occurrence { s val=$find(string,substring,val-substringLen+1) }
+		QUIT $s(val:val-substringLen,1:0)
+	}
+		#; If we get here position<0 and we count backward from the end of string and then search backward from the resulting position
+	s string=$reverse(string),position=-position set:$l(substring)>1 substring=$reverse(substring)
+	set val=$find(string,substring,position) 		// Find first occurrence
+	QUIT:'val 0 						// substring not found
+	QUIT:occurrence=1 $l(string)-(val-substringLen)		// Just wanted the first occurrence
+	f i=2:1:occurrence { s val=$find(string,substring,val-substringLen+1) }
+	QUIT:'val 0 QUIT $l(string)-(val-substringLen)
+}
+DayOfWeek(date="") [] PUBLIC {
+		#; date is a logical %Date value or logical %PosixTime value
+	QUIT:date="" ""
+	if $$$sqlxPosixTimeIsValid(+date) { set date=##class(%Library.PosixTime).LogicalToDate(date) }
+	set doysetting=$$$SQLFirstDayOfWeek,val=$zdate(date,10,,,,,-672045)
+	set:doysetting=7&&($$$WeekISO8601=1) doysetting=1		// ISO 8601 says Monday is first day of the week
+	QUIT:doysetting=7 $zdate(date,10,,,,,-672045)+1			// Sunday is day 1 (default)
+	QUIT:doysetting=1 $Case(val,0:7,:val)				// Monday is day 1
+	QUIT:doysetting=2 $Case(val,0:6,1:7,:val-1)			// Tueday is day 1
+	QUIT:doysetting=3 $Case(val,0:5,1:6,2:7,:val-2)			// Wednesday is day 1
+	QUIT:doysetting=4 $Case(val,0:4,1:5,2:6,3:7,:val-3)		// Thursday is day 1
+	QUIT:doysetting=5 $Case(val,0:3,1:4,2:5,3:6,4:7,:val-4)		// Friday is day 1
+	QUIT:doysetting=6 $Case(val,0:2,1:3,2:4,3:5,4:6,5:7,:1)		// Saturday is day 1
+}
+.
+.
+	#; DirectAccess expression for SQL projection of MV associations
+mvassociation(pAddress,pSlots) public {
+	s rows=""
+		#; $$: piecing multirow string, generated from record
+		#; pAddress=f1^f2^f3x,f3y^f4a,f4b,f4c^f5d^f6e,f6f^f7^f8z,f8t and
+		#; pSlots=$LIST(4,5,6) - f4+f5+f6 are assiciated (no "controlling"
+		#; column), so the output is: f4a,f5d,f6e^f4b,,f6f^f4c
+		#; Note: "^" and "," stand for the normal MV delimiters!
+	f n1=1:1:$ll(pSlots) s f2=$p(pAddress,$mvv(1),$li(pSlots,n1)) i f2'="" f n2=1:1:$l(f2,$mvv(2)) s pn1=$p(rows,$mvv(1),n2),$p(pn1,$mvv(2),n1)=$p(f2,$mvv(2),n2),$p(rows,$mvv(1),n2)=pn1
+	QUIT rows
+}
+.
+	// Return 1 if value is a valid JSON OBJECT, otherwise return 0
+	// predType - JSON predicate type
+	//		"A" - Array.  Value will be a %Array type, so check to see if it is
+	//		"O" - Object  Value will be a %Object type, so check to see if it is
+	//		"V" - Value   Value will be a string is JSON format
+	//		"S" - Scalar  Value will be a string is JSON format
+isJSON(value="",predType="") [] PUBLIC {
+	//w !!,"value = " zw value w ?60,"predType = ",predType
+	if $case(predType,"":1,"S":1,"V":1,:0) {
+		try { set foo=##class(%Library.DynamicAbstractObject).%FromJSON(value) RETURN 1 } 
+		catch { RETURN 0 }	// assume if any error that value is not valid JSON string
+	}
+	elseif predType="A" {	// Array
+		if $isobject(value),value.%IsA("%DynamicArray") { RETURN 1 } else { RETURN 0 }
+	}
+	else {	// Object
+		if $isobject(value),value.%IsA("%DynamicObject") { RETURN 1 } else { RETURN 0 }
+	}
+	RETURN 0	// Should never get here!
+}
+.
+	// XMLFunc accepts any number of arguments and concatenates the values 3->N together.
+	// This is called at run time to evaluate XMLELEMENT and XMLFORECT functions
+	// The first argument is a list of argument positions that need to be XML escaped, by calling $zcvt(val,"O","XML")
+	// The second argument is a list of argument positions that are stream values
+	// The 3rd through Nth arguments are the values to concatenate.
+	// If any of these values are NULL, we treat it like the empty string, it does not cause the entire value to return NULL, unless stripnulls=1 (for XMLFOREST)
+XMLFunc(stripnulls,args...) [] PUBLIC {
+	set return="",sc=$$$OK
+	if stripnulls {		// Look for null expressions and if found, turn the tags into nulls too (<tag>expr</tag>)
+		set hasstreams=$g(args(2))'="",newargs2=""
+		for arg=3:1 {
+			quit:'$d(args(arg))	// no more args
+			if hasstreams,(","_args(2)_",")[(","_arg_",") {
+				if $$XMLStreamIsNULL(args(arg)) { set args(arg-1)="",args(arg)="",args(arg+1)="" continue }	// stream item
+				else { set newargs2=newargs2_$e(",",newargs2'="")_arg }
+			}
+			if (","_args(1)_",")[(","_arg_","),args(arg)="" { set args(arg-1)="",args(arg+1)="" }
+		}
+		set:hasstreams args(2)=$s(newargs2="":-1,1:newargs2)
+	}
+	if args(2)="" {	// no streams
+		for arg=3:1 {
+			quit:'$d(args(arg))	// no more args
+				// This handles 'stripnulls case
+			if (","_args(1)_",")[(","_arg_",") { set return=return_$zcvt(args(arg),"O","XML") }
+			else { set return=return_args(arg) }
+		}
+	} else {
+		set return=##class(%Stream.GlobalCharacter).%New()
+		for arg=3:1 {
+			quit:'$d(args(arg))	// no more args
+			continue:args(arg)=""
+			if (","_args(2)_",")[(","_arg_",") { set sc=$$XMLAppendStream(.return,args(arg),stripnulls) goto:$$$ISERR(sc) XMLFuncError }
+			elseif (","_args(1)_",")[(","_arg_",") { set sc=return.Write($zcvt(args(arg),"O","XML")) goto:$$$ISERR(sc) XMLFuncError }
+			else { set sc=return.Write(args(arg)) goto:$$$ISERR(sc) XMLFuncError }
+		}
+	}
+	RETURN return
+	
+XMLFuncError
+	set SQLCODE=-400
+	set %msg=$$$FormatText($$$Text("Unexpected error in SQL XML function: %1","%SQL.Function"),$$GetErrorText^%apiOBJ(sc)) ZTRAP "XMLF"
+.
+}
+.
+	// Given a stream target oref, and a stream source Oref or Oid, append the stream stream source onto the stream target
+	// returns a %Status value 
+XMLAppendStream(&streamTarget,streamSource,stripnulls) [] PRIVATE {
+	try {
+		if stripnulls {
+			if streamSource="" RETURN $$$OK      // null stream
+			if '$isobject(streamSource),'$listvalid(streamSource) {  // not an oref or Oid, assume it is a non-null string
+				set sc=streamTarget.Write("<![CDATA["_$replace(streamSource,"]]>","]]]]><![CDATA[>")_"]]>")
+				RETURN sc
+			}
+		}
+		set buffer="",sc=$$$OK
+		set streamSource=$s($isobject(streamSource):streamSource,1:##class(%Stream.Object).%Open(streamSource,,.sc))
+		RETURN:$$$ISERR(sc) sc
+		if stripnulls,streamSource.Size=0 { RETURN $$$OK }
+		set sc=streamTarget.Write("<![CDATA[") RETURN:$$$ISERR(sc) sc
+		while '(streamSource.AtEnd) {
+			set buffer=buffer_streamSource.Read(6500)
+				#; Read is small enough this can not get MAXSTRING
+			set output=$replace(buffer,"]]>","]]]]><![CDATA[>")
+			set sc=streamTarget.Write($extract(output,1,*-2))  RETURN:$$$ISERR(sc) sc
+			set buffer=$extract(output,*-1,*)
+		}
+		set sc=streamTarget.Write(buffer_"]]>")
+	} catch { set sc=$$$ERROR($$$GeneralError,$ze) }
+	RETURN sc
+}
+.
+	// Given a stream Oref or Oid return 1 if the stream object is null, otherwise 0
+XMLStreamIsNULL(streamSource) [] PRIVATE {
+	#dim streamSource as %Stream.Object
+	try {
+		if streamSource="" RETURN 1      // null stream
+		set sc=$$$OK
+		set streamSource=$s($isobject(streamSource):streamSource,1:##class(%Stream.Object).%Open(streamSource,,.sc))
+		RETURN:$$$ISERR(sc) 0 // maybe not really a stream??
+		RETURN (streamSource.Size=0)
+	} catch { }
+	RETURN 0 // we only get here in an error case
+}
+.
+ATAN2(y,x) [] PUBLIC{  
+	#;  ATAN2
+	try{
+		if ('$isvalidnum(y))||('$isvalidnum(x)){
+			throw
+		}
+		s y=+y,x=+x
+		if x=0,y=0 RETURN 0 ; same as postgresql
+    
+    	#;deal with x == 0 when y / x is expected infinite
+    	if x=0,y>0 RETURN $zpi/2
+    	if x=0,y<0 RETURN -$zpi/2
+    
+    	#;deal with first and fourth quarters as the way ATAN does
+    	if y>=0,x>0 RETURN $zarctan(y/x) 
+    	if y<=0,x>0 RETURN $zarctan(y/x)
+    
+    	#;deal with second and third quarters
+    	if x<0,y>=0 RETURN $zpi-$zarctan(y/-x)
+    	if x<0,y<=0 RETURN (-$zpi)+$zarctan(-y/-x)
+	}
+	catch {	s SQLCODE=-400,%msg=$$$Text("Invalid argument passed to {fn ATAN2} function.  The valid numbers are expected","%SQL.Function") ZTRAP "ATAN2" }
+    #;this should never be reached
+	QUIT 0
+.
+}
+.
+	// Given a distinct comma delimited list and a collation code, return a new comma deimited list which is distinct based on collated values
+	// the list value input is distinct, but not distinct based on the collation.
+	// For example:  "AA,AB,aa,Ab,AC,Ad,aD"
+	// We will return a new distinct list, but each value will be distinct based on the collated value.  Using the example above, we will return: "AA,AB,AC,Ad"
+	// Since the caller of this is a list aggregate value produced by distinctlist, we don't need to worry about multile SQL empty string values
+DistinctListCollate(list="",collation="SU") [] PUBLIC {
+	RETURN:list="" ""
+	set retlist="",retlistcol=""
+	if collation["(" { set length=+$p(collation,"(",2),collation=$p(collation,"(",1) } else { set length=0 }
+	set collationcode=$case(collation,"SU":7,"A":6,"MV":2,"T":9,"SS":8,"U":5,:0)
+	for pos=1:1:$l(list,",") {
+		set value=$p(list,",",pos)
+		if collationcode { 
+			if length { set valuecol=$zu(28,value,collationcode,length) }
+			else      { set valuecol=$zu(28,value,collationcode) }
+		}
+		else {
+			if collation="M" { set valuecol=-value }
+			elseif collation="P" { set valuecol=+value }
+			elseif collation="S" { set valuecol=" "_value }
+			elseif $$$ISENCODEDCOLLATE(collation) {
+				do decodeCollate^%qaqcpre(collation,.parm1,.parm2)
+ 				set valuecol = $$$COLLATET(value,parm1,parm2)
+			}
+		}
+		if retlist="""" { set retlist=value,retlistcol=valuecol }        // first value of the list
+		else { set:(","_retlistcol_",")'[(","_valuecol_",") retlist=retlist_","_value,retlistcol=retlistcol_","_valuecol }
+	}
+	RETURN $e(retlist,2,*)
+}
+.
+	// Given a distinct $list and a collation code, return a $list which is distinct based on collated values
+	// the list value input is distinct, but not distinct based on the collation.
+	// For example:  $lb("AA","AB","aa","Ab","AC","Ad","aD")
+	// We will return a new distinct list, but each value will be distinct based on the collated value.  Using the example above, with SqlUpper collation, we will return: "AA,AB,AC,Ad"
+	// Since the caller of this is a list aggregate value produced by distinct%dlist, we don't need to worry about multile SQL empty string values
+DistinctDListCollate(list="",collation="SU") [] PUBLIC {
+	RETURN:list="" ""
+	set retlist="",retlistcol=""
+	if collation["(" { set length=+$p(collation,"(",2),collation=$p(collation,"(",1) } else { set length=0 }
+	set collationcode=$case(collation,"SU":7,"A":6,"MV":2,"T":9,"SS":8,"U":5,:0)
+	set ptr=0
+	while $listnext(list,ptr,value) {
+		if collationcode { 
+			if length { set valuecol=$zu(28,value,collationcode,length) }
+			else      { set valuecol=$zu(28,value,collationcode) }
+		}
+		else {
+			if collation="M" { set valuecol=-value }
+			elseif collation="P" { set valuecol=+value }
+			elseif collation="S" { set valuecol=" "_value }
+			elseif $$$ISENCODEDCOLLATE(collation) {
+				do decodeCollate^%qaqcpre(collation,.parm1,.parm2)
+ 				set valuecol = $$$COLLATET(value,parm1,parm2)
+			}
+		}
+		set:'$lf(retlistcol,valuecol) retlist=retlist_$lb(value),retlistcol=retlistcol_$lb(valuecol)
+	}
+	RETURN retlist
+}
+.
+	// data is a $lb() of data values for the model's WithColumns
+	// modeloref is maintained in $system.Context.SQL().PredictModelOref(contextitem) so we do not have to open model's object for each row
+	// contextitem is a GUID, unique to this statement, that identifies the $system.Context.SQL().PredictModelOref(contextitem) and $system.Context.SQL().PredictTrainedModelOref(contextitem) entries for this statement.
+Predict(modelname="",trainedmodelname="",data,contextitem) [] PUBLIC {
+	#dim modeloref As %ML.Model
+	#dim usetm As %ML.TrainedModel
+	#dim data,metadata,results As %Library.List
+	try {
+		if modelname="" { set SQLCODE=-400,%msg="Model name argument for PREDICT() function must be defined" ZTRAP "MDL1" }
+		if $g($system.Context.SQL().PredictModelOref(contextitem))=$$$NULLOREF {
+			set $system.Context.SQL().PredictModelOref(contextitem)=##class(%ML.Model).NameIndexOpen(modelname,,.sc)
+			if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unable to open Model '"_modelname_"' for PREDICT function. "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL2" }
+		}
+		if trainedmodelname'="",$g($system.Context.SQL().PredictTrainedModelOref(contextitem))="" {
+			set $system.Context.SQL().PredictTrainedModelOref(contextitem)=##class(%ML.TrainedModel).NameIndexOpen(trainedmodelname,,.sc)
+			if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unable to open %ML.TrainedModel '"_trainedmodelname_"' for PREDICT w/USE function. "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL2" }
+		}
+		set sc=$system.Context.SQL().PredictModelOref(contextitem).%Predict(data,.results,contextitem)
+		if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unexpected error in PREDICT("_modelname_") function: "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL3" } 
+		RETURN results
+		
+	} catch {
+		if $d(SQLCODE) { ZTRAP "MDL1" } // We came here from ZTRAP above
+		set SQLCODE=-400,%msg="Error in "_modelname_".%Predict(): "_$ze ZTRAP "MDL4"
+	}
+}
+.
+Probability(modelname="",trainedmodelname="",forexpr=1,data) [] PUBLIC {
+	#dim modeloref As %ML.Model
+	#dim data,metadata,results As %Library.List
+	try {
+		if modelname="" { set SQLCODE=-400,%msg="Model name argument for PROBABILITY() function must be defined" ZTRAP "MDL1" }
+		set modeloref=##class(%ML.Model).NameIndexOpen(modelname,,.sc)
+		if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unable to open Model '"_modelname_"' for PROBABILITY function. "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL2" }
+		if trainedmodelname'="" {
+			set usetm=##class(%ML.TrainedModel).NameIndexOpen(trainedmodelname,,.sc)
+			if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unable to open %ML.TrainedModel '"_trainedmodelname_"' for PROBABILITY w/USE function. "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL2" }
+		} else { set usetm="" }
+		set sc=modeloref.%Probability(data,.results,.usetm,forexpr)
+		if $$$ISERR(sc) { set SQLCODE=-400,%msg="Unexpected error in PROBABILITY("_modelname_") function: "_$$GetErrorText^%apiOBJ(sc) ZTRAP "MDL3" } 
+		RETURN results
+		
+	} catch {
+		if $d(SQLCODE) { ZTRAP "MDL1" } // We came here from ZTRAP above
+		set SQLCODE=-400,%msg="Error in "_modelname_".%Probability(): "_$ze ZTRAP "MDL4"
+	}
+}
+.
+#include %stringreplace
+---
+
+

@@ -1,0 +1,200 @@
+====
+SYS.LCBINDSRV
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%SYS.LCBINDSRV^MAC^^^0
+	#; %SYS.LCBINDSRV ; Functions to support Light CCallin-based C++ Binding
+ 
+#include %SYS.DBSRV
+#include %SYS.BINDSRV
+#include %occInclude
+  
+ //==============
+ 
+listParameters(className, res) PUBLIC
+{
+	s numParameters=0
+	s res=""
+	s parameterName = $$$defMemberNext(className,$$$cCLASSparameter,"")
+	while (parameterName '= "") {
+		if $$$defMemberKeyGet(className,$$$cCLASSparameter,parameterName,$$$cPARAMtype)'="COSEXPRESSION" {
+			s parameterValue = $$$defMemberKeyGet(className,$$$cCLASSparameter,parameterName,$$$cPARAMdefault)
+			if parameterValue=""&&($$$defMemberKeyGet(className,$$$cCLASSparameter,parameterName,$$$cPARAMexpression)'="") {
+				s parameterValue = $$$comMemberKeyGet(className,$$$cCLASSparameter,parameterName,$$$cPARAMdefault)
+			}
+			s numParameters=numParameters+1
+			s res=res_$lb(parameterName,parameterValue)
+		}
+		s parameterName = $$$defMemberNext(className,$$$cCLASSparameter,parameterName)
+	}
+	s res = $lb(numParameters)_res
+	q 1
+}
+.
+listTriggers(className, res) PUBLIC
+{
+	s triggerName = $O(^oddDEF(className,"t",""))
+	s res = ""
+	s numTriggers = 0
+	while (triggerName '= "") {
+		if $g(^oddDEF(className,"t",triggerName,21))[";C++" {
+			s numTriggers = numTriggers + 1
+			s event = $g(^oddDEF(className,"t",triggerName,22))
+			s time = $g(^oddDEF(className,"t",triggerName,25))
+			i time = "" s time = "BEFORE"
+			s order = $g(^oddDEF(className,"t",triggerName,23))
+			i order = "" s order = 0
+			s res = res_$lb(triggerName,event,time,order)
+		}
+		s triggerName = $O(^oddDEF(className,"t",triggerName))
+	}
+	s res = $lb(numTriggers)_res
+	q 1	
+}
+ 
+GetIndexList(className) PUBLIC
+{
+	d listIndexes(className, .res)
+	q res
+}
+   
+listIndexes(className, res) PUBLIC
+{
+	s idxName = $O($$$EXTIDX($$$pEXT,className,""))
+	
+	s res = ""
+	s numIndexes = 0
+	while (idxName '= "") {
+		s numIndexes = numIndexes + 1
+		s numProps = $$$EXTIDXprop($$$pEXT,className,idxName)
+		;s res = res_$lb(idxName, $$$EXTIDXtype($$$pEXT,className,idxName), $p($$$EXTADDRglobal($$$pEXT,className,idxName),"^",2), $$$EXTADDRindex($$$pEXT,className,idxName))_$$$EXTADDRkeysubscripts($$$pEXT,className,idxName)_$lb($$$EXTADDRkey($$$pEXT,className,idxName))_$$listIndexProps(className, idxName)_$$listIndexDataProps(className, idxName)
+		s keySubscripts=$g($$$EXTADDRkeysubscripts($$$pEXT,className,idxName))
+		if keySubscripts="" {
+			s numKeySubscripts=0
+		}	
+		else {
+			s numKeySubscripts=$li(keySubscripts)
+		}
+		s unique=$$$EXTIDXunique($$$pEXT,className,idxName)
+		if unique="" {
+			s unique=0
+		}
+		s res = res_$lb(idxName, $$$EXTIDXtype($$$pEXT,className,idxName), unique, $p($$$EXTADDRglobal($$$pEXT,className,idxName),"^",2), $$$EXTADDRindex($$$pEXT,className,idxName))_$lb(numKeySubscripts)_$lb($$$EXTADDRkey($$$pEXT,className,idxName))_$$listIndexProps(className, idxName)_$$listIndexDataProps(className, idxName)
+		s idxName = $O($$$EXTIDX($$$pEXT,className,idxName))
+	}
+	s res = $lb(numIndexes)_res
+	q 1
+}
+ 
+listIndexProps(className,idxName) PUBLIC
+{
+	s propSubscript = $O($$$EXTIDXPROP($$$pEXT,className,idxName,""))
+	
+	s numProps = $$$EXTIDXprop($$$pEXT,className,idxName)
+	s res = $lb($s(numProps="":0,1:numProps))
+	while (propSubscript '= "") {
+		s collation = $g($$$EXTIDXPROPcollation($$$pEXT,className,idxName,propSubscript))
+		s res = res_$lb($$$EXTIDXPROP($$$pEXT,className,idxName,propSubscript),$s(collation="":"exact",1:collation))
+        s propSubscript = $O($$$EXTIDXPROP($$$pEXT,className,idxName,propSubscript))
+	}
+	q res
+}
+ 
+listIndexDataProps(className,idxName) PUBLIC
+{
+	s propSubscript = $O($$$EXTIDXPROP($$$pEXT,className,idxName,""))
+	
+	s numProps = $g($$$EXTIDXdata($$$pEXT,className,idxName))
+	s:numProps="" numProps=0
+	s res = $lb($s(numProps="":0,1:numProps))
+        if numProps > 0 {
+		while (propSubscript '= "") {
+			s res = res_$lb($$$EXTIDXDATA($$$pEXT,className,idxName,propSubscript))
+        	s propSubscript = $O($$$EXTIDXDATA($$$pEXT,className,idxName,propSubscript))
+		}
+	}
+	q res
+}
+ 
+#include %occInclude
+NodeMetadata(strClass,arNodes) public {
+	Set $ZTrap = "Catch"
+	If $$$SQLStorageIsSerial($g($$$EXTtype($$$pEXT,strClass)))
+	{
+		Set strValue = $$$EXTstate($$$pEXT,strClass)
+		Set arNodes(strValue) = $$Serialization(strClass,strValue)
+	}
+	Else
+	{
+		Set strDataAddress = $Get($$$EXTdataaddress($$$pEXT,strClass))
+		If strDataAddress '= "" {
+			Set strNode = $Order($$$EXTMAPDATA($$$pEXT,strClass,strDataAddress,""))
+			While strNode '= "" {
+				Set strType = $$$EXTMAPDATAtype($$$pEXT,strClass,strDataAddress,strNode)
+				Set strValue = $$$EXTMAPDATAvalue($$$pEXT,strClass,strDataAddress,strNode)
+				If strType '= "subnode" && (strType '= "node" && (strNode=($p(strClass,".",$length(strClass,"."))_"DefaultData"))) { Set arNodes(strNode) = $$Serialization(strClass,strValue) } // JMM258
+				Set strNode = $Order($$$EXTMAPDATA($$$pEXT,strClass,strDataAddress,strNode))
+			}
+		}
+	}
+	Quit $$$OK
+Catch	Set $ZTrap = ""
+	Quit $$$ERROR($$$ObjectScriptError,$ZE)
+}
+ 
+Serialization(strClass,strSerial) public {
+	Set strSerialType = $$$EXTPROPserialtype($$$pEXT,strClass,strSerial)
+	If strSerialType = "s" {
+			#; type = "s" means this is a composite serial, construct the symbol.
+		Set strResult = "", intPrevSlot = ""
+		Set intSlot = $Order($$$EXTPROPSLOT($$$pEXT,strClass,strSerial,""))
+		While intSlot '= "" {
+			Set strElement = $$$EXTPROPSLOT($$$pEXT,strClass,strSerial,intSlot)
+ 			If intSlot-intPrevSlot > 1 { For intPtr = 2:1:(intSlot-intPrevSlot) { Set strResult = strResult _ $ListBuild("") } }
+			Set strResult = strResult _ $ListBuild(strElement)
+			Set intPrevSlot = intSlot, intSlot = $Order($$$EXTPROPSLOT($$$pEXT,strClass,strSerial,intSlot))
+		}
+	}
+	ElseIf $Extract(serialtype) = "p" {
+		Set strResult = strSerial
+	}
+	Else { Set strResult = "" }
+	QUIT strResult
+}
+ 
+InsertDirect(className,data,concurrency=-1) PUBLIC
+{
+	s id=""
+	s ret=$zobjclassmethod(className,"%SaveDirect",.id,"",data,concurrency)
+    q $LB(ret,id)
+}
+ 
+getClassGlobalName(className) PUBLIC
+{
+	set dataAddress = $Get($$$EXTdataaddress($$$pEXT,className))
+    if dataAddress = "" q ""
+	q $Get($$$EXTADDRbasereference($$$pEXT,className,dataAddress))
+}
+ 
+ 
+getColnPropStorageType(className,propName,res) PUBLIC
+{
+	Set res = $$$lcase($$$comMemberArrayGet(className,$$$cCLASSproperty,propName,$$$cPROPparameter,"STORAGEDEFAULT"))
+ 
+	Set collection = $Get($$$EXTPROPcollection($$$pEXT,className,propName))
+	If (collection = $$$cPROPCOLLECTIONARRAY) || (collection = $$$cPROPCOLLECTIONLIST) {
+		Set res = $$$lcase($$$comMemberArrayGet(className,$$$cCLASSproperty,propName,$$$cPROPparameter,"STORAGEDEFAULT"))
+		If res = "" { Set res = $Case(collection,$$$cPROPCOLLECTIONARRAY:"array",:"list") }
+	}
+	Else { Set res = "unknown" }
+	Quit 1
+} 
+ 
+getPropTypeCategory(className,propName,res) PUBLIC
+{
+	Set res = $g($$$EXTPROPtypecategory($$$pEXT,className,propName))	
+    If res = "" { Set res = "unknown" }
+	Quit 1
+}
+---

@@ -1,0 +1,622 @@
+====
+qaqpsl2
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%qaqpsl2^MAC^^^0
+%qaqpsl2	// SQL select-expr - extension of %qaqpslx
+	;; COMPONENTS :: SQL/Parser
+#INCLUDE %msql
+#IF 0   ;-------------------------------------------------------------
+	; Description:   Rest of SQL select-exp
+	; Author:        Moved from %qaqslx by Jim Finnerty (restored from DPV1103)
+	; Date Started:  Mar 21 2004
+	; 
+	;  AK850   (11/30/2020) - Implement lateral join
+	;  PVA327  (08/10/2015) - More plan freeze changes from review meetings. 
+	;  PVA280  (08/09/2013) - Remve CATALOG as a reserved word + many reserved word cleanups
+	;  AK862   (04/02/2012) - "findname" for all tables and fields
+	;  AK840   (12/14/2011) - "findname" parsing for "rename" refactoring
+	;  PVA231  (11/30/2010) - Implement view.%id feature 
+	;  PVA222  (04/23/2010) - Fix resolution of unqualified column references in ON clauses 
+	;  DPV3375 (03/17/2009) - Correct DPV3227 which broke %CLASSNAME/%TABLENAME
+	;  DPV3369 (03/05/2009) - Report in contextdep() if there are reference to %CLASSNAME or %TABLENAME, unqualified names off for now
+	;  DPV3231 (08/05/2008) - Use process private global for ptln, ptrel
+	;  DPV3227 (07/28/2008) - Implement "tablist" info compile
+	;  AK703   (06/04/2008) - Don't use "onerow" if correlated fields used
+	;  DPV3095 (01/22/2008) - Support for column-level privileges
+	;  PVA149  (10/15/2007) - Restore support of arrow syntax from view columns in post 2007.1 versions
+	;  DPV2903 (04/05/2007) - QUIT 0 in valcol if utbl table does not exist - avoid <SUBSCRIPT> error
+	;  PVA131  (03/07/2007) - Arrow syntax from multi-table view gives erroneous error 31 
+	;  DPV2849 (01/25/2007) - More 999 -> $$$MaxStringLength changes
+	;  PVA104               - Cache SQL allows invalid FROM clause - reference across commas
+	;  DPV2697 (07/12/2006) - Use $e(...,*) and $e(...,...,*) in SQL code
+	;  PVA087  (02/01/2006) - Extended Outer Join Support: Any ON clause for LEFT JOIN from base tables to a base table.
+	;  AK637   (11/10/2005) - Support FROM in UPDATE/DELETE
+	;  DPV2544 (10/26/2005) - call skipid("EACH"), it is an identifier, in create trigger.  Fix WHEN clause field processing.
+	;  DPV2533 (10/12/2005) - Fix INSERT/SELECT into a view
+	;                         SQL Fix ProdLog 46593: insert..select fails with <UNDEFINED>pushlog+3^%qaqpnl
+	;  JLF015  (03/22/2004) - ANYOF() operator support
+	;
+#ENDIF
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; PVA050: Eliminate viewlab routine.
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+holdcur(&holdvar)  ;  Hold the current state of the SQL Lexical Analyzer/Parser information
+	$$$lexSave(holdvar)
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setold(&holdvar)  ;  Set back the old state of the SQL Lexical Analyzer/Parser information
+	$$$lexRestore(holdvar)
+	RETURN
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; MRP607 (In ORACLE functions list)-
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#;  FROM HERE DOWN USED TO BE IN %qaqpsl3 (DPV1103)
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#;  **DPV** (11/28/2000) - I have cleaned up colmn because it has so many
+	#;                         nested #IF 0's it was very difficult to follow
+	#;                         the code.  The code with all the change marks is
+	#;                         located at the bottom of the routine
+colmn	;  Column Reference
+	#; JLF015
+	#;  BNF:  <colmn>  ::=  [ <table> . ]  <field> { -> <field> } | %KEY | %VALUE 
+	#;---------------------------------------------------------------------
+	#; There are several crucial implicit output variables from colmn:
+	#;   logic - set to 0 by colmn
+	#;   name - the parsed qualified name of the column reference
+	#;   val - the value found or created for the column reference
+	#;   lcval - val is also saved here (whenever name is valid - that is, for all cases
+	#;           except when a user defined function is found). Thus, after a scalx call, 
+	#;           testing val=lcval tells whether the whole expression was a column reference.
+	#; PVA050: rewrite this routine with completely different logic. The major changes;
+	#;   - dictionary lookup now done here for validation when not in a special compile mode
+	#;   - all column references are entered in parse tree and ptln fully resolved
+	#;   - arrow syntax is fully validated here against the dictionary
+	#;   - references to a single column idkey are changed into references to the rowid
+	#;   - if an idkey is a designative reference, arrow syntax now allows use of the rowid as well
+	#;   - arrow syntax now works with both merged and streamed views, where sensible
+	#;   - arrow syntax now supports pseudo columns, e.g. a->b->%CLASSNAME
+	#;   - numerous bugs fixed
+	new %delidsv,asPos,chain,colqual,fitem,floc,found,label,latf,n,newname,pseudocol,qual,sfitm,slabel,sqtbl,stref,sval,svnum,utbl,viewnum,x
+	s colqual="",found=0,pseudocol=0
+		#; PVA050: add comment about embedded periods:
+		#; This code locally handles embedded periods in delimited identifiers by substituting $c(2)
+		#;   for them in qualified names. Note, however, that code elsewhere needs more changes before delimited ids with
+		#;   embedded periods can be considered supported. 
+		#;   Universal convention, in memory or globals: "."-->$c(2) in optionally qualified names; as is in known unqalified names.
+	  ; logic=0 needs to stay for funny parser communication 
+	s logic=0,(name,label)=$tr(value,".",$c(2))
+	#; AK840
+	s floc="" d:callname="findname" getloc  ;  record fname location
+		#; PVA280: explicit pseudo-column handling added
+	s %delidsv=(%delid=2) s:token'="ID" pseudocol=1 d lext // PVA280: all token validation done in term^%qaqpslx
+	if 'pseudocol  // pseudocolumn.something not allowed
+	{
+	  For  {  // Handle <owner>.<catalog>.<schema>.<table>
+	  	q:token'="."
+		s colqual=$s(colqual'="":".",1:"")_$tr(value,".",$c(2))
+		$$$lexskip(".")
+		If token="*" { s name=label_".*" d lext QUIT  }  // <qualifier>.*
+		Else {
+	#; AK840
+			d:callname="findname" getloc  ;  qualified fname
+			s name=label_"."_$tr(value,".",$c(2)) s %delidsv=(%delid=2)
+			#; PVA280: pseudo-columns as reserved words
+			if " %CLASSNAME %ID %REALID %KEY %TABLENAME %VALUE %VID "[(" "_token_" ") { s pseudocol=1 d lext} // JMM1327=
+			else { $$$lexskip("ID")} // anything else invalid
+			quit:pseudocol // no more dots allowed
+			If token="." s label=$$$LastPiece(label,".")_"."_$tr(value,".",$c(2)) 
+		}
+	  }
+	}
+	#;  at this point, for a query text of f, t.f, or {x.}s.t.f, where f
+	#;  is a field (not including ->g) or *, %ID etc.,
+	#;  <name,label,colqual> is:  <f,f,"">, <t.f,t,t>, or <s.t.f,s.t,.t>
+	#; AK862
+	i callname="findname",name["." {  ;  record [sch.]tab name, if used
+		i label["." { d namap("st",label,$li(floc,5,6)_$li(floc,3,4)) }
+		#;  look in mt("flbls",m,tlab,m^stuff)=$LB(sch.tab,aliasflag)
+		else { d:($o($$$mtFLabels(m,label,""),1,x)'="")&&(label=$p($li(x),".",2)) namap("t",$li(x),$li(floc,3,4)) }
+	}
+	#; AK862-
+	#; AK637
+	#;  force qualification setcol (which is either s.t or alias x) for
+	#;      INSERT/UPDATE target columns, if missing
+	i "INS UPD"[$$$mtStatementType,setcol'="" s:name'["." name=setcol_"."_name,label=setcol,colqual=$s(setcol[".":"."_$p(setcol,".",2),1:setcol) i setcol[".",$p(setcol,".",2)=colqual s name=$p(setcol,".")_"."_name,label=setcol,colqual="."_colqual
+	#; AK637-
+	#; DPV1596
+	if 'pseudocol $$$lexcheck("(") d UserDefinedFunction^%qaqpsq1(name,$g(pCallArg)) QUIT  //  function call of the form [schema.]function(...)
+	if $g(pCallArg) {	// pCallArg might be one if we came in through call^%qaqpDDLParsr2->scalx^%qaqpslx->colmn  We allow UDFs as an argument to CALL, but not a column or pseudo column
+		set t="CALL PROCEDURE ARGUMENT" do error(1)	// From parsing of an argument to CALL PROC(...), fields not allowed
+	}
+ 
+	if $$$mtStatementType="CRG" $$$lexputval("f^^"_colqual_"^"_$tr($$$LastPiece(name,"."),$c(2),".")) QUIT  	// DPV2544 Handle fields in WHEN clause of CREATE TRIGGER
+	s latf=""  ;  AK850 
+	#; Handle [s.]t.* case first - no outer reference search allowed in this case, also qualifier
+	#;                search is all that is needed
+	if name[".*",$g(inselect)=m {  
+		s x=$s(colqual[".":$e(colqual,2,*),1:colqual),x=$tr(x,$c(2),".")
+		if $$getunqlabel^%qaqpsq(x,m,$S(colqual[".":label,1:""),.fitem,.qual,.utbl,.latf) {
+	        s viewnum=$$getviewnum(fitem)
+	        if $i(mt("tstar")) {
+		    	if viewnum>0 {
+			    	$$$lexputval("i^"_viewnum_",")
+		    	} else {
+		    		$$$lexputval("i^"_$p(fitem,"^",2))
+		    	}
+	        }
+	    	s lcval=val
+	    	QUIT
+		}
+		else  {d error(23)} //label not found
+	}
+		#; Outer search for labels - same with or without arrow syntax
+	if colqual]"" {
+		//loop $$$mtCorrParentQb(n) starting with m, looking for colqual
+		s x=$s(colqual[".":$e(colqual,2,*),1:colqual),x=$tr(x,$c(2),".")
+		s n=m for  {
+			if '$$getunqlabel^%qaqpsq(x,n,$S(colqual[".":label,1:""),.fitem,.qual,.utbl,.latf) {
+				s n=+$$$mtP(n) ;  look for the lateral table, correlated fields can be found
+			                   ;  when $e(lat,n)=" " ; AK850
+				i 'n,latf="" d error(23)  ; label not found
+				CONTINUE:n
+				s $lb(n,fitem,qual,utbl)=latf
+			}
+			#;  record correlated unqualified table name  ;  AK862
+			i callname="findname",n'=m,label=$p(utbl,".",2) d namap("t",utbl,$li(floc,3,4))
+			s chain=$tr($$$LastPiece(name,"."),$c(2),".") // PVA149
+			if $$check("->") {
+				d:$d(inONClause) error(67) // PVA087: can no longer allow arrow inside of ON clause.
+				#; PVA131: pass fitem by reference
+				#; PVA149: argument changes
+				if '$$valref^%qaqpsq1(utbl,.chain,%delidsv,n,qual,.fitem,.stref),callname'="tablist" s name=name_"->" d error(29)
+				d arrow^%qaqpsq1(m,n,utbl,qual,chain,stref,fitem)
+			}
+			else {
+				#; PVA149: argument changes
+				if '$$valcol(n,%delidsv,utbl,qual,chain,fitem,.val,.viewnum),callname'="tablist" d error(29)
+				d column(%delidsv,m,n,qual,.chain,utbl,fitem,viewnum,val)
+				d:floc'="" retloc(val)  ;  maybe val is of interest  ;  AK840
+			}
+			s lcval=val
+			RETURN ;  found
+		}
+	}
+ 	$$$lexcheck("->") GOTO arrow
+	if $g(saveplan)>0&&'pseudocol {s mt("pdunqcol",$tr(name,$c(2),"."))=""} // PVA327
+	set n=m  // Start processing from the current query block 'm' of the <from clause>! 
+	for { // --- Process All Query Blocks 'n' from 'm' up the tree to the Main Query (n=0) ---
+		QUIT:$$getunqcolumn($tr(name,$c(2),"."),n,%delidsv,.slabel,.sqtbl,.sfitm,.sval,.svnum,.latf)  // The 'getunqcolumn(...)' method traps and handles ambiguity error(27) and won't return if this error occurs!
+		set n=+$$$mtP(n) // This might be a lateral table; correlated fields can be found when $e(lat,n)=" " ; AK850
+		CONTINUE:n  // Skip Query Blocks that are a <sub query> and not the Main Query (n=0)!
+		
+		#;----------------------------------------------------------------------------------------------------
+		#; The following information is returned from the invocation of the '$$getunqcolumn(...)'
+		#; method:
+		#;
+		#;   latf: One of the following values:
+		#;          = "" - No implicit LATERALs Columns
+		#;          = $LB(m,slabel,sqtbl,sfitm,sval,svnum) - A candidate for an implicit LATERAL column, in case nothing else is found
+		#;          = "error27" - If ambiguous implicit LATERALs are found, to disable implicit LATERALs all the way up
+		#;----------------------------------------------------------------------------------------------------
+		if callname'="tablist",(latf="")||(latf="error27") { // --- Processing the Main Query (n=0) with either No Implicit Lateral Columns (latf="") or Ambiguous Implicit Lateral Columns (latf="error27") ---
+			if ($g(group)||$g(having)) { // --- Check Field/Column <alias> for <group by clause> and <having clause> ---
+				set asPos=$LF($g($$$mtAlphaUpAliases(m)),name)  // Search for the <alias> (name) in the <select list>
+				if asPos { // --- The <alias> (name) was found in the SQL Parse Tree mt(...) ---
+					do:$LF($$$mtAlphaUpAliases(m),name,asPos) error(24)   // Ambiguity when more than one <alias> (name) found within the <select list>!
+					set val=$p($$$mtOutputVals($$$mtOutput(m)),",",asPos) // Get the <alias> field's corresponding 'val' from the <select list>
+					if group { // --- Check Valid Field/Column <alias> for <group by clause> ---
+						if $$findtree^%qaqpagg("v",val,"a") { do error(19) }  // An aggregate function cannot be used in a <group by clause>!
+						else { RETURN }  // Valid <group by clause>!
+					}
+					else { RETURN }  // Valid <having clause>!
+				}
+			}
+			do error(29) // Field/Column not found in the specified tables!
+		}
+		set $LG(n,slabel,sqtbl,sfitm,sval,svnum)=latf
+		QUIT  // Found a candidate for an implicit LATERAL column!
+	}
+	d column(%delidsv,m,n,slabel,$tr(name,$c(2),"."),sqtbl,sfitm,svnum,sval) // no error possible here. This handles special columns.
+	d:floc'="" retloc(val)  ;  check whether val is the one  ; AK840
+	s lcval=val
+	RETURN	  
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+arrow	; Handle -> arrow syntax
+	do:$d(inONClause) error(67) // PVA087: can no longer allow arrow inside of ON clause.
+	if $g(saveplan)>0&&'pseudocol { set mt("pdunqref",$tr(name,$c(2),".")) = "" } // PVA327
+	set n = m 
+	for {
+		QUIT:('n||found)
+		if $$getunqref^%qaqpsq1($tr(name,$c(2),"."), n, %delidsv) { //getunqref traps and handles ambiguity error(27). No return in this case. 
+			set found = 1
+			do arrow^%qaqpsq1(m,n,sqtbl,qual,newname,stref,sfitm) 
+		}
+		set n = $$$mtCorrParentQb(n)		
+	}
+	if 'found, callname'="tablist" {
+		set name = name_"->" 
+		do error(29) // reference not found
+	}
+	set lcval = val
+	RETURN
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK862
+namap(stf,name,floc)  ;  record location of encountered sch.tab
+	i stf="st" d namap("s",name,$li(floc,1,2)),namap("t",name,$li(floc,3,4)) QUIT
+	s mtc(0,"namap"_stf,name)=$g(mtc(0,"namap"_stf,name))_floc
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK862-
+	#; AK840
+getloc	;  [public: floc,mt,value,line,f,%delid] record identifier locations in
+	#;  floc=$LB(line,pos,...), and their values in floc(1)=$LB(value,...),
+	#; AK862
+	#;  use mt("nameplex") to compensate for first token from previous line
+	s floc=$lb(line,f+(%delid=2)-$li(mt("namaplex")))_floc,floc(1)=$lb(value)_$g(floc(1))  ;  prepend current location to floc
+	s:$li(floc,2)<1 $li(floc,1,2)=$li(mt("namaplex"),2,3)
+	#; AK862-
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+retloc(val)  ;  [public: floc] record field val's table and location, if needed
+	#; AK862
+	s val=$$namapv(val) d:val'="" namap("f",val,$li(floc,1,2))
+	s floc=""
+	QUIT
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+namapv(val)  ;  $$: sch.tab.fld/"" - determine and record in mt("namap",val)
+	s:'$d(mt("namapv",val)) mt("namapv",val)=$$stf(val)
+	QUIT mt("namapv",val)
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+stf(val)  ;  $$: sch.tab.fld for val, or "" if none
+	s val=$$$mtV(val)
+	QUIT:$e(val)="n" $$namapv($p(val,"^",4))
+	QUIT:$e(val)'="f" ""  ;  alias to merged view/subquery expression
+	i val'["->" s val=$$$mtFromTableName($p(val,"^",2,3))_"."_$p(val,"^",4) QUIT:$e(val,1,3)="%%Q" "" QUIT val
+	QUIT $tr($p(val,"->",$l(val,"->")),"^",".")
+	#;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	#; AK840-
+	#; PVA050: new function getviewnum                     
+getviewnum(fitm) ; Determine if an $$$mtFromTableName(fitm) entry is a view/table subquery and return its
+	#; its view number if so. Also determine whether streamed. Return value
+	#; will be 0 for a base table, -viewnum for a streamed view, +viewnum if
+	#; fitem is from a merged view. 
+	n lbl
+	s lbl=$p(fitm,"^",2)
+	if lbl[",", $p(lbl,",")=+lbl QUIT +lbl
+	if $e($$$mtFromTableName(fitm),1,3)="%%Q" QUIT -$p($$$mtFromTableName(fitm),"Q",2)
+	QUIT 0	  
+	#; PVA050: new function getunqcolumn
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+getunqcolumn(lname,m,delid,slabel,sqtbl,sfitm,sval,svnum,latf) ; find FROM item matching an unqalified column named lname
+    #; m (input) : query number of FROM clause to search
+    #; delid (input) : whether lname was a delimited id
+    #; if lat(m) is empty, must find it starting from firsttbl(m)
+    #; if lat(m)=1, could find it anywhere in FROM(m)
+    #; return 1 if found (and leave latf=""), 0 if not.
+    #; if implicit lateral is found (lat(m)=0) then set latf as a candidate and return 0
+    #; OUTPUT BY REF: if successful, following saved values are valid
+    #;    slabel,sqtbl,sfitm,sval,svnum
+    #;    latf=lb(m,slabel,sqtbl,sfitm,sval,svnum) is a candidate for an implicit 
+    #;      LATERAL column, in case nothing else is found
+    #;    latf="error27" if ambiguious implicit LATERALs are found, to disable 
+    #;      implicit LATERALs all the way up
+	new asFld,fitm,found,i,qtbl,qtlbl,tlabel,val,vnum
+	#; asFld  - The <field name> for the specified alias
+	#; fitm   - $$$mtFromTableName(fitm) corresponding to 'mt("flbls",m,tlabel,fitm)'
+	#; found  - A flag to determine if FROM item matching an unqalified column named 'lname'
+	#; qtbl   - A $LIST(qtlbl,<as flag>) from 'mt("flbls",m,tlabel,fitm)'
+	#; qtlbl  - Actual or alias <table name> reference in <from clause>
+	set found=0
+	set tlabel=""
+	for { // --- Process All 'tlable' Values --- 
+		set tlabel=$o($$$mtFLabelsSaveNode(m,tlabel))
+		QUIT:tlabel=""  // No more 'tlabel' values!
+		
+		set fitm="",fitm=$o($$$mtFLabels(m,tlabel,fitm),1,qtbl)
+		set qtlbl=$s($li(qtbl,2):$tr(tlabel,".",$c(2)),1:$li(qtbl))
+		#; PVA222: Skip out of scope labels altogether, rather than trying to recover afterward
+		#; PVA104: treat as not found if table reference is out of scope
+		#; for lat=1 or lat=0 no need to check firsttbl(m)  ;  AK850
+		if " "[$e(lat,m),$lf($g($$$mtFromList(m)),$p(fitm,"^",2,*))<$g(firsttbl(m),1) { CONTINUE }
+		if $$valcol(m,delid,$li(qtbl),qtlbl,lname,fitm,.val,.vnum) { // --- A valid column within a table ---
+			if found,(callname'="tablist") { if $e(lat,m)=0 { set latf="error27" RETURN 0 } do error(27) }		// DPV3227=
+			set found=1,slabel=qtlbl,sqtbl=$li(qtbl),sfitm=fitm,sval=val,svnum=vnum
+		}
+		#; Need to check the following to avoid 'error(27)' for $$valcol(...) & CRV or ALV
+		if found,"CRV ALV"[$$$mtStatementType RETURN 1  ; otherwise would always get error(27) with > table in this compile state
+	}
+	if $e(lat,m)=0,found { set latf=$lb(m,slabel,sqtbl,sfitm,sval,svnum) RETURN 0 }
+	
+	// --- Check whether the found field name/alias is causing ambiguity by using the name/alias of another existing column in the <group by clause> or <having clause> ---
+	if found,callname'="tablist",($g(group)||$g(having)),$LF($$$UPPER($g($$$mtAliases(m))),lname) { // --- Check for Field Name/Alias Ambiguity ---
+		set val=$p($$$mtOutputVals($$$mtOutput(m)),",",$LF($g($$$mtAlphaUpAliases(m)),lname))  // Get the corresponding 'val' from <select list>
+		#;-----------------------------------------------------------------------------
+		#; At this point:
+		#;   - 'lname' is a field that is 'found' within the table 'qtlbl' [$$valcol(...)]
+		#;   - 'callname' is not processing "tablist"
+		#;   - 'lname' is used as an alias in the <select statement>
+		#;   - 'lname' is used within a <group by clause> or <having clause>
+		#;   - The field is not one of the following: 
+		#;       - A (sub-)expression
+		#;       - An aggregation
+		#;       - A logic condition
+		#;       - An unambiguous field name of a table 
+		#;           NOTE: Typical ambiguity (e.g. <select list>) would already be 
+		#;                 reported above as error(27)
+		#; 
+		#; Now lets check to see if there is alias [AS] ambiguity such that an alias
+		#; is using the name of another existing field/column:
+		#;-----------------------------------------------------------------------------
+		set asFld=$p($g($$$mtV($$findtree^%qaqpagg("v",val,"f"))),"^",4)  // The alias's actual field name!
+		if '$$findtree^%qaqpagg("v",val,"avl"),asFld'=lname { // --- Process Alias/Field Ambiguity ---
+			#;-----------------------------------------------------------------------------
+			#; Alias [AS] ambiguity has been found such that an alias is using the name of 
+			#; another existing field/column, so record this information accordingly:
+			#; 
+			#;   $$$mtNumAmbiguousAliases=# of ambiguous alias in <group by>/<having> clause
+			#;   $$$mtAmbiguousAlias(#)=$LB(<alias>,<field>,<table>,<group>,<having>)
+			#; 
+			#; NOTE: By defining this node in the SQL Parse Tree 'mt(...)', a <warning>
+			#;       message will be generated via the SQL ShowPlan/Explain feature.
+			#;-----------------------------------------------------------------------------
+			set $$$mtAmbiguousAlias($i($$$mtNumAmbiguousAliases))=$LB(lname,asFld,qtlbl,$g(group),$g(having))
+		}
+	}
+	RETURN found
+  	#; PVA050: new function column
+  	#; PVA149: unify chain and lname argument
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+column(delid,m,n,label,chain,qtbl,fitm,vnum,inval) // set up vals, ptln for a fully validated column reference
+		#; delid - input - whether lname is delimited
+		#; m - input - query number of query directly containing column reference
+		#; n - input - query number of possibly outer query the reference resolved to
+		#; label - input - either correlation name or same as qtbl, that is, what should be used in ptln.
+		#; chain - in[out] - the column name (no qualifiers); For arrow syntax, a chain
+		#;                   of unqualified column or child table names: nm1->nm2->...nmn.
+		#;                   This function (column) acts on the last piece of chain. 
+		#;                   NOTE: because chain contains unqualified names, it follows that
+		#;                   convention, having "." not $c(2). The external 'name' variable is 
+		#;                   a qualified chain and uses $c(2).
+		#;                   NOTE: the last piece of chain may be modified (for %id or when
+		#;                   single column idkey mapped to rowid). Call by reference
+		#;                   if you want to know about this. 
+		#; qtbl - input - the fully qualified table or view (or synthetic table subquery) name the column resolves to
+		#; fitm - input -  $$$mtFromTableName(fitm) entry the column reference resolves to. This corresponds to query n, not m.
+		#; vnum - input - view number: 0 if base table, else positive view query#
+		#; inval - input - val# resolved to. May be empty. If nonempty, this is a val# of query n.
+		#; IMPLICIT OUTPUT: parser variable val is left pointing to an appropriate val# of query m.
+ 
+	n lit,tbinf,irn,idb,idifn,ifn,sname,tmpname,lname,tmpchain,needsbar,surrogateIdFieldName // JMM1334=
+	// JMM1327 If table has a surrogate id column, and this reference is to the ID column,
+	// substitute the surrogate id column.
+	if ($$substituteSurrogateIdFieldName^%occPartition(qtbl,,,.surrogateIdFieldName)'="") && ($zcvt($$$LastPiece(chain,"->"),"U")=$zcvt($$idName^%occPartition(qtbl),"U") || ($zcvt($$$LastPiece(chain,"->"),"U")="%ID")) { // JMM1327+ JMM1334+
+		set $$$LastPiece(chain,"->")=surrogateIdFieldName // JMM1334-
+	} // JMM1327-
+	s sname="",lname=$$$LastPiece(chain,"->"),needsbar=0
+	If 'delid,"%CLASSNAME"=lname { ; must check this before lookup in ptln
+		   	#; Note: without incorporating delid into ptln, we cannot use it to remember the literal
+		   	#;  val created for these pseudo-columns, or to remember what %id maps to.   
+			#; must not access dictionary in special compile modes
+		If "CRV ALV"[$$$mtStatementType||(callname="tablist") { s lit="%CLASSNAME" }
+		Else 
+		{ s lit=$$$GetClassNameFromIQN(qtbl) 
+		  if $g(saveplan)>0 {s pdict("%CLASSNAME",qtbl)=lit} // PVA327
+		}	
+		d putval("t^"_lit)
+		set ContextDependent=1	// DPV3369
+		QUIT
+	}
+	If 'delid,"%TABLENAME"=lname { 
+		If "CRV ALV"[$$$mtStatementType||(callname="tablist") { s lit="%TABLENAME" }
+		Else 
+		{ s lit=$$$GetExactIQNFromIQN(qtbl),lit=$$$SchemaFromIQN(lit)_"."_$$$TableFromIQN(lit) 
+		  if $g(saveplan)>0 {s pdict("%TABLENAME",qtbl)=lit } // PVA327
+		}	
+		d putval("t^"_lit)
+		set ContextDependent=1	// DPV3369
+		QUIT
+	}
+#IF	1	; JLF015+
+	If 'delid,(",%VALUE,%KEY,"[(","_lname_",")),$g(anyofctx)>0 {
+		s val=$g($$$mtForSomeElementTarget(label))
+		#; Currently we do not support multiple references to the same %VALUE or %KEY
+		n val2,elemNum
+		s val2=$g($$$ptln(m,label_"."_$tr(chain,".",$c(2))))
+		i val2=""
+		{
+			#; Associate the %KEY and %VALUE with the same val when both are specified
+			s tmpchain=chain,$$$LastPiece(tmpchain,"->")=$s(lname="%VALUE":"%KEY",1:"%VALUE")
+			s val2=$g($$$ptln(m,label_"."_$tr(tmpchain,".",$c(2))))
+		} 
+		if val2'="" { s elemNum=$p($p($$$mtV(val2),"^",2),":",2) } else { s elemNum=$i($$$mtNumAnyOf),$$$mtNumAnyOf=elemNum }
+		s val=$$putunary^%qaqpslx(val,$s(lname="%VALUE":"%ANYOF:",1:"%ANYOFKEY:")_elemNum)
+		s $$$ptln(m,label_"."_$tr(chain,".",$c(2)))=val
+		QUIT
+	}	
+#ENDIF	; JLF015-
+	If 'delid,("%ID"=lname||("%REALID"=lname)),"CRV ALV"'[$$$mtStatementType,callname'="tablist" {					// DPV3227 (tablist)  JMM1327=
+		s irn=$$$smdLoadGetIrn(qtbl,$g($$$mtTvf(m,qtbl)))
+		if irn="" { set tname=qtbl do error(30) }			// DPV2060+	// DPV3363 (report error)
+		if $$needsKeyTranslation^%qaqpmod($$$smdMasterMap(1,irn)) s needsbar=1
+	 	s lname=$$$smdRowIDFieldName(1,irn)
+		s lname=$$$UPPER(lname),tmpname=$tr(lname,".",$c(2))	// DPV2060-
+	 	if $g(saveplan)>0 {s pdict("%ID",$$$smdGetIqnFromIrn(irn))=lname } // PVA327 note: need exact case; qtbl above is upper
+	 	s $$$LastPiece(chain,"->")=lname,$$$LastPiece(name,"->")=tmpname
+	}
+	#; Check if we are parsing the row ID under its field name and whether key translation is thus required.
+	#; Have to check qtbl for "." because of a bug in nested FOR SOME %ELEMENT parsing that sets it to the
+	#; collection field name rather than a valid FROM item
+	If 'delid,"CRV ALV"'[$$$mtStatementType,callname'="tablist",qtbl["." {
+		s irn=$$$smdLoadGetIrn(qtbl,$g($$$mtTvf(m,qtbl)))
+		if irn,$$$smdRowIDFieldName(1,irn)=lname,'$g(%0SQLCompileLevel),'$g(mt("options","parallelQuery"),0),$$needsKeyTranslation^%qaqpmod($$$smdMasterMap(1,irn)) s needsbar=1
+	}
+	s val=$g($$$ptln(m,label_"."_$tr(chain,".",$c(2)))) QUIT:val]""
+		
+		#; if base table, try mapping single column idkey to rowid
+	If vnum=0,"CRV ALV CRF CRM CRP CRQ"'[$$$mtStatementType,$$$mtStatementType'="INS" || $d(%insqry),'info {	// DPV2024= (Don't do this for INSERT) PVA054: Do it though, for query part of INSERT	// DPV2157 (CREATE PROC, etc.)
+		set irn=$$$smdLoadGetIrn(qtbl,$g($$$mtTvf(m,qtbl)))
+		if irn="" { set tname=qtbl do error(30) }			// DPV2060+	// DPV3363 (report error)
+		s idb=$$$smdRowIDLogicalFields(1,irn),idifn=$$$smdRowIDField(1,irn)
+		s ifn=$$$smdGetIfn(1,irn,lname)
+		if idb'="",idb'[",",$$$UPPER(lname)=$$$UPPER($$$smdGetFieldName(idb)) {
+			s ifn=idifn,sname=lname,lname=$$$UPPER($$$smdRowIDFieldName(1,irn)) s $$$LastPiece(chain,"->")=lname // DPV2060-
+			#; now must re-check ptln. If idkey were referenced previously, then our convention of recording
+			#;   two ptln's for it would catch it above. However, if rowid only were referenced before, we 
+			#;   do need to check ptln again to avoid making an extraneous second val for it.
+			s val=$g($$$ptln(m,label_"."_$tr(chain,".",$c(2)))),tmpchain=chain,$$$LastPiece(tmpchain,"->")=sname
+			if val]"" s $$$ptln(m,label_"."_$tr(tmpchain,".",$c(2)))=val QUIT
+		}
+	}
+		#; If not a tsq#% table...  also if the table does not [".", assume it is a forex() expression table (** is this an OK assumption???)
+	if $g(%sqlColPriv)'=""&&($g(inview)="")&&($$$LOWER($$$LastPiece(qtbl,"."))'?1"tsq"1.n1"%")&&(qtbl[".")&&('$d($$$mtTvf(m,qtbl))) {
+		if callname'="recount",callname'="tablist","CRV ALV CRF CRM CRP CRQ"'[$$$mtStatementType,('$d(mtsave("t"))||("CRV ALV CRF CRM CRP CRQ"'[mtsave("t"))) {	// DPV3095=	// DPV3227
+			new extent,relType s relType=$$$smdGetTType(qtbl),irn=$$$smdLoadGetIrn(qtbl),extent=$$$smdExtent(relType,irn)
+			if extent'="" {
+				new pname set pname=$g($$$EXTsqlcolumnidx($$$rEXT,extent,lname))
+				if pname'="" {
+					if %sqlColPriv="s" {
+						set:'$lf($g(mtc(0,0,"select privs",qtbl)),pname) mtc(0,0,"select privs",qtbl)=$g(mtc(0,0,"select privs",qtbl))_$lb(pname)
+							#; For a sharded=2 table, define a mapping from this table name to the sharded table on the shard mater for privilege checking
+						if $$$smdSharded(relType,irn)=2,'$d(mtc(0,0,"select privs",qtbl,"realname")) { set mtc(0,0,"select privs",qtbl,"realname")=$$$smdShardMasterName(relType,irn) }
+					}
+					else { 
+						set mtc(0,0,"table",m_"^"_qtbl,"priv",%sqlColPriv,"fields")=$g(mtc(0,0,"table",m_"^"_qtbl,"priv",%sqlColPriv,"fields"))_$lb(pname)
+						set:$g(mt("orupdate"))=1 mtc(0,0,"table",m_"^"_qtbl,"priv","u","fields")=$g(mtc(0,0,"table",m_"^"_qtbl,"priv","u","fields"))_$lb(pname)	// DPV4086
+					}
+				}
+			}
+		}
+	}
+	
+		#; first set up val, ptln for query n
+	If 'inval { 
+		s val=$g($$$ptln(n,label_"."_$tr(chain,".",$c(2)))) ; in case we changed the name this is necessary
+		if 'val {
+			#; PVA149: New parse tree format for arrow entries:
+			#;         f^fitm->col1->...col4->qualified table^col5
+			#;     fitm is where the arrow reference is 'rooted'. 
+			#;     col5 is the rightmost column reference.
+			#;     qualified table applies to col5. Putstr can construct a stream name
+			#;     exactly as for a normal field, and just look up
+			#;     col5 in the final arrow piece of this stream name. 
+			#;     As before, there are no $$$mtFromTableName() entries for arrow streams.
+			#;     Ptln, as set here and in valref ensures all references to the same
+			#;     thing share stream and f val#. 
+			$$$lexputval("f^"_fitm_$s(chain["->":"->"_$p(chain,"->",1,*-1)_"->"_qtbl,1:"")_"^"_$$$LastPiece(chain,"->"))
+			i needsbar s mt("bars",val)=1
+			s $$$ptln(n,label_"."_$tr(chain,".",$c(2)))=val
+		}
+		if sname]"" s tmpchain=chain,$$$LastPiece(tmpchain,"->")=sname,$$$ptln(n,label_"."_$tr(tmpchain,".",$c(2)))=val ; recording sname as well avoids doing metadata access for another reference
+	}
+	Else { s $$$ptln(n,label_"."_$tr(chain,".",$c(2)))=inval,val=inval } ; could already be set to same, but this better than test and set; shouldn't be set to something else
+ 
+	#; now for query m
+	If m'=n { 
+		$$$lexputval($s(" "[$e(lat,n):"n^^^"_val_"^",1:"x^"_val))  ;  AK850
+		s $$$ptln(m,label_"."_$tr(chain,".",$c(2)))=val // NOTE: this is a change to store outer refs in ptln 
+		                             #; It avoids a separate parse tree entry an variable for each
+		                             #; plus avoids some repeated work, esp. outer ref to idkey.
+		if sname]"" s tmpchain=chain,$$$LastPiece(tmpchain,"->")=sname,$$$ptln(m,label_"."_$tr(tmpchain,".",$c(2)))=val
+	#; AK703
+		s $$$mtCorrFieldUsed(n)=1  ;  record correlated field use, for "onerow"
+	}
+		
+	QUIT
+	
+ 
+	#; PVA050: new function valcol
+	#; PVA149: unify chain and lname arguments
+valcol(m,delid,utbl,tlabel,chain,fitm,val,viewnum) ; validate a column against a usage of a table
+	#; m - input - query number of FROM clause validated against
+	#; delid - input - whether lname was a delimited id  
+	#; utbl - input - qualified table or view name to validate against (this name underlies a possible
+	#;                correlation name for table or view. This is a synthetic name for table subqueries.
+	#; tlabel - input - actual FROM name to validate against (either correlation name or qualified table name)
+	#; chain - input - for arrow syntax, the full chain; otherwise, unqualified column name
+	#; fitm - input - $$$mtFromTableName(fitm) corresponding to tlable. If a merged view, 'first' of them.
+	#; val - output - either "", or a val#. A val# returned if lname found in ptln or if it is a view
+	#;                column.
+	#; viewnum - output - view number (0 - not a view, else a positive view number)
+	#; RETURN value: 1 valid, 0 not valid
+	n x,y,tbinf,irn,lname
+	s val="",lname=$$$LastPiece(chain,"->")
+	s viewnum=$s(fitm]"":$$getviewnum(fitm),1:0)
+		#; check for special names - (pseudo columns)
+		#;   Note: check  before ptln() lookup, since these could collide with delimited ids.
+	if 'delid,("%ID"=lname||("%REALID"=lname)) { if viewnum'=0 {QUIT 0 } else {QUIT 1}} ; %ID does not exist for views   JMM1327=
+	if 'delid,",%CLASSNAME,%TABLENAME,"[(","_lname_",") {
+		s x=$p(utbl,".",2),y=$e(x,4,*-1)
+		if $e(x,1,3)="tsq",$e(x,*)=%,y=+y { QUIT 0 } ; There is no class or table name for table subqueries
+		else { QUIT 1 }
+	}
+	#; JLF015
+	if 'delid && (",%VALUE,%KEY,"[(","_lname_",")) {if ($g(anyofctx)>0) { QUIT 1} else {QUIT 0} }
+	s val=$g($$$ptln(m,tlabel_"."_$tr(chain,".",$c(2)))) QUIT:val]"" 1
+	if "CRV ALV CRF CRM CRP CRQ CRG"[$$$mtStatementType { QUIT 1 }  	// DPV2157 Add CREATE PROC ,etc.
+        	#; PVA231: Check for new %VID; this must be 'super reserved', because it goes in ptln
+	if viewnum&&("%VID"=lname) { 
+		if viewnum>0 {
+			if info {
+				set val=$$newval("t^1")
+				do create^%qaqpdt(val,"const","%Library.Integer",,,,"%VID",0)
+				set $$$VTRomsinfo(val)=$$definfo^%qaqpif2("%Library.Integer")
+				QUIT 1
+			} 
+			QUIT 0
+		} 
+		elseif viewnum <0 { 
+			set val=$$$mtPViewIDVal($$$mtP(-viewnum))
+			if info {
+				do create^%qaqpdt(val,"const","%Library.Integer",,,,"%VID",0)
+				set $$$VTRomsinfo(val)="%VID"_$$definfo^%qaqpif2("%Library.Integer")
+			}
+			QUIT 1
+		}
+	} 
+	elseif "%VID"=lname { QUIT 0 }
+	s:viewnum<0 viewnum=-viewnum
+  	if viewnum {
+	  	QUIT:'$d(%viewinfo("vcols",viewnum,lname)) 0
+		s val=$lg(%viewinfo("vcols",viewnum,lname),2) d error(27):val="" ; name exposed > once by view
+		QUIT 1
+  	}
+		#; Base table now
+	#; JLF015
+	QUIT:$d($$$mtQbHasForSomeElement(m)) 0					// return 0 for %ELEMENT query block
+	QUIT:callname="tablist" 1  					// DPV3227=
+	set irn=$$$smdLoadGetIrn(utbl,$g($$$mtTvf(m,utbl))) QUIT:irn="" 0			// return 0 if table not found (DPV2903)
+	QUIT:$$$smdFieldExists($$$smdTType(irn),irn,lname) 1					// DPV2060-, DPV2533 (TType)
+	QUIT 0
+ 	#; PVA050: remove tag 'nolbl'. It is no longer used.
+	#; PVAP50: remove tags: inanyschema, inanyschemavi
+	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+containsterm
+	n basecoll,coll,aoa,ChooseSearchKeyFn,prevLog
+	n rawPatternVal,canonCollVal,contVal,aoa,op
+	s prevLog="",ChooseSearchKeyFn=""
+	QUIT:$$$mtVType($$$mtV(val))'="f"
+	s basecoll=val
+	s ChooseSearchKeyFn="METHOD:*ChooseSearchKey"
+	do skip("(")
+	for i=1:1 
+	{	s op="%ANYOFKEY:"_$i($$$mtNumAnyOf)
+		s coll=$$putunary^%qaqpslx(basecoll,op)
+		d scalx^%qaqpslx()
+		s rawPatternVal = val
+		d putval("v^"_ChooseSearchKeyFn_":"_op_"^^"_rawPatternVal_"^")
+		d putlog("v^=^^"_coll_"^"_val_"^")		//  %ANYOFKEY(coll) = ChooseSearchKey(pattern)
+		d complexlog^%qaqpnl(m,val)
+		d putlog("l^ANYOFAND^^"_val_"^")
+		d:$d(aoa) putlog("l^&^^"_aoa_"^"_val_"^")
+		s aoa = val
+		QUIT:'$$check(",")
+	}
+	d skip(")")
+	s val=aoa
+	s logic=1
+	QUIT
+#INCLUDE %qaqplex
+.
+---

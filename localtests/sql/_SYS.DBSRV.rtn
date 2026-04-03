@@ -1,0 +1,127 @@
+====
+SYS.DBSRV
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%SYS.DBSRV^MAC^^^0
+	#; %SYS.DBSRV
+#include %msql
+#include %SYS.DBSRV
+#include %SYS.BINDSRV
+.
+	#;-----------------------------------------------------
+ 	#; The IRIS SQL Server code hss been moved to the %SYS.DBSRV.cls
+	#; This stub remains for the output redirection APIs and Light C Binding APIs
+	#;-----------------------------------------------------
+.
+LCBSuperConnect1(protocol, msgid, acn, io)
+	do ##class(%SYS.DBSRV).LCBSuperConnect1(protocol, msgid, acn, io)
+	RETURN
+.
+LCBSuperConnect2(io)
+	do ##class(%SYS.DBSRV).LCBSuperConnect2(io)
+	RETURN
+.
+Server()
+	do ##class(%SYS.DBSRV).Server()
+	RETURN
+.
+	#;------------------------------------------------------
+	#; Description:    IRIS xDBC+ transfer performance test
+	#; Author:         Aleksandar Djakovic
+	#; AND881
+	#; This logic was originally in %xdbcperf.MAC
+	#; It is called from DBSRV function P2 (Ping 2)
+	#; I believe it is only used by QD for testing, 
+	#; but we do not ship %xdbcperf with the product so DPV6650 moved the code here.
+	#;------------------------------------------------------
+xdbcperf()	;
+	set x=$zobjexport(%qmsgid,1),x=$zobjexport(%qacn,2)
+	set flavor=$zobjexport(12)
+	if (flavor=0) {
+	} else {
+		set reserved=$zobjexport(12),type=$zobjexport(12)
+		if (type=0) {
+			set itemCount=$zobjexport(12)
+			for i=1:1:itemCount { set items(itemCount)=$zobjexport(12) }
+		} else {
+			set itemSize=$zobjexport(12)
+			set item=$zobjexport(itemSize,13)
+		}
+		if (flavor>1) {
+			if (type=0) {
+				set x=$zobjexport(itemCount,3)
+				for i=1:1:itemCount { set x=$zobjexport(items(itemCount),3) }
+			} else {
+				set x=$zobjexport(itemSize,3)
+				set x=$zobjexport(item,5)
+			}
+		}
+	}
+	set x=$zobjexport(0,8)
+	RETURN
+.
+ // THE FOLLOWING CODE IS *ALMOST* THE SAME AS IN %SYS.BINDSRV
+ // UPDATES TO THIS MOST LIKELY NEED TO BE MADE IN %SYS.BINDSRV AS WELL
+ //==============
+ 
+ // 1 piece at getCommon
+ // 
+ // srv_output_branch:
+ // n pieces at getCommon
+ // 
+ // srv_output_branch1:
+ // 1 piece at real time
+ // 
+ // srv_output_branch2:
+ // 1 piece at real time + cache
+ //
+ // srv_output_branch3:
+ // n pieces at real time + cache
+ //
+ //	FOR addToOutput IN DBSRV, ALWAYS BUFFER
+ 
+addToOutput(str, func, val)      
+{
+	if $d($$$srv),$zb($$$qserveroptions($$$qdev),32,1) {
+		if $$$logging { do ##class(%SYS.DBSRV).logappend("addToOutput device redirection on: str="_str_"', func="_func_", val=",val) }
+		RETURN:##class(%Net.Remote.Gateway).%RedirectOutput(str)
+	}
+	
+	set lastGlobalRef = $zr 
+	if lastGlobalRef'="" { set old68val=$zu(68,1,1) }
+	if $d($$$srv),$$$logging { do ##class(%SYS.DBSRV).logappend("addToOutput: str="_str_"', func="_func_", val=",val) }
+	If $d($$$bufferSrvOutput) {
+		$$$SysLog(3,"Output Redirection", func, val)
+		if ($g(%clientVersion)="") { $$$setBufferSrvOutput(1) }
+		if (($length($$$outLastPieceVar) + $length(str)) '> $$$maxOutputPieceLen) { 
+			set $$$outLastPieceVar=$$$outLastPieceVar_str 
+		} else {
+			if $i($$$outCountVar) {}
+			set $$$outLastPieceVar = str
+		}
+	}
+	if lastGlobalRef'="" { if $d(@lastGlobalRef) }
+	if lastGlobalRef'="" { do $zu(68,1,old68val) }
+	RETURN
+}
+ 
+	#; Write str
+wstr(str) public { do addToOutput(str, "wstr", str) RETURN }
+ 
+	#; Write *a
+wchr(ch) public { do addToOutput(ch, "wchr", ch) RETURN }
+ 
+	#; Write ?n 
+wtab(num) public { set str="" for ii=1:1:num { set str=str_" " } do addToOutput(str, "wtab", num) RETURN }
+  
+	#; Write !
+wnl() public { do addToOutput($c(13,10), "wnl", "") RETURN }
+ 
+	#; Write #
+wff() public { do addToOutput($c(13,10,13,10), "wff", "") RETURN }
+ 
+rstr(len,time) public {	RETURN "" }
+ 
+rchr(time) public { RETURN "" }
+---

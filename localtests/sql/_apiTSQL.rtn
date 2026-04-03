@@ -1,0 +1,24 @@
+====
+apiTSQL
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%apiTSQL^MAC^^^0
+%apiTSQL ; TSQL compiler - shell and miscellaneous
+	;; COMPONENTS :: SQL/Runtime/DDL
+	#;
+  Quit ##class(%TSQL.Manager).interactive()
+.
+ // the TSQL shell
+Shell() PUBLIC {
+	quit ##class(%TSQL.Manager).interactive()
+}
+.
+.
+ // log a message to %xsqllogging
+Log(message) PUBLIC {
+	Do ##class(%XSQL.Reporting).Log(message)
+}
+ 
+.
+---

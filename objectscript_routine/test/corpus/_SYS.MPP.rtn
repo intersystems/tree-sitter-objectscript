@@ -1,0 +1,2170 @@
+====
+SYS.MPP
+====
+^MAC^Save for Source Control^^~Format=IRIS.S~^UTF8
+%RO
+%SYS.MPP^MAC^^^0
+	;%SYS.MPP.MAC
+	;; COMPONENTS :: IRIS/MPP
+	#;
+	
+#INCLUDE %msql
+.
+#IF 0   ;--------------------------------------------------------------------------------
+	; Description:    Macro Pre-Processor (MPP) System Helper Methods
+	; Author:         Michael Pantaleo
+	; Date Started:   08/20/2020
+	; Maintenance History: [XXXnnn (MM/DD/YY) - Description]
+	;
+	;  MRP1256 (05/28/2021) - [DP-405968] MPP: Create APIs/Methods to Set/Get Macro Pre-Processor Configuration Settings
+	;  MRP1217 (08/20/2020) - [DP-13436]  MPP: Enhance the MPP to identify Recursive/Self-Referencing $$$MACRO[(arg)]s and report more appropriate compilation errors
+	;
+	;--------------------------------------------------------------------------------
+	;                             I N F O R M A T I O N
+	;--------------------------------------------------------------------------------
+	; 
+	; This routine contains System Helper methods that are used by the Macro 
+	; Pre-Processor (MPP) routine '%qarmac.MAC' to perform the following tasks:
+	;
+	;    - initializeMPPOption(...)      // Initialize MPP Configuration Settings [Internal]
+	;    - SetMPPOption(...)             // Set MPP Configuration Settings 'optionName' value
+	;    - GetMPPOption(...)             // Get MPP Configuration Settings 'optionName' value
+	;    - etc...
+	;
+#ENDIF  ;--------------------------------------------------------------------------------
+	$$$Abort  ;  Not an Entry Point!!
+	QUIT
+ 	#;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+.
+/// -------------------------------------------------------------------------------
+/// Method:       initializeMPPOption
+/// Definition:   This method initializes/sets the specified Macro Pre-Processor
+///               (MPP) Configuration Settings (optionName) to the value from its
+///               corresponding System Configuration global:
+///
+///                     ----------  MPP System Configuration ----------
+///                  optionName/$ZU(slot)       $$$MACROname/global
+///                  -------------------------  -----------------------------------  
+///                  MPPParsingMode             $$$getMPPParsingModeGlo
+///                    $ZU(35,15)                 ^%SYS("MPP","Parsing","Mode")
+///                  MacroMaxRecursionNoArg     $$$getMacroMaxRecursionNoArgGlo
+///                    $ZU(35,16)                 ^%SYS("MPP","MacroRecursion","NoArg")
+///                  MacroMaxRecursionGotArg    $$$getMacroMaxRecursionGotArgGlo
+///                    $ZU(35,17)                 ^%SYS("MPP","MacroRecursion","GotArg")
+///                  ALL                        Set all 'optionName' values
+///
+///               If the System Configuration global is not defined, then set the
+///               value to the Default value for the given 'optionName'.
+///
+///               [See the 'SetMPPOption(...)' method for additional details]
+///
+///               This method returns the 'optionValue' as well as the invocation
+///               status via the PBR parameter 'tSC'.
+/// 
+/// Notes:        - Initializing an MPP Configuration Setting will affect all 
+///                 processes immediately.
+///               - This is a system-wide setting.
+/// 
+/// Invocation:   This method can be invoked in the following ways:
+///                  ObjectScript: $$initializeMPPOption^%SYS.MPP(...)
+///                           SQL: N/A
+///
+/// Examples:     The following examples shows the use of this method:
+/// 
+///    #1         Initialize the 'MPPParsingMode' option of the Macro Pre-Processor
+///               to the value specified by the 'Definition' above:
+/// 
+///               set optionValue=$$initializeMPPOption^%SYS.MPP("MPPParsingMode",.tSC)
+///
+///    #2         Initialize all Configuration Settings options of the Macro Pre-Processor
+///               to the value specified by the 'Definition' above:
+/// 
+///               set optionInfoList=$$initializeMPPOption^%SYS.MPP("ALL",.tSC)
+/// 
+/// Data Storage: ^%SYS("MPP","Parsing") & ^%SYS("MPP","MacroRecursion")
+/// 
+/// Parameters:
+///    optionName     - The Pre-Processor (MPP) Configuration Settings 'option'
+///                     name.
+///                     The following is a list of currently supported Macro
+///                     Pre-Processor Configuration Settings Options:
+///                        - MPPParsingMode
+///                        - MacroMaxRecursionNoArg
+///                        - MacroMaxRecursionGotArg
+///                        - ALL  (Set all 'optionName' values)
+///    tSC            - A Pass By Reference (PBR) parameter which returns the
+///                     status from the invocation of this method
+///    
+/// RETURN Value: The current value of the specified Macro Pre-Processor (MPP) 
+///               Configuration Settings 'optionName'.
+///               NOTE: If 'optionName' is passed the value "ALL", then return
+///                     a $LIST(...) of a $LIST(...) of the following values for
+///                     each of the valid 'optionName' values:
+///                        $LIST($LIST(optionName,optionValue,tSC),...)
+/// -------------------------------------------------------------------------------
+///
+initializeMPPOption(optionName = "", &tSC) [] PUBLIC {
+	QUIT $$initializeMPPOptionPriv(optionName, .tSC)
+}
+.
+/// PRIVATE Method for 'initializeMPPOption(...)'
+initializeMPPOptionPriv(optionName = "", &tSC) [] PRIVATE {
+ 
+	new %objlasterror
+ 	set tSC=$$$OK
+.
+	$$$AddAllRoleTemporary
+.
+	set optionNameUP=$$$UPPER(optionName)
+ 	set optionValue=""
+.
+ try {	// --- Ensure $ZU() Function Implementation --- 	
+	if optionNameUP="MPPPARSINGMODE" { // --- Process MPP Configuration Settings Option: MPPParsingMode ---
+ 		#; --- Set MPP Config Setting: MPPParsingMode ::= {$$$MPPParsingModeStandard | $$$MPPParsingModeEnhanced} ---
+ 		set optionValue=$$$getMPPParsingModeGlo
+ 		if 'optionValue { set optionValue=$$$MPPParsingModeDefault $$$setMPPParsingModeGlo(optionValue) }
+ 		$$$setMPPParsingMode(optionValue)
+	}
+	elseif optionNameUP="MACROMAXRECURSIONNOARG" { // --- Process MPP Configuration Settings Option: MacroMaxRecursionNoArg ---
+ 		#; --- Set MPP Config Setting: MacroMaxRecursionNoArg ::= {3...n} to Eliminate Recursive $$$MACRO Invocations ---
+ 		set optionValue=$$$getMacroMaxRecursionNoArgGlo
+ 		if 'optionValue { set optionValue=$$$MacroMaxRecursionNoArgDefault $$$setMacroMaxRecursionNoArgGlo(optionValue) }
+ 		$$$setMacroMaxRecursionNoArg(optionValue)
+	}
+	elseif optionNameUP="MACROMAXRECURSIONGOTARG"  { // --- Process MPP Configuration Settings Option: MacroMaxRecursionGotArg ---
+ 		#; --- Set MPP Config Setting: MacroMaxRecursionGotArg ::= {10...n} to Eliminate Recursive $$$MACRO(args) Invocations ---
+ 		set optionValue=$$$getMacroMaxRecursionGotArgGlo
+ 		if 'optionValue { set optionValue=$$$MacroMaxRecursionGotArgDefault $$$setMacroMaxRecursionGotArgGlo(optionValue) }
+ 		$$$setMacroMaxRecursionGotArg(optionValue)
+	}
+	elseif optionNameUP="ALL" { // --- Process MPP Configuration Settings Option: All Options ---
+		for optionName="MPPParsingMode","MacroMaxRecursionNoArg","MacroMaxRecursionGotArg" { // --- Initialize All MPP Configuration Settings Options ---
+			set optionValueAll=$$initializeMPPOptionPriv(optionName,.tSCAll)
+			set $LIST(optionValue,*+1)=$LB(optionName,optionValueAll,tSCAll)
+			set:$$$ISERR(tSCAll)&&$$$ISOK(tSC) tSC=tSCAll
+		}
+	}
+	else { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionName' parameter must be a valid value") THROW }
+ }
+ catch {
+	set:tSC=$$$OK tSC=$$$ERROR($$$ObjectScriptError,$ze)
+ }
+	QUIT optionValue
+}
+.
+	#;----------------------------------------------------------------------------------
+	#;   S E T / G E T   M A C R O  P R E - P R O C E S S O R (MPP)   M E T H O D S
+	#;----------------------------------------------------------------------------------
+	#; The following methods are used to set/get the Macro Pre-Processor (MPP)
+	#; Configuration Settings:
+	#;
+	#;    - SetMPPOption(...)
+	#;    - GetMPPOption(...)
+	#;
+	#;----------------------------------------------------------------------------------
+.
+/// -------------------------------------------------------------------------------
+/// Method:       SetMPPOption
+/// Definition:   This method sets the specified Macro Pre-Processor (MPP)
+///               Configuration Settings 'optionName' to the specified 
+///               'optionValue'.
+///               This method also returns the original value via the PBR 
+///               'oldValue' parameter, along with the invocation status
+///               via the method's return value.
+///
+/// Options:      The following is a list of currently supported Macro 
+///               Pre-Processor Configuration Settings Options:
+///
+///                  optionName/optionValue     Description
+///                  -------------------------  -----------------------------------
+///                  MPPParsingMode           - The MPP's Parsing Mode
+///                     {1 | 2}
+///                      1 - Standard Macro Pre-Processor Parsing  [$$$MPPParsingModeStandard]
+///                      2 - Enhanced Macro Pre-Processor Parsing  [$$$MPPParsingModeEnhanced]
+///                          This mode supports $$$MACRO[(args)] Recursion Parsing
+///                                             [DEFAULT: 1 = $$$MPPParsingModeDefault]
+///                  MacroMaxRecursionNoArg   - The maximum allowed sub-string 
+///                                             repetitions between $$$MACRO
+///                                             references (without arguments) of 
+///                                             the same name
+///                     {3...n}
+///                      3 - The minimum number to determine $$$MACRO Recursive
+///                          Referencing or Self-Referencing
+///                      n - This number can be increased, but should never need
+///                          to be for $$$MACRO references without arguments
+///                                             [DEFAULT: 3 = $$$MacroMaxRecursionNoArgDefault]
+///                  MacroMaxRecursionGotArg  - The maximum allowed sub-string
+///                                             repetitions between $$$MACRO(...)
+///                                             references (with arguments) of 
+///                                             the same name
+///                     {10...n}
+///                      10 - The minimum number to determine $$$MACRO(...) 
+///                           Recursive Referencing or Self-Referencing
+///                       n - This number can be increased for $$$MACRO(...)
+///                           references (with arguments) that may exceed 10 
+///                           nesting levels, but this should be very rare
+///                              Example: $$$A($$$A($$$A(...)))
+///                                             [DEFAULT: 10 $$$MacroMaxRecursionGotArgDefault]
+///
+/// Restriction:  You must have the "USE" permission on the %Admin Manage Resource 
+///               in order to change this MPP Configuration Setting.
+///
+/// Notes:        - Changing this MPP Configuration Setting will affect all
+///                 processes immediately.
+///               - This is a system-wide setting.
+/// 
+/// Invocation:   This method can be invoked in the following ways:
+///                  ObjectScript: $$SetMPPOption^%SYS.MPP(...)
+///                                $SYSTEM.OBJ.SetMPPOption(...)
+///                           SQL: N/A
+/// 
+/// Examples:     The following examples shows the use of this method:
+///
+///    #1         Set the 'MPPParsingMode' option of the Macro Pre-Processor
+///               to the value two (2), which specifies the use of the Enhanced
+///               Parsing to check for $$$MACRO[(args)] Recursion:
+/// 
+///               set tSC=$$SetMPPOption^%SYS.MPP("MPPParsingMode",2,.oldVal)
+/// 
+/// Data Storage: ^%SYS("MPP","Parsing") & ^%SYS("MPP","MacroRecursion")
+///
+/// Internal Note: The value for each of the Macro Pre-Processor configuration
+///                settings is stored in the following two locations:
+///                   - System-Global: ^%SYS("MPP",...)
+///                   - System-Slot:   $ZU(35,n)
+///
+///                The value stored in the System-Global is meant to be
+///                a permanent storage location, while the value stored
+///                in the corresponding System-Slot is meant to hold the
+///                same value, but with significant performance traits.
+///                These two values are intended to remain in sync after
+///                being initialized during system startup (^STU).
+///
+///                The following rules govern the value of each MPP's
+///                Configuration Setting based on the given context:
+///                   STU.MAC (MPP)
+///                     1) Retrieve the value from the System-Global
+///                     2) If the value is undefined, set the System-Global
+///                        to the Default value
+///                     3) Set the System-Slot to the value from (1) or (2)
+///
+///                    %SYS.MPP.MAC (SetMPPOption)
+///                     1) Retrieve the 'oldValue' from the System-Slot
+///                     2) Set System-Global to the 'optionValue'
+///                     3) Set System-Slot to the 'optionValue'
+///
+///                    %SYS.MPP.MAC (GetMPPOption)
+///                     1) If 'getGloValue=0', retrieve the 'oldValue' from the System-Slot
+///                     2) If 'getGloValue=1', retrieve the 'oldValue' from the System-Global
+///                   
+///                It's important to note that the value of each MPP's
+///                Configuration Setting should not be changed by modifying
+///                either the System-Global or the System-Slot directly,
+///                but rather, the value should only be changed by the  
+///                following method invocation (maintaining value integrity):
+///                   $$SetMPPOption^%SYS.MPP(...)     [Internal Invocation]
+///                      OR
+///                   $SYSTEM.OBJ.SetMPPOption(...)    [External Invocation]
+/// 
+/// Parameters:
+///    optionName     - The Pre-Processor (MPP) Configuration Settings 
+///                     'option' name.
+///                     The following is a list of currently supported Macro
+///                     Pre-Processor Configuration Settings Options:
+///                        - MPPParsingMode
+///                        - MacroMaxRecursionNoArg
+///                        - MacroMaxRecursionGotArg
+///    optionValue    - The value to set for the specified 'optionName'
+///    oldValue       - A Pass By Reference (PBR) parameter which returns
+///                     the old MPP Configuration Setting value
+///    
+/// RETURN Value: The status from the invocation of this method
+/// -------------------------------------------------------------------------------
+///
+SetMPPOption(optionName = "", optionValue = "", &oldValue) [] PUBLIC {
+.
+	QUIT:'$SYSTEM.Security.Check($$$AdminOperateResourceName,$$$PermUseName) $$$ERROR($$$OperationRequires,$$$AdminOperateResourceName_":"_$$$PermUseName)
+.
+	new %objlasterror
+ 	set tSC=$$$OK
+.
+	set optionNameUP=$$$UPPER(optionName)
+ 	set oldValue=""
+	
+ try {
+	if optionNameUP="MPPPARSINGMODE" { // --- Process MPP Configuration Settings Option: MPPParsingMode ---
+		if ",1,2,"'[(","_optionValue_",") { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionValue' parameter must be one of the following values for the given 'optionName': {1 | 2}") THROW }
+		set oldValue=$$$getMPPParsingMode     // Get the configuration setting from the System-Slot!
+		$$$setMPPParsingModeGlo(optionValue)  // Set the configuration setting into the System-Global!
+		$$$setMPPParsingMode(optionValue)     // Set the configuration setting into the System-Slot!
+	}
+	elseif optionNameUP="MACROMAXRECURSIONNOARG" { // --- Process MPP Configuration Settings Option: MacroMaxRecursionNoArg ---
+		if optionValue<3 { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionValue' parameter must be one of the following values for the given 'optionName': {3...n}") THROW }
+		set oldValue=$$$getMacroMaxRecursionNoArg     // Get the configuration setting from the System-Slot!
+		$$$setMacroMaxRecursionNoArgGlo(optionValue)  // Set the configuration setting into the System-Global!
+		$$$setMacroMaxRecursionNoArg(optionValue)     // Set the configuration setting into the System-Slot!
+	}
+	elseif optionNameUP="MACROMAXRECURSIONGOTARG"  { // --- Process MPP Configuration Settings Option: MacroMaxRecursionGotArg ---
+		if optionValue<10 { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionValue' parameter must be one of the following values for the given 'optionName': {10...n}") THROW }
+		set oldValue=$$$getMacroMaxRecursionGotArg     // Get the configuration setting from the System-Slot!
+		$$$setMacroMaxRecursionGotArgGlo(optionValue)  // Set the configuration setting into the System-Global!
+		$$$setMacroMaxRecursionGotArg(optionValue)     // Set the configuration setting into the System-Slot!
+	}
+	else { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionName' parameter must be a valid value") THROW }
+ }
+ catch {
+	set:tSC=$$$OK tSC=$$$ERROR($$$ObjectScriptError,$ze)
+ }
+	QUIT tSC
+}
+.
+/// -------------------------------------------------------------------------------
+/// Method:       GetMPPOption
+/// Definition:   This method returns the current value for the specified 
+///               Macro Pre-Processor (MPP) Configuration Settings 'optionName'
+///
+/// Options:      The following is a list of currently supported Macro 
+///               Pre-Processor Configuration Settings Options:
+///
+///                  optionName                 Description
+///                  -------------------------  -----------------------------------
+///                  MPPParsingMode           - The MPP's Parsing Mode
+///                                                {1 | 2}
+///                  MacroMaxRecursionNoArg   - The maximum allowed sub-string 
+///                                             repetitions between $$$MACRO
+///                                             references (without arguments) of 
+///                                             the same name
+///                                                {3...n}
+///                  MacroMaxRecursionGotArg  - The maximum allowed sub-string
+///                                             repetitions between $$$MACRO(...)
+///                                             references (with arguments) of 
+///                                             the same name
+///                                                {10...n}
+///                  ALL                        Get all 'optionName' values
+///
+/// Notes:        - See the 'SetMPPOption(...)' method for specific details
+///                 about each of the 'optionName' values
+/// 
+/// Invocation:   This method can be invoked in the following ways:
+///                  ObjectScript: $$GetMPPOption^%SYS.MPP(...)
+///                                $SYSTEM.OBJ.GetMPPOption(...)
+///                           SQL: N/A
+/// 
+/// Examples:     The following examples shows the use of this method:
+/// 
+///    #1         Get the current value for the 'MPPParsingMode' option of 
+///               the Macro Pre-Processor Configuration Settings
+/// 
+///               set optVal=$$GetMPPOption^%SYS.MPP("MPPParsingMode",.tSC)
+/// 
+/// Data Storage: ^%SYS("MPP","Parsing") & ^%SYS("MPP","MacroRecursion")
+/// 
+/// Parameters:
+///    optionName     - The Pre-Processor (MPP) Configuration Settings 
+///                     'option' name.
+///                     The following is a list of currently supported Macro
+///                     Pre-Processor Configuration Settings Options:
+///                        - MPPParsingMode
+///                        - MacroMaxRecursionNoArg
+///                        - MacroMaxRecursionGotArg
+///                        - ALL  (Get all 'optionName' values)
+///    tSC            - A Pass By Reference (PBR) parameter which returns
+///                     the status from the invocation of this method
+///    getGloValue    - 0 = Don't retrieve the value from the System-Global  [DEFAULT]
+///                     1 = Retrieve the value from the System-Global
+///                       NOTE: This parameter should be used for 
+///                             internal purposes only!
+///    
+/// RETURN Value: The current value of the specified Macro Pre-Processor (MPP) 
+///               Configuration Settings 'optionName'.
+///               NOTE: If 'optionName' is passed the value "ALL", then return
+///                     a $LIST(...) of a $LIST(...) of the following values for
+///                     each of the valid 'optionName' values:
+///                        $LIST($LIST(optionName,optionValue,tSC),...)
+/// -------------------------------------------------------------------------------
+///
+GetMPPOption(optionName = "", &tSC, getGloValue = 0) [] PUBLIC {
+.
+	new %objlasterror
+ 	set tSC=$$$OK
+.
+	set optionNameUP=$$$UPPER(optionName)
+ 	set optionValue=""
+.
+ try {
+	if optionNameUP="MPPPARSINGMODE" { // --- Process MPP Configuration Settings Option: MPPParsingMode ---
+		set optionValue=$s(getGloValue:$$$getMPPParsingModeGlo,1:$$$getMPPParsingMode)   // Get the configuration setting from the System-Slot or System-Global!
+	}
+	elseif optionNameUP="MACROMAXRECURSIONNOARG" { // --- Process MPP Configuration Settings Option: MacroMaxRecursionNoArg ---
+		set optionValue=$s(getGloValue:$$$getMacroMaxRecursionNoArgGlo,1:$$$getMacroMaxRecursionNoArg)     // Get the configuration setting from the System-Slot or System-Global!
+	}
+	elseif optionNameUP="MACROMAXRECURSIONGOTARG"  { // --- Process MPP Configuration Settings Option: MacroMaxRecursionGotArg ---
+		set optionValue=$s(getGloValue:$$$getMacroMaxRecursionGotArgGlo,1:$$$getMacroMaxRecursionGotArg)   // Get the configuration setting from the System-Slot or System-Global!
+	}
+	elseif optionNameUP="ALL" { // --- Process MPP Configuration Settings Option: All Options ---
+		for optionName="MPPParsingMode","MacroMaxRecursionNoArg","MacroMaxRecursionGotArg" { // --- Get All MPP Configuration Settings Options ---
+			set optionValueAll=$$GetMPPOption(optionName,.tSCAll,getGloValue)
+			set $LIST(optionValue,*+1)=$LB(optionName,optionValueAll,tSCAll)
+			set:$$$ISERR(tSCAll)&&$$$ISOK(tSC) tSC=tSCAll
+		}
+	}
+	else { set tSC=$$$ERROR($$$ObjectScriptError,"The 'optionName' parameter must be a valid value") THROW }
+ }
+ catch {
+	set:tSC=$$$OK tSC=$$$ERROR($$$ObjectScriptError,$ze)
+ }
+	QUIT optionValue
+}
+.
+---
+
+(source_file
+  (compiled_header)
+  (line_comment_3)
+  (line_comment_3)
+  (line_comment_2)
+  (statement
+    (pound_include
+      (keyword_pound_include)
+      (class_name)))
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case)
+      (keyword_pound_endif)))
+  (line_comment_3)
+  (statement
+    (command_macro
+      (macro
+        (macro_constant))))
+  (line_comment_3)
+  (statement
+    (command_quit
+      (keyword_quit)))
+  (line_comment_2)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (bracket)
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))
+          (bracket)))
+      (procedure_pub_vars)
+      (keyword_public)
+      (statement
+        (command_quit
+          (keyword_quit)
+          (expression
+            (expr_atom
+              (extrinsic_function
+                (objectscript_identifier)
+                (method_args
+                  (bracket)
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (bracket)))))))))
+  (documatic_line)
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (bracket)
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))
+          (bracket)))
+      (procedure_pub_vars)
+      (keyword_private)
+      (statement
+        (command_new
+          (keyword_new)
+          (command_new_argument
+            (command_new_item
+              (lvn
+                (objectscript_identifier_special))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_constant)))))))
+      (statement
+        (command_macro
+          (macro
+            (macro_constant))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_function
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))
+                      (bracket)))))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_trycatch
+          (keyword_try)
+          (line_comment_1)
+          (statement
+            (command_if
+              (keyword_if)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))
+              (line_comment_1)
+              (line_comment_2)
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (set_target
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_constant)))))))
+              (statement
+                (command_if
+                  (keyword_if)
+                  (expression
+                    (expr_atom
+                      (unary_expression
+                        (unary_operator)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))))
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (set_argument
+                        (set_target
+                          (glvn
+                            (lvn
+                              (objectscript_identifier))))
+                        (expression
+                          (expr_atom
+                            (macro
+                              (macro_constant)))))))
+                  (statement
+                    (command_macro
+                      (macro
+                        (macro_function
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))
+                            (bracket))))))))
+              (statement
+                (command_macro
+                  (macro
+                    (macro_function
+                      (method_args
+                        (bracket)
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))
+                        (bracket))))))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (line_comment_2)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (statement
+                  (command_if
+                    (keyword_if)
+                    (expression
+                      (expr_atom
+                        (unary_expression
+                          (unary_operator)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_constant)))))))
+                    (statement
+                      (command_macro
+                        (macro
+                          (macro_function
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (bracket))))))))
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket)))))))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (line_comment_2)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (statement
+                  (command_if
+                    (keyword_if)
+                    (expression
+                      (expr_atom
+                        (unary_expression
+                          (unary_operator)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_constant)))))))
+                    (statement
+                      (command_macro
+                        (macro
+                          (macro_function
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (bracket))))))))
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket)))))))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_for
+                    (keyword_for)
+                    (for_parameter
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal)))))
+                    (line_comment_1)
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (extrinsic_function
+                                (objectscript_identifier)
+                                (method_args
+                                  (bracket)
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (byref_arg
+                                      (lvn
+                                        (objectscript_identifier))))
+                                  (bracket))))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (system_defined_function
+                              (dollar_list
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (dollar_func_pos
+                                  (expression
+                                    (expr_atom
+                                      (numeric_literal)))))))
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (dollar_function
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))))))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (post_conditional
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_function
+                                  (method_args
+                                    (bracket)
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))))
+                                    (bracket)))))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_function
+                                      (method_args
+                                        (bracket)
+                                        (method_arg
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier)))))
+                                        (bracket)))))))))
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))))))))
+              (else_block
+                (keyword_else)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_function
+                              (method_args
+                                (bracket)
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (macro
+                                        (macro_constant)))))
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))
+                                (bracket)))))))))
+                (statement
+                  (command_throw
+                    (keyword_throw))))))
+          (catch_block
+            (keyword_catch)
+            (statement
+              (command_set
+                (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (set_argument
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_function
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (system_defined_variable))))
+                            (bracket))))))))))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))))
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (line_comment_2)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (bracket)
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))
+          (bracket)))
+      (procedure_pub_vars)
+      (keyword_public)
+      (statement
+        (command_quit
+          (keyword_quit)
+          (post_conditional
+            (expression
+              (expr_atom
+                (unary_expression
+                  (unary_operator)
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollarsf
+                          (objectscript_identifier)
+                          (objectscript_identifier)
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (bracket))))))))))
+          (expression
+            (expr_atom
+              (macro
+                (macro_function
+                  (method_args
+                    (bracket)
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (string_literal))))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_constant)))))))
+                    (bracket))))))))
+      (statement
+        (command_new
+          (keyword_new)
+          (command_new_argument
+            (command_new_item
+              (lvn
+                (objectscript_identifier_special))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_constant)))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_function
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))
+                      (bracket)))))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_trycatch
+          (keyword_try)
+          (statement
+            (command_if
+              (keyword_if)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))
+              (line_comment_1)
+              (statement
+                (command_if
+                  (keyword_if)
+                  (expression
+                    (expr_atom
+                      (string_literal))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (parenthetical_expression
+                            (bracket)
+                            (expression
+                              (expr_atom
+                                (string_literal))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))
+                              (expr_tail
+                                (binary_operator)
+                                (expression
+                                  (expr_atom
+                                    (string_literal)))))
+                            (bracket))))))
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (set_argument
+                        (set_target
+                          (glvn
+                            (lvn
+                              (objectscript_identifier))))
+                        (expression
+                          (expr_atom
+                            (macro
+                              (macro_function
+                                (method_args
+                                  (bracket)
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (macro
+                                          (macro_constant)))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (string_literal))))
+                                  (bracket)))))))))
+                  (statement
+                    (command_throw
+                      (keyword_throw)))))
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (set_target
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))
+                    (expression
+                      (expr_atom
+                        (macro
+                          (macro_constant)))))))
+              (line_comment_1)
+              (statement
+                (command_macro
+                  (macro
+                    (macro_function
+                      (method_args
+                        (bracket)
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))
+                        (bracket))))))
+              (line_comment_1)
+              (statement
+                (command_macro
+                  (macro
+                    (macro_function
+                      (method_args
+                        (bracket)
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))
+                        (bracket))))))
+              (line_comment_1)
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_if
+                    (keyword_if)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_function
+                                  (method_args
+                                    (bracket)
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (macro
+                                            (macro_constant)))))
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (bracket)))))))))
+                    (statement
+                      (command_throw
+                        (keyword_throw)))))
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (line_comment_1)
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket))))))
+                (line_comment_1)
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket))))))
+                (line_comment_1))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_if
+                    (keyword_if)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_function
+                                  (method_args
+                                    (bracket)
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (macro
+                                            (macro_constant)))))
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (string_literal))))
+                                    (bracket)))))))))
+                    (statement
+                      (command_throw
+                        (keyword_throw)))))
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (line_comment_1)
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket))))))
+                (line_comment_1)
+                (statement
+                  (command_macro
+                    (macro
+                      (macro_function
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
+                          (bracket))))))
+                (line_comment_1))
+              (else_block
+                (keyword_else)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_function
+                              (method_args
+                                (bracket)
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (macro
+                                        (macro_constant)))))
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))
+                                (bracket)))))))))
+                (statement
+                  (command_throw
+                    (keyword_throw))))))
+          (catch_block
+            (keyword_catch)
+            (statement
+              (command_set
+                (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (set_argument
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_function
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (system_defined_variable))))
+                            (bracket))))))))))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))))))
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (documatic_line)
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list
+          (bracket)
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (string_literal))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (bracket)))
+      (procedure_pub_vars)
+      (keyword_public)
+      (statement
+        (command_new
+          (keyword_new)
+          (command_new_argument
+            (command_new_item
+              (lvn
+                (objectscript_identifier_special))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_constant)))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (macro
+                  (macro_function
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))
+                      (bracket)))))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_trycatch
+          (keyword_try)
+          (statement
+            (command_if
+              (keyword_if)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (string_literal)))))
+              (line_comment_1)
+              (statement
+                (command_set
+                  (keyword_set)
+                  (set_argument
+                    (set_target
+                      (glvn
+                        (lvn
+                          (objectscript_identifier))))
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (dollar_select
+                            (dollar_arg_pair
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier))))
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (dollar_arg_pair
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant))))))))))))
+              (line_comment_1)
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_select
+                              (dollar_arg_pair
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (expression
+                                  (expr_atom
+                                    (macro
+                                      (macro_constant)))))
+                              (dollar_arg_pair
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (expression
+                                  (expr_atom
+                                    (macro
+                                      (macro_constant))))))))))))
+                (line_comment_1))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_select
+                              (dollar_arg_pair
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (expression
+                                  (expr_atom
+                                    (macro
+                                      (macro_constant)))))
+                              (dollar_arg_pair
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (expression
+                                  (expr_atom
+                                    (macro
+                                      (macro_constant))))))))))))
+                (line_comment_1))
+              (elseif_block
+                (keyword_elseif)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (line_comment_1)
+                (statement
+                  (command_for
+                    (keyword_for)
+                    (for_parameter
+                      (glvn
+                        (lvn
+                          (objectscript_identifier)))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (for_parameter_arg
+                        (expression
+                          (expr_atom
+                            (string_literal)))))
+                    (line_comment_1)
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (extrinsic_function
+                                (objectscript_identifier)
+                                (method_args
+                                  (bracket)
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (byref_arg
+                                      (lvn
+                                        (objectscript_identifier))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (bracket))))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (set_argument
+                          (set_target
+                            (system_defined_function
+                              (dollar_list
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier))))
+                                (dollar_func_pos
+                                  (expression
+                                    (expr_atom
+                                      (numeric_literal)))))))
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (dollar_function
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier))))))))))))
+                    (statement
+                      (command_set
+                        (keyword_set)
+                        (post_conditional
+                          (expression
+                            (expr_atom
+                              (macro
+                                (macro_function
+                                  (method_args
+                                    (bracket)
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier)))))
+                                    (bracket)))))
+                            (expr_tail
+                              (binary_operator)
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_function
+                                      (method_args
+                                        (bracket)
+                                        (method_arg
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier)))))
+                                        (bracket)))))))))
+                        (set_argument
+                          (set_target
+                            (glvn
+                              (lvn
+                                (objectscript_identifier))))
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))))))))
+              (else_block
+                (keyword_else)
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (glvn
+                          (lvn
+                            (objectscript_identifier))))
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_function
+                              (method_args
+                                (bracket)
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (macro
+                                        (macro_constant)))))
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (string_literal))))
+                                (bracket)))))))))
+                (statement
+                  (command_throw
+                    (keyword_throw))))))
+          (catch_block
+            (keyword_catch)
+            (statement
+              (command_set
+                (keyword_set)
+                (post_conditional
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))))
+                (set_argument
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (macro
+                        (macro_function
+                          (method_args
+                            (bracket)
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (macro
+                                    (macro_constant)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (system_defined_variable))))
+                            (bracket))))))))))))
+      (statement
+        (command_quit
+          (keyword_quit)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
