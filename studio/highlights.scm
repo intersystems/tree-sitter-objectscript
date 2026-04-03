@@ -11,3 +11,5 @@
 
 ; &sql -> purple
 
+
+(dotted_statement) @punctuation.special.dots

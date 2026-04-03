@@ -1,184 +1,335 @@
 ====
-Valid Nested #if 0 Special Case In Routine
+Valid #if Statements
 ====
-Routine test [Type=mac]
-cond()
-#IF 0
-  QUIT:op["NULL" "#endif should not close"]
-#ELSE
-  #IF 0
-    QUIT "inner"
-  #ELSE
-    QUIT "outer"
-  #ENDIF
-#ENDIF
+ KILL ^MyColor, ^MyNumber
+#define ColorDay $ZDate($H,12)
+#if $$$ColorDay="Monday"
+ SET ^MyColor = "Red"
+ SET ^MyNumber = 1
+#elseIf $$$ColorDay="Tuesday"
+ SET ^MyColor = "Orange"
+ SET ^MyNumber = 2
+#elseIf $$$ColorDay="Wednesday"
+ SET ^MyColor = "Yellow"
+ SET ^MyNumber = 3
+#elseIf $$$ColorDay="Thursday"
+ SET ^MyColor = "Green"
+ SET ^MyNumber = 4
+#elseIf $$$ColorDay="Friday"
+ SET ^MyColor = "Blue"
+ SET ^MyNumber = 5
+#else
+ SET ^MyColor = "Purple"
+ SET ^MyNumber = -1
+#endif
+ WRITE ^MyColor, ", ", ^MyNumber
 ---
 
 (source_file
-  (routine)
-  (routine_name)
-  (routine_type)
   (statement
-    (tag_with_params
-      (tag)
-      (parameter_list
-        (bracket)
-        (bracket))))
+    (command_kill
+      (keyword_kill)
+      (kill_argument
+        (kill_target
+          (glvn
+            (gvn))))
+      (kill_argument
+        (kill_target
+          (glvn
+            (gvn))))))
+  (statement
+    (pound_define
+      (keyword_pound_define)
+      (macro_def)
+      (macro_value
+        (macro_value_line))))
   (statement
     (pound_if
       (keyword_pound_if)
-      (pound_if_special_case_else)
-      (keyword_pound_else)))
-  (statement
-    (pound_if
-      (keyword_pound_if)
-      (pound_if_special_case_else)
-      (keyword_pound_else)))
-  (statement
-    (command_quit
-      (keyword_quit)
       (expression
         (expr_atom
-          (string_literal)))))
+          (macro
+            (macro_constant)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (gvn)))
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (gvn)))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (pound_elseif
+        (keyword_pound_elseif)
+        (expression
+          (expr_atom
+            (macro
+              (macro_constant)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (pound_elseif
+        (keyword_pound_elseif)
+        (expression
+          (expr_atom
+            (macro
+              (macro_constant)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (pound_elseif
+        (keyword_pound_elseif)
+        (expression
+          (expr_atom
+            (macro
+              (macro_constant)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (pound_elseif
+        (keyword_pound_elseif)
+        (expression
+          (expr_atom
+            (macro
+              (macro_constant)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (string_literal)))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (gvn)))
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))
+      (pound_else
+        (keyword_pound_else)
+        (statements
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (glvn
+                    (gvn)))
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (glvn
+                    (gvn)))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))))
+      (keyword_pound_endif)))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (gvn))))
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal))))
+      (write_argument
+        (expression
+          (expr_atom
+            (gvn)))))))
+
+====
+Invalid If (no #endif, #else, or #elseif)
+:error
+====
+#if $$$ColorDay="Monday"
+ SET ^MyColor = "Red"
+ SET ^MyNumber = 1
+---
+
+
+
+====
+Valid PoundIf Special Case
+====
+#if 0
+ adsfkjads F
+ this can have anything 
+#endif
+---
+
+(source_file
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case)
+      (keyword_pound_endif))))
+
+====
+Valid PoundIf Special Case Nested
+====
+#if 0
+ set x = "#endif should not close"
+#else
+ #if 0
+  quit "inner"
+ #else
+  set y = "#if also text"
+ #endif
+#endif
+---
+
+(source_file
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case_else)
+      (keyword_pound_else)))
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case_else)
+      (keyword_pound_else)))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (string_literal))))))
   (statement
     (tag))
   (statement
     (tag)))
 
 ====
-Valid Nested #if 0 Special Case User Pattern
+Valid Pound If, ENDIF, ELSE
 ====
-Routine test [Type=mac]
-cond()
-#IF 0   ; DPV1693+ (AK481+ in cond^%qaqcpr)
-  QUIT:op["NULL" "("_val4_$s(op["'":"'",1:"")_"="""")"
-#ELSE   ; DPV1693= (AK481= in cond^%qaqcpr)
-  #;  if collated, collate NULL
-#IF 0  ; DPV1799+
-  QUIT:op["NULL" "("_val4_$s(op["'":"'",1:"")_"="""_$$colnul^%qaqcpr($p(string,"^",4))_""")"
-#ELSE  ; DPV1799=
-  QUIT:op["NULL" "("_val4_$s(op["'":"'",1:"")_"="_$$colnul^%qaqcpr($p(string,"^",4),1)_")"
-#ENDIF ; DPV1799-
-#ENDIF ; DPV1693- (AK481- in cond^%qaqcpr)
+#if 0
+  afsdklf SetUDAFDropIfExists
+#ELSE
+  w hi
+#ENDIF
 ---
 
 (source_file
-  (routine)
-  (routine_name)
-  (routine_type)
-  (statement
-    (tag_with_params
-      (tag)
-      (parameter_list
-        (bracket)
-        (bracket))))
   (statement
     (pound_if
       (keyword_pound_if)
       (pound_if_special_case_else)
       (keyword_pound_else)))
-  (line_comment_3)
-  (line_comment_2)
   (statement
-    (pound_if
-      (keyword_pound_if)
-      (pound_if_special_case_else)
-      (keyword_pound_else)))
-  (line_comment_3)
-  (statement
-    (command_quit
-      (keyword_quit)
-      (post_conditional
+    (command_write
+      (keyword_write)
+      (write_argument
         (expression
           (expr_atom
             (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))
-      (expression
-        (expr_atom
-          (string_literal))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (system_defined_function
-                (dollar_select
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal)))))
-                    (expression
-                      (expr_atom
-                        (string_literal))))
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (string_literal))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (extrinsic_function
-                (objectscript_identifier)
-                (routine_ref
-                  (routine_name))
-                (method_args
-                  (bracket)
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (system_defined_function
-                          (built_in_func_with_pos_options
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier)))))
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (string_literal))))
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))))))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))
-                  (bracket))))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (string_literal)))))))
+              (objectscript_identifier)))))))
   (statement
-    (tag))
-  (line_comment_3)
-  (statement
-    (tag))
-  (line_comment_3))
+    (tag)))

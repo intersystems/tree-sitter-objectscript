@@ -674,7 +674,7 @@ if (valid_symbols[_TERMINATION]) {
               }
             }
             // Also treat newline as whitespace when a block opens on the next line.
-            if (lexer->lookahead == '{') {
+            if (lexer->lookahead == '{' || lexer->lookahead ==',') {
               lexer->mark_end(lexer);
               lexer->result_symbol = _WHITESPACE;
               scanner->terminated_newline = false;
@@ -1219,14 +1219,6 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
           directive[len++] = ascii_toupper_i32(lexer->lookahead);
           advance(lexer);
         }
-
-        // if (ascii_upper_eq(directive, len, "IF") ||
-        //     ascii_upper_eq(directive, len, "IFDEF") ||
-        //     ascii_upper_eq(directive, len, "IFNDEF") ||
-        //     ascii_upper_eq(directive, len, "IFUNDEF")) {
-        //   scanner->special_pound_if_mode_if_depth += 1;
-        //   return false;
-        // }
 
         if (ascii_upper_eq(directive, len, "ENDIF")) {
           if (scanner->special_pound_if_mode_if_depth > 0) {

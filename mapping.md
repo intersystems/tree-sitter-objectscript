@@ -79,7 +79,7 @@
     " GROUPING BY COLOR TO CAPTURE" : {
         Default (fg = bg) : this isnt a capture,
         "maroon fg, yellow bg": [@label, @type],
-        "black fg,silver bg": ["Dots"], //specifically dots in dotted statements, I am going to add something for this
+        "black fg,silver bg": [@punctuation.special.dots], //specifically dots in dotted statements, I am going to add something for this
     }
     
 

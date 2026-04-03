@@ -328,13 +328,11 @@ module.exports = grammar(objectscript_expr, {
       seq(
           $.keyword_pound_define,
         prec(10, seq(
-          alias($.pound_define_variable_name, $.macro_def),
+          alias(choice($.objectscript_identifier, $.objectscript_identifier_special), $.macro_def),
           optional($.pound_define_variable_args),
         )),
         choice($.macro_value, $._termination),
       ),
-    pound_define_variable_name: (_) =>
-      /[A-Za-z0-9]+/,
     pound_define_variable_args: ($) =>
       prec(15, seq(
         alias(token.immediate('('), $.bracket),
@@ -352,7 +350,7 @@ module.exports = grammar(objectscript_expr, {
       seq(
           $.keyword_pound_def1arg,
         prec(10, seq(
-          alias($.pound_define_variable_name, $.macro_def),
+          alias(choice($.objectscript_identifier, $.objectscript_identifier_special), $.macro_def),
           optional($.pound_def1arg_variable_arg),
         )),
         optional($.macro_value),
@@ -378,7 +376,7 @@ module.exports = grammar(objectscript_expr, {
             ),
             seq(
               $.pound_if_special_case,
-              $.keyword_pound_endif
+              $.keyword_pound_endif,
             ),
             seq(
               $.pound_if_special_case_else,
@@ -386,9 +384,9 @@ module.exports = grammar(objectscript_expr, {
                 $.keyword_pound_else,
                 seq(
                   $.keyword_pound_elseif,
-                  '0'
-                )
-              )
+                  '0',
+                ),
+              ),
             ),
             seq(
               $.pound_if_special_case_else_if,
@@ -397,7 +395,7 @@ module.exports = grammar(objectscript_expr, {
               repeat($.statement),
               $.keyword_pound_endif,
             ),
-        )
+        ),
       ),
     pound_ifdef: ($) =>
       seq(
@@ -566,7 +564,7 @@ module.exports = grammar(objectscript_expr, {
                 $.routine_tag_call,
                 $.class_method_call,
                 $.instance_method_call,
-                $.doable_dollar_functions,
+                $.system_defined_function,
                 $.superclass_method_call,
             ),
             optional($.post_conditional),
@@ -625,24 +623,24 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
-    doable_dollar_functions: ($) =>
-      choice(
-        alias($.dollar_method, $.system_defined_function),
-        alias($.dollarsf, $.system_defined_function),
-        alias(
-          seq(
-          choice(
-            /\$I(NCREMENT)?/i,
-            /\$ZF/i,
-            /\$ZU(TIL)?/i,
-          ),
-          alias(token.immediate('('), $.bracket),
-          repeat_with_commas($.expression),
-          alias(')', $.bracket),
-        ),
-        $.system_defined_function,
-        ),
-      ),
+    // doable_dollar_functions: ($) =>
+    //   choice(
+    //     alias($.dollar_method, $.system_defined_function),
+    //     alias($.dollarsf, $.system_defined_function),
+    //     alias(
+    //       seq(
+    //       choice(
+    //         /\$I(NCREMENT)?/i,
+    //         /\$ZF/i,
+    //         /\$ZU(TIL)?/i,
+    //       ),
+    //       alias(token.immediate('('), $.bracket),
+    //       repeat_with_commas($.expression),
+    //       alias(')', $.bracket),
+    //     ),
+    //     $.system_defined_function,
+    //     ),
+    //   ),
 
 
     command_for: ($) =>
@@ -806,7 +804,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     // Available values are “S” (shared lock), ”E” (escalating lock), “I” (immediate unlock), and “D” (deferred unlock
     // of course lock ^foo#"SSSSSSSSSEEEEEEEEEDDDDDDDD" doesn't make sense, but it's syntactically valid and compiles.
-    locktype: (_) =>
+    locktype: ($) =>
       choice(
         token(seq(
         '#',
@@ -817,6 +815,14 @@ module.exports = grammar(objectscript_expr, {
       token(seq(
         '#',
         /[SEID]+/i,
+      )),
+      token(seq(
+        '#',
+        '"',
+        /[SEID]+/i,
+        '"',
+        '_',
+        /[A-Za-z]+/,
       )),
       ),
 
@@ -1043,6 +1049,7 @@ module.exports = grammar(objectscript_expr, {
     command_new_item: ($) =>
       choice(
         seq(optional('@'), $.lvn),
+        $.macro,
         alias($.estack_token, $.system_defined_variable),
         alias($.etrap_token, $.system_defined_variable),
         alias($.namespace_token, $.system_defined_variable),
@@ -1238,7 +1245,7 @@ module.exports = grammar(objectscript_expr, {
         build_command_rule_argumentless_or_argumentful_block_allowed(
           $,
           $.keyword_goto,
-          repeat_with_commas($.goto_argument),
+          repeat_with_commas(choice($.goto_argument, $.system_defined_function)),
         ),
       ),
     goto_argument: ($) => seq(
@@ -1668,16 +1675,31 @@ module.exports = grammar(objectscript_expr, {
 
       ),
 
-    command_macro: ($) => 
-      prec.right(seq(
+    command_macro: ($) =>
+      prec.right(
+
+        seq(
         $.macro,
         optional($.post_conditional),
-        repeat(
-          seq(
-            ',',
-            $.do_parameter,
-          )
-        )
+
+        optional(
+          choice(
+            repeat1(
+              seq(
+                ',',
+                $.do_parameter,
+              ),
+            ),
+            seq(
+              '{',
+              repeat($.statement),
+              '}',
+              repeat($.elseif_block),
+              optional($.else_block),
+            ),
+          ),
+        ),
+
       )),
 
     // A tag parameter can be just a name or a name with a default value

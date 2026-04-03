@@ -3,6 +3,7 @@ LOCK STATEMENTS
 ===============
  LOCK +^a(1)
  LOCK +^a(1)#"E"
+ LOCK +^a(1)#"I"_locktype
  LOCK +a(6,i)
  LOCK -^a(1)#"I"
  LOCK -^a(1)
@@ -24,6 +25,20 @@ LOCK STATEMENTS
                   (expr_atom
                     (numeric_literal)))
                 (bracket))))))))
+  (statement
+    (command_lock
+      (keyword_lock)
+      (command_lock_argument
+        (command_lock_arguments_variant_1
+          (glvn
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket))))
+          (locktype)))))
   (statement
     (command_lock
       (keyword_lock)
