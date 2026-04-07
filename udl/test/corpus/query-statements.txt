@@ -41,16 +41,17 @@ Query ByName(name As %String = "")
           (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (numeric_literal))
-              (typename_param
-                (identifier)
-                (string_literal))
-              (typename_param
-                (identifier)
-                (string_literal))))
+                (typename_param
+                  (identifier)
+                  (numeric_literal))
+                (typename_param
+                  (identifier)
+                  (string_literal))
+                (typename_param
+                  (identifier)
+                  (string_literal)))))
           (query_keywords
             (query_keyword
               (method_keyword_sql_name
@@ -101,13 +102,14 @@ SELECT ID,Name,Title FROM Employee
           (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (string_literal))
-              (typename_param
-                (identifier)
-                (numeric_literal))))
+                (typename_param
+                  (identifier)
+                  (string_literal))
+                (typename_param
+                  (identifier)
+                  (numeric_literal)))))
           (query_keywords
             (query_keyword
               (method_keyword_sql_proc))
@@ -149,10 +151,11 @@ Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc]
               (return_type
                 (keyword_as)
                 (typename
-                  (identifier)
-                  (typename_param
+                  (type_with_params
                     (identifier)
-                    (numeric_literal)))))
+                    (typename_param
+                      (identifier)
+                      (numeric_literal))))))
             (bracket))
           (return_type
             (keyword_as)

@@ -19,7 +19,6 @@ enum ObjectScript_Core_Scanner_TokenType {
   SENTINEL,
   _BOL,
   _TERMINATION,
-  ZBREAK_COMMAND,
   _ZBREAK_DEVICE_TERMINATION,
   _POST_CONDITIONAL_ID,
   _XECUTE_ARG_INVALID,
@@ -31,6 +30,8 @@ enum ObjectScript_Core_Scanner_TokenType {
   POUND_IF_SPECIAL_CASE,
   POUND_IF_SPECIAL_CASE_ELSE,
   POUND_IF_SPECIAL_CASE_ELSE_IF, 
+  MNEMONIC,
+  TAG_END_IF,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -54,7 +55,6 @@ static const char* token_names[] = {
   "_BOL",
   "_INLINE_STATEMENT_SEPARATOR",
   "_TERMINATION",
-  "ZBREAK_COMMAND",
   "_ZBREAK_DEVICE_TERMINATION",
   "_POST_CONDITIONAL_ID",
   "_XECUTE_ARG_INVALID",
@@ -66,6 +66,8 @@ static const char* token_names[] = {
   "POUND_IF_SPECIAL_CASE",
   "POUND_IF_SPECIAL_CASE_ELSE",
   "POUND_IF_SPECIAL_CASE_ELSE_IF", 
+  "MNEMONIC",
+  "TAG_END_IF"
 };
 
 #if 0
@@ -206,6 +208,10 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "J") || ascii_upper_eq(text, len, "JOB")) return true;
   if (ascii_upper_eq(text, len, "B") || ascii_upper_eq(text, len, "BREAK")) return true;
   if (ascii_upper_eq(text, len, "M") || ascii_upper_eq(text, len, "MERGE")) return true;
+  if (ascii_upper_eq(text, len, "MV")) return true;
+  if (ascii_upper_eq(text, len, "MVC") || ascii_upper_eq(text, len, "MVCRT")) return true;
+  if (ascii_upper_eq(text, len, "MVDIM")) return true;
+  if (ascii_upper_eq(text, len, "MVPRINT")) return true;
   if (ascii_upper_eq(text, len, "Q") || ascii_upper_eq(text, len, "QUIT")) return true;
   if (ascii_upper_eq(text, len, "G") || ascii_upper_eq(text, len, "GOTO")) return true;
   if (ascii_upper_eq(text, len, "H") || ascii_upper_eq(text, len, "HALT") ||
@@ -216,11 +222,35 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "TS") || ascii_upper_eq(text, len, "TSTART")) return true;
   if (ascii_upper_eq(text, len, "X") || ascii_upper_eq(text, len, "XECUTE")) return true;
   if (ascii_upper_eq(text, len, "V") || ascii_upper_eq(text, len, "VIEW")) return true;
+  if (ascii_upper_eq(text, len, "ZA") || ascii_upper_eq(text, len, "ZALLOCATE")) return true;
   if (ascii_upper_eq(text, len, "ZB") || ascii_upper_eq(text, len, "ZBREAK")) return true;
+  if (ascii_upper_eq(text, len, "ZD") || ascii_upper_eq(text, len, "ZDEALLOCATE")) return true;
+  if (ascii_upper_eq(text, len, "ZDELETE")) return true;
+  if (ascii_upper_eq(text, len, "ZERASE")) return true;
+  if (ascii_upper_eq(text, len, "ZETRAP")) return true;
+  if (ascii_upper_eq(text, len, "ZFILE")) return true;
+  if (ascii_upper_eq(text, len, "ZGO")) return true;
+  if (ascii_upper_eq(text, len, "ZHTRAP")) return true;
+  if (ascii_upper_eq(text, len, "ZI") || ascii_upper_eq(text, len, "ZINSERT")) return true;
+  if (ascii_upper_eq(text, len, "ZITRAP")) return true;
   if (ascii_upper_eq(text, len, "ZK") || ascii_upper_eq(text, len, "ZKILL")) return true;
+  if (ascii_upper_eq(text, len, "ZL") || ascii_upper_eq(text, len, "ZLOAD")) return true;
   if (ascii_upper_eq(text, len, "ZN") || ascii_upper_eq(text, len, "ZNSPACE")) return true;
+  if (ascii_upper_eq(text, len, "ZNS")) return true;
+  if (ascii_upper_eq(text, len, "ZMOVE")) return true;
+  if (ascii_upper_eq(text, len, "ZOMSPACK")) return true;
+  if (ascii_upper_eq(text, len, "ZONERROR")) return true;
+  if (ascii_upper_eq(text, len, "ZOS")) return true;
+  if (ascii_upper_eq(text, len, "ZREAD")) return true;
+  if (ascii_upper_eq(text, len, "ZS") || ascii_upper_eq(text, len, "ZSAVE")) return true;
   if (ascii_upper_eq(text, len, "ZSU")) return true;
+  if (ascii_upper_eq(text, len, "ZSYNC")) return true;
+  if (ascii_upper_eq(text, len, "ZTA")) return true;
+  if (ascii_upper_eq(text, len, "ZTB")) return true;
+  if (ascii_upper_eq(text, len, "ZTE")) return true;
+  if (ascii_upper_eq(text, len, "ZTRANSACTION")) return true;
   if (ascii_upper_eq(text, len, "ZT") || ascii_upper_eq(text, len, "ZTRAP")) return true;
+  if (ascii_upper_eq(text, len, "ZU") || ascii_upper_eq(text, len, "ZUSE")) return true;
 
   // Top-level class/objectscript keywords that can start a non-tag statement.
   if (ascii_upper_eq(text, len, "CLASS")) return true;
@@ -542,7 +572,6 @@ if (valid_symbols[EMBEDDED_SQL_REVERSE_MARKER]) {
     }
 
     advance(lexer);
-    // lexer->mark_end(lexer);
     scanner->sql_marker_buffer_len -= 1;
   }
 
@@ -594,6 +623,7 @@ if (valid_symbols[_TERMINATION]) {
             // so multiline IF/WHILE conditions continue.
             lexer->mark_end(lexer);
             if (scanner->special_pound_if_mode && valid_symbols[_ZW_BLOCK]) {
+              
                   lexer->mark_end(lexer);
                   lexer->result_symbol = _TERMINATION;
                   return true;
@@ -706,6 +736,11 @@ if (valid_symbols[_TERMINATION]) {
         if (lexer->lookahead == '/') {
           lexer->mark_end(lexer); // check if it is a comment 
           advance(lexer);
+
+          if (is_label_char(lexer->lookahead) && valid_symbols[MNEMONIC]) {
+            lexer->result_symbol = MNEMONIC;
+            return true;
+          }
           if (lexer->lookahead == '/') {
             scanner->terminated_newline = false;
             lexer->result_symbol = _TERMINATION;
@@ -779,6 +814,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
 
         bool is_block = (lexer->lookahead == '{');
 
+        bool saw_slash = false;
 
         if (count == 1 && !is_block && !is_termination) {
             if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
@@ -794,27 +830,98 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
           return true;
         }
         
-        if (count == 1 && !is_block && lexer->lookahead=='/' && valid_symbols[ZBREAK_COMMAND]) {
-            lexer->mark_end(lexer);
-            lexer->advance(lexer, false);
-            if (lexer->lookahead == 'c' || 
-                    lexer->lookahead == 'C' || 
-                    lexer->lookahead == 'd' || 
-                    lexer->lookahead == 'D' ||
-                  lexer->lookahead == 't' || 
-                    lexer->lookahead == 'T' ||
-                  lexer->lookahead == 'e' || 
-                    lexer->lookahead == 'E' ||
-                  lexer->lookahead == 'i' || 
-                    lexer->lookahead == 'I' ||
-                  lexer->lookahead == 's' || 
-                    lexer->lookahead == 'S' ||
-                  lexer->lookahead == 'n' || 
-                    lexer->lookahead == 'N') {  
-            lexer->result_symbol = ZBREAK_COMMAND;  
+        if (count == 1 && lexer->lookahead == '/') {
+          lexer->mark_end(lexer);
+          advance(lexer);
+
+          // A slash followed by an identifier starts a mnemonic argument
+          // (for example `WRITE /X`). When the parser is not asking for the
+          // mnemonic external token, fall back to ordinary immediate
+          // whitespace so the grammar can consume `mnemonic_name` directly.
+          if (is_label_char(lexer->lookahead)) {
             scanner->terminated_newline = false;
-            return true;  
-          }  
+            if (valid_symbols[MNEMONIC]) {
+              lexer->result_symbol = MNEMONIC;
+              return true;
+            }
+            if (valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE]) {
+              lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
+              return true;
+            }
+          }
+
+          if (lexer->lookahead == '/') {
+            lexer->advance(lexer, true);
+
+            while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
+              lexer->advance(lexer, true);
+            }
+
+            if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+              bool new_line = false;
+              while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                if (lexer->lookahead == '\n') {
+                  new_line = true;
+                }
+                lexer->advance(lexer, false);
+              }
+              if (lexer->lookahead == '{' && new_line) {
+                lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                scanner->terminated_newline = false;
+                lexer->mark_end(lexer);
+                return true;
+              }
+            }
+
+            if (valid_symbols[_TERMINATION]) {
+              lexer->result_symbol = _TERMINATION;
+              scanner->terminated_newline = false;
+              lexer->mark_end(lexer);
+              return true;
+            }
+          }
+
+          if (lexer->lookahead == '*') {
+            lexer->advance(lexer, true);
+            // bool new_line = false;
+            while (!lexer->eof(lexer)) {
+              // if (lexer->lookahead == '\n') {
+              //   new_line = true;
+              // }
+              if (lexer->lookahead == '*') {
+                lexer->advance(lexer, true);
+                if (lexer->lookahead == '/') {
+                  lexer->advance(lexer, true);
+                  break;
+                }
+              } else {
+                lexer->advance(lexer, true);
+              }
+            }
+            if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+              bool new_line = false;
+              while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                if (lexer->lookahead == '\n') {
+                  new_line = true;
+                }
+                lexer->advance(lexer, false);
+              }
+              if (lexer->lookahead == '{' && new_line) {
+                lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                scanner->terminated_newline = false;
+                lexer->mark_end(lexer);
+                return true;
+              }
+            }
+            if (valid_symbols[_TERMINATION]) {
+              lexer->result_symbol = _TERMINATION;
+              scanner->terminated_newline = false;
+              lexer->mark_end(lexer);
+              return true;
+            }
+          }
+
+          saw_slash = true;
         }
 
         if (valid_symbols[_ARGUMENTLESS_LOOP] && is_block) {
@@ -837,38 +944,42 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
 
         if (count >=1 && (valid_symbols[_ARGUMENTLESS_COMMAND_END] || valid_symbols[_TERMINATION] || (valid_symbols[_BOL] && termination_new_line)) && !is_block) {
             // allow /* */
-            if (lexer->lookahead=='/') { // potential comment
+            if (lexer->lookahead=='/' || saw_slash) { // potential comment
+                lexer->mark_end(lexer);
                 lexer->advance(lexer, true);
+                
                 if (lexer->lookahead=='/') {
-                lexer->advance(lexer, true);
+                  lexer->advance(lexer, true);
 
-                while (!lexer->eof(lexer) && !(lexer->lookahead=='\n')) {
-                    lexer->advance(lexer, true);
-                }
-                // For argumentless FOR blocks, allow:
-                //   FOR //comment
-                //   {
-                // by treating the comment+newline gap as loop whitespace.
-                if (valid_symbols[_ARGUMENTLESS_LOOP]) {
-                    bool new_line = false;
-                    while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
-                        if (lexer->lookahead == '\n') {
-                          new_line = true;
-                        }
-                        lexer->advance(lexer, false);
-                    }
-                    if (lexer->lookahead == '{' && new_line) {
-                        lexer->result_symbol = _ARGUMENTLESS_LOOP;
-                        scanner->terminated_newline = false;
-                        return true;
-                    }
-                }
-                // means the rest of the line is a comment
-                if(valid_symbols[_TERMINATION]) {
-                    lexer->result_symbol = _TERMINATION;
-                    scanner->terminated_newline = false;
-                    return true;
-                }
+                  while (!lexer->eof(lexer) && !(lexer->lookahead=='\n')) {
+                      lexer->advance(lexer, true);
+                  }
+                  // For argumentless FOR blocks, allow:
+                  //   FOR //comment
+                  //   {
+                  // by treating the comment+newline gap as loop whitespace.
+                  if (valid_symbols[_ARGUMENTLESS_LOOP]) {
+                      bool new_line = false;
+                      while (!lexer->eof(lexer) && iswspace(lexer->lookahead)) {
+                          if (lexer->lookahead == '\n') {
+                            new_line = true;
+                          }
+                          lexer->advance(lexer, false);
+                      }
+                      if (lexer->lookahead == '{' && new_line) {
+                          lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                          scanner->terminated_newline = false;
+                          lexer->mark_end(lexer);
+                          return true;
+                      }
+                  }
+                  // means the rest of the line is a comment
+                  if(valid_symbols[_TERMINATION]) {
+                      lexer->result_symbol = _TERMINATION;
+                      scanner->terminated_newline = false;
+                      lexer->mark_end(lexer);
+                      return true;
+                  }
                 }
                 if (lexer->lookahead=='*') {
                 lexer->advance(lexer, true);
@@ -931,7 +1042,6 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
             }
 
             if(valid_symbols[_TERMINATION] && (is_termination || new_line) && !is_block) {
-
                 lexer->result_symbol = _TERMINATION;
                 if (termination_new_line || new_line) {
                     scanner->terminated_newline = true;
@@ -1226,7 +1336,7 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
             if (scanner->special_pound_if_mode_if_depth<1) {
               scanner->special_pound_if_mode=false;
             }
-            lexer->result_symbol = TAG;
+            lexer->result_symbol = TAG_END_IF;
             lexer->mark_end(lexer);
             return true;
           }

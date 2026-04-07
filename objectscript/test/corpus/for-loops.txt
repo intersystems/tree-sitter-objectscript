@@ -739,3 +739,76 @@ For Valid Argumentless loop with comment
   (statement
     (command_for
       (keyword_for))))
+
+======
+For Argumentless Block with Block Comment
+======
+test
+  for /* */
+ {
+ 	w hi
+ }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+=====
+For Argumentless Block with Block Comment, no new line before {
+=====
+test
+  for /* 
+  
+  */{
+ 	w hi
+ }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+====
+For Argumentless, Block comment on the same line
+====
+test
+  for /* */ { w hi }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))

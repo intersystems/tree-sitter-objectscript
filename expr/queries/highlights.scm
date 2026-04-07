@@ -24,8 +24,6 @@
   (keyword_pound_pound_class)
 ] @keyword.operator
 
-(system_defined_variable) @variable.builtin
-
 (system_defined_function) @function.builtin
 
 (sql_field_modifier) @keyword.modifier
@@ -47,16 +45,16 @@
 
 (macro_constant) @constant.macro
 
+(objectscript_identifier) @variable
+
 [
-  (lvn)
-  (gvn)
   (ssvn)
-  (objectscript_identifier)
-] @variable
-
-(namespace) @module
+  (system_defined_variable)
+  "$$"
+] @variable.builtin
 
 [
+  (gvn)
   (objectscript_identifier_special)
   (instance_variable)
 ] @variable.member

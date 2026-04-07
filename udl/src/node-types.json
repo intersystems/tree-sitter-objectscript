@@ -1081,7 +1081,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "close_rename",
@@ -1093,6 +1093,14 @@
         },
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "mnemonic_name",
+          "named": true
+        },
+        {
+          "type": "string_literal",
           "named": true
         }
       ]
@@ -1120,7 +1128,21 @@
   {
     "type": "close_rename",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "mnemonic_name",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "command_break",
@@ -2037,6 +2059,29 @@
     }
   },
   {
+    "type": "command_zload",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "keyword_zload",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "command_zn",
     "named": true,
     "fields": {},
@@ -2240,7 +2285,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -2430,6 +2475,10 @@
           "named": true
         },
         {
+          "type": "command_zload",
+          "named": true
+        },
+        {
           "type": "command_zn",
           "named": true
         },
@@ -2515,6 +2564,10 @@
         },
         {
           "type": "tag",
+          "named": true
+        },
+        {
+          "type": "tag_end_if",
           "named": true
         },
         {
@@ -4158,6 +4211,11 @@
     "fields": {}
   },
   {
+    "type": "keyword_of",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "keyword_pound_ifndef",
     "named": true,
     "fields": {}
@@ -4290,7 +4348,21 @@
   {
     "type": "locktype",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "lvn",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "lvn",
@@ -4298,7 +4370,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "objectscript_identifier",
@@ -5704,7 +5776,7 @@
           "named": true
         },
         {
-          "type": "oref_set_target",
+          "type": "variable_datatype",
           "named": true
         }
       ]
@@ -6108,19 +6180,7 @@
       "required": true,
       "types": [
         {
-          "type": "keyword_array",
-          "named": true
-        },
-        {
           "type": "keyword_as",
-          "named": true
-        },
-        {
-          "type": "keyword_list",
-          "named": true
-        },
-        {
-          "type": "keyword_of",
           "named": true
         },
         {
@@ -6623,19 +6683,7 @@
       "required": true,
       "types": [
         {
-          "type": "keyword_array",
-          "named": true
-        },
-        {
           "type": "keyword_as",
-          "named": true
-        },
-        {
-          "type": "keyword_list",
-          "named": true
-        },
-        {
-          "type": "keyword_of",
           "named": true
         },
         {
@@ -6894,6 +6942,10 @@
         {
           "type": "indirection",
           "named": true
+        },
+        {
+          "type": "mnemonic_name",
+          "named": true
         }
       ]
     }
@@ -7123,15 +7175,7 @@
       "required": true,
       "types": [
         {
-          "type": "namespace",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
+          "type": "lvn",
           "named": true
         },
         {
@@ -7474,6 +7518,10 @@
           "named": true
         },
         {
+          "type": "command_zload",
+          "named": true
+        },
+        {
           "type": "command_zn",
           "named": true
         },
@@ -7559,6 +7607,10 @@
         },
         {
           "type": "tag",
+          "named": true
+        },
+        {
+          "type": "tag_end_if",
           "named": true
         },
         {
@@ -8049,6 +8101,25 @@
     }
   },
   {
+    "type": "type_with_params",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "typename_param",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "typename",
     "named": true,
     "fields": {},
@@ -8061,15 +8132,7 @@
           "named": true
         },
         {
-          "type": "keyword_of",
-          "named": true
-        },
-        {
-          "type": "typename",
-          "named": true
-        },
-        {
-          "type": "typename_param",
+          "type": "type_with_params",
           "named": true
         }
       ]
@@ -8154,14 +8217,14 @@
           "named": true
         },
         {
-          "type": "use_parameters",
+          "type": "open_parameters",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "use_parameters",
+    "type": "variable_datatype",
     "named": true,
     "fields": {},
     "children": {
@@ -8169,11 +8232,27 @@
       "required": true,
       "types": [
         {
-          "type": "bracket",
+          "type": "identifier_segment_immediate",
           "named": true
         },
         {
-          "type": "device_keywords",
+          "type": "identifier_segment_immediate_special",
+          "named": true
+        },
+        {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "macro",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier_special",
           "named": true
         }
       ]
@@ -8251,6 +8330,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "mnemonic",
+          "named": true
+        },
         {
           "type": "write_device_char",
           "named": true
@@ -8547,10 +8630,6 @@
           "named": true
         },
         {
-          "type": "keyword_break",
-          "named": true
-        },
-        {
           "type": "keyword_clear",
           "named": true
         },
@@ -8572,10 +8651,6 @@
         },
         {
           "type": "keyword_interrupt",
-          "named": true
-        },
-        {
-          "type": "keyword_normal",
           "named": true
         },
         {
@@ -8603,11 +8678,15 @@
           "named": true
         },
         {
+          "type": "mnemonic",
+          "named": true
+        },
+        {
           "type": "zbreak_arg",
           "named": true
         },
         {
-          "type": "zbreak_command",
+          "type": "zbreak_command_option",
           "named": true
         }
       ]
@@ -8661,18 +8740,6 @@
   },
   {
     "type": "\"\"",
-    "named": false
-  },
-  {
-    "type": "\"D\"",
-    "named": false
-  },
-  {
-    "type": "\"K\"",
-    "named": false
-  },
-  {
-    "type": "\"R\"",
     "named": false
   },
   {
@@ -8820,14 +8887,6 @@
     "named": false
   },
   {
-    "type": "/REN=",
-    "named": false
-  },
-  {
-    "type": "/RENAME=",
-    "named": false
-  },
-  {
     "type": "0",
     "named": false
   },
@@ -8961,10 +9020,6 @@
   },
   {
     "type": "keyword_all",
-    "named": true
-  },
-  {
-    "type": "keyword_array",
     "named": true
   },
   {
@@ -9132,19 +9187,11 @@
     "named": true
   },
   {
-    "type": "keyword_normal",
-    "named": true
-  },
-  {
     "type": "keyword_nostep",
     "named": true
   },
   {
     "type": "keyword_not",
-    "named": true
-  },
-  {
-    "type": "keyword_of",
     "named": true
   },
   {
@@ -9336,6 +9383,10 @@
     "named": true
   },
   {
+    "type": "keyword_zload",
+    "named": true
+  },
+  {
     "type": "keyword_zn",
     "named": true
   },
@@ -9376,7 +9427,7 @@
     "named": true
   },
   {
-    "type": "namespace",
+    "type": "mnemonic",
     "named": true
   },
   {
@@ -9416,6 +9467,10 @@
     "named": true
   },
   {
+    "type": "tag_end_if",
+    "named": true
+  },
+  {
     "type": "true",
     "named": false
   },
@@ -9424,7 +9479,7 @@
     "named": true
   },
   {
-    "type": "zbreak_command",
+    "type": "zbreak_command_option",
     "named": true
   },
   {

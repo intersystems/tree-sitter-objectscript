@@ -1082,3 +1082,27 @@ Write objects
                               (expression
                                 (expr_atom
                                   (numeric_literal))))))))))))))))))
+
+====
+Write Mnemonic Valid
+====
+ w /%x
+ w /x
+---
+
+(source_file
+  (statements
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_mnemonic
+              (mnemonic_name))))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (write_device_control
+            (write_mnemonic
+              (mnemonic_name))))))))

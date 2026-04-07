@@ -153,9 +153,6 @@ module.exports = grammar({
       ),
 
     pattern_expression: _ =>
-    // Keep this as a single token to avoid parser state growth.
-    // Supports balanced groups with nesting depth up to 2.
-    // Full arbitrary-depth balance cannot be enforced with regex alone.
       token.immediate(PATTERN_EXPRESSION_REGEX),
 
     class_method_call: ($) =>
@@ -264,7 +261,7 @@ module.exports = grammar({
             seq(
               token.immediate('|'),
               repeat(choice('+', '-', '\'')),
-              alias(choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), $.namespace),
+              choice(alias($.objectscript_identifier, $.lvn), alias($.objectscript_identifier_special, $.lvn), $.string_literal),
               token.immediate('|'),
             ),
           ),
@@ -638,7 +635,8 @@ module.exports = grammar({
       ),
     dollar_bitlogic: ($) =>
       seq(
-        token(seq(/\$BITLOGIC/i, token.immediate('('))),
+        /\$BITLOGIC/i,
+        token.immediate('('),
         $.bitlogic_expression,
         optional(seq(',', $.expression)), // length/flags arg
         ')',

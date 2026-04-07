@@ -438,15 +438,6 @@ module.exports = define_grammar(objectscript_core, {
 
     property_type: ($) => seq(
       $.keyword_as,
-      optional(
-        seq(
-          choice(
-            $.keyword_list,
-            $.keyword_array,
-          ),
-          $.keyword_of,
-        ),
-      ),
       $.typename,
     ),
 
@@ -482,14 +473,12 @@ module.exports = define_grammar(objectscript_core, {
         '}',
       ),
 
+    type_with_params: ($) => seq($.identifier, '(', $.typename_param, repeat(seq(',', $.typename_param)), ')'),
     typename: ($) =>
       seq(
-        $.identifier,
+        choice($.identifier, $.type_with_params),
         optional(
-          seq('(', $.typename_param, repeat(seq(',', $.typename_param)), ')'),
-        ),
-        optional(
-          seq($.keyword_of, $.typename),
+          seq(/Of/i, choice($.identifier, $.type_with_params)),
         ),
       ),
 

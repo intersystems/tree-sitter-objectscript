@@ -819,26 +819,31 @@
                       }
                     },
                     {
-                      "type": "ALIAS",
-                      "content": {
-                        "type": "CHOICE",
-                        "members": [
-                          {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "ALIAS",
+                          "content": {
                             "type": "SYMBOL",
                             "name": "objectscript_identifier"
                           },
-                          {
+                          "named": true,
+                          "value": "lvn"
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
                             "type": "SYMBOL",
                             "name": "objectscript_identifier_special"
                           },
-                          {
-                            "type": "SYMBOL",
-                            "name": "string_literal"
-                          }
-                        ]
-                      },
-                      "named": true,
-                      "value": "namespace"
+                          "named": true,
+                          "value": "lvn"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "string_literal"
+                        }
+                      ]
                     },
                     {
                       "type": "IMMEDIATE_TOKEN",
@@ -2535,23 +2540,15 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "TOKEN",
+          "type": "PATTERN",
+          "value": "\\$BITLOGIC",
+          "flags": "i"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "\\$BITLOGIC",
-                "flags": "i"
-              },
-              {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "("
-                }
-              }
-            ]
+            "type": "STRING",
+            "value": "("
           }
         },
         {
