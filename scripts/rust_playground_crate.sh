@@ -32,6 +32,7 @@ stage_playground_crate() {
   cp -f "$ROOT_DIR/objectscript/src/scanner.c" "$dest/objectscript/src/scanner.c"
   cp -f "$ROOT_DIR/objectscript/src/node-types.json" "$dest/objectscript/src/node-types.json"
   cp -f "$ROOT_DIR/objectscript/src/tree_sitter/parser.h" "$dest/objectscript/src/tree_sitter/parser.h"
+  cp -f "$ROOT_DIR/objectscript/queries/studio-highlights.scm" "$dest/objectscript/queries/studio-highlights.scm"
 
   cp -f "$ROOT_DIR/objectscript/queries/highlights.scm" "$dest/objectscript/queries/highlights.scm"
   cp -f "$ROOT_DIR/objectscript/queries/indents.scm" "$dest/objectscript/queries/indents.scm"
