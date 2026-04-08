@@ -21,6 +21,9 @@ pub const NODE_TYPES: &str = include_str!("objectscript_routine/src/node-types.j
 /// The syntax highlighting query for ObjectScript routine grammar.
 pub const HIGHLIGHTS_QUERY: &str = include_str!("objectscript_routine/queries/highlights.scm");
 
+/// The syntax highlighting query for ObjectScript routines (Studio Version).
+pub const STUDIO_HIGHLIGHTS_QUERY: &str = include_str!("objectscript_routine/queries/studio-highlights.scm");
+
 /// The injections query for ObjectScript routine grammar.
 pub const INJECTIONS_QUERY: &str = include_str!("objectscript_routine/queries/injections.scm");
 

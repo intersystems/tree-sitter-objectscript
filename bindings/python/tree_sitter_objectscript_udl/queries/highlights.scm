@@ -353,8 +353,6 @@
   (keyword_list)
   (parameter_type)
   (index_type)
-  (projection_type)
-  (property_type)
   (index_property_type)
   (typename)
 ] @type.builtin

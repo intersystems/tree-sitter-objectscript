@@ -211,7 +211,7 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         $.keyword_property,
         alias($.quote_permitting_identifier, $.property_name),
-        optional($.property_type),
+        optional($.return_type),
         optional($.property_keywords),
         ';',
       ),
@@ -221,10 +221,7 @@ module.exports = define_grammar(objectscript_core, {
         alias(/Relationship/i, $.keyword_relationship),
         alias($.quote_permitting_identifier, $.relationship_name),
         optional(
-          seq(
-            $.keyword_as,
-            $.typename,
-          ),
+          $.return_type,
         ),
         $.relationship_keywords,
         ';',
@@ -284,7 +281,7 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         $.keyword_projection,
         alias($.quote_permitting_identifier, $.projection_name),
-        alias($.property_type, $.projection_type),
+        $.return_type,
         optional($.projection_keywords),
         ';',
       ),
@@ -436,11 +433,6 @@ module.exports = define_grammar(objectscript_core, {
         '}',
       ),
 
-    property_type: ($) => seq(
-      $.keyword_as,
-      $.typename,
-    ),
-
     arguments: ($) =>
       seq(alias(token.immediate('('), $.bracket), optional(seq($.argument, repeat(seq(',', $.argument)))), alias(')', $.bracket)),
 
@@ -455,7 +447,7 @@ module.exports = define_grammar(objectscript_core, {
     default_argument_value: ($) =>
       choice(
         $.identifier,
-        $.string_literal,
+        alias($.string_literal, $.typename),
         $.numeric_literal,
         seq('{', optional($.expression), '}'),
       ),
@@ -487,7 +479,7 @@ module.exports = define_grammar(objectscript_core, {
         $.identifier,
         '=',
         choice(
-          $.string_literal,
+          alias($.string_literal, $.typename),
           $.keyword_pound_pound_super,
           seq(optional(field('operator', '-')), $.numeric_literal),
         ),

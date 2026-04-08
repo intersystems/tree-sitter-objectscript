@@ -49,7 +49,7 @@ module.exports = {
     method_keyword_sql_proc: ($) => seq(optional($.keyword_not), /SqlProc/i),
     method_keyword_web_method: ($) => seq(optional($.keyword_not), /WebMethod/i),
     method_keyword_return_results_set: ($) => seq(optional($.keyword_not), /ReturnResultsets/i),
-    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice($.objectscript_identifier, seq('(', repeat_with_commas($.objectscript_identifier), ')'))),
+    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice(alias($.objectscript_identifier, $.method_name), seq('(', repeat_with_commas(alias($.objectscript_identifier, $.method_name)), ')'))),
     method_keyword_procedure_block: ($) => seq(/ProcedureBlock/i, optional(seq('=', alias(/[0-1]/, $.numeric_literal)))),
     method_keyword_soap_binding_style: ($) => seq(/SoapBindingStyle/i, '=', alias(choice(/document/i, /rpc/i), $.typename)),
     method_keyword_soap_body_use: ($) => seq(/SoapBodyUse/i, '=', alias(choice(/literal/i, /encoded/i), $.typename)),
@@ -85,7 +85,7 @@ module.exports = {
       seq(
         /Requires/i,
         '=',
-        $.string_literal,
+        alias($.string_literal, $.typename),
       ),
     method_keyword_soap_message_name: ($) =>
   seq(
@@ -97,7 +97,7 @@ module.exports = {
   seq(
     /SoapAction/i,
     '=',
-    choice($.string_literal, $.objectscript_identifier),
+    alias(choice($.string_literal, $.objectscript_identifier), $.typename),
   ),
   call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
   call_method_keywords: ($) =>
@@ -588,9 +588,9 @@ module.exports = {
     property_keyword_server_only: ($) => seq(/ServerOnly/i, '=', alias(/[0-1]/, $.numeric_literal)),
     property_keyword_sql_column_number: ($) => seq(/SqlColumnNumber/i, '=', $.numeric_literal),
     property_keyword_sql_computed: ($) => seq(optional($.keyword_not), /SqlComputed/i),
-    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(', repeat_with_commas(choice($.objectscript_identifier, $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename))), ')'), choice($.objectscript_identifier, $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename)))),
+    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(', repeat_with_commas(choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename))), ')'), choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename)))),
     property_keyword_sql_field_name: ($) => seq(/SqlFieldName/i, '=', alias($.sql_id, $.query_name)),
-    property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i, '=', $.string_literal),
+    property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i, '=', alias($.string_literal, $.typename)),
     property_keyword_sql_list_type: ($) =>
       seq(
         /SqlListType/i,
@@ -623,7 +623,7 @@ module.exports = {
     ),
 
     property_keyword_initial_expression: ($) =>
-      seq(/InitialExpression/i, '=', choice(seq('{', $.expression, '}'), $.string_literal, $.objectscript_identifier)),
+      seq(/InitialExpression/i, '=', choice(seq('{', $.expression, '}'), alias($.string_literal, $.typename), alias($.objectscript_identifier, $.typename))),
     property_keyword: ($) =>
       choice(
         $.property_keyword_aliases,
@@ -689,7 +689,7 @@ module.exports = {
       seq(
         /inverse/i,
         '=',
-        choice($.objectscript_identifier, $.oref_set_target),
+        $.variable_datatype,
       ),
     relationship_keyword_on_delete: ($) =>
       seq(
@@ -740,7 +740,7 @@ module.exports = {
     parameter_keyword_deprecated: ($) => seq(optional($.keyword_not), /Deprecated/i),
     parameter_keyword_internal: ($) => seq(optional($.keyword_not), /Internal/i),
     parameter_keyword_flags: ($) => seq(/Flags/i, '=', choice(alias(/ENUM/i, $.typename), $.keyword_list)),
-    parameter_keyword_constraint: ($) => seq(/Constraint/i, '=', choice($.string_literal, $.objectscript_identifier)),
+    parameter_keyword_constraint: ($) => seq(/Constraint/i, '=', alias(choice($.string_literal, $.objectscript_identifier), $.typename)),
     parameter_keyword: ($) =>
       choice(
         $.parameter_keyword_abstract,
@@ -818,7 +818,7 @@ module.exports = {
       seq(
         /Condition/i,
         '=',
-        choice($.string_literal, $.numeric_literal, seq('{', $.expression, '}')),
+        choice(alias($.string_literal, $.typename), $.numeric_literal, seq('{', $.expression, '}')),
       ),
 
     index_keyword: ($) =>
@@ -863,13 +863,13 @@ module.exports = {
       seq(
         /SchemaSpec/i,
         '=',
-        $.string_literal,
+        alias($.string_literal, $.typename),
       ),
     xdata_keyword_xmlnamespace: ($) =>
       seq(
         /XMLNamespace/i,
         '=',
-        $.string_literal,
+        alias($.string_literal, $.typename),
       ),
     xdata_keyword: ($) =>
     choice(

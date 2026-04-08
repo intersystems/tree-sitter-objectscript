@@ -20,14 +20,14 @@ Projection JavaClient As %Projection.Java(ROOTDIR="c:\java");
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
-                  (string_literal))))))))))
+                  (typename))))))))))
 
 ===
 Projection Class
@@ -169,7 +169,7 @@ Projection MyProj As %Projection.SomeProjection;
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (identifier))))))))
@@ -195,7 +195,7 @@ Projection CompileHook As %Projection.AbstractProjection;
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (identifier))))))))
@@ -219,7 +219,7 @@ Projection P1 As dc.proj.CustomProjection(FOO=1,BAR="baz");
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
@@ -229,7 +229,7 @@ Projection P1 As dc.proj.CustomProjection(FOO=1,BAR="baz");
                   (numeric_literal))
                 (typename_param
                   (identifier)
-                  (string_literal))))))))))
+                  (typename))))))))))
 
 ===
 projection - with keyword list [ Internal ]
@@ -250,7 +250,7 @@ Projection HiddenOne As dc.proj.CustomProjection [ Internal ];
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -277,7 +277,7 @@ Projection VisibleOne As dc.proj.CustomProjection [ Not Internal ];
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -305,7 +305,7 @@ Projection Combo As dc.proj.CustomProjection(ENABLED=1,MODE="fast") [ Internal ]
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
@@ -315,7 +315,7 @@ Projection Combo As dc.proj.CustomProjection(ENABLED=1,MODE="fast") [ Internal ]
                   (numeric_literal))
                 (typename_param
                   (identifier)
-                  (string_literal)))))
+                  (typename)))))
           (projection_keywords
             (projection_keyword
               (parameter_keyword_internal))))))))
@@ -341,7 +341,7 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))))
@@ -350,7 +350,7 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
@@ -366,14 +366,14 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
-                  (string_literal))
+                  (typename))
                 (typename_param
                   (identifier)
                   (numeric_literal))))))))))
@@ -400,7 +400,7 @@ Projection W As dc.proj.CustomProjection(
           (keyword_projection)
           (projection_name
             (identifier))
-          (projection_type
+          (return_type
             (keyword_as)
             (typename
               (type_with_params
@@ -410,7 +410,7 @@ Projection W As dc.proj.CustomProjection(
                   (numeric_literal))
                 (typename_param
                   (identifier)
-                  (string_literal)))))
+                  (typename)))))
           (projection_keywords
             (projection_keyword
               (parameter_keyword_internal))))))))

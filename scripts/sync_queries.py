@@ -47,6 +47,7 @@ OBJECTSCRIPT_DIR = ROOT / "objectscript" / "queries"
 ROUTINE_DIR = ROOT / "objectscript_routine" / "queries"
 
 QUERY_FILENAMES = ("highlights.scm", "indents.scm", "injections.scm")
+IGNORED_QUERY_FILENAMES = {"studio-highlights.scm"}
 
 GRAMMAR_DIRS: dict[str, Path] = {
     "expr": EXPR_DIR,
@@ -158,15 +159,23 @@ def list_query_files() -> list[str]:
     names: set[str] = set(QUERY_FILENAMES)
     for directory in GRAMMAR_DIRS.values():
         if directory.exists():
-            names.update(p.name for p in directory.glob("*.scm"))
+            names.update(
+                p.name
+                for p in directory.glob("*.scm")
+                if p.name not in IGNORED_QUERY_FILENAMES
+            )
     return sorted(names)
 
 
 def sync_python_query_dir(src_dir: Path, dst_dir: Path) -> None:
     dst_dir.mkdir(parents=True, exist_ok=True)
 
-    src_files = {p.name: p for p in src_dir.glob("*.scm")}
-    dst_files = {p.name: p for p in dst_dir.glob("*.scm")}
+    src_files = {
+        p.name: p for p in src_dir.glob("*.scm") if p.name not in IGNORED_QUERY_FILENAMES
+    }
+    dst_files = {
+        p.name: p for p in dst_dir.glob("*.scm") if p.name not in IGNORED_QUERY_FILENAMES
+    }
 
     for stale_name in sorted(set(dst_files) - set(src_files)):
         dst_files[stale_name].unlink()
@@ -176,7 +185,11 @@ def sync_python_query_dir(src_dir: Path, dst_dir: Path) -> None:
 
 
 def read_query_files(path: Path) -> dict[str, str]:
-    return {p.name: read_text(p) for p in sorted(path.glob("*.scm"))}
+    return {
+        p.name: read_text(p)
+        for p in sorted(path.glob("*.scm"))
+        if p.name not in IGNORED_QUERY_FILENAMES
+    }
 
 
 def check_python_query_dirs() -> list[str]:
