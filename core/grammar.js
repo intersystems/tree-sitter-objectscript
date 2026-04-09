@@ -387,7 +387,7 @@ module.exports = grammar(objectscript_expr, {
                 $.keyword_pound_else,
                 seq(
                   $.keyword_pound_elseif,
-                  '0',
+                  alias('1', $.numeric_literal),
                 ),
               ),
             ),

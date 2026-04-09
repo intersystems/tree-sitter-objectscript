@@ -386,12 +386,12 @@ static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) 
           }
         } else if (ascii_upper_eq(directive, len, "ELSEIF")) {
           if (depth == 0) return false;
-          // depth -= 1;
-          if (depth == 0) {
+          if (depth == 1) {
             while (lexer->lookahead== ' ' || lexer->lookahead== '\t') {
               advance(lexer);
             }
             if (lexer->lookahead == '1') {
+              depth -= 1;
               lexer->result_symbol = POUND_IF_SPECIAL_CASE_ELSE;
               return true;
             }

@@ -393,7 +393,10 @@
 
 ; end extrinsic_function
 ; start highlighting for code never touched
-(pound_if_special_case) @comment.inactive
+[
+  (pound_if_special_case)
+  (pound_if_special_case_else)
+] @comment.inactive
 
 ; end highlighting for code never touched
 ; start zload command
