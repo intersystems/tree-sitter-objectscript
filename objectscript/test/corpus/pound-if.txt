@@ -333,3 +333,97 @@ Valid Pound If, ENDIF, ELSE
               (objectscript_identifier)))))))
   (statement
     (tag_end_if)))
+
+====
+Valid #if #elseif #else
+====
+test
+#if 0
+#elseif x
+ w "second scenario"
+#else 
+ w "back into global"
+#endif
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case_else_if)
+      (keyword_pound_elseif)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (pound_else
+        (keyword_pound_else)
+        (statements
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal))))))))
+      (keyword_pound_endif))))
+
+====
+Valid #if #elseif 1
+====
+test
+#if 0
+#elseif 1
+ w "back into global"
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case_else)
+      (keyword_pound_elseif)
+      (numeric_literal)))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+====
+Valid, extra #else
+====
+test
+#if 0
+#else
+ w "back into global"
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (pound_if
+      (keyword_pound_if)
+      (pound_if_special_case_else)
+      (keyword_pound_else)))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (string_literal)))))))

@@ -396,6 +396,7 @@
 [
   (pound_if_special_case)
   (pound_if_special_case_else)
+  (pound_if_special_case_else_if)
 ] @comment.inactive
 
 ; end highlighting for code never touched

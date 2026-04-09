@@ -453,18 +453,10 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     // tokens can be scanned normally.
     if (ObjectScript_Core_Scanner_lex_pound_if_special_case(lexer)) {
       if (
-          // (lexer->result_symbol == POUND_IF_SPECIAL_CASE ||
            lexer->result_symbol == POUND_IF_SPECIAL_CASE_ELSE 
-          //  lexer->result_symbol == POUND_IF_SPECIAL_CASE_ELSE_IF
           ) {
         scanner->special_pound_if_mode_if_depth += 1;
         scanner->special_pound_if_mode = true;
-      }
-      if (lexer->result_symbol == POUND_IF_SPECIAL_CASE_ELSE) {
-        // if (!scanner->special_pound_if_mode) {
-        //   scanner->special_pound_if_mode = true;
-        //   // scanner->special_pound_if_mode_if_depth = 0;
-        // }
       }
       scanner->terminated_newline = false;
       return true;
