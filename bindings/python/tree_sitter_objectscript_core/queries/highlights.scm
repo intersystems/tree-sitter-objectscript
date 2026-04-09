@@ -257,6 +257,7 @@
 ] @comment @spell
 
 (tag) @label
+
 (pound_if_special_case) @comment.inactive
 
 [
