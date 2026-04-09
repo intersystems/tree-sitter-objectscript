@@ -258,6 +258,8 @@
 
 (tag) @label
 
+(pound_if_special_case) @comment.inactive
+
 [
   (command_quit)
   (command_else)
