@@ -20148,13 +20148,27 @@
                   "value": "="
                 },
                 {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "[0-1]"
-                  },
-                  "named": true,
-                  "value": "numeric_literal"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "STRING",
+                        "value": "0"
+                      },
+                      "named": true,
+                      "value": "false"
+                    },
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "STRING",
+                        "value": "1"
+                      },
+                      "named": true,
+                      "value": "true"
+                    }
+                  ]
                 }
               ]
             },

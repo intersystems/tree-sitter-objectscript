@@ -5,9 +5,9 @@
 | Metric | Status | Details |
 |--------|--------|---------|
 | **Overall Health** | Good | Well-structured, maintainable codebase |
-| **Technical Debt** | Low-Medium | Some unimplemented features, minor style issues |
-| **Test Coverage** | Good | 186 corpus test files across 5 grammar corpus directories (109 source-corpus files before playground sync) |
-| **Documentation** | Good | Comprehensive README, inline comments |
+| **Technical Debt** | Medium | Main sharp edge is staged Rust routine/playground packaging drifting from the Rust template includes |
+| **Test Coverage** | Good | 185 corpus test files across 5 grammar corpus directories (109 source-corpus files before playground sync) |
+| **Documentation** | Good | Top-level and architecture docs now reflect the current five-grammar layout and query sync behavior |
 | **Code Quality** | Good | Consistent patterns, type annotations |
 
 ---
@@ -22,23 +22,33 @@
 
 ### High Priority
 
-#### H1: Unimplemented Preprocessor Directives
+#### H1: Staged Rust routine/playground crates omit `studio-highlights.scm`
 
-**Location**: `core/grammar.js:433-436`
+**Location**:
+- `bindings/rust-routine/lib.rs`
+- `bindings/rust-playground/lib.rs`
+- `scripts/rust_routine_crate.sh`
+- `scripts/rust_playground_crate.sh`
 
 **Evidence**:
-```javascript
-// TODO: Unimplemented preprocessor directives (lower priority):
-// #noshow, #show, #sqlcompile (audit/mode/path/select), #undef,
-// ##; ##beginquote/##EndQuote, ##expression, ##function, ##lit,
-// ##quote, ##quoteExp, ##sql, ##stripq, ##unique
+```text
+bindings/rust-routine/lib.rs      -> include_str!("objectscript_routine/queries/studio-highlights.scm")
+bindings/rust-playground/lib.rs   -> include_str!("objectscript/queries/studio-highlights.scm")
+scripts/rust_routine_crate.sh     -> copies highlights.scm, indents.scm, injections.scm only
+scripts/rust_playground_crate.sh  -> copies highlights.scm, indents.scm, injections.scm only
 ```
 
-**Impact**: Files using these directives may not parse correctly. Users relying on `##expression` or `##function` macros will see parse errors.
+**Impact**: A staged `cargo build`, `cargo package`, or `cargo publish` for the
+routine/playground crates fails unless `studio-highlights.scm` is copied into
+the staged query directory manually. Contributors can hit this even though the
+root UDL Rust crate builds and tests cleanly.
 
-**Suggested Fix**: Implement rules for frequently-used directives, prioritizing `##expression`, `##function`, and `#undef`.
+**Suggested Fix**: Keep the staging scripts in sync with the Rust templates by
+copying `studio-highlights.scm`, or stop exporting `STUDIO_HIGHLIGHTS_QUERY`
+from the staged crates until the staged package contents include it.
 
-**Validation**: Add corpus tests for each new directive.
+**Validation**: Stage each crate, copy `studio-highlights.scm`, and run
+`cargo build --manifest-path .../Cargo.toml`.
 
 ---
 
@@ -72,7 +82,7 @@ const repeat_with_commas = function (rule) {
 
 #### M2: Large File Size - `core/grammar.js`
 
-**Location**: `core/grammar.js` (1,672 lines)
+**Location**: `core/grammar.js` (1,692 lines)
 
 **Evidence**: File contains 50+ command definitions, each with complex argument handling.
 
@@ -180,7 +190,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 | Location | Comment | Action |
 |----------|---------|--------|
-| `core/grammar.js:433-436` | TODO for unimplemented directives | Keep - still valid |
+| `core/grammar.js:444-447` | TODO for unimplemented directives | Keep - still valid |
 | `common/keywords.js:3` | "NOTE: A file somewhat resembling this can be regenerated" | Update or remove if script no longer exists |
 
 ---
@@ -201,8 +211,8 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 |---------|------------|------------------------|-----|
 | expr | 30 | ~80% of expression rules | Pattern edge cases |
 | core | 57 | ~70% of command rules | I/O commands, ZBREAK variants |
-| udl | 19 | ~60% of UDL rules | Keyword combinations |
-| objectscript_routine | 3 | ~50% of routine-header rules | Header/comment edge cases |
+| udl | 18 | ~60% of UDL rules | Keyword combinations |
+| objectscript_routine | 3 | ~50% of routine-file rules | Header/comment edge cases |
 | objectscript (playground) | 77 | Broad integration coverage | Sync drift if hook is bypassed |
 
 ### Suggested Additional Tests
@@ -241,7 +251,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 1. **Well-layered architecture**: expr → core with two downstream paths (udl/playground and routine) is clean and enables reuse
 2. **Comprehensive keyword handling**: UDL keywords are exhaustively defined
-3. **Good test coverage**: 186 corpus tests provide confidence in parsing accuracy
+3. **Good test coverage**: 185 corpus tests provide confidence in parsing accuracy
 4. **Consistent patterns**: Command builder functions reduce duplication
 5. **Type annotations**: JSDoc types improve IDE support
 6. **External scanner**: Complex tokenization handled efficiently in C
@@ -262,7 +272,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 |--------|-------|------------|
 | Total Grammar LOC | 3,401 | Reasonable for language complexity |
 | Scanner LOC (C) | 1,009 | Acceptable |
-| Test Files | 186 | Good coverage |
+| Test Files | 185 | Good coverage |
 | Language Bindings | 6 | Excellent portability |
 | TODO Comments | 1 | Low debt indicator |
 | ESLint Disables | 7 | Low-Moderate - consider cleanup |
@@ -283,8 +293,10 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 ## Evidence
 
-- `core/grammar.js:433-436` — TODO for unimplemented directives
+- `bindings/rust-routine/lib.rs` and `bindings/rust-playground/lib.rs` — staged crates include `STUDIO_HIGHLIGHTS_QUERY`
+- `scripts/rust_routine_crate.sh` and `scripts/rust_playground_crate.sh` — staging helpers omit `studio-highlights.scm`
+- `core/grammar.js:444-447` — TODO for unimplemented directives
 - `expr/grammar.js:15`, `core/utils.js:47`, `udl/grammar.js:22`, `common/keywords.js:15` — Duplicated `repeat_with_commas` utility
 - `core/utils.js:52-55` — Hardcoded exclusion list
-- `find expr/test/corpus core/test/corpus udl/test/corpus objectscript_routine/test/corpus objectscript/test/corpus -type f -name '*.txt' | wc -l` — 186 corpus files across grammar directories
+- `find expr/test/corpus core/test/corpus udl/test/corpus objectscript_routine/test/corpus objectscript/test/corpus -type f -name '*.txt' | wc -l` — 185 corpus files across grammar directories
 - File line counts from `wc -l` command

@@ -6,7 +6,7 @@ The `expression` rule is the root construct for all ObjectScript expressions. It
 
 ## Definition
 
-**Location**: `expr/grammar.js:36-42`
+**Location**: `expr/grammar.js:53-58`
 
 ```javascript
 expression: ($) =>
@@ -60,10 +60,10 @@ The `expr_atom` rule is a `choice()` of:
 - `relative_dot_parameter` — `..#ParamName`
 - `oref_chain_expr` — `oref.prop.method().#Param`
 - `class_method_call` — `##class(Pkg.Class).Method(args)`
-- `class_parameter_ref` — `##class(Pkg.Class).#Param`
 - `superclass_method_call` — `##super(args)`
+- `indirection` — `@expr` with optional indirection tail
 
-**Evidence**: `expr/grammar.js:44-75`
+**Evidence**: `expr/grammar.js:60-96`
 
 ### expr_tail Structure
 
@@ -81,7 +81,7 @@ expr_tail: ($) =>
     ),
 ```
 
-**Evidence**: `expr/grammar.js:77-89`
+**Evidence**: `expr/grammar.js:98-107`
 
 ## Lifecycle
 
@@ -133,9 +133,9 @@ arr(expression, expression)
 
 | Operation | Location | Notes |
 |-----------|----------|-------|
-| Add new expr_atom | `expr/grammar.js:44-75` | Add to `choice()` in `expr_atom` |
-| Add new operator | `expr/grammar.js:99-130` | Add to `binary_operator` rule |
-| Modify precedence | `expr/grammar.js:23-28` | Update `precedences` array |
+| Add new expr_atom | `expr/grammar.js:60-96` | Add to `choice()` in `expr_atom` |
+| Add new operator | `expr/grammar.js` | Add to `binary_operator` rule |
+| Modify precedence | `expr/grammar.js` | Update `precedences` array |
 
 ## Related Structures
 
@@ -156,7 +156,7 @@ arr(expression, expression)
 
 ## Evidence
 
-- `expr/grammar.js:36-42` — `expression` rule definition
-- `expr/grammar.js:44-75` — `expr_atom` choices
-- `expr/grammar.js:77-89` — `expr_tail` definition
-- `expr/grammar.js:99-130` — `binary_operator` definition
+- `expr/grammar.js:53-58` — `expression` rule definition
+- `expr/grammar.js:60-96` — `expr_atom` choices
+- `expr/grammar.js:98-107` — `expr_tail` definition
+- `expr/grammar.js` — `binary_operator` definition

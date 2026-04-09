@@ -6,12 +6,12 @@ The `class_definition` rule represents an ObjectScript class declaration in UDL 
 
 ## Definition
 
-**Location**: `udl/grammar.js:78-87`
+**Location**: `udl/grammar.js:108-115`
 
 ```javascript
 class_definition: ($) =>
   seq(
-    field('keyword', $.keyword_class),
+    $.keyword_class,
     alias($.identifier, $.class_name),
     optional($.class_extends),
     optional($.class_keywords),
@@ -25,7 +25,7 @@ class_definition: ($) =>
 
 ```
 (class_definition
-  keyword: (keyword_class)           ; "Class" keyword
+  (keyword_class)                     ; "Class" keyword
   (class_name)                        ; Package.ClassName
   (class_extends)?                    ; Extends clause (optional)
   (class_keywords)?                   ; [ keyword = value, ... ] (optional)
@@ -37,7 +37,7 @@ class_definition: ($) =>
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `keyword` | `keyword_class` | Yes | The "Class" keyword |
+| `keyword_class` | node | Yes | The `Class` keyword token |
 | `class_name` | `identifier` | Yes | Fully qualified class name |
 | `class_extends` | node | No | Superclass declaration |
 | `class_keywords` | node | No | Class modifiers in brackets |
@@ -48,7 +48,7 @@ class_definition: ($) =>
 ```javascript
 class_extends: ($) =>
   seq(
-    field('keyword', $.keyword_extends),
+    $.keyword_extends,
     choice(
       alias($.identifier, $.class_name),
       seq(alias('(', $.bracket), 
@@ -59,7 +59,7 @@ class_extends: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:89-99`
+**Evidence**: `udl/grammar.js:118-124`
 
 ### class_body Structure
 
@@ -85,7 +85,7 @@ class_statement: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:107-125`
+**Evidence**: `udl/grammar.js:136-151`
 
 ## Lifecycle
 
@@ -93,7 +93,7 @@ class_statement: ($) =>
 |-------|-------------|
 | Parse | UDL grammar matches "Class" keyword and structure |
 | AST Creation | `class_definition` node with nested members |
-| Query | Highlight queries capture class name as `@type` |
+| Query | Highlight queries can capture the class keyword, class name, and class member declarations from the UDL/objectscript query layers |
 | Injection | Storage body injected as XML |
 
 ## Member Types
@@ -168,8 +168,8 @@ Class MyPackage.MyClass Extends (%Persistent, %XML.Adaptor) {
 | Operation | Location | Notes |
 |-----------|----------|-------|
 | Add class keyword | `common/keywords.js` | Define in `class_keywords` rule |
-| Add member type | `udl/grammar.js:110-124` | Add to `class_statement` choice |
-| Modify extends syntax | `udl/grammar.js:89-99` | Update `class_extends` rule |
+| Add member type | `udl/grammar.js:138-151` | Add to `class_statement` choice |
+| Modify extends syntax | `udl/grammar.js:118-124` | Update `class_extends` rule |
 
 ## Related Structures
 
@@ -179,22 +179,9 @@ Class MyPackage.MyClass Extends (%Persistent, %XML.Adaptor) {
 
 ## File-Level Context
 
-Before `class_definition`, a file may have:
-
-```javascript
-source_file: ($) =>
-  seq(
-    optional(
-      choice(
-        seq($.include_code,$.include_generator,$.import_code),
-        // ... other orderings
-      )
-    ),
-    $.class_definition,
-  ),
-```
-
-**Evidence**: `udl/grammar.js:46-67`
+Before `class_definition`, a file may have optional `Include`,
+`IncludeGenerator`, and `Import` clauses. The `source_file` rule still resolves
+those clauses before the class body.
 
 ### Include/Import Clauses
 
@@ -217,8 +204,8 @@ source_file: ($) =>
 
 ## Evidence
 
-- `udl/grammar.js:78-87` — `class_definition` rule
-- `udl/grammar.js:89-99` — `class_extends` rule
-- `udl/grammar.js:107-125` — `class_body` and `class_statement` rules
-- `udl/grammar.js:46-67` — `source_file` with include/import
+- `udl/grammar.js:108-115` — `class_definition` rule
+- `udl/grammar.js:118-124` — `class_extends` rule
+- `udl/grammar.js:136-151` — `class_body` and `class_statement` rules
+- `udl/grammar.js:59-105` — `source_file` with include/import
 - `common/keywords.js` — Class keyword definitions

@@ -1,6 +1,6 @@
 # Design Document - tree-sitter-objectscript
 
-> Update note (2026): The implemented system uses five grammar targets, including `objectscript_routine` as a branch from `core`. Operational workflows and hook behavior were expanded (corpus sync, query sync, lint auto-fix, parser/query checks). Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
+> Update note (2026): The implemented system uses five grammar targets, including `objectscript_routine` as a branch from `core`. Operational workflows and hook behavior were expanded (corpus sync, query sync, lint auto-fix, parser/query checks). Query sync now only manages the canonical `highlights.scm`, `indents.scm`, and `injections.scm` files; `studio-highlights.scm` remains manual. Refer to `README.md` and `CONTRIBUTING.md` for current procedures.
 
 ## Metadata
 
@@ -73,7 +73,7 @@ expr -> core -> objectscript_udl -> objectscript
 expr -> core -> objectscript_routine
 ```
 
-Each target is a complete tree-sitter grammar. `objectscript` is the playground profile, `objectscript_udl` remains the class-file profile, and `objectscript_routine` is the routine-header profile.
+Each target is a complete tree-sitter grammar. `objectscript` is the playground profile, `objectscript_udl` remains the class-file profile, and `objectscript_routine` is the routine-file profile.
 
 ### Detailed Design
 
@@ -98,7 +98,7 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 - All ObjectScript operators have equal precedence (left-associative)
 - Pattern expressions (`?1N.A`) use a single regex token for efficiency
 
-**Evidence**: `expr/grammar.js:20-40` defines the core expression structure.
+**Evidence**: `expr/grammar.js` defines the core expression structure.
 
 #### 2. Core Grammar (core)
 
@@ -123,7 +123,7 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 - **Block and old-style syntax** both supported (`IF cond { } ELSE { }` and `IF cond command`)
 - **Keyword field placement** at usage sites: `field('keyword', $.keyword_set)`
 
-**Evidence**: `core/grammar.js:30-80` defines command builder functions.
+**Evidence**: `core/grammar.js` defines the command builder functions.
 
 #### 3. UDL Grammar (objectscript_udl)
 
@@ -149,9 +149,33 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 - **Keyword definitions** factored into `common/keywords.js` for maintainability
 - **External scanner extension** for IRIS username and external method body content
 
-**Evidence**: `udl/grammar.js:50-150` defines class structure rules.
+**Evidence**: `udl/grammar.js` defines class structure rules.
 
-#### 4. Playground Grammar (objectscript)
+#### 4. Routine Grammar (objectscript_routine)
+
+**Scope**: Routine files that begin with a `ROUTINE` header and then continue
+with core statements.
+
+**Key constructs**:
+
+| Category | Constructs |
+|----------|------------|
+| Routine header | `ROUTINE Name [Type=mac|inc|int]` |
+| Routine body | Reuses `statement` from `core` after the header |
+| Extras | Allows routine documatic lines and routine-specific scanner tokens |
+
+**Design decisions**:
+
+- Keep routine files on the `expr -> core -> objectscript_routine` branch so
+  they can reuse the full core statement grammar without UDL class rules
+- Accept both headered routine files and statement-only routine snippets at the
+  top level
+- Share the same scanner with extra routine-specific external tokens
+
+**Evidence**: `objectscript_routine/grammar.js` defines the routine-file entry
+point and header rules.
+
+#### 5. Playground Grammar (objectscript)
 
 **Scope**: Mixed/top-level snippet parsing for terminal/agent output and incomplete code fragments.
 
@@ -168,9 +192,9 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 - Preserve strict `.cls` parsing in `objectscript_udl`, but permit mixed snippets in `objectscript`
 - Reuse shared scanner with mode flag instead of duplicating scanner logic
 
-**Evidence**: `objectscript/grammar.js:1-80` and `common/scanner.h` scanner mode handling.
+**Evidence**: `objectscript/grammar.js` and `common/scanner.h` show the scanner mode handling.
 
-#### 5. Shared Components (common)
+#### 6. Shared Components (common)
 
 | Component | Purpose |
 |-----------|---------|
@@ -178,9 +202,9 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 | `scanner.h` | C external scanner for whitespace, comments, markers |
 | `define_grammar.js` | `define_grammar()` helper for grammar extension |
 
-**Evidence**: `common/identifiers.js:1-15` defines identifier patterns.
+**Evidence**: `common/identifiers.js` defines identifier patterns.
 
-#### 6. Query Files
+#### 7. Query Files
 
 | Query | Purpose |
 |-------|---------|
@@ -191,11 +215,12 @@ Each target is a complete tree-sitter grammar. `objectscript` is the playground 
 **Design decisions**:
 
 - **Generated layered composition**: `scripts/sync_queries.py` composes layered EXPR/CORE/UDL/LOCAL sections for `core`, `udl`, `objectscript`, and `objectscript_routine` query trees
+- **Canonical sync scope only**: `scripts/sync_queries.py` manages `highlights.scm`, `indents.scm`, and `injections.scm`; `studio-highlights.scm` is intentionally excluded from sync and Python copy verification
 - **Zed-compatible capture names**: `@keyword`, `@variable`, `@function`, `@type`, etc.
 - **MimeType-based injection**: XDATA blocks use MimeType attribute to select injected language
-- **Shared UDL/playground query sources**: `objectscript` and `objectscript_udl` both consume the same `expr/core/udl` query files from `tree-sitter.json`
+- **Layered playground queries**: `objectscript` query trees are composed from the `expr`, `core`, and `udl` layers plus objectscript-local rules before `tree-sitter.json` points consumers at the composed files
 
-**Evidence**: `udl/queries/injections.scm:1-100` defines XDATA injection rules; `tree-sitter.json:1-80` defines shared query mappings.
+**Evidence**: `udl/queries/injections.scm` defines XDATA injection rules; `tree-sitter.json` defines grammar/query mappings.
 
 ---
 
@@ -344,7 +369,13 @@ cd objectscript_routine && tree-sitter test
 # Binding tests
 nvm use
 npm ci
-cargo test                                    # Rust
+cargo test --lib --package tree-sitter-objectscript
+./scripts/rust_routine_crate.sh stage /tmp/tsroutine
+cp objectscript_routine/queries/studio-highlights.scm /tmp/tsroutine/objectscript_routine/queries/
+cargo build --manifest-path /tmp/tsroutine/Cargo.toml
+./scripts/rust_playground_crate.sh stage /tmp/tsplayground
+cp objectscript/queries/studio-highlights.scm /tmp/tsplayground/objectscript/queries/
+cargo build --manifest-path /tmp/tsplayground/Cargo.toml
 python3 -m pytest bindings/python/tests/      # Python (in venv)
 npm test                                       # Node
 npm run lint                                   # JavaScript lint
@@ -357,15 +388,12 @@ make installhooks                              # Install repo pre-commit hook
 python3 scripts/sync_queries.py --check-python # Verify Python query copies
 ```
 
-### Success Criteria
+### Current Validation Targets
 
-- [x] All corpus tests pass
-- [x] All binding tests pass
-- [x] Zed extension published and installable
-- [x] nvim-treesitter `:TSInstall objectscript_udl` for `.cls` works
-- [x] nvim-treesitter `:TSInstall objectscript` for playground snippets works
-- [x] nvim-treesitter `:TSInstall objectscript_routine` for routine files works
-- [x] Emacs major mode loads without errors
+- Corpus tests run in all five grammar directories
+- Binding checks cover Rust, Python, Node, Go, Swift, and C surfaces
+- CI verifies synchronized Python query copies separately from parser/query lint
+- Editor integration targets remain Zed, nvim-treesitter, and Emacs
 
 ---
 
@@ -386,19 +414,20 @@ python3 scripts/sync_queries.py --check-python # Verify Python query copies
 
 ## Evidence
 
-- `expr/grammar.js:1-700` — Expression grammar implementation
-- `core/grammar.js:1-1200` — Core grammar implementation
-- `udl/grammar.js:1-400` — objectscript_udl grammar implementation
-- `objectscript/grammar.js:1-120` — objectscript playground grammar implementation
+- `expr/grammar.js` — Expression grammar implementation
+- `core/grammar.js` — Core grammar implementation
+- `udl/grammar.js` — objectscript_udl grammar implementation
+- `objectscript/grammar.js` — objectscript playground grammar implementation
+- `objectscript_routine/grammar.js` — objectscript_routine implementation
 - `common/scanner.h` — External scanner C implementation
-- `common/keywords.js:1-500` — shared keyword definitions
-- `common/define_grammar.js:1-120` — shared grammar extension helper
-- `tree-sitter.json:1-80` — Multi-grammar configuration
+- `common/keywords.js` — shared keyword definitions
+- `common/define_grammar.js` — shared grammar extension helper
+- `tree-sitter.json` — Multi-grammar configuration
 - `.githooks/pre-commit` — local query synchronization hook
 - `.github/workflows/sync-queries.yml` — CI verification for Python query parity
 - `.github/workflows/lint.yml` — deterministic `npm ci` lint workflow
 - `eslint.config.mjs` — ESLint flat configuration
 - `package-lock.json` — lockfile for deterministic npm dependency resolution
-- `README.md:1-111` — Project documentation
-- `*/test/corpus/*.txt` — 186 test corpus files
+- `README.md` — Project documentation
+- `*/test/corpus/*.txt` — 185 test corpus files
 - `bindings/*/` — Language binding implementations

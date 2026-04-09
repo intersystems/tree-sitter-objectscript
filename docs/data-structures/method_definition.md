@@ -6,7 +6,7 @@ The `method_definition` rule represents the structure of an ObjectScript method 
 
 ## Definition
 
-**Location**: `udl/grammar.js:173-179`
+**Location**: `udl/grammar.js:395-400`
 
 ```javascript
 method_definition: ($) =>
@@ -65,7 +65,7 @@ _core_method: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:187-193`
+**Evidence**: `udl/grammar.js:412-417`
 
 #### 2. Expression Method (`_expression_method`)
 
@@ -81,7 +81,7 @@ _expression_method: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:195-202`
+**Evidence**: `udl/grammar.js:420-425`
 
 #### 3. External Method (`_external_method`)
 
@@ -97,7 +97,7 @@ _external_method: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:204-211`
+**Evidence**: `udl/grammar.js:428-433`
 
 #### 4. Call Method (`_call_method`)
 
@@ -113,7 +113,7 @@ _call_method: ($) =>
   ),
 ```
 
-**Evidence**: `udl/grammar.js:181-186`
+**Evidence**: `udl/grammar.js:403-409`
 
 ## Lifecycle
 
@@ -121,36 +121,36 @@ _call_method: ($) =>
 |-------|-------------|
 | Parse | UDL grammar matches method structure |
 | AST Creation | `method_definition` with appropriate body variant |
-| Query | Highlight queries capture method name as `@function` |
-| Injection | External bodies trigger language injection (Python, TSQL, ISPL) |
+| Query | Highlight queries capture the method name, method keywords, and return type separately |
+| Injection | External bodies trigger language injection based on the `Language` keyword |
 
 ## Arguments Structure
 
 ```javascript
 arguments: ($) =>
   seq(
-    token.immediate('('), 
-    optional(seq($.argument, repeat(seq(',', $.argument)))), 
-    ')'
+    alias(token.immediate('('), $.bracket),
+    optional(seq($.argument, repeat(seq(',', $.argument)))),
+    alias(')', $.bracket)
   ),
 
 argument: ($) =>
   seq(
-    optional(choice(field('keyword', $.keyword_byref), field('keyword', $.keyword_output))),
-    $.identifier,
+    optional(choice($.keyword_byref, $.keyword_output)),
+    alias(choice($.variadic_arg, $.expression), $.method_arg),
     optional($.return_type),
     optional(seq('=', $.default_argument_value)),
   ),
 ```
 
-**Evidence**: `udl/grammar.js:217-230`
+**Evidence**: `udl/grammar.js:436-445`
 
 ### Argument Components
 
 | Component | Required | Description |
 |-----------|----------|-------------|
 | `ByRef`/`Output` | No | Pass-by-reference modifier |
-| Identifier | Yes | Argument name |
+| `method_arg` | Yes | Aliased argument payload; can be a regular expression/identifier form or a variadic arg |
 | Return type | No | `As TypeName` |
 | Default value | No | `= value` |
 
@@ -227,8 +227,8 @@ Work^MyRoutine
 | Operation | Location | Notes |
 |-----------|----------|-------|
 | Add method keyword | `common/keywords.js` | Add to `method_keywords` rule |
-| Add body variant | `udl/grammar.js:173-179` | Add to `choice()` |
-| Modify argument syntax | `udl/grammar.js:217-230` | Update `argument` rule |
+| Add body variant | `udl/grammar.js:395-400` | Add to `choice()` |
+| Modify argument syntax | `udl/grammar.js:436-445` | Update `argument` rule |
 
 ## Related Structures
 
@@ -266,7 +266,7 @@ External methods trigger language injection:
 
 ## Evidence
 
-- `udl/grammar.js:173-211` — Method definition and body variants
-- `udl/grammar.js:217-230` — Arguments structure
+- `udl/grammar.js:395-433` — Method definition and body variants
+- `udl/grammar.js:436-445` — Arguments structure
 - `common/keywords.js` — Method keyword definitions
 - `udl/queries/injections.scm:1-35` — Method body injections

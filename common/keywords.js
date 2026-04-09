@@ -50,7 +50,7 @@ module.exports = {
     method_keyword_web_method: ($) => seq(optional($.keyword_not), /WebMethod/i),
     method_keyword_return_results_set: ($) => seq(optional($.keyword_not), /ReturnResultsets/i),
     method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice(alias($.objectscript_identifier, $.method_name), seq('(', repeat_with_commas(alias($.objectscript_identifier, $.method_name)), ')'))),
-    method_keyword_procedure_block: ($) => seq(/ProcedureBlock/i, optional(seq('=', alias(/[0-1]/, $.numeric_literal)))),
+    method_keyword_procedure_block: ($) => seq(/ProcedureBlock/i, optional(seq('=', choice(alias('0', $.false), alias('1', $.true))))),
     method_keyword_soap_binding_style: ($) => seq(/SoapBindingStyle/i, '=', alias(choice(/document/i, /rpc/i), $.typename)),
     method_keyword_soap_body_use: ($) => seq(/SoapBodyUse/i, '=', alias(choice(/literal/i, /encoded/i), $.typename)),
     method_keyword_soap_namespace: ($) => seq(/SoapNameSpace/i, '=', choice($.objectscript_identifier, $.string_literal)),

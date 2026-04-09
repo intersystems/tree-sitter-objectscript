@@ -17,7 +17,7 @@ This repository publishes five related grammars:
 - `objectscript_udl`: class-file grammar for `.cls`.
 - `objectscript_core`: routine/statement grammar.
 - `objectscript_expr`: expression grammar.
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.rtn`, and `.int`.
+- `objectscript_routine`: routine-file grammar for `.mac`, `.inc`, `.rtn`, and `.int`.
 
 Grammar extension graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
@@ -60,6 +60,11 @@ swift test
 make test
 ```
 
+The routine and playground Rust crates are staged from `bindings/rust-routine` and
+`bindings/rust-playground` via helper scripts. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the current local build workflow and the
+temporary `studio-highlights.scm` copy step those staged crates need today.
+
 For Node bindings specifically, `.nvmrc` pins the expected Node version.
 
 ## Editor Integration
@@ -101,6 +106,19 @@ tree-sitter playground
 ```
 
 If you change an upstream grammar (`expr` or `core`), regenerate downstream grammars as needed (`udl`, `objectscript`, `objectscript_routine`).
+
+## Query Sync
+
+`scripts/sync_queries.py` manages the canonical query trio for each grammar:
+
+- `highlights.scm`
+- `indents.scm`
+- `injections.scm`
+
+It composes the layered query trees for `core`, `udl`, `objectscript`, and
+`objectscript_routine`, then mirrors those composed files into the Python
+binding query directories. `studio-highlights.scm` files are intentionally left
+out of that sync process and are maintained separately.
 
 ## Corpus Sync
 
