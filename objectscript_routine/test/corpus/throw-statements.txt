@@ -1,0 +1,51 @@
+======================
+Throw Statements
+======================
+ throw:(x >= 5) ex
+ THROW badDOB
+ throw
+ SET $THROWOBJ=""
+---
+
+(source_file
+  (statement
+    (command_throw
+      (keyword_throw)
+      (post_conditional
+        (expression
+          (expr_atom
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))
+              (bracket)))))
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))))
+  (statement
+    (command_throw
+      (keyword_throw)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier))))))
+  (statement
+    (command_throw
+      (keyword_throw)))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (system_defined_variable))
+        (expression
+          (expr_atom
+            (string_literal)))))))

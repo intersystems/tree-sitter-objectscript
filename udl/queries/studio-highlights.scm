@@ -12,6 +12,19 @@
     ] @punctuation.bracket.json)
 ]
 
+[
+  (class_body
+    [
+      "{"
+      "}"
+    ] @punctuation.special)
+  (method_definition
+    [
+      "{"
+      "}"
+    ] @punctuation.special)
+]
+
 ; end @punctuation.bracket.json
 ; start @label (maroon fg, yellow bg)
 (tag) @label

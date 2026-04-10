@@ -136,6 +136,7 @@ module.exports = grammar(objectscript_expr, {
     $._argumentless_loop,
     $._whitespace,
     $.tag,
+    $.routine,
     $.angled_bracket_fenced_text,
     $.paren_fenced_text,
     $.embedded_sql_marker,

@@ -1,0 +1,469 @@
+===
+Valid Zkill Statements
+===
+ ZKILL a(1)
+ Zk a(1)
+ ZKILL a(1,1)
+ ZKILL a("sub")
+ ZKILL a(1,"sub",3)
+ ZKILL a(1),b(2)
+ ZKILL a(1,1),b("x",2),c(3)
+ ZKILL a(1),^G(2),^G("x",3)
+ ZKILL:1 a(1)
+ ZKILL:(a(0)=1) a(1)
+ ZK:(x>0) a(1,1)
+ ZK:($DATA(a(1))) a(1),b(2)
+ ZKILL ^||TMP(1)
+ ZKILL ^||TMP("a"),a(1)
+ ZK:^cond ^||TMP(1,2)
+ ZKILL ^|"MYNAMESPACE"|G(1)
+ ZKILL ^["MYDB"]G(1,2)
+ ZK:^($DATA(^G(0))) ^|"NSPACE"|G(1),a(2)
+ zkill a(1)
+---
+
+(source_file
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (string_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (string_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (string_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (gvn
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (gvn
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (string_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (numeric_literal))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)
+                    (subscripts
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (numeric_literal)))
+                      (bracket))))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))
+              (bracket)))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (binary_operator)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))))
+              (bracket)))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (dollar_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)
+                              (subscripts
+                                (bracket)
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))
+                                (bracket))))))))))
+              (bracket)))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (gvn
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (gvn
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (string_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (gvn))))
+      (glvn
+        (gvn
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (gvn
+          (string_literal)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (gvn
+          (string_literal)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (post_conditional
+        (expression
+          (expr_atom
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (dollar_function
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (gvn
+                                (subscripts
+                                  (bracket)
+                                  (expression
+                                    (expr_atom
+                                      (numeric_literal)))
+                                  (bracket))))))))))
+                (bracket))))))
+      (glvn
+        (gvn
+          (string_literal)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket))))))
+  (statement
+    (command_zkill
+      (keyword_zkill)
+      (glvn
+        (lvn
+          (objectscript_identifier)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (bracket)))))))
+
+===
+Invalid Zkill (Expression arg)
+:error
+===
+ ZKILL x+y
+---
+
+
+
+===
+Invalid Zkill (Argumentless)
+:error
+===
+ ZKILL 
+---
+
+
+
+===
+Invalid Zkill (Argumentless, shorthand)
+:error
+===
+ ZK
+---
+
+
+
+===
+Invalid Zkill (Invalid Whitespace)
+:error
+===
+ ZKILL:1    a(1),  b(2)
+---
+
+

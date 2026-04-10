@@ -32,12 +32,56 @@ pub const INDENTS_QUERY: &str = include_str!("objectscript_routine/queries/inden
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn test_can_load_objectscript_routine_grammar() {
-        let mut parser = tree_sitter::Parser::new();
+    use tree_sitter::{Parser, Point, Node};
+    pub fn dump(node: Node, depth: usize) {
+    let indent = "  ".repeat(depth);
+    let start = node.start_position();
+    let end = node.end_position();
+
+    println!(
+        "{}{} [{}, {}] - [{}, {}]",
+        indent,
+        node.kind(),
+        start.row,
+        start.column,
+        end.row,
+        end.column
+    );
+
+    let mut cursor = node.walk();
+    for child in node.named_children(&mut cursor) {
+        dump(child, depth + 1);
+    }
+}
+    fn parse_cls(code: &str) -> tree_sitter::Tree {
+        let mut parser = Parser::new();
         parser
             .set_language(&super::LANGUAGE_OBJECTSCRIPT_ROUTINE.into())
-            .expect("Error loading ObjectScript routine parser");
+            .expect("failed to load objectscript routine grammar");
+        parser.parse(code, None).expect("parse returned None")
+    }
+    
+    #[test]
+    fn test_can_load_objectscript_routine_grammar() {
+        
+        // let mut parser = tree_sitter::Parser::new();
+        // parser
+        //     .set_language(&super::LANGUAGE_OBJECTSCRIPT_ROUTINE.into())
+        //     .expect("Error loading ObjectScript routine parser");
+        let source = r#"ROUTINE x
+heyyy() methodimpl {
+    w "hi"
+    set x = 2
+    if x {
+        w "bye"
+        q
+    }
+}
+"#;
+        let tree = parse_cls(source);
+        dump(tree.root_node(), 0);
+        // println!("TREE NODE {:?}", tree.root_node().named_child(0))
+        
     }
 
     #[test]
