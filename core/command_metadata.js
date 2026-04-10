@@ -56,10 +56,12 @@ const STATEMENT_RULE_NAMES = [
   'pound_ifndef',
   'pound_import',
   'pound_include',
-  'macro',
+  'command_macro',
   'tag',
+  'tag_end_if',
   'tag_with_params',
   'procedure',
+  'command_zload'
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
@@ -74,7 +76,6 @@ const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
   /zhtrap/i,
   /zi(nsert)?/i,
   /zitrap/i,
-  /zl(oad)?/i,
   /zns/i,
   /zg(o)/i,
   /zmove/i,

@@ -1,0 +1,61 @@
+====
+valid bitlogic, |
+====
+  $bitlogic(x|y)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_bitlogic
+          (bitlogic_expression
+            (bitlogic_atom
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (bitlogic_atom
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+====
+valid bitlogic, | and ~
+====
+  $bitlogic(~x|y)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_bitlogic
+          (bitlogic_expression
+            (bitlogic_atom
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))
+            (bitlogic_atom
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+====
+valid bitlogic, | and ^ and ~
+====
+  $bitlogic(~^x|y)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_bitlogic
+          (bitlogic_expression
+            (bitlogic_atom
+              (expr_atom
+                (gvn)))
+            (bitlogic_atom
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))

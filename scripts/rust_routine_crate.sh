@@ -33,6 +33,7 @@ stage_routine_crate() {
   cp -f "$ROOT_DIR/objectscript_routine/src/node-types.json" "$dest/objectscript_routine/src/node-types.json"
   cp -f "$ROOT_DIR/objectscript_routine/src/tree_sitter/parser.h" "$dest/objectscript_routine/src/tree_sitter/parser.h"
 
+  cp -f "$ROOT_DIR/objectscript_routine/queries/studio-highlights.scm" "$dest/objectscript_routine/queries/studio-highlights.scm"
   cp -f "$ROOT_DIR/objectscript_routine/queries/highlights.scm" "$dest/objectscript_routine/queries/highlights.scm"
   cp -f "$ROOT_DIR/objectscript_routine/queries/indents.scm" "$dest/objectscript_routine/queries/indents.scm"
   cp -f "$ROOT_DIR/objectscript_routine/queries/injections.scm" "$dest/objectscript_routine/queries/injections.scm"

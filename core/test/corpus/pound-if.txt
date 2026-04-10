@@ -250,3 +250,187 @@ Invalid If (no #endif, #else, or #elseif)
 ---
 
 
+
+====
+Valid PoundIf Special Case
+====
+#if 0
+ adsfkjads F
+ this can have anything 
+#endif
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case)
+        (keyword_pound_endif)))))
+
+====
+Valid PoundIf Special Case Nested
+====
+#if 0
+ set x = "#endif should not close"
+#else
+ #if 0
+  quit "inner"
+ #else
+  set y = "#if also text"
+ #endif
+#endif
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_else)))
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_else)))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (string_literal))))))
+    (statement
+      (tag_end_if))
+    (statement
+      (tag_end_if))))
+
+====
+Valid Pound If, ENDIF, ELSE
+====
+#if 0
+  afsdklf SetUDAFDropIfExists
+#ELSE
+  w hi
+#ENDIF
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_else)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (tag_end_if))))
+
+====
+Valid #if #elseif #else
+====
+test
+#if 0
+#elseif x
+ w "second scenario"
+#else 
+ w "back into global"
+#endif
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else_if)
+        (keyword_pound_elseif)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (statement
+          (command_write
+            (keyword_write)
+            (write_argument
+              (expression
+                (expr_atom
+                  (string_literal))))))
+        (pound_else
+          (keyword_pound_else)
+          (statements
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))
+        (keyword_pound_endif)))))
+
+====
+Valid #if #elseif 1
+====
+test
+#if 0
+#elseif 1
+ w "back into global"
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_elseif)
+        (numeric_literal)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+====
+Valid, extra #else
+====
+test
+#if 0
+#else
+ w "back into global"
+---
+
+(source_file
+  (statements
+    (statement
+      (tag))
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_else)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))

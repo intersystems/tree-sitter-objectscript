@@ -3,6 +3,7 @@ LOCK STATEMENTS
 ===============
  LOCK +^a(1)
  LOCK +^a(1)#"E"
+ LOCK +^a(1)#"I"_locktype
  LOCK +a(6,i)
  LOCK -^a(1)#"I"
  LOCK -^a(1)
@@ -38,7 +39,24 @@ LOCK STATEMENTS
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))))
+            (locktype
+              (string_literal))))))
+    (statement
+      (command_lock
+        (keyword_lock)
+        (command_lock_argument
+          (command_lock_arguments_variant_1
+            (glvn
+              (gvn
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (bracket))))
+            (locktype
+              (string_literal)
+              (lvn))))))
     (statement
       (command_lock
         (keyword_lock)
@@ -70,7 +88,8 @@ LOCK STATEMENTS
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))))
+            (locktype
+              (string_literal))))))
     (statement
       (command_lock
         (keyword_lock)
@@ -97,7 +116,8 @@ LOCK STATEMENTS
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))))
+            (locktype
+              (string_literal))))))
     (statement
       (command_lock
         (keyword_lock)
@@ -364,7 +384,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))
+            (locktype
+              (string_literal))))
         (command_lock_argument
           (command_lock_arguments_variant_1
             (glvn
@@ -378,7 +399,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))
+            (locktype
+              (string_literal))))
         (command_lock_argument
           (command_lock_arguments_variant_1
             (glvn
@@ -392,7 +414,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)))))
+            (locktype
+              (string_literal))))))
     (statement
       (command_lock
         (keyword_lock)
@@ -411,7 +434,8 @@ LOCK STATEMENTS 3
                       (lvn
                         (objectscript_identifier))))
                   (bracket))))
-            (locktype)))))
+            (locktype
+              (string_literal))))))
     (statement
       (command_lock
         (keyword_lock)
@@ -434,7 +458,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -443,7 +468,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -452,7 +478,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (bracket)))))
     (statement
       (command_lock
@@ -476,7 +503,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -485,7 +513,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -494,7 +523,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (bracket)))))
     (statement
       (command_lock
@@ -518,7 +548,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -527,7 +558,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -536,7 +568,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (bracket)))))
     (statement
       (command_lock
@@ -560,7 +593,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -569,7 +603,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (glvn
               (gvn
                 (subscripts
@@ -578,7 +613,8 @@ LOCK STATEMENTS 3
                     (expr_atom
                       (numeric_literal)))
                   (bracket))))
-            (locktype)
+            (locktype
+              (string_literal))
             (bracket)))))
     (statement
       (command_lock
@@ -629,7 +665,8 @@ Valid Lock Statement, with Global
                               (numeric_literal)))
                           (bracket)))))
                   (bracket))))
-            (locktype)
+            (locktype
+              (lvn))
             (timeout
               (expression
                 (expr_atom

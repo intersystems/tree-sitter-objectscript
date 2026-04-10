@@ -41,7 +41,7 @@ Property Department As %String;
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))))
@@ -50,7 +50,7 @@ Property Department As %String;
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier))))))))
@@ -108,7 +108,7 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -121,13 +121,14 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (string_literal))))
+                (typename_param
+                  (identifier)
+                  (typename)))))
           (property_keywords
             (property_keyword
               (property_keyword_required))))))))
@@ -156,13 +157,14 @@ Class Sample.Invoice Extends %Persistent
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (numeric_literal))))
+                (typename_param
+                  (identifier)
+                  (numeric_literal)))))
           (property_keywords
             (property_keyword
               (property_keyword_required)))))
@@ -171,7 +173,7 @@ Class Sample.Invoice Extends %Persistent
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))))
@@ -180,13 +182,15 @@ Class Sample.Invoice Extends %Persistent
           (keyword_relationship)
           (relationship_name
             (identifier))
-          (keyword_as)
-          (typename
-            (identifier))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
           (relationship_keywords
             (relationship_keyword
               (relationship_keyword_cardinality
                 (typename)))
             (relationship_keyword
               (relationship_keyword_inverse
-                (objectscript_identifier)))))))))
+                (variable_datatype
+                  (objectscript_identifier))))))))))

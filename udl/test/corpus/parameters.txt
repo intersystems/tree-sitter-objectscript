@@ -44,13 +44,13 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (parameter_name
             (identifier))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (property
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))))
@@ -59,7 +59,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))))
@@ -68,27 +68,27 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (string_literal))))))
+                (typename))))))
       (class_statement
         (property
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
           (property_keywords
             (property_keyword
               (property_keyword_initial_expression
-                (string_literal))))))
+                (typename))))))
       (class_statement
         (method
           (keyword_method)
@@ -166,7 +166,7 @@ Class hi {
             (parameter_keyword
               (parameter_keyword_abstract)))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -175,12 +175,12 @@ Class hi {
           (parameter_keywords
             (parameter_keyword
               (parameter_keyword_constraint
-                (string_literal)))
+                (typename)))
             (parameter_keyword
               (parameter_keyword_flags
                 (typename))))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -190,7 +190,7 @@ Class hi {
             (parameter_keyword
               (parameter_keyword_deprecated)))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -200,7 +200,7 @@ Class hi {
             (parameter_keyword
               (parameter_keyword_final)))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -210,7 +210,7 @@ Class hi {
             (parameter_keyword
               (parameter_keyword_internal)))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -219,7 +219,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (string_literal))))
+            (typename))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -228,7 +228,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (string_literal)))))))
+            (typename)))))))
 
 ========================
 Calling Parameters
@@ -269,15 +269,16 @@ Class hi {
                 (write_argument
                   (expression
                     (expr_atom
-                      (class_parameter_ref
+                      (oref_chain_expr
                         (class_ref
                           (keyword_pound_pound_class)
                           (bracket)
                           (class_name)
                           (bracket))
-                        (parameter_name
-                          (member_name
-                            (identifier_segment_immediate)))))))))
+                        (oref_chain_segment
+                          (oref_parameter
+                            (member_name
+                              (identifier_segment_immediate))))))))))
             (statement
               (command_set
                 (keyword_set)
@@ -294,9 +295,8 @@ Class hi {
                     (expr_atom
                       (relative_dot_parameter
                         (oref_parameter
-                          (parameter_name
-                            (member_name
-                              (identifier_segment_immediate))))))))))
+                          (member_name
+                            (identifier_segment_immediate)))))))))
             (statement
               (command_if
                 (keyword_if)
@@ -304,9 +304,8 @@ Class hi {
                   (expr_atom
                     (relative_dot_parameter
                       (oref_parameter
-                        (parameter_name
-                          (member_name
-                            (identifier_segment_immediate))))))
+                        (member_name
+                          (identifier_segment_immediate)))))
                   (expr_tail
                     (binary_operator)
                     (expression

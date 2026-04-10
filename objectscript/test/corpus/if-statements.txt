@@ -348,10 +348,11 @@ If Statements 3
               (expr_atom
                 (system_defined_function
                   (built_in_func_with_pos_options
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
                     (method_arg
                       (expression
                         (expr_atom
@@ -507,14 +508,14 @@ Else statements old version
       (keyword_oldelse)))
   (statement
     (command_else
-      (keyword_oldelse)
-      (statement
-        (command_write
-          (keyword_write)
-          (write_argument
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+      (keyword_oldelse)))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (expr_atom
+            (numeric_literal)))))))
 
 ======================
 Else Statement Invalid
@@ -803,9 +804,8 @@ Valid If
         (expr_atom
           (relative_dot_parameter
             (oref_parameter
-              (parameter_name
-                (member_name
-                  (identifier_segment_immediate))))))
+              (member_name
+                (identifier_segment_immediate)))))
         (expr_tail
           (binary_operator)
           (expression
@@ -918,9 +918,8 @@ If statements, built in funcs, byref
               (expr_atom
                 (relative_dot_parameter
                   (oref_parameter
-                    (parameter_name
-                      (member_name
-                        (identifier_segment_immediate))))))))))
+                    (member_name
+                      (identifier_segment_immediate)))))))))
       (statement
         (command_if
           (keyword_if)
@@ -954,10 +953,11 @@ If statements, built in funcs, byref
                             (expr_atom
                               (system_defined_function
                                 (built_in_func_with_pos_options
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier))))))))))))))
+                                  (method_arg
+                                    (expression
+                                      (expr_atom
+                                        (lvn
+                                          (objectscript_identifier)))))))))))))))
               (set_argument
                 (set_target
                   (glvn
@@ -1002,10 +1002,11 @@ If statements, built in funcs, byref
                               (expr_atom
                                 (system_defined_function
                                   (built_in_func_with_pos_options
-                                    (expression
-                                      (expr_atom
-                                        (lvn
-                                          (objectscript_identifier)))))))))
+                                    (method_arg
+                                      (expression
+                                        (expr_atom
+                                          (lvn
+                                            (objectscript_identifier))))))))))
                           (method_arg
                             (expression
                               (expr_atom
@@ -1034,10 +1035,11 @@ If statements, built in funcs, byref
                       (expr_atom
                         (system_defined_function
                           (built_in_func_with_pos_options
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier))))))))))
                   (method_arg
                     (expression
                       (expr_atom
@@ -1379,3 +1381,49 @@ Comment type 3 before newline, block
           (lvn
             (objectscript_identifier))))
       (line_comment_3))))
+
+====
+If statement, valid with multiple lines of comments and a block
+====
+ if x="DISTINCT" // x
+	                                  #; y
+	                                  #; z
+	{  
+    set x = 2
+    w hi
+	}
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (string_literal)))))
+      (line_comment_1)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
+                (lvn
+                  (objectscript_identifier))))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))

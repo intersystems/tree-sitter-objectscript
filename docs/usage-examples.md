@@ -8,7 +8,7 @@ This document contains current, runnable examples for using the grammars and bin
 - `objectscript_udl`: class-file grammar for `.cls`
 - `objectscript_core`: routine/statement grammar
 - `objectscript_expr`: expression grammar
-- `objectscript_routine`: routine-header grammar for `.mac`, `.inc`, `.int`, `.rtn`
+- `objectscript_routine`: routine-file grammar for `.mac`, `.inc`, `.int`, `.rtn`
 
 ## CLI Workflow
 
@@ -42,6 +42,10 @@ This syncs query files, builds parser artifacts, and runs `ts_query_ls check` on
 - `expr/queries`
 - `objectscript/queries`
 - `objectscript_routine/queries`
+
+The sync/check flow only manages `highlights.scm`, `indents.scm`, and
+`injections.scm`. `studio-highlights.scm` files are intentionally maintained
+outside `scripts/sync_queries.py`.
 
 ## Neovim Setup
 
@@ -83,7 +87,7 @@ console.log(tree.rootNode.type);
 ```
 
 Use `ObjectScript.objectscript` for playground/snippet parsing.
-Use `ObjectScript.objectscript_routine` for routine-header files.
+Use `ObjectScript.objectscript_routine` for routine files.
 
 ## Python Example
 
@@ -174,6 +178,15 @@ npm ci
 npm test
 
 cargo test --lib --package tree-sitter-objectscript
+
+./scripts/rust_routine_crate.sh stage /tmp/tsroutine
+cp objectscript_routine/queries/studio-highlights.scm /tmp/tsroutine/objectscript_routine/queries/
+cargo build --manifest-path /tmp/tsroutine/Cargo.toml
+
+./scripts/rust_playground_crate.sh stage /tmp/tsplayground
+cp objectscript/queries/studio-highlights.scm /tmp/tsplayground/objectscript/queries/
+cargo build --manifest-path /tmp/tsplayground/Cargo.toml
+
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -U pip setuptools wheel pytest tree-sitter
@@ -183,3 +196,8 @@ go test ./bindings/go/...
 swift test
 make test
 ```
+
+The staged routine/playground Rust crates currently need the explicit
+`studio-highlights.scm` copy because their staged manifests and Rust bindings
+reference that query file, while the staging helpers only copy the canonical
+query trio.

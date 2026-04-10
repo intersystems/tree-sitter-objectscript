@@ -16,7 +16,7 @@ Thanks for contributing to `tree-sitter-objectscript`.
 - `udl/`: `.cls` grammar
 - `core/`: routine/statement grammar
 - `expr/`: expression grammar
-- `objectscript_routine/`: routine-header grammar for `.mac`,`.rtn`, `.inc`, `.int`
+- `objectscript_routine/`: routine-file grammar for `.mac`, `.rtn`, `.inc`, `.int`
 
 Grammar graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
@@ -70,8 +70,9 @@ Hook behavior:
 
 - On commit, the `pre-commit` hook:
   - Replaces `objectscript/test/corpus` with files from `core/test/corpus`, `udl/test/corpus`, and `objectscript_routine/test/corpus`.
+  - Refreshes `objectscript/test/corpus` trees with `tree-sitter t --update`.
   - Removes `objectscript/test/corpus/invalid.txt`.
-  - Runs `python3 scripts/sync_queries.py` and stages synchronized query files.
+  - Runs `python3 scripts/sync_queries.py` and stages synchronized canonical query files.
   - Runs `npm run lint -- --fix`, then `npm run lint`.
   - Runs `tree-sitter test` in `objectscript`, `udl`, `core`, `expr`, and `objectscript_routine`.
   - Runs `make formatquery`, `make lintquery`, and `make checkquery`.
@@ -79,10 +80,26 @@ Hook behavior:
 Query composition rules:
 
 - `expr/queries`: source layer
-- `core/queries`: `expr + core local`
-- `udl/queries`: `expr + core local + udl local`
-- `objectscript/queries`: `expr + core local + udl local` (highlights), plus core/udl layering for injections/indents
-- `objectscript_routine/queries`: `expr + core local + routine local`
+- `core/queries`:
+  - `highlights.scm`: `expr + core local`
+  - `indents.scm`: `core local`
+  - `injections.scm`: `core local`
+- `udl/queries`:
+  - `highlights.scm`: `expr + core + udl local`
+  - `indents.scm`: `core + udl local`
+  - `injections.scm`: `core + udl local`
+- `objectscript/queries`:
+  - `highlights.scm`: `expr + core + udl + objectscript local`
+  - `indents.scm`: `core + objectscript local`
+  - `injections.scm`: `core + udl + objectscript local`
+- `objectscript_routine/queries`:
+  - `highlights.scm`: `expr + core + routine local`
+  - `indents.scm`: `core + routine local`
+  - `injections.scm`: `core + routine local`
+
+`scripts/sync_queries.py` only manages `highlights.scm`, `indents.scm`, and
+`injections.scm`. `studio-highlights.scm` files are intentionally excluded from
+query sync and from Python query-copy verification.
 
 Manual query commands:
 
@@ -99,9 +116,22 @@ Run from repository root.
 
 ```bash
 cargo test --lib --package tree-sitter-objectscript
-./scripts/rust_routine_crate.sh package --allow-dirty --no-verify
-./scripts/rust_playground_crate.sh package --allow-dirty --no-verify
+
+./scripts/rust_routine_crate.sh stage /tmp/tsroutine
+cp objectscript_routine/queries/studio-highlights.scm /tmp/tsroutine/objectscript_routine/queries/
+cargo build --manifest-path /tmp/tsroutine/Cargo.toml
+
+./scripts/rust_playground_crate.sh stage /tmp/tsplayground
+cp objectscript/queries/studio-highlights.scm /tmp/tsplayground/objectscript/queries/
+cargo build --manifest-path /tmp/tsplayground/Cargo.toml
 ```
+
+The root `Cargo.toml` only covers the published UDL crate
+(`tree-sitter-objectscript`). The routine and playground crates are staged from
+their template directories before building or publishing. Their current Rust
+templates include `STUDIO_HIGHLIGHTS_QUERY`, so local staged builds need the
+matching `studio-highlights.scm` copied into the staged query directory until
+the staging scripts are updated to do that automatically.
 
 - Python:
 

@@ -18,6 +18,21 @@ const repeat_with_commas = function(rule) {
 
 const {DOTTED_ID_STRICT, DOTTED_ID_RELAXED} = require('../common/identifiers');
 
+// Pattern token fragments. We keep `pattern_expression` as a single token
+// to avoid parser state growth, and support nested groups up to depth 2.
+const PATTERN_REPEAT = '(?:\\d*(?:\\.\\d*)?|\\.)';
+const PATTERN_STRING = '"[^"\\r\\n]*(""[^"\\r\\n]*)*"';
+const PATTERN_CODES = '(?:(?:[ACEULNPaceulnp]+)|(?:[Zz](?:[A-Za-z0-9]*[Zz])?))+';
+const PATTERN_ATOM_0 = `(?:${PATTERN_CODES}|${PATTERN_STRING})`;
+const PATTERN_SEQ_0 = `(?:(?:${PATTERN_REPEAT})?${PATTERN_ATOM_0})+`;
+const PATTERN_GROUP_0 = `\\(${PATTERN_SEQ_0}(?:,${PATTERN_SEQ_0})*\\)`;
+const PATTERN_ATOM_1 = `(?:${PATTERN_CODES}|${PATTERN_STRING}|${PATTERN_GROUP_0})`;
+const PATTERN_SEQ_1 = `(?:(?:${PATTERN_REPEAT})?${PATTERN_ATOM_1})+`;
+const PATTERN_GROUP_1 = `\\(${PATTERN_SEQ_1}(?:,${PATTERN_SEQ_1})*\\)`;
+const PATTERN_ATOM_TOP = `(?:${PATTERN_CODES}|${PATTERN_STRING}|${PATTERN_GROUP_1})`;
+const PATTERN_ITEM = `(?:${PATTERN_REPEAT})${PATTERN_ATOM_TOP}+`;
+const PATTERN_EXPRESSION_REGEX = new RegExp(`[ \\t]*[ \\n]*(?:${PATTERN_ITEM})+`);
+
 module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
@@ -75,7 +90,6 @@ module.exports = grammar({
 
         // Other special keywords
         $.class_method_call,
-        $.class_parameter_ref,
         $.superclass_method_call,
         $.unary_expression,
         $.indirection,
@@ -139,30 +153,7 @@ module.exports = grammar({
       ),
 
     pattern_expression: _ =>
-    // A pattern expression looks like this:
-    // (?:(REPEAT)(ELEMENT))+
-    //
-    // REPEAT:
-    //   (?:\d*(?:\.\d*)?|\.)
-    //     - Matches:
-    //         • '3'       → exactly 3
-    //         • '1.3'     → 1 to 3
-    //         • '3.'      → 3 or more
-    //         • '.3'      → up to 3
-    //         • '.'       → any number
-    //
-    // ELEMENT (one of):
-    //   [aceulnpzACEULNPZ]+
-    //     - One or more valid pattern codes (case-insensitive): A, C, E, L, N, P, U, Z
-    //
-    //   "[^"\r\n]*(""[^"\r\n]*)*"
-    //     - A string literal:
-    //
-    //   \([^()\r\n"]*(?:,[^()\r\n"]*)*\)
-    //     - Alternation group (e.g., (1N,"-",2P)):
-      token.immediate(
-        /[ \t]*[ \n]*(?:(?:\d*(?:\.\d*)?|\.)((?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"|\(((?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))(?:,(?:\d*(?:\.\d*)?|\.)?(?:[aceulnpzACEULNPZ]+|"[^"\r\n]*(""[^"\r\n]*)*"))*\)))+)+/,
-      ),
+      token.immediate(PATTERN_EXPRESSION_REGEX),
 
     class_method_call: ($) =>
       seq(
@@ -170,12 +161,6 @@ module.exports = grammar({
         token.immediate('.'),
         alias($.member_name, $.method_name),
         $.method_args,
-      ),
-    class_parameter_ref: ($) =>
-      seq(
-        $.class_ref,
-        token.immediate('.'),
-        $.parameter_name,
       ),
     class_ref: ($) =>
       seq(
@@ -232,10 +217,11 @@ module.exports = grammar({
           optional($.method_args),
         )),
         // Full indirection - no method args, as @var evaluates the expression
-        seq(
+        prec.right(seq(
           '$$',
           $.indirection,
-        ),
+          optional($.method_args),
+        )),
       ),
 
     line_ref: ($) => choice(
@@ -275,7 +261,7 @@ module.exports = grammar({
             seq(
               token.immediate('|'),
               repeat(choice('+', '-', '\'')),
-              alias(choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), $.namespace),
+              choice(alias($.objectscript_identifier, $.lvn), alias($.objectscript_identifier_special, $.lvn), $.string_literal),
               token.immediate('|'),
             ),
           ),
@@ -287,7 +273,7 @@ module.exports = grammar({
 
 
     dollarsf: ($) =>
-      seq(
+      prec.right(seq(
         token(seq(
           /\$SYSTEM/i,
           token.immediate('.'),
@@ -301,8 +287,11 @@ module.exports = grammar({
           $.objectscript_identifier,
           $.objectscript_identifier_special,
         ),
-        $.method_args,
-      ),
+        choice(
+          $.method_args,
+          repeat1($.oref_chain_segment),
+        ),
+      )),
 
 
     method_args: ($) =>
@@ -437,12 +426,6 @@ module.exports = grammar({
             $.class_ref,
           ),
           repeat1($.oref_chain_segment),
-          optional(
-            seq(
-              token.immediate('.'),
-              $.oref_parameter,
-            ),
-          ),
         ),
       ),
 
@@ -452,6 +435,7 @@ module.exports = grammar({
         choice(
           $.oref_property,
           $.oref_method,
+          $.oref_parameter,
         ),
       ),
 
@@ -468,8 +452,6 @@ module.exports = grammar({
         alias($.member_name, $.property_name),
         optional($.subscripts),
       ),
-    oref_parameter: ($) =>
-      $.parameter_name,
 
 
     instance_variable: ($) =>
@@ -488,7 +470,7 @@ module.exports = grammar({
           $.identifier_segment_immediate_special,
         ),
       ),
-    parameter_name: ($) =>
+    oref_parameter: ($) =>
       seq(
         token.immediate('#'),
         $.member_name,
@@ -632,7 +614,7 @@ module.exports = grammar({
         $.built_in_func_with_pos_options,
         $.dollar_case,
         $.dollar_select,
-        // $.dollar_classmethod,
+        $.dollar_bitlogic,
         $.dollar_method,
         $.dollar_text,
         $.dollarsf,
@@ -651,7 +633,33 @@ module.exports = grammar({
         $.line_ref,
         ')',
       ),
+    dollar_bitlogic: ($) =>
+      seq(
+        /\$BITLOGIC/i,
+        token.immediate('('),
+        $.bitlogic_expression,
+        optional(seq(',', $.expression)), // length/flags arg
+        ')',
+      ),
 
+    bitlogic_expression: ($) =>
+      prec.left(seq(
+        optional('~'),
+        $.bitlogic_atom,
+        repeat(seq(
+          choice('&', '|', '^'),
+          optional('~'),
+          $.bitlogic_atom,
+        )),
+      )),
+
+    bitlogic_atom: ($) =>
+      choice(
+        // nested bitlogic parens
+        seq(alias(token.immediate('('), $.bracket), $.bitlogic_expression, alias(')', $.bracket)),
+        // reuse existing atoms (functions, vars, calls, strings, numbers, etc.)
+        $.expr_atom,
+      ),
     dollar_function: ($) =>
       seq(
         token(
@@ -771,7 +779,6 @@ module.exports = grammar({
               /\$ZSET/i,
               /\$ZS(ORT)?/i,
               /\$ZSU(BLIST)?/i,
-              /\$BITLOGIC/i,
               /\$DECIMAL/i,
               /\$FACTOR/i,
               /\$G(ET)?/i,
@@ -890,11 +897,11 @@ module.exports = grammar({
         ')',
       ),
     dollar_select: ($) =>
-      seq(
+      prec.right(seq(
         token(seq(/\$S(ELECT)?/i, token.immediate('('))),
         repeat_with_commas(seq($.dollar_arg_pair)),
         ')',
-      ),
+      )),
     dollar_case: ($) =>
       seq(
         token(seq(/\$CASE/i, token.immediate('('))),
@@ -943,25 +950,19 @@ module.exports = grammar({
             token.immediate('('),
           ),
         ),
-        $.expression,
-        repeat(
+        optional(
           seq(
-            ',',
-            optional(choice($.method_arg, $.dollar_func_pos)),
+            optional($.method_arg),
+            repeat(
+              seq(
+                ',',
+                optional(choice($.method_arg, $.dollar_func_pos)),
+              ),
+            ),
           ),
         ),
         ')',
       ),
-    // dollar_classmethod: ($) =>
-    //   seq(
-    //     /\$(ZOBJ)?CLASSMETHOD/i,
-    //     alias(token.immediate('('), $.bracket),
-    //     optional($.method_arg),
-    //     ',',
-    //     $.method_arg,
-    //     repeat(seq(',', $.method_arg)),
-    //     ')',
-    //   ),
     dollar_method: ($) =>
       seq(
         token(choice(

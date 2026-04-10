@@ -8,10 +8,11 @@ files.
 It includes:
 
 - `LANGUAGE_OBJECTSCRIPT_UDL`
-- `UDL_NODE_TYPES`
-- `UDL_HIGHLIGHTS_QUERY`
-- `UDL_INJECTIONS_QUERY`
-- `UDL_INDENTS_QUERY`
+- `NODE_TYPES`
+- `HIGHLIGHTS_QUERY`
+- `STUDIO_HIGHLIGHTS_QUERY`
+- `INJECTIONS_QUERY`
+- `INDENTS_QUERY`
 
 If you want the routine grammar (`objectscript_routine`), use
 `tree-sitter-objectscript-routine`.

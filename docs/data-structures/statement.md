@@ -6,65 +6,11 @@ The `statement` rule is the union of all ObjectScript command types and construc
 
 ## Definition
 
-**Location**: `core/grammar.js:145-196`
+**Location**: `core/grammar.js:198-199`, with the statement membership list in `core/command_metadata.js`
 
 ```javascript
 statement: ($) =>
-  choice(
-    $.command_set,
-    $.command_write,
-    $.command_do,
-    $.command_zwrite,
-    $.command_for,
-    $.command_while,
-    $.command_kill,
-    $.command_lock,
-    $.command_read,
-    $.command_open,
-    $.command_close,
-    $.command_use,
-    $.command_new,
-    $.command_if,
-    $.command_else,
-    $.command_throw,
-    $.command_trycatch,
-    $.command_job,
-    $.command_break,
-    $.command_merge,
-    $.command_quit,
-    $.command_goto,
-    $.command_return,
-    $.command_halt_or_hang,
-    $.command_dowhile,
-    $.command_continue,
-    $.command_tcommit,
-    $.command_trollback,
-    $.command_tstart,
-    $.command_view,
-    $.command_xecute,
-    $.command_zbreak,
-    $.command_zkill,
-    $.command_zn,
-    $.command_zsu,
-    $.command_ztrap,
-    $.command_zz,
-    $.embedded_html,
-    $.embedded_xml,
-    $.embedded_sql,
-    $.embedded_js,
-    $.pound_dim,
-    $.pound_define,
-    $.pound_def1arg,
-    $.pound_if,
-    $.pound_ifdef,
-    $.pound_ifndef,
-    $.pound_import,
-    $.pound_include,
-    $.macro,
-    $.tag,
-    $.tag_with_params,
-    $.procedure,
-  ),
+  choice(...rule_refs($, STATEMENT_RULE_NAMES)),
 ```
 
 ## Structure
@@ -113,7 +59,7 @@ A `statement` node is an alias for one of its 50+ constituent command types. The
 |-------|-------------|
 | Parse | tree-sitter matches command keyword and arguments |
 | AST Creation | Specific command node created (e.g., `command_set`) |
-| Query | Highlight queries match `keyword:` field for keyword highlighting |
+| Query | Highlight queries usually match command keyword fields; non-command statement forms such as tags and macros are highlighted through their own node patterns |
 | Injection | Embedded statements trigger language injection |
 
 ## Command Structure Pattern
@@ -131,7 +77,7 @@ function build_command_rule_argumentful($, commandKeyword, commandArgument) {
 }
 ```
 
-**Evidence**: `core/grammar.js:30-40`
+**Evidence**: `core/grammar.js:31-40`
 
 ### Argumentless Commands
 
@@ -148,14 +94,15 @@ function build_command_rule_argumentless($, commandKeyword) {
 }
 ```
 
-**Evidence**: `core/grammar.js:57-68`
+**Evidence**: `core/grammar.js:57-67`
 
 ## Invariants
 
-1. Every command has a `keyword` field containing the command token
-2. Post-conditionals (`:expression`) are optional on most commands
-3. Block-style commands (`IF {} ELSE {}`) and old-style (`IF cond cmd`) both valid
-4. External scanner controls argumentless vs. argument command detection
+1. The `statement` rule expands from `STATEMENT_RULE_NAMES`, so the metadata list and the grammar stay in sync
+2. Most command nodes attach a `keyword` field containing the command token; tag/macro-style statements do not use that field
+3. Post-conditionals (`:expression`) are optional on most commands
+4. Block-style commands (`IF {} ELSE {}`) and old-style (`IF cond cmd`) both remain valid
+5. The external scanner controls argumentless vs. argument command detection
 
 ## Usage Patterns
 
@@ -200,8 +147,8 @@ FOR i = 1:1:10 {
 
 | Operation | Location | Notes |
 |-----------|----------|-------|
-| Add new command | `core/grammar.js:145-196` | Add to `choice()` in `statement` |
-| Add command keyword | `core/grammar.js:200-280` | Define `keyword_*` rule |
+| Add new command | `core/command_metadata.js` and `core/grammar.js:198-199` | Update `STATEMENT_RULE_NAMES`, then add the matching rule implementation |
+| Add command keyword | `core/grammar.js` | Define `keyword_*` rule |
 | Modify command syntax | Individual `command_*` rules | Use builder functions |
 
 ## Related Structures
@@ -212,7 +159,7 @@ FOR i = 1:1:10 {
 
 ## Keyword Field Pattern
 
-All keywords are attached using `field('keyword', ...)`:
+Most command keywords are attached using `field('keyword', ...)`:
 
 ```javascript
 command_set: ($) =>
@@ -229,7 +176,7 @@ This enables a single query pattern:
 keyword: (_) @keyword
 ```
 
-**Evidence**: `core/queries/highlights.scm:7`
+**Evidence**: `core/queries/highlights.scm`
 
 ## Assumptions
 
@@ -244,7 +191,8 @@ keyword: (_) @keyword
 
 ## Evidence
 
-- `core/grammar.js:145-196` — `statement` choice definition
-- `core/grammar.js:30-68` — Command builder functions
-- `core/grammar.js:200-280` — Keyword definitions
-- `core/utils.js:1-150` — Post-conditional generation utilities
+- `core/command_metadata.js` — `STATEMENT_RULE_NAMES`
+- `core/grammar.js:198-199` — `statement` definition
+- `core/grammar.js:31-67` — Command builder functions
+- `core/grammar.js` — Keyword definitions
+- `core/utils.js` — Post-conditional generation utilities

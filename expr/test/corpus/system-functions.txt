@@ -17,9 +17,10 @@ $CASE($P($ZE,">",1)_">", "<INTERRUPT>":"KeyboardInterrupt",
             (expr_atom
               (system_defined_function
                 (built_in_func_with_pos_options
-                  (expression
-                    (expr_atom
-                      (system_defined_variable)))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_variable))))
                   (method_arg
                     (expression
                       (expr_atom
@@ -64,9 +65,10 @@ $PIECE("SOME STRING", 1, *-1)
     (expr_atom
       (system_defined_function
         (built_in_func_with_pos_options
-          (expression
-            (expr_atom
-              (string_literal)))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))))
           (method_arg
             (expression
               (expr_atom
@@ -111,15 +113,16 @@ $E("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
     (expr_atom
       (system_defined_function
         (built_in_func_with_pos_options
-          (expression
-            (expr_atom
-              (string_literal))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (macro
-                    (macro_constant))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant)))))))
           (method_arg
             (expression
               (expr_atom
@@ -142,15 +145,16 @@ $EXTRACT("Some complicatino string expr $$$"_$$$FOO, 23, *+41)
     (expr_atom
       (system_defined_function
         (built_in_func_with_pos_options
-          (expression
-            (expr_atom
-              (string_literal))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (macro
-                    (macro_constant))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (macro
+                      (macro_constant)))))))
           (method_arg
             (expression
               (expr_atom
@@ -173,10 +177,11 @@ $EXTRACT(mystr,*-0)
     (expr_atom
       (system_defined_function
         (built_in_func_with_pos_options
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
           (dollar_func_pos
             (expression
               (expr_atom

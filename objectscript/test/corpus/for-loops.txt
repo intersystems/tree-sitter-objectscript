@@ -118,10 +118,11 @@ For Loop var=start:increment:end
               (expr_atom
                 (system_defined_function
                   (built_in_func_with_pos_options
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
                     (method_arg
                       (expression
                         (expr_atom
@@ -534,10 +535,11 @@ Old Style For Loop var=start:increment:end
               (expr_atom
                 (system_defined_function
                   (built_in_func_with_pos_options
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
                     (method_arg
                       (expression
                         (expr_atom
@@ -737,3 +739,76 @@ For Valid Argumentless loop with comment
   (statement
     (command_for
       (keyword_for))))
+
+======
+For Argumentless Block with Block Comment
+======
+test
+  for /* */
+ {
+ 	w hi
+ }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+=====
+For Argumentless Block with Block Comment, no new line before {
+=====
+test
+  for /* 
+  
+  */{
+ 	w hi
+ }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
+
+====
+For Argumentless, Block comment on the same line
+====
+test
+  for /* */ { w hi }
+---
+
+(source_file
+  (statement
+    (tag))
+  (statement
+    (command_for
+      (keyword_for)
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))

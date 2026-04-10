@@ -27,15 +27,13 @@
   (keyword_pound_pound_class)
 ] @keyword.operator
 
-(system_defined_variable) @variable.builtin
-
 (system_defined_function) @function.builtin
 
 (sql_field_modifier) @keyword.modifier
 
 [
   (property_name)
-  (parameter_name)
+  (oref_parameter)
   (sql_field_identifier)
 ] @variable.member
 
@@ -50,16 +48,16 @@
 
 (macro_constant) @constant.macro
 
+(objectscript_identifier) @variable
+
 [
-  (lvn)
-  (gvn)
   (ssvn)
-  (objectscript_identifier)
-] @variable
-
-(namespace) @module
+  (system_defined_variable)
+  "$$"
+] @variable.builtin
 
 [
+  (gvn)
   (objectscript_identifier_special)
   (instance_variable)
 ] @variable.member
@@ -152,16 +150,15 @@
 (keyword_return) @keyword.return
 
 [
-  (keyword_break)
   (keyword_zbreak)
   (keyword_debug)
+  (zbreak_command_option)
   (keyword_trace)
   (keyword_step)
   (keyword_nostep)
   (keyword_stepmethod)
   (keyword_errortrap)
   (keyword_interrupt)
-  (keyword_normal)
   (keyword_zkill)
   (keyword_zn)
   (keyword_zsu)
@@ -183,6 +180,7 @@
   (keyword_pound_include)
   (keyword_pound_delay)
   (locktype)
+  (tag_end_if)
 ] @keyword.directive
 
 [
@@ -229,6 +227,9 @@
   (keyword_tstart)
   (keyword_xecute)
   (keyword_view)
+  (keyword_zremove)
+  (command_keyword)
+  (keyword_zload)
 ] @function.builtin
 
 [
@@ -255,9 +256,9 @@
   (block_comment)
 ] @comment @spell
 
-(namespace) @module
-
 (tag) @label
+
+(pound_if_special_case) @comment.inactive
 
 [
   (command_quit)
@@ -270,8 +271,14 @@
   (command_return)
   (command_halt_or_hang)
   (command_break)
+  (command_tcommit)
+  (command_trollback)
+  (command_tstart)
+  (command_zbreak)
 ] @comment
 
 "--" @operator
+
+(dotted_statement) @punctuation.special
 
 ; === END LOCAL ===

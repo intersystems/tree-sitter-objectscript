@@ -29,7 +29,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -53,7 +53,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -74,7 +74,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -85,16 +85,15 @@ Class barricade {
                   (expr_atom
                     (relative_dot_parameter
                       (oref_parameter
-                        (parameter_name
-                          (member_name
-                            (identifier_segment_immediate))))))))))))
+                        (member_name
+                          (identifier_segment_immediate)))))))))))
       (documatic_line)
       (class_statement
         (property
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -115,7 +114,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -145,7 +144,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -165,13 +164,14 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (string_literal))))
+                (typename_param
+                  (identifier)
+                  (typename)))))
           (property_keywords
             (property_keyword
               (property_keyword_required)))))
@@ -180,7 +180,7 @@ Class barricade {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -229,7 +229,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier))))))))
@@ -256,13 +256,14 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (string_literal)))))))))
+                (typename_param
+                  (identifier)
+                  (typename))))))))))
 
 ===========================
 Property with keyword_list
@@ -286,7 +287,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -316,13 +317,14 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
-              (identifier)
-              (typename_param
+              (type_with_params
                 (identifier)
-                (string_literal))))
+                (typename_param
+                  (identifier)
+                  (typename)))))
           (property_keywords
             (property_keyword
               (property_keyword_required))))))))
@@ -349,13 +351,11 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
-                (identifier)))))))))
+              (identifier))))))))
 
 ==========================================
 List Of property with parameters/keywords
@@ -380,16 +380,15 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
+              (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
-                  (string_literal)))))
+                  (typename)))))
           (property_keywords
             (property_keyword
               (property_keyword_sql_list_type
@@ -419,13 +418,11 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
-                (identifier)))))))))
+              (identifier))))))))
 
 =========================================================
 Array Of property with parameter_list and keyword_list
@@ -450,12 +447,11 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
+              (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
@@ -492,16 +488,18 @@ Class Test {
           (keyword_relationship)
           (relationship_name
             (identifier))
-          (keyword_as)
-          (typename
-            (identifier))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
           (relationship_keywords
             (relationship_keyword
               (relationship_keyword_cardinality
                 (typename)))
             (relationship_keyword
               (relationship_keyword_inverse
-                (objectscript_identifier)))))))))
+                (variable_datatype
+                  (objectscript_identifier))))))))))
 
 =====================================
 Property without classname (datatype)
@@ -525,7 +523,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -555,7 +553,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier))))))))
@@ -581,23 +579,22 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
+              (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
-                  (string_literal)))))
+                  (typename)))))
           (property_keywords
             (property_keyword
               (property_keyword_sql_list_type
                 (typename)))
             (property_keyword
               (property_keyword_sql_list_delim
-                (string_literal)))
+                (typename)))
             (property_keyword
               (property_keyword_required))))))))
 
@@ -621,13 +618,11 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
-                (identifier)))))))))
+              (identifier))))))))
 
 ======================================================
 Valid — Array Of + parameters + multiple keywords
@@ -656,12 +651,11 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)
-              (keyword_of)
-              (typename
+              (type_with_params
                 (identifier)
                 (typename_param
                   (identifier)
@@ -729,7 +723,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))
@@ -787,7 +781,7 @@ Class Test {
                 (query_name)))
             (property_keyword
               (property_keyword_sql_list_delim
-                (string_literal)))
+                (typename)))
             (property_keyword
               (property_keyword_sql_list_type
                 (typename)))
@@ -815,7 +809,7 @@ Class Test {
           (keyword_property)
           (property_name
             (identifier))
-          (property_type
+          (return_type
             (keyword_as)
             (typename
               (identifier)))

@@ -983,17 +983,19 @@ Valid Write Statements
           (expr_atom
             (system_defined_function
               (built_in_func_with_pos_options
-                (expression
-                  (expr_atom
-                    (string_literal))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))))
       (write_argument
         (expression
           (expr_atom
             (system_defined_function
               (built_in_func_with_pos_options
-                (expression
-                  (expr_atom
-                    (string_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
                 (method_arg
                   (expression
                     (expr_atom
@@ -1003,9 +1005,10 @@ Valid Write Statements
           (expr_atom
             (system_defined_function
               (built_in_func_with_pos_options
-                (expression
-                  (expr_atom
-                    (string_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
                 (method_arg
                   (expression
                     (expr_atom
@@ -1068,3 +1071,26 @@ Write objects
                             (expression
                               (expr_atom
                                 (numeric_literal)))))))))))))))))
+
+====
+Write Mnemonic Valid
+====
+ w /%x
+ w /x
+---
+
+(source_file
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (write_device_control
+          (write_mnemonic
+            (mnemonic_name))))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (write_device_control
+          (write_mnemonic
+            (mnemonic_name)))))))

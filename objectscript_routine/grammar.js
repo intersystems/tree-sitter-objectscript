@@ -19,24 +19,28 @@ module.exports = define_grammar(objectscript_core, {
     previous.concat([
       /\s/,
       $.documatic_line,
+      $.rtn_dot,
     ]),
   rules: {
     source_file: ($) =>
       seq(
         choice(
           $.compiled_header,
-          seq(
-            $.routine,
-            alias($.identifier, $.routine_name),
-            optional($.routine_type),
-          ),
+          $.routine_definition,
+          $.statement,
         ),
         repeat(
           choice(
-            $.rtn_dot,
             $.statement,
           ),
         ),
+      ),
+
+    routine_definition: ($) =>
+      seq(
+        $.routine,
+        alias($.identifier, $.routine_name),
+        optional($.routine_type),
       ),
 
     routine_type: (_) =>

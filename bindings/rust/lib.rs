@@ -21,6 +21,9 @@ pub const NODE_TYPES: &str = include_str!("../../udl/src/node-types.json");
 /// The syntax highlighting query for ObjectScript UDL.
 pub const HIGHLIGHTS_QUERY: &str = include_str!("../../udl/queries/highlights.scm");
 
+/// The syntax highlighting query for ObjectScript UDL (Studio Version).
+pub const STUDIO_HIGHLIGHTS_QUERY: &str = include_str!("../../udl/queries/studio-highlights.scm");
+
 /// The injections query for ObjectScript UDL.
 pub const INJECTIONS_QUERY: &str = include_str!("../../udl/queries/injections.scm");
 

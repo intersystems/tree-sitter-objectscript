@@ -72,7 +72,7 @@ Do Statement No Param Passing
         (routine_tag_call
           (line_ref
             (routine_ref
-              (namespace)
+              (string_literal)
               (routine_name))))))))
 
 ===============================
@@ -838,26 +838,25 @@ Do Statement with Argument Postconditionals
           (expr_atom
             (numeric_literal))))
       (do_parameter
-        (doable_dollar_functions
-          (system_defined_function)
-          (bracket)
-          (system_defined_function
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))))
-                  (bracket)))))
-          (bracket))
+        (system_defined_function
+          (dollar_function
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)
+                    (subscripts
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))))))
+                      (bracket))))))))
         (post_conditional
           (expression
             (expr_atom
@@ -871,26 +870,25 @@ Do Statement with Argument Postconditionals
           (expr_atom
             (numeric_literal))))
       (do_parameter
-        (doable_dollar_functions
-          (system_defined_function)
-          (bracket)
-          (system_defined_function
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (subscripts
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))))
-                  (bracket)))))
-          (bracket))
+        (system_defined_function
+          (dollar_function
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)
+                    (subscripts
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (dollar_function
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))))))
+                      (bracket))))))))
         (post_conditional
           (expression
             (expr_atom
@@ -1427,23 +1425,24 @@ Do Statement Dot Syntax
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))))))
-      (line_comment_3)))
-  (statement
-    (command_write
-      (keyword_write)
-      (write_argument
-        (write_device_control
-          (write_device_fflf)))
-      (write_argument
-        (expression
-          (expr_atom
-            (string_literal))))
-      (write_argument
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+                            (objectscript_identifier))))))))))
+          (line_comment_3)
+          (dotted_statement
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))))))
   (statement
     (command_else
       (keyword_oldelse)
@@ -1474,26 +1473,28 @@ Do Statement Dot Syntax
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))))))
-      (line_comment_3)))
-  (statement
-    (command_write
-      (keyword_write)
-      (write_argument
-        (write_device_control
-          (write_device_fflf)))
-      (write_argument
-        (expression
-          (expr_atom
-            (string_literal))))
-      (write_argument
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
-  (statement
-    (command_quit
-      (keyword_quit)))
+                            (objectscript_identifier))))))))))
+          (line_comment_3)
+          (dotted_statement
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))
+          (dotted_statement
+            (statement
+              (command_quit
+                (keyword_quit))))))))
   (statement
     (command_goto
       (keyword_goto)
@@ -1539,21 +1540,23 @@ Do Statement Dot Syntax
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))))))))
-  (statement
-    (command_write
-      (keyword_write)
-      (write_argument
-        (write_device_control
-          (write_device_fflf)))
-      (write_argument
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
-  (statement
-    (command_quit
-      (keyword_quit)))
+                            (objectscript_identifier))))))))))
+          (dotted_statement
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (write_device_control
+                    (write_device_fflf)))
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))))))
+          (dotted_statement
+            (statement
+              (command_quit
+                (keyword_quit))))))))
   (statement
     (command_write
       (keyword_write)
