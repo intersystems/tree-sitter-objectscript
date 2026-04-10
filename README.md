@@ -67,27 +67,6 @@ temporary `studio-highlights.scm` copy step those staged crates need today.
 
 For Node bindings specifically, `.nvmrc` pins the expected Node version.
 
-## Editor Integration
-
-- Zed: [ObjectScript extension](https://zed.dev/extensions/objectscript)
-- Neovim (`nvim-treesitter`):
-  - Install grammars with `:TSInstall objectscript_udl`, `:TSInstall objectscript`, and `:TSInstall objectscript_routine`
-  - Optional filetype mapping for `.cls` and routine extensions:
-
-```lua
-vim.filetype.add({
-  extension = {
-    cls = "objectscript_udl",
-    mac = "objectscript_routine",
-    inc = "objectscript_routine",
-    int = "objectscript_routine",
-    rtn = "objectscript_routine",
-  },
-})
-```
-
-- Emacs: [emacs-objectscript-ts-mode](https://github.com/intersystems/emacs-objectscript-ts-mode)
-
 ## Quick Development
 
 Install the [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/creating-parsers/1-getting-started.html), then run commands from a grammar directory (`objectscript`, `udl`, `core`, `expr`, or `objectscript_routine`):
@@ -140,9 +119,85 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
 - [InterSystems ObjectScript documentation](https://docs.intersystems.com/latest/csp/docbook/DocBook.UI.Page.cls?KEY=GCOS_intro)
 - [Tree-sitter documentation](https://tree-sitter.github.io/tree-sitter/)
 
-## License
+## Editor Integration
+- [Zed](zed.dev)
+  On Zed, you can use `tree-sitter-objectscript` by downloading the [InterSystems ObjectScript extension](https://zed.dev/extensions/objectscript)
+- [Neovim](https://neovim.io/)
+  We currently have a [PR](https://github.com/nvim-treesitter/nvim-treesitter/pull/8587) open with `nvim-treesitter`, and if that gets merged in, the setup process will be automated. However, this repo is currently archived, so for now do the following to setup the grammars in neovim: 
+  #### Step 1: Create `~/.config/nvim/lua/plugins/objectscript-treesitter.lua`
+  Add the following content to that file: 
+  **IMPORTANT: Make sure to replace the revision section with the commit that you want.**
+  ```lua
 
-MIT. See [LICENSE](LICENSE).
+  return {
+  -- configure nvim-treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    init = function()
+      vim.filetype.add({
+        extension = {
+          cls = "objectscript_udl",
+          mac = "objectscript_routine",
+          inc = "objectscript_routine",
+          int = "objectscript_routine",
+          rtn = "objectscript_routine"
+        },
+      })
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "objectscript_udl", "objectscript_routine" },
+        callback = function(args)
+          vim.treesitter.start(args.buf)
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('User', { pattern = 'TSUpdate',
+      callback = function()
+      local parsers = require("nvim-treesitter.parsers")
+
+        parsers.objectscript_udl = {
+          install_info = {
+            url = "https://github.com/intersystems/tree-sitter-objectscript",
+            revision = "f1c568c622a0a43191563fd4c5e649a61eef11cc", 
+            location = "udl",
+            queries = "udl/queries",
+          }
+        }
+
+        parsers.objectscript_routine = {
+          install_info = {
+            url = "https://github.com/intersystems/tree-sitter-objectscript",
+            revision = "f1c568c622a0a43191563fd4c5e649a61eef11cc", 
+            location = "objectscript_routine",
+            queries = "objectscript_routine/queries",
+          }
+        }
+      end})
+    end,
+
+      opts = function(_, opts)
+        opts.ensure_installed = opts.ensure_installed or {}
+        for _, lang in ipairs({ "objectscript_udl", "objectscript_routine" }) do
+          if not vim.tbl_contains(opts.ensure_installed, lang) then
+            table.insert(opts.ensure_installed, lang)
+          end
+        end
+      end,
+    },
+  }
+  ```
+  #### Step 2: Remove cached data from nvim if necessary (if previously installed)
+  
+  ```zsh
+  rm -rf ~/.local/share/nvim/site/parser \
+    ~/.local/share/nvim/site/parser-info \
+    ~/.local/share/nvim/site/queries
+  ```
+
+  #### Step 3: Open Neovim and Install `objectscript_udl` and `objectscript_routine`
+  ```vim
+  :TSInstall objectscript_udl objectscript_routine
+  ```
 
 [ci]: https://img.shields.io/github/actions/workflow/status/intersystems/tree-sitter-objectscript/ci.yml?logo=github&label=CI
 [npm]: https://img.shields.io/npm/v/tree-sitter-objectscript?logo=npm
