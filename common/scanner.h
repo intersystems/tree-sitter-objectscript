@@ -9,6 +9,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   _ARGUMENTLESS_LOOP,
   _WHITESPACE,
   TAG,
+  ROUTINE,
   ANGLED_BRACKET_FENCED_TEXT,
   PAREN_FENCED_TEXT,
   EMBEDDED_SQL_MARKER,
@@ -44,6 +45,7 @@ static const char* token_names[] = {
   "_ARGUMENTLESS_LOOP",
   "_WHITESPACE",
   "TAG",
+  "ROUTINE",
   "ANGLED_BRACKET_FENCED_TEXT",
   "PAREN_FENCED_TEXT",
   "EMBEDDED_SQL_MARKER",
@@ -145,6 +147,8 @@ struct ObjectScript_Core_Scanner {
   // When true, column-1 identifiers are treated as statements unless they
   // are clearly labels/tags.
   bool column1_statement_mode;
+  // When true, a column-1 tag named ROUTINE is emitted as ROUTINE instead of TAG.
+  bool routine_token_mode;
   bool special_pound_if_mode;
   uint32_t special_pound_if_mode_if_depth;
   int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
@@ -1133,6 +1137,14 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
       advance(lexer);
     } while (is_label_char(lexer->lookahead));
 
+    if (scanner->routine_token_mode &&
+        valid_symbols[ROUTINE] &&
+        ascii_upper_eq(ident, len, "ROUTINE")) {
+      lexer->result_symbol = ROUTINE;
+      scanner->terminated_newline = false;
+      return true;
+    }
+
     if (!scanner->column1_statement_mode) {
       lexer->result_symbol = TAG;
       scanner->terminated_newline = false;
@@ -1346,6 +1358,7 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->html_marker_buffer_len = 0;
   scanner->terminated_newline = false;
   scanner->column1_statement_mode = false;
+  scanner->routine_token_mode = false;
   scanner->special_pound_if_mode = false;
   scanner->special_pound_if_mode_if_depth = 0;
 }

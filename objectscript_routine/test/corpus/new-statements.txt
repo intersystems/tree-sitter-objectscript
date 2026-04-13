@@ -1,0 +1,91 @@
+==================
+NEW with arguments
+==================
+ NEW d,e
+ NEW (a,c)
+---
+
+(source_file
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (command_new_item
+          (lvn
+            (objectscript_identifier))))
+      (command_new_argument
+        (command_new_item
+          (lvn
+            (objectscript_identifier))))))
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (bracket)
+        (command_new_item
+          (lvn
+            (objectscript_identifier)))
+        (command_new_item
+          (lvn
+            (objectscript_identifier)))
+        (bracket)))))
+
+==========================
+NEW with special variables
+==========================
+ NEW $ETRAP
+ NEW $NAMESPACE
+ NEW $ESTACK
+ NEW $ROLES
+---
+
+(source_file
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (command_new_item
+          (system_defined_variable)))))
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (command_new_item
+          (system_defined_variable)))))
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (command_new_item
+          (system_defined_variable)))))
+  (statement
+    (command_new
+      (keyword_new)
+      (command_new_argument
+        (command_new_item
+          (system_defined_variable))))))
+
+========================
+New with Postconditional
+========================
+ NEW:name'?3U3N (badName)
+---
+
+(source_file
+  (statement
+    (command_new
+      (keyword_new)
+      (post_conditional
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (pattern_operator
+              (pattern_expression)))))
+      (command_new_argument
+        (bracket)
+        (command_new_item
+          (lvn
+            (objectscript_identifier)))
+        (bracket)))))

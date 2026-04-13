@@ -1,0 +1,171 @@
+===============
+READ STATEMENTS
+===============
+
+  READ #!!,"Please enter",!,"your name: ",x,!,"THANK YOU"
+  READ !,"Enter your last name: ",lname
+  READ !,"Enter option number (1,2,3,4): ",*opt
+  READ !,"Enter your 3-digit area code: ",area#3
+  READ "Given name:",gname#12:10,!,
+  "Middle initial:",iname#1:10,!,
+  "Family name:",fname
+  READ "Type 1 for numbers or 2 for names:",p,#!!!!
+---
+
+(source_file
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar)
+        (read_fchar)
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))))
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)))))
+      (read_argument
+        (read_fchar)
+        (read_fchar)
+        (read_fchar)
+        (read_fchar)
+        (read_fchar)))))
+
+===============================
+READ STATEMENT WITH INDIRECTION
+===============================
+ READ !,@MESS(dtype),val(x)
+---
+
+(source_file
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (read_variable
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)
+                  (subscripts
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier))))
+                    (bracket))))))))
+      (read_argument
+        (read_variable
+          (glvn
+            (lvn
+              (objectscript_identifier)
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))
+                (bracket)))))))))

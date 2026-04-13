@@ -1,0 +1,90 @@
+======================
+Valid Merge Statements
+======================
+   MERGE gbls=^$GLOBAL("")
+   MERGE ^b=^a(1,1)
+   MERGE:F>0 ^X(2,3)=^Y(3,6,7,8)
+---
+
+(source_file
+  (statement
+    (command_merge
+      (keyword_merge)
+      (merge_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (set_target
+          (glvn
+            (ssvn
+              (identifier_segment_immediate)
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (bracket))))))))
+  (statement
+    (command_merge
+      (keyword_merge)
+      (merge_argument
+        (set_target
+          (glvn
+            (gvn)))
+        (set_target
+          (glvn
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket))))))))
+  (statement
+    (command_merge
+      (keyword_merge)
+      (post_conditional
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (merge_argument
+        (set_target
+          (glvn
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket)))))
+        (set_target
+          (glvn
+            (gvn
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (bracket)))))))))

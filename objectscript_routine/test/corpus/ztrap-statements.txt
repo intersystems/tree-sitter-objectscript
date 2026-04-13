@@ -1,0 +1,306 @@
+===
+Valid Ztrap Statements
+===
+  ZTRAP "FRED"  ; generates <ZFRED>
+  ZTRAP "Fred"  ; generates <ZFred>
+  ZTRAP "Freddy"  ; generates <ZFred>
+  ZTRAP "foo"  ; generates <Zfoo>
+  ZTRAP " foo"  ; generates <Z foo>
+  ZTRAP "@#$%"  ; generates <Z@#$%>
+  ZTRAP ""  ; generates <Z>
+  ZTRAP """"  ; generates <Z">
+  ZTRAP 1234  ; generates <Z1234>
+  ZTRAP 2+2  ; generates <Z4>
+  ZTRAP 10/3  ; generates <Z3.33>
+  ZTRAP +0.700  ; generates <Z.7>
+  ZTRAP $ZPI  ; generates <Z3.14>
+  ZTRAP $CHAR(64)_$CHAR(37)  ; generates <Z@%>
+  ZTRAP ""  ; generates <Z>
+  ZTRAP """"  ; generates <Z">
+  ZTRAP:y<0 "yNEG"
+  ZTRAP @ERPTR
+  SET $ZTRAP="OnErr"
+  SET $ZTRAP="OnErr"
+---
+
+(source_file
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (numeric_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (numeric_literal))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (numeric_literal))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (numeric_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (system_defined_variable)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (dollar_function
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (system_defined_function
+                (dollar_function
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))))))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (line_comment_3)
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (post_conditional
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (expression
+        (expr_atom
+          (string_literal)))))
+  (statement
+    (command_ztrap
+      (keyword_ztrap)
+      (expression
+        (expr_atom
+          (indirection
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (system_defined_variable))
+        (expression
+          (expr_atom
+            (string_literal))))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (system_defined_variable))
+        (expression
+          (expr_atom
+            (string_literal)))))))
+
+===
+invalid — misspelled command name (ZTRPA)
+:error
+===
+ZTRPA "ER23"
+---
+
+(ERROR)
+
+===
+invalid — stray comma after ZTRAP
+:error
+===
+ZTRAP,
+---
+
+(ERROR)
+
+===
+invalid — two arguments (string + string)
+:error
+===
+ZTRAP "ER23" "EXTRA"
+---
+
+(ERROR)
+
+===
+invalid — postconditional colon with no expression
+:error
+===
+ZTRAP:
+---
+
+(ERROR)
+
+===
+invalid — missing postconditional expression before argument
+:error
+===
+ZTRAP: "ER23"
+---
+
+(ERROR)
+
+===
+invalid — malformed pc (comma where expression must be)
+:error
+===
+ZTRAP:,$ZERROR
+---
+
+(ERROR)
+
+===
+invalid — double colon in postconditional
+:error
+===
+ZTRAP::1 "ER23"
+---
+
+(ERROR)
+
+===
+invalid — empty parentheses in postconditional expression
+:error
+===
+ZTRAP:() "ER23"
+---
+
+(ERROR)
+
+===
+invalid — invalid expression ($$ alone)
+:error
+===
+ZTRAP $$
+---
+
+(ERROR)
+
+===
+invalid — bare @ with no expression
+:error
+===
+ZTRAP @
+---
+
+(ERROR)
+
+===
+invalid — extra argument after $ZERROR form
+:error
+===
+ZTRAP $ZERROR 123
+---
+
+(ERROR)

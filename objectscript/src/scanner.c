@@ -100,6 +100,7 @@ void *tree_sitter_objectscript_external_scanner_create() {
   scanner->in_body = 0;
   ObjectScript_Core_Scanner_init(&scanner->core_scanner);
   scanner->core_scanner.column1_statement_mode = true;
+  scanner->core_scanner.routine_token_mode = true;
   return scanner;
 }
 
