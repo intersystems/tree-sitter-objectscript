@@ -1145,6 +1145,10 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
       return true;
     }
 
+    if (ascii_upper_eq(ident, len, "IRIS")) {
+        return false;
+    }
+
     if (!scanner->column1_statement_mode) {
       lexer->result_symbol = TAG;
       scanner->terminated_newline = false;
