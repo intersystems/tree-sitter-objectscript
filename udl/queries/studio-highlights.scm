@@ -263,7 +263,8 @@
 ] @comment
 
 ; start Dots in dotted statements, (black fg,silver bg)
-(dotted_statement) @punctuation.special.dots
+(dotted_statement
+  "." @punctuation.special.dots)
 
 ; end Dots in dotted statements (black fg,silver bg)
 ; start #dim command

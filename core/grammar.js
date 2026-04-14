@@ -145,7 +145,7 @@ module.exports = grammar(objectscript_expr, {
     $._block_comment_inner,
     $.macro_value_line_with_continue,
     $.sentinel,
-    $._bol,
+    $.bol,
     $._termination,
     $._zbreak_device_termination,
     $._post_conditional_id,
@@ -294,9 +294,10 @@ module.exports = grammar(objectscript_expr, {
        seq(
          // this is from the external scanner, and it means that it was
          // at the start of a line and there were dots matching the dotted statement
-        $._bol,
-        repeat('.'), // in the whitespace case, I don't want to consume the . in the scanner, so they would appear here
-        $.statement,
+        $.bol,
+        repeat1('.'),
+        repeat1($.statement),
+        $._termination,
       ),
       variable_datatype: ($) =>
         seq(
@@ -556,10 +557,14 @@ module.exports = grammar(objectscript_expr, {
           ),
         ),
         // DO with parameters
-        build_command_rule_argumentful(
-          $,
-          $.keyword_do,
-          repeat_with_commas($.do_parameter),
+        prec.right(
+          seq(
+            $.keyword_do,
+            optional($.post_conditional),
+            $._immediate_single_whitespace_followed_by_non_whitespace,
+            repeat_with_commas($.do_parameter),
+            repeat($.dotted_statement),
+          ),
         ),
       ),
 

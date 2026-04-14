@@ -279,7 +279,8 @@
 
 "--" @operator
 
-(dotted_statement) @punctuation.special
+(dotted_statement
+  ("." ) @punctuation.special.dots) 
 
 ; === END CORE ===
 ; === BEGIN UDL ===
