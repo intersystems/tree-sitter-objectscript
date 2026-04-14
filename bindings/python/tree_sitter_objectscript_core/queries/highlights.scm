@@ -280,6 +280,6 @@
 "--" @operator
 
 (dotted_statement
-  ("." ) @punctuation.special.dots) 
+  "." @punctuation.special.dots)
 
 ; === END LOCAL ===
