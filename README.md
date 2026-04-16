@@ -128,7 +128,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
   Add the following content to that file: 
   **IMPORTANT: Make sure to replace the revision section with the commit that you want.**
   ```lua
-
   return {
   -- configure nvim-treesitter
   {
@@ -158,16 +157,25 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
         parsers.objectscript_udl = {
           install_info = {
             url = "https://github.com/intersystems/tree-sitter-objectscript",
-            revision = "f1c568c622a0a43191563fd4c5e649a61eef11cc", 
+            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
             location = "udl",
             queries = "udl/queries",
+          }
+        }
+
+        parsers.objectscript = {
+          install_info = {
+            url = "https://github.com/intersystems/tree-sitter-objectscript",
+            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
+            location = "objectscript",
+            queries = "objectscript/queries",
           }
         }
 
         parsers.objectscript_routine = {
           install_info = {
             url = "https://github.com/intersystems/tree-sitter-objectscript",
-            revision = "f1c568c622a0a43191563fd4c5e649a61eef11cc", 
+            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
             location = "objectscript_routine",
             queries = "objectscript_routine/queries",
           }
@@ -177,7 +185,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
 
       opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
-        for _, lang in ipairs({ "objectscript_udl", "objectscript_routine" }) do
+        for _, lang in ipairs({ "objectscript_udl", "objectscript_routine", "objectscript" }) do
           if not vim.tbl_contains(opts.ensure_installed, lang) then
             table.insert(opts.ensure_installed, lang)
           end
@@ -185,8 +193,226 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
       end,
     },
   }
+ 
   ```
-  #### Step 2: Remove cached data from nvim if necessary (if previously installed)
+
+  #### Step 2: Create `~/.config/nvim/after/queries/xml/injections.scm`
+  Add the following content to that file: 
+  ```scheme
+  ;; extends
+
+  (
+    element
+      (STag (Name) @_start_tag)
+      (content (CDSect (CData) @injection.content))
+      (ETag (Name) @_end_tag)
+    (#eq? @_start_tag "Implementation")
+    (#eq? @_end_tag "Implementation")
+    (#set! injection.language "objectscript")
+  )
+  (
+    element
+      (STag (Name) @_start_tag)
+      (content (CharData) @injection.content)
+      (ETag (Name) @_end_tag)
+    (#eq? @_start_tag "Implementation")
+    (#eq? @_end_tag "Implementation")
+    (#set! injection.language "objectscript")
+  )
+  ```
+  #### Step 3: Create `~/.config/nvim/queries/xml/highlights.scm`
+  ```scheme
+  ;; XML declaration
+
+  "xml" @keyword
+
+  [ "version" "encoding" "standalone" ] @property
+
+  (EncName) @string.special
+
+  (VersionNum) @number
+
+  [ "yes" "no" ] @boolean
+
+  ;; Processing instructions
+
+  (PI) @embedded
+
+  (PI (PITarget) @keyword)
+
+  ;; Element declaration
+
+  (elementdecl
+    "ELEMENT" @keyword
+    (Name) @tag)
+
+  (contentspec
+    (_ (Name) @property))
+
+  "#PCDATA" @type.builtin
+
+  [ "EMPTY" "ANY" ] @string.special.symbol
+
+  [ "*" "?" "+" ] @operator
+
+  ;; Entity declaration
+
+  (GEDecl
+    "ENTITY" @keyword
+    (Name) @constant)
+
+  (GEDecl (EntityValue) @string)
+
+  (NDataDecl
+    "NDATA" @keyword
+    (Name) @label)
+
+  ;; Parsed entity declaration
+
+  (PEDecl
+    "ENTITY" @keyword
+    "%" @operator
+    (Name) @constant)
+
+  (PEDecl (EntityValue) @string)
+
+  ;; Notation declaration
+
+  (NotationDecl
+    "NOTATION" @keyword
+    (Name) @constant)
+
+  (NotationDecl
+    (ExternalID
+      (SystemLiteral (URI) @string.special)))
+
+  ;; Attlist declaration
+
+  (AttlistDecl
+    "ATTLIST" @keyword
+    (Name) @tag)
+
+  (AttDef (Name) @property)
+
+  (AttDef (Enumeration (Nmtoken) @string))
+
+  (DefaultDecl (AttValue) @string)
+
+  [
+    (StringType)
+    (TokenizedType)
+  ] @type.builtin
+
+  (NotationType "NOTATION" @type.builtin)
+
+  [
+    "#REQUIRED"
+    "#IMPLIED"
+    "#FIXED"
+  ] @attribute
+
+  ;; Entities
+
+  (EntityRef) @constant
+
+  ((EntityRef) @constant.builtin
+  (#any-of? @constant.builtin
+    "&amp;" "&lt;" "&gt;" "&quot;" "&apos;"))
+
+  (CharRef) @constant
+
+  (PEReference) @constant
+
+  ;; External references
+
+  [ "PUBLIC" "SYSTEM" ] @keyword
+
+  (PubidLiteral) @string.special
+
+  (SystemLiteral (URI) @markup.link)
+
+  ;; Processing instructions
+
+  (XmlModelPI "xml-model" @keyword)
+
+  (StyleSheetPI "xml-stylesheet" @keyword)
+
+  (PseudoAtt (Name) @property)
+
+  (PseudoAtt (PseudoAttValue) @string)
+
+  ;; Doctype declaration
+
+  (doctypedecl "DOCTYPE" @keyword)
+
+  (doctypedecl (Name) @type)
+
+  ;; Tags
+
+  (STag (Name) @tag)
+
+  (ETag (Name) @tag)
+
+  (EmptyElemTag (Name) @tag)
+
+  ;; Attributes
+
+  (Attribute (Name) @property)
+
+  (Attribute (AttValue) @string)
+
+  ;; Delimiters & punctuation
+
+  [
+  "<?" "?>"
+  "<!" "]]>"
+  "<" ">"
+  "</" "/>"
+  ] @punctuation.delimiter
+
+  [ "(" ")" "[" "]" ] @punctuation.bracket
+
+  [ "\"" "'" ] @punctuation.delimiter
+
+  [ "," "|" "=" ] @operator
+
+  ;; Text
+
+  (CharData) @markup
+
+  (
+    element
+      (STag (Name) @_start_tag)
+      (content (CDSect (CData) @injection.content))
+      (ETag (Name) @_end_tag)
+    (#eq? @_start_tag "Implementation")
+    (#eq? @_end_tag "Implementation")
+    (#set! priority 90)
+  )
+
+  (
+    element
+      (STag (Name) @_start_tag)
+      (content (CharData) @injection.content)
+      (ETag (Name) @_end_tag)
+    (#eq? @_start_tag "Implementation")
+    (#eq? @_end_tag "Implementation")
+    (#set! priority 90)
+  )
+
+  (CDSect
+    (CDStart) @markup.heading
+    (CData) @markup.raw
+    "]]>" @markup.heading)
+
+  ;; Misc
+
+  (Comment) @comment
+
+  (ERROR) @error
+  ```
+
+  #### Step 4: Remove cached data from nvim if necessary (if previously installed)
   
   ```zsh
   rm -rf ~/.local/share/nvim/site/parser \
@@ -194,9 +420,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
     ~/.local/share/nvim/site/queries
   ```
 
-  #### Step 3: Open Neovim and Install `objectscript_udl` and `objectscript_routine`
+  #### Step 5: Open Neovim and Install `objectscript_udl`, `objectscript_routine`, and `objectscript`
   ```vim
-  :TSInstall objectscript_udl objectscript_routine
+  :TSInstall objectscript_udl objectscript_routine objectscript
   ```
 
 [ci]: https://img.shields.io/github/actions/workflow/status/intersystems/tree-sitter-objectscript/ci.yml?logo=github&label=CI
