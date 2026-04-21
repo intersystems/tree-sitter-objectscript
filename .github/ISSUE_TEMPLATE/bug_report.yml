@@ -1,12 +1,12 @@
 name: Bug Report
 description: File a bug or issue
-title: "bug: "
+title: 'bug: '
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        **Before** reporting an issue, make sure to search [existing issues](https://github.com/tree-sitter/tree-sitter-typescript/issues). Usage questions such as ***"How do I...?"*** either belong in [Discussions](https://github.com/tree-sitter/tree-sitter/discussions) upstream or in our [Discord server](https://discord.gg/w7nTvsVJhm) and will be closed.
+        **Before** reporting an issue, make sure to search [existing issues](https://github.com/intersystems/tree-sitter-objectscript/issues). Usage questions such as ***"How do I...?"*** belong in [Discussions](https://github.com/intersystems/tree-sitter-objectscript/discussions) and will be closed.
         If your issue is related to a bug in your editor-experience because your editor *leverages* tree-sitter and this parser, then it is likely your issue does *NOT* belong here and belongs in the relevant editor's repository.
   - type: checkboxes
     attributes:
@@ -15,12 +15,12 @@ body:
       options:
         - label: I have read all the [tree-sitter docs](https://tree-sitter.github.io/tree-sitter/using-parsers) if it relates to using the parser
           required: false
-        - label: I have searched the existing issues of tree-sitter-typescript
+        - label: I have searched the existing issues of tree-sitter-objectscript
           required: true
   - type: input
     attributes:
-      label: "Tree-Sitter CLI Version, if relevant (output of `tree-sitter --version`)"
-      placeholder: "tree-sitter 0.20.8 (6bbb50bef8249e6460e7d69e42cc8146622fa4fd)"
+      label: 'Tree-Sitter CLI Version, if relevant (output of `tree-sitter --version`)'
+      placeholder: 'tree-sitter 0.20.8 (6bbb50bef8249e6460e7d69e42cc8146622fa4fd)'
     validations:
       required: false
   - type: textarea
@@ -48,12 +48,11 @@ body:
   - type: textarea
     attributes:
       label: Repro
-      description: Minimal code to reproduce this issue. Ideally this should be reproducible with the C library or the tree-sitter cli, do not suggest an editor or external tool. Also, a link to the TypeScript Playground showing that the snippet below is valid JavaScript or TypeScript would be great (https://www.typescriptlang.org/play)
+      description: Minimal code to reproduce this issue. Ideally this should be reproducible with the C library or the tree-sitter cli, do not suggest an editor or external tool.
       value: |
-        // Example code that causes the issue
-        function foo() {
-          // Code that fails to parse, or causes an error
-        }
-      render: TypeScript
+        SomeTag(param1,param2) ;
+         Write "Hello, World!",!
+         Quit
+      render: mumps
     validations:
       required: false
