@@ -156,6 +156,7 @@
   (keyword_elseif)
   (keyword_else)
   (keyword_oldelse)
+  (old_else_remove)
   (keyword_throw)
   (keyword_try)
   (keyword_catch)
@@ -198,6 +199,13 @@
   (keyword_zremove)
   (command_keyword)
   (keyword_zload)
+  (keyword_do_old)
+  (keyword_old_if)
+  (old_if_remove)
+  (keyword_for_infinite)
+  (keyword_old_for_no_params)
+  (keyword_old_for_params)
+  (keyword_old_if_refactor)
 ] @keyword
 
 ; end (red fg, default bg)
@@ -246,25 +254,51 @@
 
 ; end @string.regexp (olive fg, default bg)
 [
-  (command_quit)
-  (command_else)
-  (command_continue)
-  (command_if)
-  (command_do)
-  (command_for)
-  (command_lock)
-  (command_return)
-  (command_halt_or_hang)
-  (command_break)
-  (command_tcommit)
-  (command_trollback)
-  (command_tstart)
-  (command_zbreak)
+  (command_quit
+    (keyword_quit) @keyword)
+  (command_else
+    [
+      (keyword_oldelse)
+      (old_else_remove)
+    ] @keyword)
+  (command_continue
+    (keyword_continue) @keyword)
+  (command_if
+    [
+      (keyword_old_if)
+      (keyword_old_if_refactor)
+      (old_if_remove)
+    ] @keyword)
+  (command_do
+    (keyword_do_old) @keyword)
+  (command_for
+    [
+      (keyword_for_infinite)
+      (keyword_old_for_params)
+      (keyword_old_for_no_params)
+      (keyword_for)
+    ] @keyword)
+  (command_lock
+    (keyword_lock) @keyword)
+  (command_return
+    (keyword_return) @keyword)
+  (command_halt_or_hang
+    (keyword_halt_or_hang) @keyword)
+  (command_break
+    (keyword_break) @keyword)
+  (command_tcommit
+    (keyword_tcommit) @keyword)
+  (command_trollback
+    (keyword_trollback) @keyword)
+  (command_tstart
+    (keyword_tstart) @keyword)
+  (command_zbreak
+    (keyword_zbreak) @keyword)
 ] @comment
 
 ; start Dots in dotted statements, (black fg,silver bg)
 (dotted_statement
-  "." @punctuation.special.dots)
+  (dot) @punctuation.special.dots)
 
 ; end Dots in dotted statements (black fg,silver bg)
 ; start #dim command

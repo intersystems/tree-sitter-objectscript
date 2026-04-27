@@ -1063,7 +1063,7 @@ if (valid_symbols[_POST_CONDITIONAL_ID] && lexer->lookahead==':') {
                 if (lexer->lookahead == '.' || (lexer->lookahead >= '0' && lexer->lookahead <= '9')) {
                     is_decimal = true;
                 }
-                if (!is_decimal && dots > 0 && (scanner->terminated_newline || new_line)) {
+                if (!is_decimal && dots > 0) {
                     lexer->result_symbol = BOL;
                     scanner->terminated_newline = false;
                     return true;
@@ -1241,23 +1241,31 @@ else if (valid_symbols[_ASSERT_NO_SPACE_BETWEEN_RULES]) {
     bool saw_nl   = scanner->terminated_newline;
 
     while (iswspace(lexer->lookahead)) {
-      if (lexer->lookahead == '\n') saw_nl = true;
+      if (lexer->lookahead == '\n') {
+        // End the current statement before the next dotted line so
+        // constructs like `x` newline `. quit` do not collapse into `x.quit`.
+        if (valid_symbols[_TERMINATION] && consumed) {
+          lexer->result_symbol = _WHITESPACE;
+          scanner->terminated_newline = false;
+          return true;
+          
+        }
+        saw_nl = true;
+      
+      }
       lexer->advance(lexer,false);
       consumed = true;
     }
 
-
     unsigned dots = 0;
 
     lexer->mark_end(lexer);
-    
     
     while (lexer->lookahead == '.') { lexer->advance(lexer,false); dots++; }
     bool is_decimal = false;
     if (lexer->lookahead == '.' || (lexer->lookahead >= '0' && lexer->lookahead <= '9')) {
         is_decimal = true;
     }
-
     if (saw_nl && valid_symbols[BOL] && dots > 0 && !is_decimal) {
         lexer->result_symbol = BOL;
         scanner->terminated_newline = false;
