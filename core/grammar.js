@@ -295,7 +295,7 @@ module.exports = grammar(objectscript_expr, {
          // this is from the external scanner, and it means that it was
          // at the start of a line and there were dots matching the dotted statement
         $.bol,
-        repeat1('.'),
+        repeat1(alias('.', $.dot)),
         repeat1($.statement),
         $._termination,
       ),
@@ -547,9 +547,9 @@ module.exports = grammar(objectscript_expr, {
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cdo
     command_do: ($) =>
       choice(
-        prec.right(seq($.keyword_do, optional($.post_conditional), repeat1($.dotted_statement))),
+        prec.right(seq(alias($.keyword_do, $.keyword_do_old), optional($.post_conditional), repeat1($.dotted_statement))),
         prec.right(
-          seq($.keyword_do,
+          seq(alias($.keyword_do, $.keyword_do_old),
           optional($.post_conditional),
           $._argumentless_command_end,
           repeat1(alias($.statement, $.do_statement_after)),
@@ -557,15 +557,12 @@ module.exports = grammar(objectscript_expr, {
           ),
         ),
         // DO with parameters
-        prec.right(
           seq(
             $.keyword_do,
             optional($.post_conditional),
             $._immediate_single_whitespace_followed_by_non_whitespace,
             repeat_with_commas($.do_parameter),
-            repeat($.dotted_statement),
           ),
-        ),
       ),
 
     do_parameter: ($) =>
@@ -664,7 +661,7 @@ module.exports = grammar(objectscript_expr, {
         ),
         // Old style FOR with parameters
         seq(
-            $.keyword_for,
+            alias($.keyword_for, $.keyword_old_for_params),
           $._immediate_single_whitespace_followed_by_non_whitespace,
           repeat_with_commas($.for_parameter),
           repeat($.statement),
@@ -672,13 +669,13 @@ module.exports = grammar(objectscript_expr, {
         ),
         // Old style argumentless FOR
         seq(
-            $.keyword_for,
+            alias($.keyword_for, $.keyword_old_for_no_params),
           $._argumentless_command_end,
           repeat($.statement),
           $._termination,
         ),
         seq(
-            $.keyword_for,
+            alias($.keyword_for, $.keyword_for_infinite),
             $._termination,
         ),
       ),
@@ -1061,17 +1058,17 @@ module.exports = grammar(objectscript_expr, {
               optional($.else_block),
           ),
           seq(
-              $.keyword_if,
+              alias($.keyword_if, $.keyword_old_if),
               $._argumentless_command_end,
               repeat1($.statement),
               $._termination,
           ),
           seq(
-              $.keyword_if,
+              alias($.keyword_if, $.old_if_remove),
               $._termination,
           ),
           seq(
-              $.keyword_if,
+              alias($.keyword_if, $.keyword_old_if_refactor),
               $._immediate_single_whitespace_followed_by_non_whitespace,
               repeat_with_commas($.expression),
               repeat($.statement),
@@ -1083,11 +1080,11 @@ module.exports = grammar(objectscript_expr, {
             seq(
                 $.keyword_oldelse,
                 $._argumentless_command_end,
-                repeat($.statement),
+                repeat1($.statement),
                 $._termination,
             ),
             seq(
-                $.keyword_oldelse,
+                alias($.keyword_oldelse, $.old_else_remove),
                 $._termination,
             ),
         ),
@@ -1583,6 +1580,11 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
+    tag_statement: ($) =>
+      prec.right(seq(
+        $.tag,
+        optional(choice($.keyword_methodimpl, $.keyword_public, $.keyword_private)),
+      )),
 
     // Simple parameterized tag/label: tagname(params) - no modifiers, no body
     // Example: bar(a,b=2)

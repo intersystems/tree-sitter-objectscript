@@ -130,8 +130,12 @@
 [
   (keyword_for)
   (keyword_while)
+  (keyword_for_infinite)
+  (keyword_old_for_no_params)
+  (keyword_old_for_params)
   (keyword_continue)
   (keyword_quit)
+  (keyword_break)
 ] @keyword.repeat
 
 [
@@ -139,6 +143,7 @@
   (keyword_elseif)
   (keyword_else)
   (keyword_oldelse)
+  (old_else_remove)
 ] @keyword.conditional
 
 [
@@ -207,7 +212,10 @@
   (keyword_write)
   (keyword_zwrite)
   (keyword_do)
-  (keyword_for)
+  (keyword_do_old)
+  (keyword_old_if)
+  (old_if_remove)
+  (keyword_old_if_refactor)
   (keyword_while)
   (keyword_kill)
   (keyword_lock)
@@ -261,26 +269,52 @@
 (pound_if_special_case) @comment.inactive
 
 [
-  (command_quit)
-  (command_else)
-  (command_continue)
-  (command_if)
-  (command_do)
-  (command_for)
-  (command_lock)
-  (command_return)
-  (command_halt_or_hang)
-  (command_break)
-  (command_tcommit)
-  (command_trollback)
-  (command_tstart)
-  (command_zbreak)
+  (command_quit
+    (keyword_quit) @keyword.repeat)
+  (command_else
+    [
+      (keyword_oldelse)
+      (old_else_remove)
+    ] @keyword.conditional)
+  (command_continue
+    (keyword_continue) @keyword.repeat)
+  (command_if
+    [
+      (keyword_old_if)
+      (keyword_old_if_refactor)
+      (old_if_remove)
+    ] @keyword.conditional)
+  (command_do
+    (keyword_do_old) @function.builtin)
+  (command_for
+    [
+      (keyword_for_infinite)
+      (keyword_old_for_params)
+      (keyword_old_for_no_params)
+      (keyword_for)
+    ] @keyword.repeat)
+  (command_lock
+    (keyword_lock) @function.builtin)
+  (command_return
+    (keyword_return) @keyword.return)
+  (command_halt_or_hang
+    (keyword_halt_or_hang) @function.builtin)
+  (command_break
+    (keyword_break) @keyword.repeat)
+  (command_tcommit
+    (keyword_tcommit) @function.builtin)
+  (command_trollback
+    (keyword_trollback) @function.builtin)
+  (command_tstart
+    (keyword_tstart) @function.builtin)
+  (command_zbreak
+    (keyword_zbreak) @keyword.debug)
 ] @comment
 
 "--" @operator
 
 (dotted_statement
-  "." @punctuation.special.dots)
+  (dot) @punctuation.special.dots)
 
 ; === END CORE ===
 ; === BEGIN LOCAL ===

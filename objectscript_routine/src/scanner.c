@@ -13,6 +13,7 @@ struct ObjectScript_Routine_Scanner {
 };
 
 static bool lex_rtn_dot(TSLexer *lexer) {
+  lexer->mark_end(lexer);
   if (lexer->get_column(lexer) != 0) return false;
   if (lexer->lookahead != '.') return false;
 
@@ -64,16 +65,16 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     return false;
   }
 
-  if (valid_symbols[RTN_DOT] && lex_rtn_dot(lexer)) {
-    return true;
-  }
-
   if (ObjectScript_Core_Scanner_scan(&scanner->core_scanner, lexer,
                                      valid_symbols)) {
     return true;
   }
 
   if (valid_symbols[COMPILED_HEADER] && lex_compiled_header(lexer)) {
+    return true;
+  }
+
+  if (valid_symbols[RTN_DOT] && lex_rtn_dot(lexer)) {
     return true;
   }
 
