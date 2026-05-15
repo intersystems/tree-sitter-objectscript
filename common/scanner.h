@@ -18,7 +18,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   _BLOCK_COMMENT_INNER,
   MACRO_VALUE_LINE_WITH_CONTINUE,
   SENTINEL,
-  BOL,
+  _BOL,
   _TERMINATION,
   _POST_CONDITIONAL_ID,
   _ZW_BLOCK,
@@ -832,7 +832,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       }
 
       // for example, terminating an if statement nested in another if statement 
-      else if (valid_symbol_termination && !valid_symbol_argumentless_loop && !valid_symbol_intermediate_termination && !valid_symbols[BOL]) {
+      else if (valid_symbol_termination && !valid_symbol_argumentless_loop && !valid_symbol_intermediate_termination && !valid_symbols[_BOL]) {
         lexer->result_symbol = _TERMINATION;
         scanner->terminated_newline = false;
         return true;
@@ -887,8 +887,8 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
       // this _TERMINATION token is only for outer _TERMINATION instances
       // so consuming the newline is okay
-      else if (valid_symbol_termination && (lexer->lookahead != '.' || !valid_symbols[BOL])) {
-        if (lexer->get_column(lexer) == 0 && is_label_char(lexer->lookahead) && valid_symbols[BOL]) {
+      else if (valid_symbol_termination && (lexer->lookahead != '.' || !valid_symbols[_BOL])) {
+        if (lexer->get_column(lexer) == 0 && is_label_char(lexer->lookahead) && valid_symbols[_BOL]) {
           lexer->mark_end(lexer);
           while(is_label_char(lexer->lookahead) || (iswspace(lexer->lookahead) && lexer->lookahead != '\n')) {
             advance(lexer);
@@ -987,7 +987,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     } 
   }
 
-  if (scanner->terminated_newline && valid_symbols[BOL]) {    
+  if (scanner->terminated_newline && valid_symbols[_BOL]) {    
       lexer->mark_end(lexer);
       // rtn dot is a single dot on a line (represents a blank line)
       if (scanner->routine_token_mode && lexer->get_column(lexer) == 0 && lexer->lookahead == '.') {
@@ -1006,7 +1006,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
           advance(lexer);
       }
       if (lexer->lookahead == '.') {
-          lexer->result_symbol = BOL;
+          lexer->result_symbol = _BOL;
           scanner->terminated_newline = false;
           return true;
       }
@@ -1015,7 +1015,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') advance(lexer);
 
         if (lexer->lookahead == '.') {
-          lexer->result_symbol = BOL;
+          lexer->result_symbol = _BOL;
           scanner->terminated_newline = false;
           return true;
         }
@@ -1189,7 +1189,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
   }
 
-  if (scanner->terminated_newline && lexer->lookahead == '.' && !valid_symbols[BOL] && !valid_symbols[_INTERMEDIATE_TERMINATION]) {
+  if (scanner->terminated_newline && lexer->lookahead == '.' && !valid_symbols[_BOL] && !valid_symbols[_INTERMEDIATE_TERMINATION]) {
     while (lexer->lookahead == '.') {
       advance(lexer);
     }

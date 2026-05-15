@@ -28,6 +28,11 @@
 ] @keyword.operator
 
 (system_defined_function) @function.builtin
+; this is because . is grouped into system_defined_function
+; and I want the dots to be the same color
+(class_method_call "." @function.builtin)
+(byref_arg "." @function.builtin)
+(oref_chain_segment "." @function.builtin)
 
 (sql_field_modifier) @keyword.modifier
 
@@ -128,6 +133,11 @@
 (macro_def) @keyword.directive.define
 
 [
+  "("
+  ")"
+] @punctuation.bracket
+
+[
   (keyword_zbreak)
   (keyword_debug)
   (zbreak_command_option)
@@ -220,7 +230,7 @@
   (keyword_throw)
   (keyword_try)
   (keyword_catch)
-] @function.builtin
+] @keyword
 
 [
   (keyword_embedded_html)
@@ -250,12 +260,50 @@
 
 (tag) @label
 
-(pound_if_special_case) @comment.inactive
+[
+  (pound_if_special_case_else)
+  (pound_if_special_case)
+] @comment.inactive
 
 "--" @operator
 
+(command_if_dotted_block
+"." @punctuation.special.dots
+)
+
+(command_for_dotted_block
+"." @punctuation.special.dots
+)
+
+(command_while_dotted_block
+"." @punctuation.special.dots
+)
+
+(command_dowhile_dotted
+"." @punctuation.special.dots
+)
+
+(command_trycatch_dotted
+"." @punctuation.special.dots
+)
+
 (dotted_statement
-  "." @punctuation.special.dots)
+"." @punctuation.special.dots
+)
+
+(else_block_dotted
+"." @punctuation.special.dots
+)
+
+(elseif_block_dotted
+"." @punctuation.special.dots
+)
+
+(variable_datatype
+"." @function.builtin
+)
+
+(instance_method_call "." @function.builtin)
 
 ; === END CORE ===
 ; === BEGIN UDL ===

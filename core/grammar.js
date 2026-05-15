@@ -439,7 +439,7 @@ module.exports = grammar(objectscript_expr, {
     $._block_comment_inner,
     $.macro_value_line_with_continue,
     $.sentinel,
-    $.bol,
+    $._bol,
     $._termination,
     $._post_conditional_id,
     $._zw_block,
@@ -591,7 +591,7 @@ module.exports = grammar(objectscript_expr, {
     keyword_public: (_) => /public/i,
     keyword_methodimpl: (_) => /methodimpl/i,
     _dotted_block_continuation: ($) =>
-      seq($.bol, optional($.tag), repeat1('.')),
+      seq($._bol, optional($.tag), repeat1('.')),
 
     // Shared parameter list rule for both tag_with_params and procedure
 
@@ -1366,11 +1366,6 @@ module.exports = grammar(objectscript_expr, {
         build_command_rule_argumentful($, $.keyword_trollback, alias('1', $.numeric_literal)),
       ),
     command_tstart: ($) => build_command_rule_argumentless($, $.keyword_tstart),
-    byref_arg: ($) =>
-      seq(
-        '.',
-        $.lvn,
-      ),
 
     xecute_argument: ($) =>
       choice(
