@@ -28,11 +28,17 @@
 ] @keyword.operator
 
 (system_defined_function) @function.builtin
+
 ; this is because . is grouped into system_defined_function
 ; and I want the dots to be the same color
-(class_method_call "." @function.builtin)
-(byref_arg "." @function.builtin)
-(oref_chain_segment "." @function.builtin)
+(class_method_call
+  "." @function.builtin)
+
+(byref_arg
+  "." @function.builtin)
+
+(oref_chain_segment
+  "." @function.builtin)
 
 (sql_field_modifier) @keyword.modifier
 
@@ -268,41 +274,33 @@
 "--" @operator
 
 (command_if_dotted_block
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (command_for_dotted_block
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (command_while_dotted_block
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (command_dowhile_dotted
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (command_trycatch_dotted
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (dotted_statement
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (else_block_dotted
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (elseif_block_dotted
-"." @punctuation.special.dots
-)
+  "." @punctuation.special.dots)
 
 (variable_datatype
-"." @function.builtin
-)
+  "." @function.builtin)
 
-(instance_method_call "." @function.builtin)
+(instance_method_call
+  "." @function.builtin)
 
 ; === END LOCAL ===
