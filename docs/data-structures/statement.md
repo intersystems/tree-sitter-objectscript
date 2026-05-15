@@ -166,7 +166,7 @@ command_set: ($) =>
   build_command_rule_argumentful(
     $,
     field('keyword', $.keyword_set),  // Attached here
-    repeat_with_commas($.set_argument),
+    commaSep1($.set_argument),
   ),
 ```
 

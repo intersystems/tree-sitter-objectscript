@@ -54,7 +54,7 @@ from the staged crates until the staged package contents include it.
 
 ### Medium Priority
 
-#### M1: Duplicated `repeat_with_commas` Utility
+#### M1: Duplicated `commaSep1` Utility
 
 **Location**: 
 - `expr/grammar.js:14-17`
@@ -65,7 +65,7 @@ from the staged crates until the staged package contents include it.
 **Evidence**:
 ```javascript
 // In expr/grammar.js
-const repeat_with_commas = function (rule) {
+const commaSep1 = function (rule) {
     return seq(rule, repeat(seq(',', rule)));
 };
 
@@ -199,7 +199,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 | Pattern | Locations | LOC | Action |
 |---------|-----------|-----|--------|
-| `repeat_with_commas()` | 4 files | 12 | Extract to common |
+| `commaSep1()` | 4 files | 12 | Extract to common |
 | Keyword `seq(optional($.keyword_not), /Pattern/i)` | 20+ rules | ~60 | Consider helper function |
 | `alias($.expression, $.rhs)` pattern | 50+ rules | ~150 | Document as standard pattern |
 
@@ -227,7 +227,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 
 ### Short-term (1-2 weeks)
 
-1. Remove duplicate `repeat_with_commas` definitions
+1. Remove duplicate `commaSep1` definitions
 2. Update/remove stale regeneration note in `common/keywords.js`
 3. Add targeted comments where scanner behavior is not obvious
 
@@ -296,7 +296,7 @@ const EXCLUDED_RULE_4 = 'system_defined_function';
 - `bindings/rust-routine/lib.rs` and `bindings/rust-playground/lib.rs` — staged crates include `STUDIO_HIGHLIGHTS_QUERY`
 - `scripts/rust_routine_crate.sh` and `scripts/rust_playground_crate.sh` — staging helpers omit `studio-highlights.scm`
 - `core/grammar.js:444-447` — TODO for unimplemented directives
-- `expr/grammar.js:15`, `core/utils.js:47`, `udl/grammar.js:22`, `common/keywords.js:15` — Duplicated `repeat_with_commas` utility
+- `expr/grammar.js:15`, `core/utils.js:47`, `udl/grammar.js:22`, `common/keywords.js:15` — Duplicated `commaSep1` utility
 - `core/utils.js:52-55` — Hardcoded exclusion list
 - `find expr/test/corpus core/test/corpus udl/test/corpus objectscript_routine/test/corpus objectscript/test/corpus -type f -name '*.txt' | wc -l` — 185 corpus files across grammar directories
 - File line counts from `wc -l` command

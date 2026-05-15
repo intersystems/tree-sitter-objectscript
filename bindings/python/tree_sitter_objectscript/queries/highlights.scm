@@ -128,33 +128,6 @@
 (macro_def) @keyword.directive.define
 
 [
-  (keyword_for)
-  (keyword_while)
-  (keyword_for_infinite)
-  (keyword_old_for_no_params)
-  (keyword_old_for_params)
-  (keyword_continue)
-  (keyword_quit)
-  (keyword_break)
-] @keyword.repeat
-
-[
-  (keyword_if)
-  (keyword_elseif)
-  (keyword_else)
-  (keyword_oldelse)
-  (old_else_remove)
-] @keyword.conditional
-
-[
-  (keyword_throw)
-  (keyword_try)
-  (keyword_catch)
-] @keyword.exception
-
-(keyword_return) @keyword.return
-
-[
   (keyword_zbreak)
   (keyword_debug)
   (zbreak_command_option)
@@ -213,10 +186,6 @@
   (keyword_zwrite)
   (keyword_do)
   (keyword_do_old)
-  (keyword_old_if)
-  (old_if_remove)
-  (keyword_old_if_refactor)
-  (keyword_while)
   (keyword_kill)
   (keyword_lock)
   (keyword_read)
@@ -238,6 +207,19 @@
   (keyword_zremove)
   (command_keyword)
   (keyword_zload)
+  (keyword_for)
+  (keyword_while)
+  (keyword_continue)
+  (keyword_quit)
+  (keyword_break)
+  (keyword_return)
+  (keyword_if)
+  (keyword_elseif)
+  (keyword_else)
+  (keyword_oldelse)
+  (keyword_throw)
+  (keyword_try)
+  (keyword_catch)
 ] @function.builtin
 
 [
@@ -262,59 +244,18 @@
   (line_comment_3)
   (line_comment_4)
   (block_comment)
-] @comment @spell
+  (inline_comment)
+  (argumentless_inline_comment)
+] @comment
 
 (tag) @label
 
 (pound_if_special_case) @comment.inactive
 
-[
-  (command_quit
-    (keyword_quit) @keyword.repeat)
-  (command_else
-    [
-      (keyword_oldelse)
-      (old_else_remove)
-    ] @keyword.conditional)
-  (command_continue
-    (keyword_continue) @keyword.repeat)
-  (command_if
-    [
-      (keyword_old_if)
-      (keyword_old_if_refactor)
-      (old_if_remove)
-    ] @keyword.conditional)
-  (command_do
-    (keyword_do_old) @function.builtin)
-  (command_for
-    [
-      (keyword_for_infinite)
-      (keyword_old_for_params)
-      (keyword_old_for_no_params)
-      (keyword_for)
-    ] @keyword.repeat)
-  (command_lock
-    (keyword_lock) @function.builtin)
-  (command_return
-    (keyword_return) @keyword.return)
-  (command_halt_or_hang
-    (keyword_halt_or_hang) @function.builtin)
-  (command_break
-    (keyword_break) @keyword.repeat)
-  (command_tcommit
-    (keyword_tcommit) @function.builtin)
-  (command_trollback
-    (keyword_trollback) @function.builtin)
-  (command_tstart
-    (keyword_tstart) @function.builtin)
-  (command_zbreak
-    (keyword_zbreak) @keyword.debug)
-] @comment
-
 "--" @operator
 
 (dotted_statement
-  (dot) @punctuation.special.dots)
+  "." @punctuation.special.dots)
 
 ; === END CORE ===
 ; === BEGIN UDL ===

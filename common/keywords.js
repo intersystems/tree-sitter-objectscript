@@ -6,15 +6,10 @@
 /* eslint-disable indent */
 
 
-/// <reference types="tree-sitter-cli/dsl" />
-// @ts-check
-/**
- * @param {RuleOrLiteral} rule
- * @returns {RuleOrLiteral}
- */
-const repeat_with_commas = function(rule) {
-  return seq(rule, repeat(seq(',', rule)));
-};
+const {
+  commaSep1,
+} = require('../common/define_grammar');
+
 // Keyword rules
 module.exports = {
     /*
@@ -49,7 +44,7 @@ module.exports = {
     method_keyword_sql_proc: ($) => seq(optional($.keyword_not), /SqlProc/i),
     method_keyword_web_method: ($) => seq(optional($.keyword_not), /WebMethod/i),
     method_keyword_return_results_set: ($) => seq(optional($.keyword_not), /ReturnResultsets/i),
-    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice(alias($.objectscript_identifier, $.method_name), seq('(', repeat_with_commas(alias($.objectscript_identifier, $.method_name)), ')'))),
+    method_keyword_public_list: ($) => seq(/PublicList/i, '=', choice(alias($.objectscript_identifier, $.method_name), seq('(', commaSep1(alias($.objectscript_identifier, $.method_name)), ')'))),
     method_keyword_procedure_block: ($) => seq(/ProcedureBlock/i, optional(seq('=', choice(alias('0', $.false), alias('1', $.true))))),
     method_keyword_soap_binding_style: ($) => seq(/SoapBindingStyle/i, '=', alias(choice(/document/i, /rpc/i), $.typename)),
     method_keyword_soap_body_use: ($) => seq(/SoapBodyUse/i, '=', alias(choice(/literal/i, /encoded/i), $.typename)),
@@ -62,7 +57,7 @@ module.exports = {
           choice(
           seq(
             '(',
-            repeat_with_commas(alias($.identifier, $.method_name)),
+            commaSep1(alias($.identifier, $.method_name)),
             ')',
           ),
           alias($.identifier, $.method_name),
@@ -75,7 +70,7 @@ module.exports = {
         choice(
           seq(
             '(',
-            repeat_with_commas(alias($.identifier, $.method_name)),
+            commaSep1(alias($.identifier, $.method_name)),
             ')',
           ),
           alias($.identifier, $.method_name),
@@ -141,7 +136,7 @@ module.exports = {
     method_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas(
+        optional(commaSep1(
           $.method_keyword,
         )),
         ']',
@@ -225,7 +220,7 @@ module.exports = {
 
       seq(
         '(',
-        repeat_with_commas(alias($.identifier, $.class_name)),
+        commaSep1(alias($.identifier, $.class_name)),
         ')',
       ),
     ),
@@ -286,7 +281,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          repeat_with_commas(alias($.identifier, $.class_name)),
+          commaSep1(alias($.identifier, $.class_name)),
           ')',
         ),
         seq(
@@ -301,7 +296,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          repeat_with_commas(alias($.identifier, $.class_name)),
+          commaSep1(alias($.identifier, $.class_name)),
           ')',
         ),
         seq(
@@ -317,7 +312,7 @@ module.exports = {
       choice(
         seq(
           '(',
-          repeat_with_commas(alias($.identifier, $.class_name)),
+          commaSep1(alias($.identifier, $.class_name)),
           ')',
         ),
         seq(
@@ -341,7 +336,7 @@ module.exports = {
             alias($.identifier, $.class_name),
 
             // IndexClass = (Some.A, Some.B)
-            seq('(', repeat_with_commas(alias($.identifier, $.class_name)), ')'),
+            seq('(', commaSep1(alias($.identifier, $.class_name)), ')'),
           ),
       ),
     class_keyword_membersuper: ($) =>
@@ -357,7 +352,7 @@ module.exports = {
           choice(
             alias($.identifier, $.class_name),
 
-            seq('(', repeat_with_commas(alias($.identifier, $.class_name)), ')'),
+            seq('(', commaSep1(alias($.identifier, $.class_name)), ')'),
           ),
       ),
     class_keyword_modified: ($) =>
@@ -395,7 +390,7 @@ module.exports = {
           ),
       ),
     class_keywords: ($) =>
-      seq('[', optional(repeat_with_commas($.class_keyword)), ']'),
+      seq('[', optional(commaSep1($.class_keyword)), ']'),
     class_keyword: ($) =>
     choice(
       $.parameter_keyword_abstract,
@@ -461,7 +456,7 @@ module.exports = {
     query_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas(
+        optional(commaSep1(
           $.query_keyword,
         )),
         ']',
@@ -555,7 +550,7 @@ module.exports = {
       seq(
         '[',
         optional(
-          repeat_with_commas(
+          commaSep1(
             $.trigger_keyword,
           ),
         ),
@@ -574,7 +569,7 @@ module.exports = {
     PROPERTY KEYWORDS
     */
        keyword_property: (_) => /Property/i,
-    property_keyword_aliases: ($) => seq(/Aliases/i, '=', '{', repeat_with_commas(alias($.objectscript_identifier, $.property_name)), '}'),
+    property_keyword_aliases: ($) => seq(/Aliases/i, '=', '{', commaSep1(alias($.objectscript_identifier, $.property_name)), '}'),
     property_keyword_calculated: ($) => seq(optional($.keyword_not), /Calculated/i),
     property_keyword_client_name: ($) => seq(/ClientName/i, '=', alias(/[^\s'`,\[\]\(\)\{\}]+/, $.property_name)),
     property_keyword_compute_local_only: ($) => seq(/ComputeLocalOnly/i, '=', alias(/[0-1]/, $.numeric_literal)),
@@ -588,7 +583,7 @@ module.exports = {
     property_keyword_server_only: ($) => seq(/ServerOnly/i, '=', alias(/[0-1]/, $.numeric_literal)),
     property_keyword_sql_column_number: ($) => seq(/SqlColumnNumber/i, '=', $.numeric_literal),
     property_keyword_sql_computed: ($) => seq(optional($.keyword_not), /SqlComputed/i),
-    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(', repeat_with_commas(choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename))), ')'), choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename)))),
+    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(', commaSep1(choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename))), ')'), choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename)))),
     property_keyword_sql_field_name: ($) => seq(/SqlFieldName/i, '=', alias($.sql_id, $.query_name)),
     property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i, '=', alias($.string_literal, $.typename)),
     property_keyword_sql_list_type: ($) =>
@@ -653,7 +648,7 @@ module.exports = {
     property_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas($.property_keyword)),
+        optional(commaSep1($.property_keyword)),
       ']',
       ),
     relationship_keyword: ($) =>
@@ -669,7 +664,7 @@ module.exports = {
       choice(
       seq(
         '[',
-        repeat_with_commas(
+        commaSep1(
           $.relationship_keyword,
         ),
         ']',
@@ -715,7 +710,7 @@ module.exports = {
     foreignkey_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas(
+        optional(commaSep1(
           $.foreignkey_keyword,
         )),
         ']',
@@ -753,7 +748,7 @@ module.exports = {
     parameter_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas($.parameter_keyword)),
+        optional(commaSep1($.parameter_keyword)),
         ']',
       ),
 
@@ -767,7 +762,7 @@ module.exports = {
         seq(
           '[',
           optional(
-            repeat_with_commas($.projection_keyword),
+            commaSep1($.projection_keyword),
           ),
           ']',
         ),
@@ -808,7 +803,7 @@ module.exports = {
           alias($.quote_permitting_identifier, $.property_name),
           seq(
             '(',
-            repeat_with_commas(alias($.quote_permitting_identifier, $.property_name)),
+            commaSep1(alias($.quote_permitting_identifier, $.property_name)),
             ')',
           ),
         ),
@@ -841,7 +836,7 @@ module.exports = {
       seq(
         '[',
         optional(
-          repeat_with_commas($.index_keyword),
+          commaSep1($.index_keyword),
         ),
         ']',
       ),
@@ -886,7 +881,7 @@ module.exports = {
     xdata_keywords: ($) =>
       seq(
         '[',
-        optional(repeat_with_commas(
+        optional(commaSep1(
           $.xdata_keyword,
         )),
         ']',

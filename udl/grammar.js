@@ -14,21 +14,13 @@
 // @ts-check
 const keyword_rules = require('../common/keywords');
 const objectscript_core = require('../core/grammar');
-const define_grammar = require('../common/define_grammar');
-/**
- * @param {RuleOrLiteral} rule
- * @returns {RuleOrLiteral}
- */
-const repeat_with_commas = function(rule) {
-  return seq(rule, repeat(seq(',', rule)));
-};
-
+const {
+  define_grammar,
+  commaSep1,
+} = require('../common/define_grammar');
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
   name: 'objectscript_udl',
-  // Use the relaxed dotted identifier token for keyword extraction so
-  // single-letter zbreak switches (e.g. /t and /c) are not suppressed.
-  word: ($) => $.dotted_identifier_relaxed_token,
   externals: ($, previous) => previous.concat([$.external_method_body_content, $.iris_username]),
   conflicts: ($, previous) =>
     previous.concat([
@@ -356,7 +348,7 @@ module.exports = define_grammar(objectscript_core, {
     '(',
     choice(
       $.numeric_literal,
-      repeat_with_commas($.numeric_literal),
+      commaSep1($.numeric_literal),
     ),
     ')',
   ),

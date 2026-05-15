@@ -40,14 +40,6 @@ module.exports.unspace = function (baseGrammar, excludeList) {
   return ruleMap;
 };
 
-/**
- * @param {RuleOrLiteral} rule
- * @return {Rule}
- */
-module.exports.repeat_with_commas = function (rule) {
-  return seq(rule, repeat(seq(',', rule)));
-};
-
 // Rules excluded from unspacing to prevent infinite recursion
 const EXCLUDED_RULE_1 = 'method_args';
 const EXCLUDED_RULE_2 = 'subscripts';

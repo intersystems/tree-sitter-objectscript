@@ -10,7 +10,9 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 const objectscript_core = require('../core/grammar');
-const define_grammar = require('../common/define_grammar');
+const {
+  define_grammar,
+} = require('../common/define_grammar');
 
 module.exports = define_grammar(objectscript_core, {
   name: 'objectscript_routine',

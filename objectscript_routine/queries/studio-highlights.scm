@@ -152,7 +152,6 @@
   (keyword_elseif)
   (keyword_else)
   (keyword_oldelse)
-  (old_else_remove)
   (keyword_throw)
   (keyword_try)
   (keyword_catch)
@@ -177,9 +176,6 @@
   (keyword_zwrite)
   (keyword_do)
   (keyword_for)
-  (keyword_for_infinite)
-  (keyword_old_for_no_params)
-  (keyword_old_for_params)
   (keyword_while)
   (keyword_kill)
   (keyword_lock)
@@ -203,9 +199,6 @@
   (command_keyword)
   (keyword_zload)
   (keyword_do_old)
-  (keyword_old_if)
-  (old_if_remove)
-  (keyword_old_if_refactor)
 ] @keyword
 
 ; end (red fg, default bg)
@@ -252,53 +245,9 @@
 
 (keyword_zsu) @keyword.modifier
 
-; end @string.regexp (olive fg, default bg)
-[
-  (command_quit
-    (keyword_quit) @keyword)
-  (command_else
-    [
-      (keyword_oldelse)
-      (old_else_remove)
-    ] @keyword)
-  (command_continue
-    (keyword_continue) @keyword)
-  (command_if
-    [
-      (keyword_old_if)
-      (keyword_old_if_refactor)
-      (old_if_remove)
-    ] @keyword)
-  (command_do
-    (keyword_do_old) @keyword)
-  (command_for
-    [
-      (keyword_for_infinite)
-      (keyword_old_for_params)
-      (keyword_old_for_no_params)
-      (keyword_for)
-    ] @keyword)
-  (command_lock
-    (keyword_lock) @keyword)
-  (command_return
-    (keyword_return) @keyword)
-  (command_halt_or_hang
-    (keyword_halt_or_hang) @keyword)
-  (command_break
-    (keyword_break) @keyword)
-  (command_tcommit
-    (keyword_tcommit) @keyword)
-  (command_trollback
-    (keyword_trollback) @keyword)
-  (command_tstart
-    (keyword_tstart) @keyword)
-  (command_zbreak
-    (keyword_zbreak) @keyword)
-] @comment
-
 ; start Dots in dotted statements, (black fg,silver bg)
 (dotted_statement
-  (dot) @punctuation.special.dots)
+  "." @punctuation.special.dots)
 
 ; end Dots in dotted statements (black fg,silver bg)
 ; start #dim command
@@ -358,13 +307,7 @@
 ; end write command/read command
 ; start lock command
 ; @punctuation.special -> black fg, default background
-(command_lock_arguments_variant_1
-  [
-    "+"
-    "-"
-  ] @punctuation.special)
-
-(command_lock_arguments_variant_2
+(command_lock_argument
   [
     "+"
     "-"

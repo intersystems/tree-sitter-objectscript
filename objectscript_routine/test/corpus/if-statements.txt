@@ -9,7 +9,7 @@ If Statements 0
 (source_file
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (numeric_literal)))
@@ -214,7 +214,7 @@ If Statements 2
 (source_file
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (lvn
@@ -235,7 +235,7 @@ If Statements 2
             (expression
               (expr_atom
                 (numeric_literal))))))
-      (line_comment_3)))
+      (inline_comment)))
   (statement
     (command_else
       (keyword_oldelse)
@@ -252,7 +252,7 @@ If Statements 2
                 (numeric_literal))))))))
   (statement
     (command_if
-      (keyword_old_if)
+      (keyword_if)
       (statement
         (command_set
           (keyword_set)
@@ -264,7 +264,7 @@ If Statements 2
             (expression
               (expr_atom
                 (numeric_literal))))))
-      (line_comment_3)))
+      (inline_comment)))
   (statement
     (command_else
       (keyword_oldelse)
@@ -339,7 +339,7 @@ If Statements 3
 (source_file
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (parenthetical_expression
@@ -460,7 +460,7 @@ If Statements 3
           (keyword_quit)))))
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (lvn
@@ -495,27 +495,30 @@ Else statements old version
                 (numeric_literal))))))))
   (statement
     (command_else
-      (old_else_remove)))
-  (line_comment_3)
+      (keyword_oldelse)
+      (inline_comment)))
   (statement
     (command_else
-      (old_else_remove)))
+      (keyword_oldelse)))
   (statement
     (command_else
-      (old_else_remove)))
+      (keyword_oldelse)
+      (inline_comment)))
   (statement
     (command_else
-      (old_else_remove)))
-  (statement
-    (command_else
-      (old_else_remove)))
-  (statement
-    (command_write
-      (keyword_write)
-      (write_argument
-        (expression
-          (expr_atom
-            (numeric_literal)))))))
+      (keyword_oldelse)
+      (argumentless_inline_comment)
+      (statement
+        (command_else
+          (keyword_oldelse)
+          (argumentless_inline_comment)
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))
 
 ======================
 Else Statement Invalid
@@ -625,10 +628,10 @@ If Alone
 (source_file
   (statement
     (command_if
-      (old_if_remove)))
+      (keyword_if)))
   (statement
     (command_if
-      (old_if_remove))))
+      (keyword_if))))
 
 ==========
 Else alone
@@ -640,10 +643,10 @@ Else alone
 (source_file
   (statement
     (command_else
-      (old_else_remove)))
+      (keyword_oldelse)))
   (statement
     (command_else
-      (old_else_remove))))
+      (keyword_oldelse))))
 
 =========================
 If Expression Indirection
@@ -728,7 +731,7 @@ If with // comment before newline block
             (expr_atom
               (lvn
                 (objectscript_identifier))))))
-      (line_comment_1))))
+      (inline_comment))))
 
 ========================================
 If with ; comment before newline block
@@ -752,7 +755,7 @@ If with ; comment before newline block
             (expr_atom
               (lvn
                 (objectscript_identifier))))))
-      (line_comment_3))))
+      (inline_comment))))
 
 ==================================================
 If with multiline && and no trailing whitespace
@@ -825,7 +828,7 @@ If statements, valid
 (source_file
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (lvn
@@ -855,7 +858,7 @@ Valid If Statement testing
 (source_file
   (statement
     (command_if
-      (keyword_old_if_refactor)
+      (keyword_if)
       (expression
         (expr_atom
           (lvn
@@ -1361,7 +1364,7 @@ Comment before newline, block
         (expr_atom
           (lvn
             (objectscript_identifier))))
-      (line_comment_1))))
+      (inline_comment))))
 
 ====
 Comment type 3 before newline, block
@@ -1380,7 +1383,7 @@ Comment type 3 before newline, block
         (expr_atom
           (lvn
             (objectscript_identifier))))
-      (line_comment_3))))
+      (inline_comment))))
 
 ====
 If statement, valid with multiple lines of comments and a block
@@ -1407,7 +1410,9 @@ If statement, valid with multiple lines of comments and a block
           (expression
             (expr_atom
               (string_literal)))))
-      (line_comment_1)
+      (inline_comment)
+      (inline_comment)
+      (inline_comment)
       (statement
         (command_set
           (keyword_set)

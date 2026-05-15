@@ -365,11 +365,9 @@ For Loop with New
           (command_new
             (keyword_new)
             (command_new_argument
-              (bracket)
               (command_new_item
                 (lvn
-                  (objectscript_identifier)))
-              (bracket))))
+                  (objectscript_identifier))))))
         (statement
           (command_write
             (keyword_write)
@@ -444,7 +442,7 @@ Old Style For Loop Argumentless
   (statements
     (statement
       (command_for
-        (keyword_old_for_no_params)
+        (keyword_for)
         (statement
           (command_read
             (keyword_read)
@@ -514,7 +512,7 @@ Old Style For Loop var=start:increment:end
                           (objectscript_identifier))))))))))))
     (statement
       (command_for
-        (keyword_old_for_params)
+        (keyword_for)
         (for_parameter
           (glvn
             (lvn
@@ -577,7 +575,7 @@ Old Style For Loop var=start:increment
               (numeric_literal))))))
     (statement
       (command_for
-        (keyword_old_for_params)
+        (keyword_for)
         (for_parameter
           (glvn
             (lvn
@@ -638,7 +636,7 @@ Old Style For Loop var=expr
               (numeric_literal))))))
     (statement
       (command_for
-        (keyword_old_for_params)
+        (keyword_for)
         (for_parameter
           (glvn
             (lvn
@@ -675,7 +673,7 @@ For Alone
   (statements
     (statement
       (command_for
-        (keyword_for_infinite)))))
+        (keyword_for)))))
 
 =========================================
 For Block Alone, Block Starts on new line
@@ -754,7 +752,8 @@ For Valid Argumentless loop with comment
   (statements
     (statement
       (command_for
-        (keyword_for)))))
+        (keyword_for)
+        (inline_comment)))))
 
 ======
 For Argumentless Block with Block Comment
@@ -774,6 +773,7 @@ test
     (statement
       (command_for
         (keyword_for)
+        (inline_comment)
         (statement
           (command_write
             (keyword_write)
@@ -802,6 +802,7 @@ test
     (statement
       (command_for
         (keyword_for)
+        (inline_comment)
         (statement
           (command_write
             (keyword_write)
@@ -826,6 +827,7 @@ test
     (statement
       (command_for
         (keyword_for)
+        (inline_comment)
         (statement
           (command_write
             (keyword_write)
