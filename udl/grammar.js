@@ -17,6 +17,7 @@ const objectscript_core = require('../core/grammar');
 const {
   define_grammar,
   commaSep1,
+  anyOrder1,
 } = require('../common/define_grammar');
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
@@ -51,24 +52,7 @@ module.exports = define_grammar(objectscript_core, {
     source_file: ($) =>
       seq(
         optional(
-          // Include/import declarations can appear in any order.
-          choice(
-            seq($.include_code, $.include_generator, $.import_code),
-            seq($.include_code, $.import_code, $.include_generator),
-            seq($.include_code, $.include_generator),
-            seq($.include_code, $.import_code),
-            seq($.include_code),
-            seq($.include_generator, $.include_code, $.import_code),
-            seq($.include_generator, $.import_code, $.include_code),
-            seq($.include_generator, $.import_code),
-            seq($.include_generator, $.include_code),
-            seq($.include_generator),
-            seq($.import_code, $.include_code, $.include_generator),
-            seq($.import_code, $.include_generator, $.include_code),
-            seq($.import_code, $.include_generator),
-            seq($.import_code, $.include_code),
-            seq($.import_code),
-          ),
+            anyOrder1($.include_code, $.include_generator, $.import_code),
         ),
         $.class_definition,
       ),
