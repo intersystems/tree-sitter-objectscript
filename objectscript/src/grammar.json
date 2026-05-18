@@ -18856,6 +18856,30 @@
       "value": "Method",
       "flags": "i"
     },
+    "method_keyword_codemode_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "CodeMode",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "PATTERN",
+            "value": "expression",
+            "flags": "i"
+          },
+          "named": true,
+          "value": "typename"
+        }
+      ]
+    },
     "expression_method_keywords": {
       "type": "SEQ",
       "members": [
@@ -18954,7 +18978,56 @@
         }
       ]
     },
-    "method_keyword_codemode_expression": {
+    "call_method_keywords": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "method_keyword"
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              }
+            ]
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "call_method_keyword"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "method_keyword"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
+    "call_method_keyword": {
       "type": "SEQ",
       "members": [
         {
@@ -18970,55 +19043,7 @@
           "type": "ALIAS",
           "content": {
             "type": "PATTERN",
-            "value": "expression",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "method_keyword_codemode": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "CodeMode",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:objectgenerator|code)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "method_keyword_language_objectscript": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Language",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "objectscript",
+            "value": "call",
             "flags": "i"
           },
           "named": true,
@@ -19070,72 +19095,6 @@
           },
           "named": true,
           "value": "property_name"
-        }
-      ]
-    },
-    "_keyword_web_method": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "keyword_not"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "PATTERN",
-          "value": "WebMethod",
-          "flags": "i"
-        }
-      ]
-    },
-    "_not_inheritable_keyword": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "keyword_not"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "PATTERN",
-          "value": "NotInheritable",
-          "flags": "i"
-        }
-      ]
-    },
-    "_sql_proc_keyword": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "keyword_not"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "PATTERN",
-          "value": "SqlProc",
-          "flags": "i"
         }
       ]
     },
@@ -19236,42 +19195,6 @@
         }
       ]
     },
-    "_method_keyword_name_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "(?:GenerateAfter|PlaceAfter)",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_method_name_or_list"
-        }
-      ]
-    },
-    "_method_keyword_public_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "PublicList",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_objectscript_method_name_or_list"
-        }
-      ]
-    },
     "_keyword_sql_name": {
       "type": "SEQ",
       "members": [
@@ -19317,6 +19240,42 @@
         {
           "type": "SYMBOL",
           "name": "_keyword_soap_namespace"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "PublicList",
+              "flags": "i"
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_objectscript_method_name_or_list"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "(?:GenerateAfter|PlaceAfter)",
+              "flags": "i"
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_method_name_or_list"
+            }
+          ]
         },
         {
           "type": "SEQ",
@@ -19531,93 +19490,12 @@
         }
       ]
     },
-    "call_method_keyword": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "CodeMode",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "call",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "call_method_keywords": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "["
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "method_keyword"
-              },
-              {
-                "type": "STRING",
-                "value": ","
-              }
-            ]
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "call_method_keyword"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "method_keyword"
-              }
-            ]
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "]"
-        }
-      ]
-    },
     "method_keyword": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
           "name": "_method_keyword_no_arg"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_method_keyword_name_list"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_method_keyword_public_list"
         },
         {
           "type": "SYMBOL",
@@ -20239,317 +20117,6 @@
         }
       ]
     },
-    "class_keyword_inheritance": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Inheritance",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:left|right)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "class_keyword_language": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Language",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:objectscript|tsql)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "class_keyword_sharded": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Sharded",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "1"
-          },
-          "named": true,
-          "value": "numeric_literal"
-        }
-      ]
-    },
-    "class_keyword_view_query": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "ViewQuery",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "STRING",
-          "value": "{"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "external_method_body_content"
-        },
-        {
-          "type": "STRING",
-          "value": "}"
-        }
-      ]
-    },
-    "class_keyword_odbc_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "OdbcType",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:LONGVARBINARY|LONGVARCHAR|TIMESTAMP|RESULTSET|VARBINARY|SMALLINT|VARCHAR|INTEGER|NUMERIC|TINYINT|DOUBLE|BIGINT|STRUCT|DATE|TIME|BIT)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "class_keyword_owner": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Owner",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "{"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "iris_username"
-            },
-            {
-              "type": "STRING",
-              "value": "}"
-            }
-          ]
-        }
-      ]
-    },
-    "class_keyword_sql_category": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SQLCategory",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:FMTIMESTAMP|TIMESTAMP|FMDATE|STRING|NUMERIC|INTEGER|DOUBLE|MVDATE|NAME|DATE|TIME)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "class_keyword_storage_strategy": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "StorageStrategy",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          },
-          "named": true,
-          "value": "storage_name"
-        }
-      ]
-    },
-    "class_keyword_system": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "System",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "[0-4]"
-          },
-          "named": true,
-          "value": "numeric_literal"
-        }
-      ]
-    },
-    "class_keyword_classtype": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "classtype",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "PATTERN",
-                "value": "(?:persistent|datatype|dynamic|serial|stream|index|view)",
-                "flags": "i"
-              },
-              "named": true,
-              "value": "typename"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "\"\""
-              },
-              "named": true,
-              "value": "typename"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "''"
-              },
-              "named": true,
-              "value": "typename"
-            }
-          ]
-        }
-      ]
-    },
-    "class_keyword_clientdatatype": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "clientdatatype",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:characterstream|binarystream|ftimestamp|longvarchar|timestamp|currency|boolean|decimal|integer|numeric|varchar|binary|bigint|double|handle|status|fdate|date|list|time)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "class_keyword_modified": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Modified",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "numeric_literal"
-        }
-      ]
-    },
     "_class_name_or_list": {
       "type": "CHOICE",
       "members": [
@@ -20769,29 +20336,6 @@
         }
       ]
     },
-    "query_keyword_sql_view_name": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlViewName",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "sql_id"
-          },
-          "named": true,
-          "value": "query_name"
-        }
-      ]
-    },
     "query_keyword": {
       "type": "CHOICE",
       "members": [
@@ -20851,48 +20395,6 @@
         }
       ]
     },
-    "trigger_keyword_foreach": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Foreach",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:row\\/object|statement|row)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "trigger_keyword_event": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Event",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "trigger_event_value"
-        }
-      ]
-    },
     "trigger_event_value": {
       "type": "ALIAS",
       "content": {
@@ -20902,180 +20404,6 @@
       },
       "named": true,
       "value": "typename"
-    },
-    "trigger_keyword_order": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Order",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "numeric_literal"
-        }
-      ]
-    },
-    "trigger_keyword_time": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Time",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:AFTER|BEFORE)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "trigger_keyword_newtable": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "NewTable",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "sql_id"
-          },
-          "named": true,
-          "value": "query_name"
-        }
-      ]
-    },
-    "trigger_keyword_oldtable": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "OldTable",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "sql_id"
-          },
-          "named": true,
-          "value": "query_name"
-        }
-      ]
-    },
-    "trigger_keyword_update_column_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "UpdateColumnList",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "sql_id"
-              },
-              "named": true,
-              "value": "query_name"
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "ALIAS",
-                      "content": {
-                        "type": "SYMBOL",
-                        "name": "sql_id"
-                      },
-                      "named": true,
-                      "value": "query_name"
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": ","
-                          },
-                          {
-                            "type": "ALIAS",
-                            "content": {
-                              "type": "SYMBOL",
-                              "name": "sql_id"
-                            },
-                            "named": true,
-                            "value": "query_name"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "STRING",
-                  "value": ")"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "keyword_list": {
-      "type": "PATTERN",
-      "value": "list",
-      "flags": "i"
-    },
-    "keyword_array": {
-      "type": "PATTERN",
-      "value": "array",
-      "flags": "i"
     },
     "keyword_trigger": {
       "type": "PATTERN",
@@ -21432,63 +20760,6 @@
       "type": "PATTERN",
       "value": "Property",
       "flags": "i"
-    },
-    "property_keyword_aliases": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "Aliases",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "STRING",
-          "value": "{"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "objectscript_identifier"
-              },
-              "named": true,
-              "value": "property_name"
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": ","
-                  },
-                  {
-                    "type": "ALIAS",
-                    "content": {
-                      "type": "SYMBOL",
-                      "name": "objectscript_identifier"
-                    },
-                    "named": true,
-                    "value": "property_name"
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
-        }
-      ]
     },
     "_property_keyword_no_arg": {
       "type": "SEQ",
@@ -21917,24 +21188,6 @@
         }
       ]
     },
-    "property_keyword_compute_local_only": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "ComputeLocalOnly",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "PATTERN",
-          "value": "[0-1]"
-        }
-      ]
-    },
     "keyword_server_only": {
       "type": "SEQ",
       "members": [
@@ -21950,251 +21203,6 @@
         {
           "type": "PATTERN",
           "value": "[0-1]"
-        }
-      ]
-    },
-    "property_keyword_sql_column_number": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlColumnNumber",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "numeric_literal"
-        }
-      ]
-    },
-    "property_keyword_sql_compute_on_change": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlComputeOnChange",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "SYMBOL",
-                            "name": "objectscript_identifier"
-                          },
-                          "named": true,
-                          "value": "typename"
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "oref_set_target"
-                        },
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "STRING",
-                            "value": "%%UPDATE"
-                          },
-                          "named": true,
-                          "value": "typename"
-                        },
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "STRING",
-                            "value": "%%INSERT"
-                          },
-                          "named": true,
-                          "value": "typename"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": ","
-                          },
-                          {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "ALIAS",
-                                "content": {
-                                  "type": "SYMBOL",
-                                  "name": "objectscript_identifier"
-                                },
-                                "named": true,
-                                "value": "typename"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "oref_set_target"
-                              },
-                              {
-                                "type": "ALIAS",
-                                "content": {
-                                  "type": "STRING",
-                                  "value": "%%UPDATE"
-                                },
-                                "named": true,
-                                "value": "typename"
-                              },
-                              {
-                                "type": "ALIAS",
-                                "content": {
-                                  "type": "STRING",
-                                  "value": "%%INSERT"
-                                },
-                                "named": true,
-                                "value": "typename"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "STRING",
-                  "value": ")"
-                }
-              ]
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "objectscript_identifier"
-                  },
-                  "named": true,
-                  "value": "typename"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "oref_set_target"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "STRING",
-                    "value": "%%UPDATE"
-                  },
-                  "named": true,
-                  "value": "typename"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "STRING",
-                    "value": "%%INSERT"
-                  },
-                  "named": true,
-                  "value": "typename"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "property_keyword_sql_field_name": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlFieldName",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "sql_id"
-          },
-          "named": true,
-          "value": "query_name"
-        }
-      ]
-    },
-    "property_keyword_sql_list_delim": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlListDelimiter",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "string_literal"
-          },
-          "named": true,
-          "value": "typename"
-        }
-      ]
-    },
-    "property_keyword_sql_list_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "PATTERN",
-          "value": "SqlListType",
-          "flags": "i"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "PATTERN",
-            "value": "(?:DELIMITED|SUBNODE|LIST)",
-            "flags": "i"
-          },
-          "named": true,
-          "value": "typename"
         }
       ]
     },
@@ -23096,28 +22104,6 @@
         }
       ]
     },
-    "_keyword_extent": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "keyword_not"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "PATTERN",
-          "value": "Extent",
-          "flags": "i"
-        }
-      ]
-    },
     "extent_index_keywords": {
       "type": "SEQ",
       "members": [
@@ -23143,7 +22129,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_keyword_extent"
+          "name": "extent_index_keyword"
         },
         {
           "type": "REPEAT",
@@ -23164,6 +22150,28 @@
         {
           "type": "STRING",
           "value": "]"
+        }
+      ]
+    },
+    "extent_index_keyword": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "keyword_not"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "Extent",
+          "flags": "i"
         }
       ]
     },
@@ -23440,6 +22448,16 @@
           "flags": "i"
         }
       }
+    },
+    "keyword_list": {
+      "type": "PATTERN",
+      "value": "list",
+      "flags": "i"
+    },
+    "keyword_array": {
+      "type": "PATTERN",
+      "value": "array",
+      "flags": "i"
     },
     "routine_definition": {
       "type": "PREC_RIGHT",

@@ -50,16 +50,16 @@ module.exports = {
     keyword_classmethod: (_) => /ClassMethod/i,
     keyword_method: (_) => /Method/i,
 
+
+    // special case: methods
+    method_keyword_codemode_expression: ($) => seq(/CodeMode/i, '=', alias(/expression/i, $.typename)),
     expression_method_keywords: ($) => specialKeywords($.method_keyword, $.method_keyword_codemode_expression),
     external_method_keywords: ($) => specialKeywords($.method_keyword, $.method_keyword_language),
-    method_keyword_codemode_expression: ($) => seq(/CodeMode/i, '=', alias(/expression/i, $.typename)),
-    method_keyword_codemode: ($) => seq(/CodeMode/i, '=', alias(/(?:objectgenerator|code)/i, $.typename)),
-    method_keyword_language_objectscript: ($) => seq(/Language/i, '=', alias(/objectscript/i, $.typename)),
+    call_method_keywords: ($) => specialKeywords($.method_keyword, $.call_method_keyword),
+    call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
     method_keyword_language: ($) => seq(/Language/i, '=', alias(/(?:python|tsql|ispl)/i, $.typename)),
+    // regular method keywords
     _keyword_client_name: ($) => seq(/ClientName/i, '=', alias(/[^\s'`,\[\]\(\)\{\}]+/, $.property_name)),
-    _keyword_web_method: ($) => seq(optional($.keyword_not), /WebMethod/i),
-    _not_inheritable_keyword: ($) => seq(optional($.keyword_not), /NotInheritable/i),
-    _sql_proc_keyword: ($) => seq(optional($.keyword_not), /SqlProc/i),
     _keyword_soap_binding_style: ($) => seq(/SoapBindingStyle/i, '=', alias(/(?:document|rpc)/i, $.typename)),
     _keyword_soap_body_use: ($) => seq(/SoapBodyUse/i, '=', alias(/(?:literal|encoded)/i, $.typename)),
     _keyword_soap_namespace: ($) => seq(/SoapNameSpace/i, '=', choice($.objectscript_identifier, $.string_literal)),
@@ -67,8 +67,6 @@ module.exports = {
       optional($.keyword_not),
       /(?:ReturnResultsets|NotInheritable|ForceGenerate|Deprecated|Abstract|Internal|WebMethod|Private|SqlProc|Final)/i,
     ),
-    _method_keyword_name_list: ($) => seq(/(?:GenerateAfter|PlaceAfter)/i, '=', $._method_name_or_list),
-    _method_keyword_public_list: ($) => seq(/PublicList/i, '=', $._objectscript_method_name_or_list),
     _keyword_sql_name: ($) => seq(/SqlName/i, '=', alias($.sql_id, $.query_name)),
     _method_keyword_value: ($) => choice(
       $._keyword_client_name,
@@ -76,6 +74,8 @@ module.exports = {
       $._keyword_soap_binding_style,
       $._keyword_soap_body_use,
       $._keyword_soap_namespace,
+      seq(/PublicList/i, '=', $._objectscript_method_name_or_list),
+      seq(/(?:GenerateAfter|PlaceAfter)/i, '=', $._method_name_or_list),
       seq(/ExternalProcName/i, '=', $.objectscript_identifier),
       seq(/CodeMode/i, '=', alias(/(?:objectgenerator|code)/i, $.typename)),
       seq(/Language/i, '=', alias(/objectscript/i, $.typename)),
@@ -86,13 +86,9 @@ module.exports = {
       seq(/SoapRequestMessage/i, '=', $.xml_identifier),
       $._keyword_sql_name,
     ),
-  call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
-  call_method_keywords: ($) => specialKeywords($.method_keyword, $.call_method_keyword),
   method_keyword: ($) =>
     choice(
             $._method_keyword_no_arg,
-            $._method_keyword_name_list,
-            $._method_keyword_public_list,
             $._method_keyword_value,
           ),
     method_keywords: ($) => buildKeywords($.method_keyword),
@@ -166,54 +162,6 @@ module.exports = {
       seq(/System/i, '=', alias(/[0-4]/, $.numeric_literal)),
       seq(/ViewQuery/i, '=', '{', $.external_method_body_content, '}'),
     ),
-    class_keyword_inheritance: ($) => seq(/Inheritance/i, '=', alias(/(?:left|right)/i, $.typename)),
-    class_keyword_language: ($) => seq(/Language/i, '=', alias(/(?:objectscript|tsql)/i, $.typename)),
-    class_keyword_sharded: ($) => seq(/Sharded/i, '=', alias(/1/, $.numeric_literal)),
-    class_keyword_view_query: ($) =>
-      seq(
-        /ViewQuery/i,
-        '=',
-      '{',
-        $.external_method_body_content,
-      '}',
-      ),
-    class_keyword_odbc_type: ($) => seq(/OdbcType/i, '=', alias(
-      /(?:LONGVARBINARY|LONGVARCHAR|TIMESTAMP|RESULTSET|VARBINARY|SMALLINT|VARCHAR|INTEGER|NUMERIC|TINYINT|DOUBLE|BIGINT|STRUCT|DATE|TIME|BIT)/i,
-      $.typename,
-    )),
-      class_keyword_owner: ($) =>seq(/Owner/i, '=', seq('{', $.iris_username, '}')),
-      class_keyword_sql_category: ($) => seq(/SQLCategory/i, '=', alias(
-      /(?:FMTIMESTAMP|TIMESTAMP|FMDATE|STRING|NUMERIC|INTEGER|DOUBLE|MVDATE|NAME|DATE|TIME)/i,
-      $.typename,
-    )),
-    class_keyword_storage_strategy: ($) => seq(/StorageStrategy/i, '=', alias($.identifier, $.storage_name)),
-    class_keyword_system: ($) => seq(/System/i, '=', alias(/[0-4]/, $.numeric_literal)),
-
-  class_keyword_classtype: ($) =>
-    seq(
-      /classtype/i,
-      '=',
-        choice(
-          alias(/(?:persistent|datatype|dynamic|serial|stream|index|view)/i, $.typename),
-          alias('""', $.typename),
-          alias('\'\'', $.typename),
-        ),
-    ),
-  class_keyword_clientdatatype: ($) =>
-  seq(
-    /clientdatatype/i,
-    '=',
-      alias(
-        /(?:characterstream|binarystream|ftimestamp|longvarchar|timestamp|currency|boolean|decimal|integer|numeric|varchar|binary|bigint|double|handle|status|fdate|date|list|time)/i,
-        $.typename,
-      ),
-  ),
-    class_keyword_modified: ($) =>
-      seq(
-        /Modified/i,
-        '=',
-        $.numeric_literal,
-      ),
     _class_name_or_list: ($) =>
       choice(
         alias($.identifier, $.class_name),
@@ -225,7 +173,10 @@ module.exports = {
       $._class_keyword_no_arg,
       $._class_keyword_value,
     ),
-    // QUERY KEYWORDS
+
+    /*
+     QUERY KEYWORDS
+    */
     keyword_query: (_) => /Query/i,
     _query_keyword_no_arg: ($) => seq(optional($.keyword_not), /(?:Deprecated|Internal|WebMethod|SqlView|Private|SqlProc|Final)/i),
     _query_keyword_value: ($) => choice(
@@ -237,7 +188,6 @@ module.exports = {
       seq(/Requires/i, '=', alias($.string_literal, $.typename)),
       $._keyword_client_name,
     ),
-    query_keyword_sql_view_name: ($) => seq(/SqlViewName/i, '=', alias($.sql_id, $.query_name)),
     query_keyword: ($) =>
     choice(
       $._query_keyword_no_arg,
@@ -246,60 +196,12 @@ module.exports = {
     query_keywords: ($) => buildKeywords($.query_keyword),
 
 
-    trigger_keyword_foreach: ($) =>
-      seq(
-        /Foreach/i,
-        '=',
-        alias(/(?:row\/object|statement|row)/i, $.typename),
-      ),
-    trigger_keyword_event: ($) =>
-      seq(
-        /Event/i,
-        '=',
-        $.trigger_event_value,
-      ),
+    /*
+      TRIGGER KEYWORDS
+    */
 
     trigger_event_value: ($) =>
       alias(/(?:INSERT\/UPDATE\/DELETE|INSERT\/UPDATE|INSERT\/DELETE|UPDATE\/DELETE|DELETE|INSERT|UPDATE)/i, $.typename),
-
-    trigger_keyword_order: ($) =>
-      seq(
-        /Order/i,
-        '=',
-        $.numeric_literal,
-      ),
-
-    trigger_keyword_time: ($) =>
-      seq(
-        /Time/i,
-        '=',
-        alias(/(?:AFTER|BEFORE)/i, $.typename),
-      ),
-    trigger_keyword_newtable: ($) => seq(
-      /NewTable/i,
-      '=',
-      alias($.sql_id, $.query_name),
-    ),
-    trigger_keyword_oldtable: ($) => seq(
-      /OldTable/i,
-      '=',
-      alias($.sql_id, $.query_name),
-    ),
-    trigger_keyword_update_column_list: ($) =>
-      seq(
-        /UpdateColumnList/i,
-        '=',
-          choice(
-            alias($.sql_id, $.query_name),
-            seq(
-              '(',
-              seq(alias($.sql_id, $.query_name), repeat(seq(',', alias($.sql_id, $.query_name)))),
-              ')',
-            ),
-          ),
-      ),
-    keyword_list: (_)=> /list/i,
-    keyword_array: (_)=> /array/i,
     // TRIGGER KEYWORDS
     keyword_trigger: (_) => /Trigger/i,
     _trigger_keyword_no_arg: ($) => seq(optional($.keyword_not), /(?:Deprecated|Internal|Final)/i),
@@ -326,20 +228,12 @@ module.exports = {
       $._trigger_keyword_value,
     ),
     trigger_keywords: ($) => buildKeywords($.trigger_keyword),
-    external_trigger_keywords: ($) =>
-      seq(
-        '[',
-        repeat(seq($.trigger_keyword, ',')),
-        $.method_keyword_language,
-        repeat(seq(',', $.trigger_keyword)),
-        ']',
-      ),
+    external_trigger_keywords: ($) => specialKeywords($.trigger_keyword, $.method_keyword_language),
 
     /*
     PROPERTY KEYWORDS
     */
-       keyword_property: (_) => /Property/i,
-    property_keyword_aliases: ($) => seq(/Aliases/i, '=', '{', commaSep1(alias($.objectscript_identifier, $.property_name)), '}'),
+    keyword_property: (_) => /Property/i,
     _property_keyword_no_arg: ($) => seq(
       optional($.keyword_not),
       /(?:Multidimensional|Calculated|Deprecated|SqlComputed|Transient|Deferred|Readonly|Required|Identity|Internal|Private|Final)/i,
@@ -357,17 +251,7 @@ module.exports = {
       seq(/SqlListDelimiter/i, '=', alias($.string_literal, $.typename)),
       seq(/SqlListType/i, '=', alias(/(?:DELIMITED|SUBNODE|LIST)/i, $.typename)),
     ),
-    property_keyword_compute_local_only: ($) => buildBoolKeywordArg(/ComputeLocalOnly/i),
     keyword_server_only: ($) => buildBoolKeywordArg(/ServerOnly/i),
-    property_keyword_sql_column_number: ($) => seq(/SqlColumnNumber/i, '=', $.numeric_literal),
-    property_keyword_sql_compute_on_change: ($) => seq(/SqlComputeOnChange/i, '=', choice(seq('(', commaSep1(choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename))), ')'), choice(alias($.objectscript_identifier, $.typename), $.oref_set_target, alias('%%UPDATE', $.typename), alias('%%INSERT', $.typename)))),
-    property_keyword_sql_field_name: ($) => seq(/SqlFieldName/i, '=', alias($.sql_id, $.query_name)),
-    property_keyword_sql_list_delim: ($) => seq(/SqlListDelimiter/i, '=', alias($.string_literal, $.typename)),
-    property_keyword_sql_list_type: ($) =>
-      seq(
-        /SqlListType/i,
-        '=',
-        alias(/(?:DELIMITED|SUBNODE|LIST)/i, $.typename)),
     sql_id: (_) => /[A-Za-z%_][A-Za-z@_#$0-9]*/,
     rhs_sql_compute_code: ($) => seq('{',
         /Set/i,
@@ -392,15 +276,15 @@ module.exports = {
         $._property_keyword_value,
       ),
     property_keywords: ($) => buildKeywords($.property_keyword),
-    relationship_keyword: ($) =>
-      choice(
-            $._keyword_cardinality,
-            $._keyword_inverse,
-            $._keyword_on_delete,
-          ),
     /*
     RELATIONSHIP KEYWORDS
     */
+   relationship_keyword: ($) =>
+    choice(
+      $._keyword_cardinality,
+      $._keyword_inverse,
+      $._keyword_on_delete,
+    ),
     relationship_keywords: ($) => buildKeywords($.relationship_keyword),
     _keyword_cardinality: ($) =>
       seq(
@@ -489,9 +373,10 @@ module.exports = {
         $._index_keyword_no_arg,
         $._index_keyword_value,
       ),
+
     index_keywords: ($) => buildKeywords($.index_keyword),
-    _keyword_extent: ($) => seq(optional($.keyword_not), /Extent/i),
-    extent_index_keywords: ($) => specialKeywords($.index_keyword, $._keyword_extent),
+    extent_index_keywords: ($) => specialKeywords($.index_keyword, $.extent_index_keyword),
+    extent_index_keyword: ($) => seq(optional($.keyword_not), /Extent/i),
 
     keyword_index: (_) => /Index/i,
 
@@ -535,8 +420,8 @@ module.exports = {
     keyword_includegenerator: (_) => /IncludeGenerator/i,
     keyword_byref: (_) => token(prec(1, /ByRef/i)),
     keyword_output: (_) => token(prec(1, /Output/i)),
-
-
+    keyword_list: (_)=> /list/i,
+    keyword_array: (_)=> /array/i,
 };
 
 //

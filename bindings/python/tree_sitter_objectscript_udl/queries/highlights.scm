@@ -336,6 +336,7 @@
 [
   (method_keyword_codemode_expression)
   (call_method_keyword)
+  (extent_index_keyword)
   (method_keyword)
   (class_keywords)
   (query_keywords)
