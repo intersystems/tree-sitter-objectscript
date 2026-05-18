@@ -8,8 +8,8 @@
 
 /**
  *
- * @param rule
- * @param requiredRule
+ * @param {RuleOrLiteral} rule
+ * @param {RuleOrLiteral} requiredRule
  */
 function specialKeywords(rule, requiredRule) {
   return seq(
@@ -23,7 +23,7 @@ function specialKeywords(rule, requiredRule) {
 
 /**
  *
- * @param keyword
+ * @param {RuleOrLiteral} keyword
  */
 function buildBoolKeywordArg(keyword) {
   return seq(keyword, '=', /[0-1]/);
@@ -31,7 +31,7 @@ function buildBoolKeywordArg(keyword) {
 
 /**
  *
- * @param keyword
+ * @param {RuleOrLiteral} keyword
  */
 function buildKeywords(keyword) {
   return seq('[', commaSep(keyword), ']');

@@ -7,7 +7,6 @@ on:
       - main
   workflow_dispatch:
 
-
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
@@ -23,23 +22,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2022, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+      - name: Set up NodeJS
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
       - name: Run tests
-        uses: tree-sitter/parser-test-action@v3
+        uses: tree-sitter/parser-test-action@v2
         with:
           test-rust: true
-          test-node: true
-          node-version: "22"
+          test-node: false
           test-python: true
           test-go: true
           test-swift: true
           test-parser-cmd: cd objectscript && tree-sitter test && cd ../udl && tree-sitter test && cd ../core && tree-sitter test && cd ../expr && tree-sitter test && cd ../objectscript_routine && tree-sitter test && cd ..
-          
 
   query:
     name: Validate queries
@@ -81,4 +82,3 @@ jobs:
           if [ "$found" -eq 0 ]; then
             echo "No .cls examples found under examples/"
           fi
-  
