@@ -23,8 +23,7 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_unique))))))))
+            (index_keyword)))))))
 
 ===
 Valid Index: PrimaryKey
@@ -51,8 +50,7 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_primary_key))))))))
+            (index_keyword)))))))
 
 ===
 Valid Index: IdKey
@@ -79,8 +77,7 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_idkey))))))))
+            (index_keyword)))))))
 
 ===
 Valid Index: IdKey + PrimaryKey
@@ -107,10 +104,8 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_idkey))
-            (index_keyword
-              (index_keyword_primary_key))))))))
+            (index_keyword)
+            (index_keyword)))))))
 
 ===
 Valid Index: Data = Name
@@ -138,9 +133,8 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_data
-                (property_name
-                  (identifier))))))))))
+              (property_name
+                (identifier)))))))))
 
 ===
 Valid Index: Type = bitmap
@@ -168,8 +162,7 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_type
-                (typename)))))))))
+              (typename))))))))
 
 ===
 Valid Index: composite + IdKey + Unique
@@ -200,10 +193,8 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_idkey))
-            (index_keyword
-              (index_keyword_unique))))))))
+            (index_keyword)
+            (index_keyword)))))))
 
 ===
 Valid Index: Type = key + Unique (BATKey)
@@ -231,10 +222,8 @@ Class test {
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_keyword_type
-                (typename)))
-            (index_keyword
-              (index_keyword_unique)))))
+              (typename))
+            (index_keyword))))
       (block_comment))))
 
 ===
@@ -270,8 +259,7 @@ Class test {
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
-            (index_keyword
-              (index_keyword_unique)))))
+            (index_keyword))))
       (block_comment))))
 
 ===
@@ -293,10 +281,8 @@ Class test {
           (index_name
             (identifier))
           (extent_index_keywords
-            (index_keyword_extent)
             (index_keyword
-              (index_keyword_type
-                (typename)))))))))
+              (typename))))))))
 
 ===
 Valid Index: collection properties (KEYS/ELEMENTS)
@@ -462,16 +448,12 @@ Class User.Employee
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
+            (index_keyword)
             (index_keyword
-              (parameter_keyword_abstract))
+              (class_name))
+            (index_keyword)
             (index_keyword
-              (index_coshardwith
-                (class_name)))
-            (index_keyword
-              (index_keyword_shardkey))
-            (index_keyword
-              (method_keyword_sql_name
-                (query_name)))))))))
+              (query_name))))))))
 
 ===
 Index: CoshardWith + Unique on multiple properties
@@ -503,11 +485,9 @@ Class Pkg.Test
                 (quote_permitting_identifier
                   (identifier)))))
           (index_keywords
+            (index_keyword)
             (index_keyword
-              (index_keyword_unique))
-            (index_keyword
-              (index_coshardwith
-                (class_name)))))))))
+              (class_name))))))))
 
 ===
 Index: CoshardWith with % class name and mixed keyword order
@@ -536,13 +516,10 @@ Class Pkg.Test
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (method_keyword_sql_name
-                (query_name)))
+              (query_name))
             (index_keyword
-              (index_coshardwith
-                (class_name)))
-            (index_keyword
-              (index_keyword_shardkey))))))))
+              (class_name))
+            (index_keyword)))))))
 
 ===
 Index: quoted index name + CoshardWith
@@ -570,8 +547,7 @@ Class Pkg.Test
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_coshardwith
-                (class_name)))))))))
+              (class_name))))))))
 
 ===
 Index: case-insensitive CoshardWith spelling
@@ -600,8 +576,7 @@ Class Pkg.Test
                   (identifier)))))
           (index_keywords
             (index_keyword
-              (index_coshardwith
-                (class_name)))))))))
+              (class_name))))))))
 
 ===
 INVALID: CoshardWith missing '='

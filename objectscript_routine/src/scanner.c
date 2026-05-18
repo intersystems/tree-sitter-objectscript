@@ -70,6 +70,13 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     return true;
   }
 
+  if (scanner->core_scanner.is_rtn_dot) {
+    scanner->core_scanner.is_rtn_dot = false;
+    lexer->mark_end(lexer);
+    lexer->result_symbol = RTN_DOT;
+    return true;
+  }
+
   if (valid_symbols[COMPILED_HEADER] && lex_compiled_header(lexer)) {
     return true;
   }

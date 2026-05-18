@@ -3,7 +3,7 @@ $(error Windows is not supported)
 endif
 
 HOMEPAGE_URL := https://github.com/intersystems/tree-sitter-objectscript
-VERSION := 1.7.13
+VERSION := 1.8.1
 
 # repository
 SRC_DIR := src

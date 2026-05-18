@@ -16,50 +16,48 @@ heyyy() methodimpl {
   (routine_definition
     (routine)
     (routine_name)
-    (routine_type)
-    (statement
-      (procedure
-        (tag_with_params
-          (tag)
-          (parameter_list
-            (bracket)
-            (bracket))
-          (keyword_methodimpl))
-        (statement
-          (command_write
-            (keyword_write)
-            (write_argument
-              (expression
-                (expr_atom
-                  (string_literal))))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
-        (statement
-          (command_if
-            (keyword_if)
+    (routine_type))
+  (statement
+    (procedure
+      (tag_with_params
+        (tag)
+        (parameter_list)
+        (keyword_methodimpl))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
             (expression
               (expr_atom
+                (string_literal))))))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (glvn
                 (lvn
                   (objectscript_identifier))))
-            (statement
-              (command_write
-                (keyword_write)
-                (write_argument
-                  (expression
-                    (expr_atom
-                      (string_literal))))))
-            (statement
-              (command_quit
-                (keyword_quit)))))))))
+            (expression
+              (expr_atom
+                (numeric_literal))))))
+      (statement
+        (command_if
+          (keyword_if)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (statement
+            (command_quit
+              (keyword_quit))))))))
 
 ====
 Valid routine header, type = int
@@ -91,9 +89,7 @@ heyyy() methodimpl {
     (procedure
       (tag_with_params
         (tag)
-        (parameter_list
-          (bracket)
-          (bracket))
+        (parameter_list)
         (keyword_methodimpl))
       (statement
         (command_write

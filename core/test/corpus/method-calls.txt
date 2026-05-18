@@ -1,0 +1,69 @@
+===
+class with dots
+===
+common	; 
+	if x {
+		set x = $ListGet($$$y,x)
+		do ##class(%SQL.Util.Import).z(x)
+		QUIT
+	}
+---
+
+(source_file
+  (statements
+    (statement
+      (tag_statement
+        (tag)))
+    (line_comment_3)
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (built_in_func_with_pos_options
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (macro
+                              (macro_constant)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))))))))
+        (statement
+          (command_do
+            (keyword_do)
+            (do_parameter
+              (class_method_call
+                (class_ref
+                  (keyword_pound_pound_class)
+                  (bracket)
+                  (class_name)
+                  (bracket))
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args
+                  (bracket)
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (bracket))))))
+        (statement
+          (command_quit
+            (keyword_quit)))))))

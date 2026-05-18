@@ -16,9 +16,7 @@ proc1() [a, b]
     (procedure
       (tag_with_params
         (tag)
-        (parameter_list
-          (bracket)
-          (bracket)))
+        (parameter_list))
       (procedure_pub_vars
         (objectscript_identifier)
         (objectscript_identifier))
@@ -137,7 +135,6 @@ MyProc(x,y) PUBLIC { }
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -149,8 +146,7 @@ MyProc(x,y) PUBLIC { }
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket))
+                    (objectscript_identifier)))))))
         (keyword_public)))))
 
 ========================
@@ -167,7 +163,6 @@ MyProc2(x,y) { }
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -179,15 +174,13 @@ MyProc2(x,y) { }
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket))
+                    (objectscript_identifier)))))))
         (keyword_private))))
   (statement
     (procedure
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -199,8 +192,7 @@ MyProc2(x,y) { }
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket))))))
+                    (objectscript_identifier)))))))))))
 
 ================
 Valid Procedures
@@ -216,7 +208,6 @@ MyProc(x,y)[x] {
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -228,8 +219,7 @@ MyProc(x,y)[x] {
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))
+                    (objectscript_identifier))))))))
       (procedure_pub_vars
         (objectscript_identifier))
       (statement
@@ -267,7 +257,6 @@ Label1 // Label1 that is part of Rou1 and neither procedure
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -279,8 +268,7 @@ Label1 // Label1 that is part of Rou1 and neither procedure
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))
+                    (objectscript_identifier))))))))
       (statement
         (tag_statement
           (tag)))
@@ -290,7 +278,6 @@ Label1 // Label1 that is part of Rou1 and neither procedure
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -308,8 +295,7 @@ Label1 // Label1 that is part of Rou1 and neither procedure
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))
+                    (objectscript_identifier))))))))
       (statement
         (tag_statement
           (tag)))
@@ -340,7 +326,6 @@ Label1 ; The DO calls this label
       (tag_with_params
         (tag)
         (parameter_list
-          (bracket)
           (tag_parameter
             (method_arg
               (expression
@@ -352,8 +337,7 @@ Label1 ; The DO calls this label
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))
+                    (objectscript_identifier))))))))
       (statement
         (command_do
           (keyword_do)
@@ -430,9 +414,7 @@ Valid part of routine, no procedure
   (statement
     (tag_with_params
       (tag)
-      (parameter_list
-        (bracket)
-        (bracket))
+      (parameter_list)
       (keyword_methodimpl)))
   (statement
     (command_trycatch
