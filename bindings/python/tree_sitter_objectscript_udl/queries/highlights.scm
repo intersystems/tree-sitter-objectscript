@@ -230,6 +230,7 @@
   (keyword_break)
   (keyword_return)
   (keyword_if)
+  (keyword_old_if)
   (keyword_elseif)
   (keyword_else)
   (keyword_oldelse)

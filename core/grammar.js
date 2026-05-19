@@ -1215,7 +1215,7 @@ module.exports = grammar(objectscript_expr, {
               repeat($.elseif_block),
               optional($.else_block),
           ),
-          build_legacy_version_conditional($, $.keyword_if, $._expression_list),
+          build_legacy_version_conditional($, alias($.keyword_if, $.keyword_old_if), $._expression_list),
       ),
 
       else_block_dotted: ($) => build_dotted_block_no_params($, $.keyword_else),
