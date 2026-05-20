@@ -959,7 +959,7 @@ module.exports = grammar(objectscript_expr, {
       // NOTE: `FOR` doesn't allow post_conditional in any form
       choice(
         build_special_block_version($, $.keyword_for, commaSep1($.for_parameter)),
-        build_legacy_version($, $.keyword_for, commaSep1($.for_parameter)),
+        build_legacy_version($, alias($.keyword_for, $.keyword_old_for), commaSep1($.for_parameter)),
       ),
 
     command_for_dotted_block: ($) =>
