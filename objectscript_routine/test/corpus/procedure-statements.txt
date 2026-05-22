@@ -14,9 +14,8 @@ proc1() [a, b]
 (source_file
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list))
+      (tag)
+      (parameter_list)
       (procedure_pub_vars
         (objectscript_identifier)
         (objectscript_identifier))
@@ -132,22 +131,21 @@ MyProc(x,y) PUBLIC { }
 (source_file
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
-        (keyword_public)))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
+      (keyword_public))))
 
 ========================
 Valid Private Procedures
@@ -160,39 +158,37 @@ MyProc2(x,y) { }
 (source_file
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
-        (keyword_private))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
+      (keyword_private)))
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ================
 Valid Procedures
@@ -205,21 +201,20 @@ MyProc(x,y)[x] {
 (source_file
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
       (procedure_pub_vars
         (objectscript_identifier))
       (statement
@@ -254,48 +249,46 @@ Label1 // Label1 that is part of Rou1 and neither procedure
   (line_comment_1)
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
       (statement
         (tag_statement
           (tag)))
       (line_comment_1)))
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
       (statement
         (tag_statement
           (tag)))
@@ -323,21 +316,20 @@ Label1 ; The DO calls this label
   (line_comment_3)
   (statement
     (procedure
-      (tag_with_params
-        (tag)
-        (parameter_list
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (tag_parameter
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))))
+      (tag)
+      (parameter_list
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))
+        (tag_parameter
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))))
       (statement
         (command_do
           (keyword_do)
@@ -412,7 +404,7 @@ Valid part of routine, no procedure
 
 (source_file
   (statement
-    (tag_with_params
+    (tag_statement
       (tag)
       (parameter_list)
       (keyword_methodimpl)))

@@ -593,8 +593,6 @@ module.exports = grammar(objectscript_expr, {
     _dotted_block_continuation: ($) =>
       seq($._bol, optional($.tag), repeat1('.')),
 
-    // Shared parameter list rule for both tag_with_params and procedure
-
     dotted_statement: ($) =>
        seq(
          // this is from the external scanner, and it means that it was
@@ -1621,15 +1619,7 @@ module.exports = grammar(objectscript_expr, {
     tag_statement: ($) =>
       prec.right(seq(
         $.tag,
-        optional(choice($.keyword_methodimpl, $.keyword_public, $.keyword_private)),
-      )),
-
-    // Simple parameterized tag/label: tagname(params) - no modifiers, no body
-    // Example: bar(a,b=2)
-    tag_with_params: ($) =>
-      prec.right(seq(
-        $.tag,
-        $.parameter_list,
+        optional($.parameter_list),
         optional(choice($.keyword_methodimpl, $.keyword_public, $.keyword_private)),
       )),
 
@@ -1645,7 +1635,8 @@ module.exports = grammar(objectscript_expr, {
     // Full procedure definitions: tagname(params) [public_vars] access_modifier { body }
     procedure: ($) =>
       seq(
-        $.tag_with_params,
+        $.tag,
+        $.parameter_list,
         // Optional public variables list [var1, var2, ...]
         optional($.procedure_pub_vars),
         optional(

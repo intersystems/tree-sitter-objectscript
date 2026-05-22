@@ -59,7 +59,6 @@ const STATEMENT_RULE_NAMES = [
   'command_macro',
   'tag_statement',
   'tag_end_if',
-  'tag_with_params',
   'procedure',
   'command_zload'
 ];
