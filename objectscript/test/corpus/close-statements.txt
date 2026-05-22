@@ -53,9 +53,7 @@ Close Command
             (expr_atom
               (lvn
                 (objectscript_identifier)))))
-        (close_parameters
-          (bracket)
-          (bracket)))))
+        (close_parameters))))
   (statement
     (command_close
       (keyword_close)
@@ -66,7 +64,6 @@ Close Command
               (lvn
                 (objectscript_identifier)))))
         (close_parameters
-          (bracket)
           (close_parameter_option_value
             (string_literal))
           (close_parameter_option_value
@@ -75,8 +72,7 @@ Close Command
             (device
               (expression
                 (expr_atom
-                  (string_literal)))))
-          (bracket)))))
+                  (string_literal)))))))))
   (statement
     (command_close
       (keyword_close)
@@ -87,7 +83,6 @@ Close Command
               (lvn
                 (objectscript_identifier)))))
         (close_parameters
-          (bracket)
           (close_parameter_option_value
             (close_rename
               (string_literal))
@@ -95,8 +90,7 @@ Close Command
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))))
+                    (objectscript_identifier))))))))))
   (statement
     (command_close
       (keyword_close)
@@ -107,29 +101,6 @@ Close Command
               (lvn
                 (objectscript_identifier)))))
         (close_parameters
-          (bracket)
-          (close_parameter_option_value
-            (string_literal))
-          (close_parameter_option_value
-            (close_rename
-              (string_literal))
-            (device
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
-          (bracket)))))
-  (statement
-    (command_close
-      (keyword_close)
-      (close_argument
-        (device
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (close_parameters
-          (bracket)
           (close_parameter_option_value
             (string_literal))
           (close_parameter_option_value
@@ -139,8 +110,7 @@ Close Command
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))))
+                    (objectscript_identifier))))))))))
   (statement
     (command_close
       (keyword_close)
@@ -151,7 +121,6 @@ Close Command
               (lvn
                 (objectscript_identifier)))))
         (close_parameters
-          (bracket)
           (close_parameter_option_value
             (string_literal))
           (close_parameter_option_value
@@ -161,8 +130,27 @@ Close Command
               (expression
                 (expr_atom
                   (lvn
-                    (objectscript_identifier))))))
-          (bracket)))))
+                    (objectscript_identifier))))))))))
+  (statement
+    (command_close
+      (keyword_close)
+      (close_argument
+        (device
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (close_parameters
+          (close_parameter_option_value
+            (string_literal))
+          (close_parameter_option_value
+            (close_rename
+              (string_literal))
+            (device
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))))))))
   (statement
     (command_close
       (keyword_close)

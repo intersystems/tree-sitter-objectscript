@@ -9,7 +9,7 @@ sync_objectscript_corpus() {
 
   # Replace objectscript corpus with the union of source corpora.
   find "$target_dir" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-  for src_dir in core/test/corpus udl/test/corpus objectscript_routine/test/corpus; do
+  for src_dir in udl/test/corpus objectscript_routine/test/corpus; do
     find "$src_dir" -mindepth 1 -maxdepth 1 -exec cp -a {} "$target_dir"/ \;
   done
 

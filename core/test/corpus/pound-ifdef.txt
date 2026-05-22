@@ -15,7 +15,8 @@ Valid ifDef Statements
     (statement
       (pound_define
         (keyword_pound_define)
-        (macro_def)))
+        (macro_def
+          (objectscript_identifier))))
     (statement
       (pound_ifdef
         (keyword_pound_ifdef)
@@ -35,17 +36,16 @@ Valid ifDef Statements
                 (write_device_fflf)))))
         (pound_else
           (keyword_pound_else)
-          (statements
-            (statement
-              (command_write
-                (keyword_write)
-                (write_argument
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                (write_argument
-                  (write_device_control
-                    (write_device_fflf)))))))
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (write_argument
+                (write_device_control
+                  (write_device_fflf))))))
         (keyword_pound_endif)))))
 
 ====

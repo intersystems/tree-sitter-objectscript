@@ -12,24 +12,25 @@
     ] @punctuation.bracket.json)
 ]
 
-[
-  (class_body
-    [
-      "{"
-      "}"
-    ] @punctuation.special)
-  (method_definition
-    [
-      "{"
-      "}"
-    ] @punctuation.special)
-]
-
 ; end @punctuation.bracket.json
 ; start @label (maroon fg, yellow bg)
 (tag) @label
 
 ; end @label (maroon fg, yellow bg)
+; start method_arg @variable.parameter
+(method_arg) @variable.parameter
+
+(variadic_arg
+  (lvn
+    (objectscript_identifier) @variable.parameter))
+
+(method_arg
+  (expression
+    (expr_atom
+      (lvn
+        (objectscript_identifier) @variable.parameter))))
+
+; end method_arg @variable.parameter
 ; start @variable.builtin @keyword.directive @variable.member.oref @constant.builtin (blue fg, default bg)
 [
   (ssvn)
@@ -58,15 +59,10 @@
 (macro_value) @constant.builtin
 
 [
-  (oref_property)
+  (method_name)
+  (property_name)
   (oref_parameter)
 ] @variable.member.oref
-
-(oref_method
-  (method_name) @variable.member.oref)
-
-(class_method_call
-  (method_name) @variable.member.oref)
 
 ; end @variable.builtin @keyword.directive @variable.member.oref @constant.builtin (blue fg, default bg)
 ; start @type.definition (purple fg)
@@ -118,7 +114,9 @@
 
 [
   (keyword_trace)
+  (keyword_on)
   (keyword_errortrap)
+  (keyword_off)
   (keyword_interrupt)
   (zbreak_command_option)
   (keyword_clear)
@@ -148,15 +146,12 @@
 ; end "Navy FG, Default BG" (Object (Class, super))
 ; keyword names (red fg, default bg)
 [
-  (keyword_for)
-  (keyword_while)
   (keyword_continue)
   (keyword_quit)
   (keyword_if)
   (keyword_elseif)
   (keyword_else)
   (keyword_oldelse)
-  (old_else_remove)
   (keyword_throw)
   (keyword_try)
   (keyword_catch)
@@ -166,6 +161,8 @@
   (keyword_zkill)
   (keyword_ztrap)
   (keyword_zz)
+  (keyword_as)
+  (keyword_of)
   (keyword_public)
   (keyword_private)
   (keyword_methodimpl)
@@ -178,6 +175,8 @@
   (keyword_write)
   (keyword_zwrite)
   (keyword_do)
+  (keyword_for)
+  (keyword_while)
   (keyword_kill)
   (keyword_lock)
   (keyword_read)
@@ -200,12 +199,6 @@
   (command_keyword)
   (keyword_zload)
   (keyword_do_old)
-  (keyword_old_if)
-  (old_if_remove)
-  (keyword_for_infinite)
-  (keyword_old_for_no_params)
-  (keyword_old_for_params)
-  (keyword_old_if_refactor)
 ] @keyword
 
 ; end (red fg, default bg)
@@ -225,6 +218,8 @@
   (line_comment_3)
   (line_comment_4)
   (block_comment)
+  (inline_comment)
+  (argumentless_inline_comment)
 ] @comment @spell
 
 ; end (green fg, default bg)
@@ -252,53 +247,30 @@
 
 (keyword_zsu) @keyword.modifier
 
-; end @string.regexp (olive fg, default bg)
-[
-  (command_quit
-    (keyword_quit) @keyword)
-  (command_else
-    [
-      (keyword_oldelse)
-      (old_else_remove)
-    ] @keyword)
-  (command_continue
-    (keyword_continue) @keyword)
-  (command_if
-    [
-      (keyword_old_if)
-      (keyword_old_if_refactor)
-      (old_if_remove)
-    ] @keyword)
-  (command_do
-    (keyword_do_old) @keyword)
-  (command_for
-    [
-      (keyword_for_infinite)
-      (keyword_old_for_params)
-      (keyword_old_for_no_params)
-      (keyword_for)
-    ] @keyword)
-  (command_lock
-    (keyword_lock) @keyword)
-  (command_return
-    (keyword_return) @keyword)
-  (command_halt_or_hang
-    (keyword_halt_or_hang) @keyword)
-  (command_break
-    (keyword_break) @keyword)
-  (command_tcommit
-    (keyword_tcommit) @keyword)
-  (command_trollback
-    (keyword_trollback) @keyword)
-  (command_tstart
-    (keyword_tstart) @keyword)
-  (command_zbreak
-    (keyword_zbreak) @keyword)
-] @comment
-
 ; start Dots in dotted statements, (black fg,silver bg)
+(command_if_dotted_block
+  "." @punctuation.special.dots)
+
+(command_for_dotted_block
+  "." @punctuation.special.dots)
+
+(command_while_dotted_block
+  "." @punctuation.special.dots)
+
+(command_dowhile_dotted
+  "." @punctuation.special.dots)
+
+(command_trycatch_dotted
+  "." @punctuation.special.dots)
+
 (dotted_statement
-  (dot) @punctuation.special.dots)
+  "." @punctuation.special.dots)
+
+(else_block_dotted
+  "." @punctuation.special.dots)
+
+(elseif_block_dotted
+  "." @punctuation.special.dots)
 
 ; end Dots in dotted statements (black fg,silver bg)
 ; start #dim command
@@ -358,13 +330,7 @@
 ; end write command/read command
 ; start lock command
 ; @punctuation.special -> black fg, default background
-(command_lock_arguments_variant_1
-  [
-    "+"
-    "-"
-  ] @punctuation.special)
-
-(command_lock_arguments_variant_2
+(command_lock_argument
   [
     "+"
     "-"
@@ -497,7 +463,6 @@
 (pound_include
   (class_name) @label)
 
-; end #include command
 ; === END CORE ===
 ; === BEGIN LOCAL ===
 (iris_username) @variable.member
@@ -638,12 +603,6 @@
       "}"
     ] @punctuation.special))
 
-(class_keyword_owner
-  [
-    "{"
-    "}"
-  ] @punctuation.special)
-
 (documatic_line) @comment.documentation @spell
 
 ; start keywords
@@ -658,7 +617,6 @@
   (external_method_keywords)
   (foreignkey_keyword)
   (index_keyword)
-  (index_keyword_extent)
   (keyword_byref)
   (keyword_output)
   (parameter_keyword)
@@ -723,9 +681,6 @@
       (xml_identifier)
     ] @type.definition))
 
-(method_keyword_external_proc_name
-  (objectscript_identifier) @type.definition)
-
 (parameter_keyword
   (_
     [
@@ -744,7 +699,7 @@
   (_
     (typename) @type.definition))
 
-(property_keyword_aliases
+(property_keyword
   (property_name) @variable.member)
 
 (foreignkey_keyword
@@ -902,5 +857,20 @@
   ] @punctuation.special) @keyword.operator
 
 (routine) @keyword.type
+
+(variable_datatype
+  "." @variable.builtin)
+
+(instance_method_call
+  "." @variable.builtin)
+
+(class_method_call
+  "." @variable.builtin)
+
+(byref_arg
+  "." @variable.builtin)
+
+(oref_chain_segment
+  "." @variable.builtin)
 
 ; end routine

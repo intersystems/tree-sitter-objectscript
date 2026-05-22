@@ -8,13 +8,9 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-/**
- * @param {RuleOrLiteral} rule
- * @returns {RuleOrLiteral}
- */
-const repeat_with_commas = function(rule) {
-  return seq(rule, repeat(seq(',', rule)));
-};
+const {
+  commaSep1,
+} = require('../common/define_grammar');
 
 const {DOTTED_ID_STRICT, DOTTED_ID_RELAXED} = require('../common/identifiers');
 
@@ -200,22 +196,7 @@ module.exports = grammar({
     // $$tag^rtn or $$@var
       choice(
         // Standard line reference with optional method args
-        prec.left(seq(
-          '$$',
-          choice(
-            // label+offset+routine or label+routine or label only
-            seq(
-              choice($.objectscript_identifier, $.objectscript_identifier_special),
-              optional($.label_offset),
-              optional($.routine_ref),
-            ),
-            // routine only (^routine)
-            seq(
-              $.routine_ref,
-            ),
-          ),
-          optional($.method_args),
-        )),
+        prec.left(seq('$$', $._extrinsic_reference, optional($.method_args))),
         // Full indirection - no method args, as @var evaluates the expression
         prec.right(seq(
           '$$',
@@ -223,6 +204,17 @@ module.exports = grammar({
           optional($.method_args),
         )),
       ),
+    _extrinsic_reference: ($) =>
+      prec.left(choice(
+        // label+offset+routine or label+routine or label only
+        seq(
+          choice($.objectscript_identifier, $.objectscript_identifier_special),
+          optional($.label_offset),
+          optional($.routine_ref),
+        ),
+        // routine only (^routine)
+        $.routine_ref,
+      )),
 
     line_ref: ($) => choice(
       // label+offset+routine or label+routine or label only
@@ -254,21 +246,21 @@ module.exports = grammar({
       ),
     routine_ref: ($) =>
       seq(token.immediate('^'),
-        optional(
-          choice(
-            token.immediate('||'),
-            token.immediate('@'),
-            seq(
-              token.immediate('|'),
-              repeat(choice('+', '-', '\'')),
-              choice(alias($.objectscript_identifier, $.lvn), alias($.objectscript_identifier_special, $.lvn), $.string_literal),
-              token.immediate('|'),
-            ),
-          ),
-        ),
+        optional($._routine_ref_prefix),
         choice(
           $.system_defined_function,
           alias($.dotted_identifier_relaxed_token, $.routine_name)),
+      ),
+    _routine_ref_prefix: ($) =>
+      choice(
+        token.immediate('||'),
+        token.immediate('@'),
+        seq(token.immediate('|'), $._routine_ref_namespace, token.immediate('|')),
+      ),
+    _routine_ref_namespace: ($) =>
+      seq(
+        repeat(choice('+', '-', '\'')),
+        choice(alias($.objectscript_identifier, $.lvn), alias($.objectscript_identifier_special, $.lvn), $.string_literal),
       ),
 
 
@@ -297,18 +289,21 @@ module.exports = grammar({
     method_args: ($) =>
       seq(
         alias(token.immediate('('), $.bracket),
-        optional(
-          seq(
-            optional($.method_arg),
-            repeat(
-              seq(
-                ',',
-                optional($.method_arg),
-              ),
+        optional($._method_arg_list),
+        alias(')', $.bracket),
+      ),
+    _method_arg_list: ($) =>
+      choice(
+        $.method_arg,
+        seq(
+          optional($.method_arg),
+          repeat1(
+            seq(
+              ',',
+              optional($.method_arg),
             ),
           ),
         ),
-        alias(')', $.bracket),
       ),
     method_arg: ($) =>
       choice(
@@ -332,16 +327,31 @@ module.exports = grammar({
       prec.right(
         seq(
           '^',
-          optional(
-            choice(
-              token.immediate('||'),
-              seq(token.immediate('|'), repeat(choice('+', '-', '\'')), choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), optional(seq(',', repeat(choice('+', '-', '\'')), choice($.objectscript_identifier, $.string_literal) )), '|'),
-              seq(token.immediate('['), repeat(choice('+', '-', '\'')), choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal), optional(seq(',', repeat(choice('+', '-', '\'')), choice($.objectscript_identifier, $.string_literal) )), ']'),
-            ),
-          ),
+          optional($._global_reference_prefix),
           optional(token.immediate(/(?:\$\$\$)?[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/)),
           optional($.subscripts),
         ),
+      ),
+    _global_reference_prefix: ($) =>
+      choice(
+        token.immediate('||'),
+        seq(token.immediate('|'), $._global_reference_namespace, '|'),
+        seq(token.immediate('['), $._global_reference_namespace, ']'),
+      ),
+    _global_reference_namespace: ($) =>
+      seq(
+        $._global_reference_primary_namespace,
+        optional(seq(',', $._global_reference_secondary_namespace)),
+      ),
+    _global_reference_primary_namespace: ($) =>
+      seq(
+        repeat(choice('+', '-', '\'')),
+        choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal),
+      ),
+    _global_reference_secondary_namespace: ($) =>
+      seq(
+        repeat(choice('+', '-', '\'')),
+        choice($.objectscript_identifier, $.string_literal),
       ),
     lvn: ($) => prec.right(seq(choice($.objectscript_identifier, $.objectscript_identifier_special), optional($.subscripts))),
     ssvn: ($) =>
@@ -883,23 +893,13 @@ module.exports = grammar({
             token.immediate('('),
           ),
         ),
-        optional(
-          seq(
-            optional($.method_arg),
-            repeat(
-              seq(
-                ',',
-                optional($.method_arg),
-              ),
-            ),
-          ),
-        ),
+        optional($._method_arg_list),
         ')',
       ),
     dollar_select: ($) =>
       prec.right(seq(
         token(seq(/\$S(ELECT)?/i, token.immediate('('))),
-        repeat_with_commas(seq($.dollar_arg_pair)),
+        commaSep1(seq($.dollar_arg_pair)),
         ')',
       )),
     dollar_case: ($) =>
@@ -937,7 +937,7 @@ module.exports = grammar({
         optional(
           seq(
             ',',
-            repeat_with_commas(choice($.method_arg, $.dollar_func_pos, $.dollar_arg_pair)),
+            commaSep1(choice($.method_arg, $.dollar_func_pos, $.dollar_arg_pair)),
           ),
         ),
         ')',
@@ -950,18 +950,21 @@ module.exports = grammar({
             token.immediate('('),
           ),
         ),
-        optional(
-          seq(
-            optional($.method_arg),
-            repeat(
-              seq(
-                ',',
-                optional(choice($.method_arg, $.dollar_func_pos)),
-              ),
+        optional($._dollar_pos_method_arg_list),
+        ')',
+      ),
+    _dollar_pos_method_arg_list: ($) =>
+      choice(
+        choice($.method_arg, $.dollar_func_pos),
+        seq(
+          optional($.method_arg),
+          repeat1(
+            seq(
+              ',',
+              optional(choice($.method_arg, $.dollar_func_pos)),
             ),
           ),
         ),
-        ')',
       ),
     dollar_method: ($) =>
       seq(
@@ -970,17 +973,7 @@ module.exports = grammar({
           /\$(ZOBJ)?CLASSMETHOD/i,
         )),
         alias(token.immediate('('), $.bracket),
-        optional(
-          seq(
-            optional($.method_arg),
-            repeat(
-              seq(
-                ',',
-                optional($.method_arg),
-              ),
-            ),
-          ),
-        ),
+        optional($._method_arg_list),
         alias(')', $.bracket),
       ),
     dollar_arg_pair: ($) => seq($.expression, ':', $.expression),
@@ -1026,7 +1019,7 @@ module.exports = grammar({
 
     json_object_literal: ($) => prec(2, seq(
       '{',
-      optional(repeat_with_commas($.json_object_literal_pair)),
+      optional(commaSep1($.json_object_literal_pair)),
       '}',
     )),
     json_object_literal_pair: ($) => seq(
@@ -1052,7 +1045,7 @@ module.exports = grammar({
     ),
     json_array_literal: ($) => seq(
       '[',
-      optional(repeat_with_commas($.json_literal)),
+      optional(commaSep1($.json_literal)),
       ']',
     ),
     json_string_literal: (_) => token(seq(

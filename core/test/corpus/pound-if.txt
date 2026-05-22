@@ -31,17 +31,16 @@ Valid #if Statements
       (command_kill
         (keyword_kill)
         (kill_argument
-          (kill_target
-            (glvn
-              (gvn))))
+          (glvn
+            (gvn)))
         (kill_argument
-          (kill_target
-            (glvn
-              (gvn))))))
+          (glvn
+            (gvn)))))
     (statement
       (pound_define
         (keyword_pound_define)
-        (macro_def)
+        (macro_def
+          (objectscript_identifier))
         (macro_value
           (macro_value_line))))
     (statement
@@ -202,27 +201,26 @@ Valid #if Statements
                     (numeric_literal)))))))
         (pound_else
           (keyword_pound_else)
-          (statements
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (gvn)))
-                  (expression
-                    (expr_atom
-                      (string_literal))))))
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (gvn)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (glvn
+                    (gvn)))
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (glvn
+                    (gvn)))
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))
         (keyword_pound_endif)))
     (statement
       (command_write
@@ -373,14 +371,13 @@ test
                   (string_literal))))))
         (pound_else
           (keyword_pound_else)
-          (statements
-            (statement
-              (command_write
-                (keyword_write)
-                (write_argument
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal)))))))
         (keyword_pound_endif)))))
 
 ====
@@ -418,6 +415,37 @@ test
 #if 0
 #else
  w "back into global"
+---
+
+(source_file
+  (statements
+    (statement
+      (tag_statement
+        (tag)))
+    (statement
+      (pound_if
+        (keyword_pound_if)
+        (pound_if_special_case_else)
+        (keyword_pound_else)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (expr_atom
+              (string_literal))))))))
+
+===
+inner #IF 0 must be closed
+===
+test
+#if 0    
+#if 0    
+#else    
+ this never gets reached 
+#endif   
+#else 
+ w "goodbye"
 ---
 
 (source_file

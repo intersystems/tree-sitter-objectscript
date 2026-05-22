@@ -15,7 +15,8 @@ Valid Ifndef Statements
   (statement
     (pound_define
       (keyword_pound_define)
-      (macro_def)
+      (macro_def
+        (objectscript_identifier))
       (macro_value
         (macro_value_line))))
   (statement
@@ -38,19 +39,18 @@ Valid Ifndef Statements
                 (numeric_literal))))))
       (pound_else
         (keyword_pound_else)
-        (statements
-          (statement
-            (command_set
-              (keyword_set)
-              (set_argument
-                (set_target
-                  (glvn
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant)))))))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
+              (expression
+                (expr_atom
+                  (macro
+                    (macro_constant))))))))
       (keyword_pound_endif)))
   (statement
     (command_write

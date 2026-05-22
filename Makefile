@@ -63,7 +63,10 @@ buildqueryparsers:
 				echo "No parser artifact produced for $$grammar_name in $$grammar_dir" >&2; \
 				exit 1; \
 			fi; \
-			cp "$$built_parser" "$$grammar_name.$${built_parser##*.}"; \
+			target_parser="$$grammar_name.$${built_parser##*.}"; \
+			tmp_parser=".$$target_parser.tmp"; \
+			cp "$$built_parser" "$$tmp_parser"; \
+			mv -f "$$tmp_parser" "$$target_parser"; \
 		); \
 	done
 
