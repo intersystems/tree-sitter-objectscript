@@ -598,7 +598,7 @@ module.exports = grammar(objectscript_expr, {
          // this is from the external scanner, and it means that it was
          // at the start of a line and there were dots matching the dotted statement
         $._dotted_block_continuation,
-        repeat1(choice($.statement, $.dotted_block_statements)),
+        repeat(choice($.statement, $.dotted_block_statements)),
         $._termination,
       ),
       variable_datatype: ($) =>
