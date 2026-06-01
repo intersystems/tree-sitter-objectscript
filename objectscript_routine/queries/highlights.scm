@@ -298,6 +298,9 @@
 (elseif_block_dotted
   "." @punctuation.special.dots)
 
+(catch_block_dotted
+  "." @punctuation.special.dots)
+
 (variable_datatype
   "." @function.builtin)
 
