@@ -1152,7 +1152,19 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       consumed = true;
     }
     if (!consumed) return false;  
-    if (lexer->lookahead != '.' && !(lexer->get_column(lexer) == 0 && is_label_char(lexer->lookahead))) {
+    bool starts_line_sensitive_construct =
+        lexer->lookahead == '.' ||
+        (lexer->get_column(lexer) == 0 && is_label_char(lexer->lookahead));
+    bool line_sensitive_context =
+        valid_symbols[_BOL] ||
+        valid_symbols[TAG] ||
+        valid_symbols[_TERMINATION] ||
+        valid_symbols[_STATEMENT_TERMINATION] ||
+        valid_symbols[_ARGUMENTLESS_LOOP] ||
+        valid_symbols[_ARGUMENTLESS_COMMAND_END] ||
+        valid_symbols[DOTTED_STATEMENT_BLOCK] ||
+        valid_symbols[_INTERMEDIATE_TERMINATION];
+    if (!starts_line_sensitive_construct || !line_sensitive_context) {
       scanner->terminated_newline = false;
     }
 
