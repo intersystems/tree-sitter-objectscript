@@ -1061,6 +1061,10 @@ module.exports = grammar(objectscript_expr, {
         '_',
         alias(/[A-Za-z]+/, $.lvn),
       ),
+      seq(
+        '#',
+        choice($.relative_dot_method, $.relative_dot_property, $.relative_dot_parameter),
+      ),
       )),
 
     timeout: ($) =>

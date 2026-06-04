@@ -265,7 +265,7 @@
   (argumentless_inline_comment)
 ] @comment
 
-(tag) @label
+(tag) @function.method
 
 [
   (pound_if_special_case_else)

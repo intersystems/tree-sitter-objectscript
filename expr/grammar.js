@@ -12,6 +12,17 @@ const {
   commaSep1,
 } = require('../common/define_grammar');
 
+/**
+ * @param {RuleOrLiteral} commandArgument
+ * @returns {RuleOrLiteral}
+ */
+function build_relative_dot_fn(commandArgument) {
+  return seq(
+    token('..'),
+    commandArgument,
+  );
+}
+
 const {DOTTED_ID_STRICT, DOTTED_ID_RELAXED} = require('../common/identifiers');
 
 // Pattern token fragments. We keep `pattern_expression` as a single token
@@ -335,23 +346,10 @@ module.exports = grammar({
     _global_reference_prefix: ($) =>
       choice(
         token.immediate('||'),
-        seq(token.immediate('|'), $._global_reference_namespace, '|'),
-        seq(token.immediate('['), $._global_reference_namespace, ']'),
-      ),
-    _global_reference_namespace: ($) =>
-      seq(
-        $._global_reference_primary_namespace,
-        optional(seq(',', $._global_reference_secondary_namespace)),
-      ),
-    _global_reference_primary_namespace: ($) =>
-      seq(
-        repeat(choice('+', '-', '\'')),
-        choice($.objectscript_identifier, $.objectscript_identifier_special, $.string_literal),
-      ),
-    _global_reference_secondary_namespace: ($) =>
-      seq(
-        repeat(choice('+', '-', '\'')),
-        choice($.objectscript_identifier, $.string_literal),
+        seq(token.immediate('|'), $.expression,
+          repeat(seq(',', $.expression)), '|'),
+        seq(token.immediate('['), $.expression,
+          repeat(seq(',', $.expression)), ']'),
       ),
     lvn: ($) => prec.right(seq(choice($.objectscript_identifier, $.objectscript_identifier_special), optional($.subscripts))),
     ssvn: ($) =>
@@ -467,7 +465,7 @@ module.exports = grammar({
     instance_variable: ($) =>
       prec.right(
         seq(
-          token.immediate(/[irm]\%/i),
+          token(/[irms]\%/i),
           $.member_name,
           optional($.subscripts),
         ),
@@ -494,20 +492,11 @@ module.exports = grammar({
       ),
 
     relative_dot_method: ($) =>
-      seq(
-        token.immediate('..'),
-        $.oref_method,
-      ),
+      build_relative_dot_fn($.oref_method),
     relative_dot_property: ($) =>
-      seq(
-        token.immediate('..'),
-        $.oref_property,
-      ),
+      build_relative_dot_fn($.oref_property),
     relative_dot_parameter: ($) =>
-      seq(
-        token.immediate('..'),
-        $.oref_parameter,
-      ),
+      build_relative_dot_fn($.oref_parameter),
     namespace_token: (_) => token(/\$NAMESPACE/i),
     estack_token: (_) => token(/\$ES(TACK)?/i),
     etrap_token: (_) => token(/\$ET(RAP)?/i),

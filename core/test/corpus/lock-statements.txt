@@ -694,3 +694,28 @@ Valid Lock Statement, with Global
           (expression
             (expr_atom
               (system_defined_variable))))))))
+
+====
+Lock with function arg
+====
+ Lock +x#..MyFunction()
+---
+
+(source_file
+  (statements
+    (statement
+      (command_lock
+        (keyword_lock)
+        (command_lock_argument
+          (lock_arg
+            (glvn
+              (lvn
+                (objectscript_identifier)))
+            (locktype
+              (relative_dot_method
+                (oref_method
+                  (method_name
+                    (identifier_segment_immediate))
+                  (method_args
+                    (bracket)
+                    (bracket)))))))))))
