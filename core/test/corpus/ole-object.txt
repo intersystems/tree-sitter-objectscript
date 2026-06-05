@@ -1,0 +1,47 @@
+===
+set ole object
+===
+Printing(a) Set _x!y.Z=a
+ Quit _x!y.Z
+---
+
+(source_file
+  (statements
+    (statement
+      (tag_statement
+        (tag)
+        (parameter_list
+          (tag_parameter
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (ole_object_reference
+              (identifier_segment_immediate)
+              (identifier_segment_immediate)
+              (oref_chain_segment
+                (oref_property
+                  (property_name
+                    (identifier_segment_immediate))))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
+    (statement
+      (command_quit
+        (keyword_quit)
+        (expression
+          (expr_atom
+            (ole_object_reference
+              (identifier_segment_immediate)
+              (identifier_segment_immediate)
+              (oref_chain_segment
+                (oref_property
+                  (property_name
+                    (identifier_segment_immediate)))))))))))

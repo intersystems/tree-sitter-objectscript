@@ -374,14 +374,14 @@
 ; @variable.member.oref ->  blue fg, default bg
 (dollarsf
   [
-    (objectscript_identifier)
-    (objectscript_identifier_special)
+    (identifier_segment_immediate)
+    (identifier_segment_immediate_special)
   ] @type.builtin
   "."
   .
   [
-    (objectscript_identifier)
-    (objectscript_identifier_special)
+    (identifier_segment_immediate)
+    (identifier_segment_immediate_special)
   ] @variable.member.oref)
 
 ; end dollarsf

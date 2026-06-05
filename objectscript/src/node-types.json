@@ -1,5 +1,43 @@
 [
   {
+    "type": "_base_variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier_special",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "_base_variable_immediate",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        },
+        {
+          "type": "identifier_segment_immediate_special",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "_extrinsic_reference",
     "named": true,
     "fields": {},
@@ -8,15 +46,11 @@
       "required": true,
       "types": [
         {
+          "type": "_base_variable",
+          "named": true
+        },
+        {
           "type": "label_offset",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
           "named": true
         },
         {
@@ -36,6 +70,21 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "_ole_server_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "_base_variable_immediate",
           "named": true
         }
       ]
@@ -2433,15 +2482,15 @@
       "required": true,
       "types": [
         {
+          "type": "identifier_segment_immediate",
+          "named": true
+        },
+        {
+          "type": "identifier_segment_immediate_special",
+          "named": true
+        },
+        {
           "type": "method_args",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
           "named": true
         },
         {
@@ -2801,6 +2850,10 @@
         },
         {
           "type": "numeric_literal",
+          "named": true
+        },
+        {
+          "type": "ole_object_reference",
           "named": true
         },
         {
@@ -3955,6 +4008,10 @@
       "required": false,
       "types": [
         {
+          "type": "_base_variable",
+          "named": true
+        },
+        {
           "type": "objectscript_identifier",
           "named": true
         },
@@ -4373,6 +4430,37 @@
     "type": "objectscript_identifier_special",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "ole_object_reference",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "_base_variable_immediate",
+          "named": true
+        },
+        {
+          "type": "_ole_server_name",
+          "named": true
+        },
+        {
+          "type": "identifier_segment_immediate",
+          "named": true
+        },
+        {
+          "type": "identifier_segment_immediate_special",
+          "named": true
+        },
+        {
+          "type": "oref_chain_segment",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "open_argument",
@@ -5860,6 +5948,10 @@
         },
         {
           "type": "instance_variable",
+          "named": true
+        },
+        {
+          "type": "ole_object_reference",
           "named": true
         },
         {
