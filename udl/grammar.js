@@ -7,13 +7,10 @@
  *
  */
 
-/* eslint-disable indent */
-
 
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
-const keyword_rules =
-require('../common/keywords');
+const keyword_rules = require('../common/keywords');
 const objectscript_core = require('../core/grammar');
 const {
   define_grammar,
@@ -23,7 +20,8 @@ const {
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
   name: 'objectscript_udl',
-  externals: ($, previous) => previous.concat([$.external_method_body_content, $.iris_username]),
+  externals: ($, previous) =>
+    previous.concat([$.external_method_body_content, $.iris_username]),
   conflicts: ($, previous) =>
     previous.concat([
       [
@@ -32,83 +30,63 @@ module.exports = define_grammar(objectscript_core, {
         $.external_method_keywords,
         $.call_method_keywords,
       ],
-      [
-        $.xdata_keywords,
-        $.xdata_keywords_any,
-      ],
-      [
-        $.trigger_keywords,
-        $.external_trigger_keywords,
-      ],
+      [$.xdata_keywords, $.xdata_keywords_any],
+      [$.trigger_keywords, $.external_trigger_keywords],
     ]),
 
   // Keep /\s/ in extras to avoid state-0 error-recovery loops.
-  extras: ($, previous) =>
-    previous.concat([
-      /\s/,
-      $.documatic_line,
-    ]),
+  extras: ($, previous) => previous.concat([/\s/, $.documatic_line]),
 
   rules: {
     source_file: ($) =>
       seq(
-        optional(
-            anyOrder1($.include_code, $.include_generator, $.import_code),
-        ),
+        optional(anyOrder1($.include_code, $.include_generator, $.import_code)),
         $.class_definition,
       ),
 
     import_code: ($) =>
-      seq(
-        alias(/Import/i, $.keyword_import),
-        $.include_clause,
-      ),
+      seq(alias(/Import/i, $.keyword_import), $.include_clause),
 
-    include_code: ($) => seq(
-      $.keyword_include,
-      $.include_clause,
-    ),
+    include_code: ($) => seq($.keyword_include, $.include_clause),
 
-
-    include_generator: ($) => seq(
-      $.keyword_includegenerator,
-      $.include_clause,
-    ),
+    include_generator: ($) => seq($.keyword_includegenerator, $.include_clause),
 
     include_clause: ($) =>
       choice(
         alias($.identifier, $.class_name),
-        seq(alias('(', $.bracket), alias($.identifier, $.class_name), repeat(seq(',', alias($.identifier, $.class_name))), alias(')', $.bracket)),
+        seq(
+          alias('(', $.bracket),
+          alias($.identifier, $.class_name),
+          repeat(seq(',', alias($.identifier, $.class_name))),
+          alias(')', $.bracket),
+        ),
       ),
-
 
     class_definition: ($) =>
       seq(
         $.keyword_class,
-        alias($.identifier, $.class_name),
+        alias($.quote_permitting_identifier, $.class_name),
         optional($.class_extends),
         optional($.class_keywords),
         $.class_body,
       ),
-
 
     class_extends: ($) =>
       seq(
         $.keyword_extends,
         choice(
           alias($.identifier, $.class_name),
-          seq(alias('(', $.bracket), alias($.identifier, $.class_name), repeat(seq(',', alias($.identifier, $.class_name))), alias(')', $.bracket)),
+          seq(
+            alias('(', $.bracket),
+            alias($.identifier, $.class_name),
+            repeat(seq(',', alias($.identifier, $.class_name))),
+            alias(')', $.bracket),
+          ),
         ),
       ),
 
-
-    documatic_line: ($) => seq(
-      '///',
-      choice(
-        $._line_comment_inner,
-        token.immediate(prec(1, /.*/)),
-      ),
-    ),
+    documatic_line: ($) =>
+      seq('///', choice($._line_comment_inner, token.immediate(prec(1, /.*/)))),
 
     class_body: ($) => seq('{', repeat($.class_statement), '}'),
 
@@ -130,19 +108,9 @@ module.exports = define_grammar(objectscript_core, {
         ),
       ),
 
-    method: ($) =>
-      seq(
-        $.keyword_method,
-        $.method_definition,
-      ),
+    method: ($) => seq($.keyword_method, $.method_definition),
 
-
-    classmethod: ($) =>
-      seq(
-        $.keyword_classmethod,
-        $.method_definition,
-      ),
-
+    classmethod: ($) => seq($.keyword_classmethod, $.method_definition),
 
     query: ($) =>
       seq(
@@ -168,13 +136,7 @@ module.exports = define_grammar(objectscript_core, {
         choice($.core_trigger, $.external_trigger),
       ),
 
-    core_trigger: ($) =>
-      seq(
-        $.trigger_keywords,
-        '{',
-        repeat($.statement),
-        '}',
-      ),
+    core_trigger: ($) => seq($.trigger_keywords, '{', repeat($.statement), '}'),
 
     external_trigger: ($) =>
       seq(
@@ -197,9 +159,7 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         alias(/Relationship/i, $.keyword_relationship),
         alias($.quote_permitting_identifier, $.relationship_name),
-        optional(
-          $.return_type,
-        ),
+        optional($.return_type),
         $.relationship_keywords,
         ';',
       ),
@@ -225,7 +185,6 @@ module.exports = define_grammar(objectscript_core, {
         ';',
       ),
 
-
     parameter_type: ($) =>
       seq(
         $.keyword_as,
@@ -242,7 +201,7 @@ module.exports = define_grammar(objectscript_core, {
           /text/i,
           /configvalue/i,
         ),
-    ),
+      ),
 
     parameter: ($) =>
       seq(
@@ -266,14 +225,11 @@ module.exports = define_grammar(objectscript_core, {
     index: ($) =>
       choice(
         seq(
-        $.keyword_index,
-        alias($.quote_permitting_identifier, $.index_name),
-        seq(
-          $.keyword_on,
-          $.index_properties,
-        ),
-        optional($.index_keywords),
-        ';',
+          $.keyword_index,
+          alias($.quote_permitting_identifier, $.index_name),
+          seq($.keyword_on, $.index_properties),
+          optional($.index_keywords),
+          ';',
         ),
         seq(
           $.keyword_index,
@@ -289,15 +245,7 @@ module.exports = define_grammar(objectscript_core, {
         $.index_item,
       ),
     index_item: ($) =>
-      seq(
-        $.index_property,
-        optional(
-          seq(
-            $.keyword_as,
-            $.index_type,
-          ),
-        ),
-      ),
+      seq($.index_property, optional(seq($.keyword_as, $.index_type))),
     index_property: ($) =>
       seq(
         $.quote_permitting_identifier,
@@ -309,34 +257,23 @@ module.exports = define_grammar(objectscript_core, {
           ),
         ),
       ),
-    index_property_type: (_) =>
-      choice(
-        /ELEMENTS/i,
-        /KEYS/i,
-      ),
+    index_property_type: (_) => choice(/ELEMENTS/i, /KEYS/i),
 
     index_type: ($) =>
       seq(
-      choice(
-        /EXACT/i,
-        /SQLSTRING/i,
-        /SQLUPPER/i,
-        /TRUNCATE/i,
-        /PLUS/i,
-        /MINUS/i,
+        choice(
+          /EXACT/i,
+          /SQLSTRING/i,
+          /SQLUPPER/i,
+          /TRUNCATE/i,
+          /PLUS/i,
+          /MINUS/i,
+        ),
+        optional($.index_type_params),
       ),
-      optional($.index_type_params),
-    ),
 
     index_type_params: ($) =>
-  seq(
-    '(',
-    choice(
-      $.numeric_literal,
-      commaSep1($.numeric_literal),
-    ),
-    ')',
-  ),
+      seq('(', choice($.numeric_literal, commaSep1($.numeric_literal)), ')'),
 
     xdata: ($) =>
       seq(
@@ -346,12 +283,7 @@ module.exports = define_grammar(objectscript_core, {
       ),
 
     xdata_xml: ($) =>
-      seq(
-        optional($.xdata_keywords),
-        '{',
-        $.external_method_body_content,
-        '}',
-      ),
+      seq(optional($.xdata_keywords), '{', $.external_method_body_content, '}'),
 
     xdata_any: ($) =>
       seq(
@@ -374,48 +306,41 @@ module.exports = define_grammar(objectscript_core, {
         alias($.quote_permitting_identifier, $.method_name),
         $.arguments,
         optional($.return_type),
-        choice($._core_method, $._expression_method, $._external_method, $._call_method),
+        choice(
+          $._core_method,
+          $._expression_method,
+          $._external_method,
+          $._call_method,
+        ),
       ),
 
     _call_method: ($) =>
-      seq(
-
-          $.call_method_keywords,
-        '{',
-          $.routine_tag_call,
-        '}',
-      ),
+      seq($.call_method_keywords, '{', $.routine_tag_call, '}'),
 
     _core_method: ($) =>
-      seq(
-        optional($.method_keywords),
-        '{',
-       repeat($.statement),
-        '}',
-      ),
+      seq(optional($.method_keywords), '{', repeat($.statement), '}'),
 
     _expression_method: ($) =>
       seq(
-          $.expression_method_keywords,
+        $.expression_method_keywords,
         '{',
         alias($.expression, $.expression_method_body_content),
         '}',
       ),
 
     _external_method: ($) =>
-      seq(
-        $.external_method_keywords,
-        '{',
-       $.external_method_body_content,
-        '}',
-      ),
+      seq($.external_method_keywords, '{', $.external_method_body_content, '}'),
 
     arguments: ($) =>
-      seq(alias(token.immediate('('), $.bracket), optional(seq($.argument, repeat(seq(',', $.argument)))), alias(')', $.bracket)),
+      seq(
+        alias(token.immediate('('), $.bracket),
+        optional(seq($.argument, repeat(seq(',', $.argument)))),
+        alias(')', $.bracket),
+      ),
 
     argument: ($) =>
       seq(
-        optional( choice($.keyword_byref, $.keyword_output)),
+        optional(choice($.keyword_byref, $.keyword_output)),
         alias(choice($.variadic_arg, $.expression), $.method_arg),
         optional($.return_type),
         optional(seq('=', $.default_argument_value)),
@@ -430,25 +355,22 @@ module.exports = define_grammar(objectscript_core, {
       ),
     return_type: ($) => seq($.keyword_as, $.typename),
 
-    code_snippet: ($) =>
-      seq(
-        '{', prec.left(repeat1($.statement)), '}',
-      ),
+    code_snippet: ($) => seq('{', prec.left(repeat1($.statement)), '}'),
 
-    storage_body: ($) =>
-      seq(
-        '{',
-        $.external_method_body_content,
-        '}',
-      ),
+    storage_body: ($) => seq('{', $.external_method_body_content, '}'),
 
-    type_with_params: ($) => seq($.identifier, '(', $.typename_param, repeat(seq(',', $.typename_param)), ')'),
+    type_with_params: ($) =>
+      seq(
+        $.identifier,
+        '(',
+        $.typename_param,
+        repeat(seq(',', $.typename_param)),
+        ')',
+      ),
     typename: ($) =>
       seq(
         choice($.identifier, $.type_with_params),
-        optional(
-          seq(/Of/i, choice($.identifier, $.type_with_params)),
-        ),
+        optional(seq(/Of/i, choice($.identifier, $.type_with_params))),
       ),
 
     typename_param: ($) =>
@@ -461,9 +383,6 @@ module.exports = define_grammar(objectscript_core, {
           seq(optional(field('operator', '-')), $.numeric_literal),
         ),
       ),
-    identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z][A-Za-z0-9]*)*/,
-    quote_permitting_identifier: ($) =>
-      choice(/"((?:""|[^"])*)"/, $.identifier),
     ...keyword_rules,
   },
 });

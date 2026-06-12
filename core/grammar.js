@@ -4,7 +4,6 @@
  * Confidential, unpublished property of InterSystems.
  */
 
-
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
@@ -22,6 +21,31 @@ const {
   sep1Immediate,
   sepN,
   sepUpTo,
+  build_argument_list_immediate,
+  build_command_rule_argumentful,
+  build_command_rule_argumentless_or_argumentful_block_allowed,
+  build_command_rule_argumentless_or_argumentful,
+  build_dotted_statement_special_block_version,
+  build_legacy_version,
+  build_special_block_version,
+  build_argument_list,
+  build_dotted_block_has_params,
+  build_block_has_params,
+  build_command_rule_argumentful_block_allowed,
+  build_parameter_options_three,
+  build_parameter_options_two,
+  build_dotted_block_no_params,
+  build_block_no_params,
+  build_special_dotted_block_has_params,
+  build_special_block_has_params,
+  build_special_block_no_params,
+  build_legacy_version_conditional,
+  build_legacy_no_params_cond,
+  build_arguments,
+  build_block,
+  build_command_rule_argumentless,
+  build_argumentful_statement,
+  command_keyword_alias,
 } = require('../common/define_grammar');
 
 const {
@@ -32,386 +56,11 @@ const {
 
 /**
  * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_command_rule_argumentful($, commandKeyword, commandArgument) {
-  return seq(
-    commandKeyword,
-    optional($.post_conditional),
-    $._immediate_single_whitespace_followed_by_non_whitespace,
-    commandArgument,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_command_rule_argumentful_block_allowed(
-  $,
-  commandKeyword,
-  commandArgument,
-) {
-  return seq(
-    commandKeyword,
-    optional($.post_conditional),
-    choice(
-      $._immediate_single_whitespace_followed_by_non_whitespace,
-      $._zw_block,
-    ),
-    commandArgument,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_command_rule_argumentless($, commandKeyword) {
-  return seq(
-    commandKeyword,
-    optional($.post_conditional),
-    $._statement_termination,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_legacy_version($, commandKeyword, commandArgument) {
-  return choice(
-    build_legacy_no_params($, commandKeyword),
-    build_legacy_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_legacy_version_conditional($, commandKeyword, commandArgument) {
-  return choice(
-    build_legacy_no_params_cond($, commandKeyword),
-    build_legacy_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_special_block_version($, commandKeyword, commandArgument) {
-  return choice(
-    build_special_block_no_params($, commandKeyword),
-    build_special_block_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_dotted_statement_special_block_version(
-  $,
-  commandKeyword,
-  commandArgument,
-) {
-  return choice(
-    build_dotted_block_no_params($, commandKeyword),
-    build_special_dotted_block_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_dotted_statement_block($, commandKeyword, commandArgument) {
-  return choice(
-    build_dotted_block_no_params($, commandKeyword),
-    build_dotted_block_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_block($, commandKeyword, commandArgument) {
-  return choice(
-    build_block_no_params($, commandKeyword),
-    build_block_has_params($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_block_no_params($, commandKeyword) {
-  return seq(commandKeyword, $._statements_block);
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_block_has_params($, commandKeyword, commandArgument) {
-  return seq(commandKeyword, commandArgument, $._statements_block);
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_special_block_has_params($, commandKeyword, commandArgument) {
-  return seq(
-    commandKeyword,
-    $._immediate_single_whitespace_followed_by_non_whitespace,
-    commandArgument,
-    optional($._intermediate_termination),
-    $._statements_block,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_special_block_no_params($, commandKeyword) {
-  return seq(commandKeyword, $._argumentless_loop, $._statements_block);
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_legacy_has_params($, commandKeyword, commandArgument) {
-  return seq(
-    commandKeyword,
-    $._immediate_single_whitespace_followed_by_non_whitespace,
-    commandArgument,
-    repeat($.statement),
-    $._termination,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_legacy_no_params($, commandKeyword) {
-  return seq(
-    commandKeyword,
-    optional(seq($._argumentless_command_end, repeat1($.statement))),
-    $._termination,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_legacy_no_params_cond($, commandKeyword) {
-  return seq(
-    commandKeyword,
-    optional(
-      seq(
-        choice($._argumentless_command_end, $.argumentless_inline_comment),
-        repeat1($.statement),
-      ),
-    ),
-    $._termination,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_special_dotted_block_has_params(
-  $,
-  commandKeyword,
-  commandArgument,
-) {
-  return seq(
-    commandKeyword,
-    $._immediate_single_whitespace_followed_by_non_whitespace,
-    commandArgument,
-    $._dotted_statements_block,
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_dotted_block_has_params($, commandKeyword, commandArgument) {
-  return seq(commandKeyword, commandArgument, $._dotted_statements_block);
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @returns {RuleOrLiteral}
- */
-function build_dotted_block_no_params($, commandKeyword) {
-  return seq(commandKeyword, $._dotted_statements_block);
-}
-
-/**
- * @param {RuleOrLiteral} firstSlot
- * @param {RuleOrLiteral} secondSlot
- * @returns {RuleOrLiteral}
- */
-function build_parameter_options_two(firstSlot, secondSlot) {
-  return choice(
-    seq(token.immediate(':'), firstSlot),
-    seq(
-      token.immediate(':'),
-      optional(firstSlot),
-      token.immediate(':'),
-      secondSlot,
-    ),
-  );
-}
-
-/**
- * @param {RuleOrLiteral} firstSlot
- * @param {RuleOrLiteral} secondSlot
- * @param {RuleOrLiteral} thirdSlot
- * @returns {RuleOrLiteral}
- */
-function build_parameter_options_three(firstSlot, secondSlot, thirdSlot) {
-  return choice(
-    seq(token.immediate(':'), firstSlot),
-    seq(
-      token.immediate(':'),
-      optional(firstSlot),
-      token.immediate(':'),
-      secondSlot,
-    ),
-    seq(
-      token.immediate(':'),
-      optional(firstSlot),
-      token.immediate(':'),
-      optional(secondSlot),
-      token.immediate(':'),
-      thirdSlot,
-    ),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_command_rule_argumentless_or_argumentful(
-  $,
-  commandKeyword,
-  commandArgument,
-) {
-  return choice(
-    build_command_rule_argumentless($, commandKeyword),
-    build_command_rule_argumentful($, commandKeyword, commandArgument),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RuleOrLiteral} commandKeyword
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_command_rule_argumentless_or_argumentful_block_allowed(
-  $,
-  commandKeyword,
-  commandArgument,
-) {
-  return choice(
-    build_command_rule_argumentless($, commandKeyword),
-    build_command_rule_argumentful_block_allowed(
-      $,
-      commandKeyword,
-      commandArgument,
-    ),
-  );
-}
-
-/**
- * @param {GrammarSymbols<string>} $
  * @param {string[]} ruleNames
  * @returns {RuleOrLiteral[]}
  */
 function rule_refs($, ruleNames) {
   return ruleNames.map((ruleName) => $[ruleName]);
-}
-
-/**
- * @param {GrammarSymbols<string>} $
- * @param {RegExp[]} commandPatterns
- * @returns {RuleOrLiteral}
- */
-function command_keyword_alias($, commandPatterns) {
-  return alias(token(choice(...commandPatterns)), $.command_keyword);
-}
-
-/**
- * @param {RuleOrLiteral} argument
- * @returns {RuleOrLiteral}
- */
-function build_arguments(argument) {
-  return choice(build_argument_list(commaSep1(argument)), argument);
-}
-
-/**
- * @param {RuleOrLiteral} argument
- * @returns {RuleOrLiteral}
- */
-function build_argument_list(argument) {
-  return seq('(', argument, ')');
-}
-
-/**
- * @param {RuleOrLiteral} argument
- * @returns {RuleOrLiteral}
- */
-function build_argument_list_immediate(argument) {
-  return seq(token.immediate('('), argument, token.immediate(')'));
 }
 
 const post_conditional_rules = generate_post_conditionals(
@@ -457,11 +106,16 @@ module.exports = grammar(objectscript_expr, {
     $.dotted_statement_block,
     $._intermediate_termination,
     $.bol_extra,
+    $._do_termination,
+    $._bol_block,
   ],
   conflicts: ($, previous) =>
     previous.concat([
       [$.xecute_argument, $.parenthetical_expression],
       [$.line_ref, $.line_ref],
+      [$.lvn, $._tag_or_line_ref],
+      [$._target_variable, $.set_target],
+      [$.expr_atom, $.device_params],
     ]),
 
   extras: ($) => [
@@ -487,7 +141,6 @@ module.exports = grammar(objectscript_expr, {
   rules: {
     source_file: ($) => $.statements,
     statements: ($) => repeat1($.statement),
-    _expression_list: ($) => commaSep1($.expression),
     // Note: Line comments must be handled separately due to tree-sitter limitations.
     // Using choice() for line_comment as an extra causes parsing issues.
     line_comment_1: ($) => seq('//', $._line_comment_inner),
@@ -589,6 +242,7 @@ module.exports = grammar(objectscript_expr, {
     keyword_methodimpl: (_) => /methodimpl/i,
     _dotted_block_continuation: ($) =>
       seq($._bol, optional($.tag), repeat1('.')),
+    _dotted_block_end: ($) => seq($._bol_block, repeat1('.')),
 
     dotted_statement: ($) =>
       seq(
@@ -736,44 +390,67 @@ module.exports = grammar(objectscript_expr, {
       ),
     set_argument: ($) =>
       choice(
-        seq(choice($.set_target, $.set_target_list), '=', $.expression),
+        seq(
+          choice($.set_target, $.set_target_list),
+          '=',
+          choice(
+            seq(
+              '^$|',
+              $._expression_list,
+              '|',
+              choice(
+                $.identifier_segment_immediate,
+                $.identifier_segment_immediate_special,
+              ),
+              $.subscripts,
+            ),
+            $.expression,
+          ),
+        ),
         $.indirection,
       ),
 
-    set_target_list: ($) => build_argument_list(commaSep1($.set_target)),
+    set_target_list: ($) =>
+      seq('(', $.set_target, repeat1(seq(',', $.set_target)), ')'),
 
     set_target: ($) =>
       choice(
-        $.ole_object_reference,
         $._target_variable,
+        $.macro,
+        $.relative_dot_property,
+        $.relative_dot_method,
         $.system_defined_function,
         $.system_defined_variable,
+        $.parenthetical_expression,
+        $.json_object_literal,
+        $.json_array_literal,
+        $.ole_object_reference,
+        $.class_method_call,
         $.sql_field_reference,
+        $.oref_chain_expr,
+        $._ole_server_name,
       ),
-    oref_set_target: ($) =>
-      choice(
-        $.relative_dot_property,
+
+    _special_case_do: ($) =>
+      prec.right(
         seq(
-          choice(
-            $.lvn,
-            $.instance_variable,
-            $.relative_dot_property,
-            $.relative_dot_method,
-            $.system_defined_function,
-            $.macro,
-          ),
-          repeat1($.oref_chain_segment),
+          alias($.keyword_do, $.keyword_do_old),
+          optional($.post_conditional),
+          $._do_termination,
+          '}',
+          repeat1($.dotted_statement),
         ),
       ),
 
-    _statements_block: ($) => seq('{', repeat($.statement), '}'),
+    _statements_block: ($) =>
+      seq('{', repeat($.statement), choice('}', $._special_case_do)),
 
     _dotted_statements_block: ($) =>
       seq(
         $.dotted_statement_block,
         '{',
         repeat(choice($.dotted_statement, $.statement)),
-        optional($._dotted_block_continuation),
+        optional($._dotted_block_end),
         '}',
       ),
 
@@ -843,14 +520,22 @@ module.exports = grammar(objectscript_expr, {
         choice(
           $.routine_tag_call,
           $.class_method_call,
-          $.instance_method_call,
           $.system_defined_function,
           $.superclass_method_call,
+          $.method_call,
         ),
         optional($.post_conditional),
       ),
 
-    instance_method_call: ($) =>
+    command_mvcall: ($) =>
+      seq(
+        alias(/MVCALL/i, $.command_keyword),
+        optional($.post_conditional),
+        $._immediate_single_whitespace_followed_by_non_whitespace,
+        commaSep1($.do_parameter),
+      ),
+
+    method_call: ($) =>
       choice(
         $.relative_dot_method,
         seq(
@@ -862,6 +547,9 @@ module.exports = grammar(objectscript_expr, {
             $.parenthetical_expression,
             $.macro,
             $.extrinsic_function,
+            $.system_defined_function,
+            $.system_defined_variable,
+            $.class_method_call,
           ),
           repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
@@ -870,7 +558,14 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
-    routine_tag_call: ($) => seq($.line_ref, optional($.method_args)),
+    _tag_or_line_ref: ($) =>
+      choice(
+        prec(1, $.line_ref),
+        alias($._base_variable, $.line_ref),
+        $.numeric_literal,
+      ),
+
+    routine_tag_call: ($) => seq($._tag_or_line_ref, optional($.method_args)),
     keyword_zremove: (_) => /zr(emove)?/i,
 
     print_statement: ($) => {
@@ -886,9 +581,11 @@ module.exports = grammar(objectscript_expr, {
       );
     },
     print_argument: ($) =>
-      choice(
-        seq($.line_ref),
-        seq($.line_ref, token.immediate(':'), $.line_ref),
+      prec.right(
+        seq(
+          $._tag_or_line_ref,
+          optional(seq(token.immediate(':'), $._tag_or_line_ref)),
+        ),
       ),
 
     _for_header: ($) =>
@@ -964,10 +661,13 @@ module.exports = grammar(objectscript_expr, {
       build_command_rule_argumentless_or_argumentful(
         $,
         $.keyword_kill,
-        commaSep1($.kill_argument),
+        commaSep1(
+          choice(
+            alias($.set_target, $.kill_target),
+            alias($.set_target_list, $.kill_target_list),
+          ),
+        ),
       ),
-
-    kill_argument: ($) => build_arguments($._target_variable),
 
     command_lock: ($) =>
       build_command_rule_argumentless_or_argumentful_block_allowed(
@@ -991,29 +691,38 @@ module.exports = grammar(objectscript_expr, {
           optional($.timeout),
         ),
       ),
+
     // Available values are “S” (shared lock), ”E” (escalating lock), “I” (immediate unlock), and “D” (deferred unlock
     // of course lock ^foo#"SSSSSSSSSEEEEEEEEEDDDDDDDD" doesn't make sense, but it's syntactically valid and compiles.
     locktype: ($) =>
       prec.right(
-        choice(
-          seq('#', alias(token(seq('"', /[SEID]+/i, '"')), $.string_literal)),
-          seq('#', alias(/[SEID]+/i, $.lvn)),
-          seq(
-            '#',
-            alias(token(seq('"', /[SEID]+/i, '"')), $.string_literal),
-            '_',
-            alias(/[A-Za-z]+/, $.lvn),
-          ),
-          seq('#', alias(/[SEID]+/i, $.lvn), '_', alias(/[A-Za-z]+/, $.lvn)),
-          seq(
-            '#',
-            choice(
-              $.relative_dot_method,
-              $.relative_dot_property,
-              $.relative_dot_parameter,
+        seq(
+          '#',
+          choice(
+            $.relative_dot_method,
+            $.relative_dot_property,
+            $.relative_dot_parameter,
+            $.instance_variable,
+            seq(
+              choice(
+                $.string_literal,
+                alias(token.immediate(/[A-Za-z]+/), $.lvn),
+                $.system_defined_function,
+              ),
+              optional(
+                seq(
+                  '_',
+                  choice(
+                    $.string_literal,
+                    alias(token.immediate(/[A-Za-z]+/), $.lvn),
+                    $.system_defined_function,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
+        // ),
       ),
 
     timeout: ($) =>
@@ -1088,6 +797,7 @@ module.exports = grammar(objectscript_expr, {
       choice(
         alias('"K"', $.string_literal),
         alias('"D"', $.string_literal),
+        alias('"I"', $.string_literal),
         seq($.close_rename, $.device),
         seq(
           alias(/del(ete)?/i, $.mnemonic_name),
@@ -1112,15 +822,20 @@ module.exports = grammar(objectscript_expr, {
               token(seq('/', /[%A-Za-z][A-Za-z0-9]*/, token.immediate('='))),
               $.mnemonic_name,
             ),
-            $.expression,
+            choice($.expression, $.variadic_arg),
           ),
           $.expression,
           $.mnemonic_name,
         ),
       ),
+
     device_params: ($) =>
       choice(
-        build_argument_list(sep1(optional($.device_keywords), ':')),
+        build_argument_list(
+          commaSep1(
+            choice(sep1(optional($.device_keywords), ':'), $.string_literal),
+          ),
+        ),
         $.device_keywords,
       ),
 
@@ -1158,7 +873,8 @@ module.exports = grammar(objectscript_expr, {
 
     command_new_item: ($) =>
       choice(
-        seq(optional('@'), $.lvn),
+        $.indirection,
+        $.lvn,
         $.macro,
         alias($.estack_token, $.system_defined_variable),
         alias($.etrap_token, $.system_defined_variable),
@@ -1203,13 +919,11 @@ module.exports = grammar(objectscript_expr, {
             $._expression_list,
           ),
           repeat($.elseif_block_dotted),
-          optional($._dotted_block_continuation),
           optional($.else_block_dotted),
         ),
         seq(
           build_dotted_block_no_params($, $.keyword_if),
           repeat($.elseif_block_dotted),
-          optional($._dotted_block_continuation),
           optional($.else_block_dotted),
         ),
       ),
@@ -1229,20 +943,15 @@ module.exports = grammar(objectscript_expr, {
       seq(build_block_no_params($, $.keyword_try), $.catch_block),
 
     catch_block: ($) =>
-      build_block(
-        $,
-        $.keyword_catch,
-        choice(build_argument_list($._target_var_arg), $._target_var_arg),
-      ),
+      build_block($, $.keyword_catch, build_arguments($._target_var_arg)),
 
     command_trycatch_dotted: ($) =>
-      seq(build_dotted_block_no_params($, $.keyword_try), $.catch_block_dotted),
-
-    catch_block_dotted: ($) =>
-      build_dotted_statement_block(
-        $,
+      seq(
+        build_dotted_block_no_params($, $.keyword_try),
+        // choice($._statements_block, $._dotted_statements_block),
         $.keyword_catch,
-        choice(build_argument_list($._target_var_arg), $._target_var_arg),
+        optional(build_arguments($._target_var_arg)),
+        $._dotted_statements_block,
       ),
 
     command_job: ($) =>
@@ -1260,20 +969,23 @@ module.exports = grammar(objectscript_expr, {
               // jobLocation
               seq(
                 choice(token.immediate('['), token.immediate('|')),
-                $.expression,
+                $._routine_ref_namespace,
                 choice(token.immediate(']'), token.immediate('|')),
               ),
             ),
           ),
           $.class_method_call,
-          $.relative_dot_method,
-          alias($.dollar_method, $.system_defined_function),
+          $.system_defined_function,
+          $.superclass_method_call,
+          $.method_call,
         ),
         optional(
           seq(
             token.immediate(':'),
-            optional(
+            choice(
+              $.lvn,
               build_argument_list(sep1Immediate(optional($.expression), ':')),
+              $.timeout,
             ),
             optional($.timeout),
           ),
@@ -1319,7 +1031,7 @@ module.exports = grammar(objectscript_expr, {
           commaSep1(choice($.goto_argument, $.system_defined_function)),
         ),
       ),
-    goto_argument: ($) => seq($.line_ref, optional($.post_conditional)),
+    goto_argument: ($) => seq($._tag_or_line_ref, optional($.post_conditional)),
 
     command_halt_or_hang: ($) =>
       choice(
@@ -1376,7 +1088,7 @@ module.exports = grammar(objectscript_expr, {
       build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_view,
-        $.view_parameter,
+        commaSep1($.view_parameter),
       ),
 
     view_parameter: ($) => choice($.expression, sepN($.expression, ':', 4)),
@@ -1402,7 +1114,7 @@ module.exports = grammar(objectscript_expr, {
         optional(choice('+', '-', '--')),
         choice(
           // code line location?,
-          $.line_ref,
+          $._tag_or_line_ref,
           // local var *var
           seq('*', $.objectscript_identifier),
           // single step breakpoint
@@ -1466,11 +1178,13 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     device: ($) => sep1Immediate($.expression, '/'),
+    _zkill_arg: ($) => choice($._target_var_arg, $.dollar_arg_pair),
+
     command_zkill: ($) =>
       build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_zkill,
-        commaSep1($._target_var_arg),
+        commaSep1($._zkill_arg),
       ),
     command_zn: ($) =>
       build_command_rule_argumentful_block_allowed(
@@ -1611,14 +1325,20 @@ module.exports = grammar(objectscript_expr, {
 
     // https://docs.intersystems.com/ens201817/csp/docbook/Doc.View.cls?KEY=RCOS_cmvcrt
     commands_with_printlist: ($) =>
-      choice(
-        build_command_rule_argumentful_block_allowed(
-          $,
-          command_keyword_alias($, PRINTLIST_COMMAND_PATTERNS),
-          commaSep1(choice($.expression, '!', '?')),
-        ),
-        build_command_rule_argumentless($, PRINTLIST_COMMAND_PATTERNS[0]),
+      build_argumentful_statement(
+        $,
+        command_keyword_alias($, PRINTLIST_COMMAND_PATTERNS),
+        commaSep1(choice($.expression, '!', '?')),
       ),
+
+    // choice(
+    //   build_command_rule_argumentful_block_allowed(
+    //     $,
+    //     command_keyword_alias($, PRINTLIST_COMMAND_PATTERNS),
+    //     commaSep1(choice($.expression, '!', '?')),
+    //   ),
+    //   // build_command_rule_argumentless($, PRINTLIST_COMMAND_PATTERNS[0]),
+    // ),
     parameter_list: ($) =>
       build_argument_list_immediate(commaSep($.tag_parameter)),
 
@@ -1642,7 +1362,7 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     _target_variable: ($) =>
-      choice($.glvn, $.indirection, $.instance_variable, $.oref_set_target),
+      choice($.glvn, $.indirection, $.instance_variable, $.oref_chain_expr),
 
     _target_var_arg: ($) => choice($.glvn, $.indirection),
 

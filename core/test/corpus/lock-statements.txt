@@ -719,3 +719,96 @@ Lock with function arg
                   (method_args
                     (bracket)
                     (bracket)))))))))))
+
+===
+Valid Locktype system defined function
+===
+  Lock -^GLOB.okay($namespace)#$s($get(x):"hi",1:"s")
+---
+
+(source_file
+  (statements
+    (statement
+      (command_lock
+        (keyword_lock)
+        (command_lock_argument
+          (lock_arg
+            (glvn
+              (gvn
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (system_defined_variable)))
+                  (bracket))))
+            (locktype
+              (system_defined_function
+                (dollar_select
+                  (dollar_arg_pair
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (dollar_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))))))
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (dollar_arg_pair
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))
+                    (expression
+                      (expr_atom
+                        (string_literal)))))))))))))
+
+===
+Locktype empty string
+===
+ Lock +@(i%y)@("lock")#"":$zu(x,y)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_lock
+        (keyword_lock)
+        (command_lock_argument
+          (lock_arg
+            (indirection
+              (expression
+                (expr_atom
+                  (parenthetical_expression
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (instance_variable
+                          (member_name
+                            (identifier_segment_immediate)))))
+                    (bracket))))
+              (subscripts
+                (bracket)
+                (expression
+                  (expr_atom
+                    (string_literal)))
+                (bracket)))
+            (locktype
+              (string_literal)))
+          (timeout
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))))))

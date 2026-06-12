@@ -705,7 +705,7 @@ If Expression Indirection
 ====================================
 If with Expression, Block on newline
 ====================================
- if x 
+ if x
  {}
 ---
 
@@ -805,9 +805,9 @@ If with multiline && and no trailing whitespace
 ====
 Valid If
 ====
-  if ..#PARMNAME=1 { 
+  if ..#PARMNAME=1 {
   //do something
-  } else { 
+  } else {
   //do something else
   }
 ---
@@ -836,7 +836,7 @@ Valid If
 =====
 If statements, valid
 =====
-  if iristype = "" Return {"type": "string"} 
+  if iristype = "" Return {"type": "string"}
 ---
 
 (source_file
@@ -1203,27 +1203,28 @@ If + built in + set, valid
                 (expr_atom
                   (system_defined_function
                     (dollar_list
-                      (expression
-                        (expr_atom
-                          (system_defined_function
-                            (dollar_function
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (gvn
-                                      (subscripts
-                                        (bracket)
-                                        (expression
-                                          (expr_atom
-                                            (lvn
-                                              (objectscript_identifier_special)
-                                              (subscripts
-                                                (bracket)
-                                                (expression
-                                                  (expr_atom
-                                                    (numeric_literal)))
-                                                (bracket)))))
-                                        (bracket))))))))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (system_defined_function
+                              (dollar_function
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (gvn
+                                        (subscripts
+                                          (bracket)
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier_special)
+                                                (subscripts
+                                                  (bracket)
+                                                  (expression
+                                                    (expr_atom
+                                                      (numeric_literal)))
+                                                  (bracket)))))
+                                          (bracket)))))))))))
                       (method_arg
                         (expression
                           (expr_atom
@@ -1412,7 +1413,7 @@ If statement, valid with multiple lines of comments and a block
  if x="DISTINCT" // x
 	                                  #; y
 	                                  #; z
-	{  
+	{
     set x = 2
     w hi
 	}
@@ -1454,3 +1455,39 @@ If statement, valid with multiple lines of comments and a block
                 (expr_atom
                   (lvn
                     (objectscript_identifier)))))))))))
+
+===
+# in expression condition
+===
+ If y, $DATA($ZOBJVAL(x)) # 2 {
+ }
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (dollar_function
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (system_defined_function
+                        (dollar_function
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))))))))))
+          (expr_tail
+            (binary_operator)
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))

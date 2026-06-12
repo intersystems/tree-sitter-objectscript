@@ -5,7 +5,7 @@ JOB statements
   JOB Disp^monitor
   JOB ^Add(num1,8,a+2)
   JOB ^Add()
-  JOB AA:("":1) 
+  JOB AA:("":1)
   JOB ABC^PROG(VAL1,"DR."):(:0:"tta5:")
   JOB ##class(MyClass).Run():(:0:"tta5:"):10
   JOB $CLASSMETHOD("MyClass","Run"):(:0:"tta5:"):10
@@ -126,7 +126,8 @@ JOB statements
           (class_ref
             (keyword_pound_pound_class)
             (bracket)
-            (class_name)
+            (class_name
+              (identifier))
             (bracket))
           (method_name
             (identifier_segment_immediate))
@@ -148,16 +149,17 @@ JOB statements
       (keyword_job)
       (job_argument
         (system_defined_function
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (bracket))
+          (dollar_method
+            (bracket)
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (bracket)))
         (expression
           (expr_atom
             (numeric_literal)))
@@ -172,13 +174,14 @@ JOB statements
     (command_job
       (keyword_job)
       (job_argument
-        (relative_dot_method
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))
+        (method_call
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args
+                (bracket)
+                (bracket)))))
         (expression
           (expr_atom
             (numeric_literal)))
@@ -193,13 +196,14 @@ JOB statements
     (command_job
       (keyword_job)
       (job_argument
-        (relative_dot_method
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))
+        (method_call
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args
+                (bracket)
+                (bracket)))))
         (timeout
           (expression
             (expr_atom
@@ -404,9 +408,7 @@ JOB Doc Syntax: joblocation forms
           (line_ref
             (routine_ref
               (routine_name))))
-        (expression
-          (expr_atom
-            (string_literal))))))
+        (string_literal))))
   (statement
     (command_job
       (keyword_job)
@@ -416,10 +418,8 @@ JOB Doc Syntax: joblocation forms
             (objectscript_identifier)
             (routine_ref
               (routine_name))))
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+        (lvn
+          (objectscript_identifier)))))
   (statement
     (command_job
       (keyword_job)
@@ -450,9 +450,7 @@ JOB Doc Syntax: joblocation forms
                     (expr_atom
                       (numeric_literal))))))
             (bracket)))
-        (expression
-          (expr_atom
-            (string_literal)))
+        (string_literal)
         (expression
           (expr_atom
             (numeric_literal)))
@@ -474,11 +472,62 @@ JOB Doc Syntax: joblocation forms
           (method_args
             (bracket)
             (bracket)))
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+        (lvn
+          (objectscript_identifier))
         (timeout
           (expression
             (expr_atom
               (numeric_literal))))))))
+
+===
+job, var could contain the process list
+===
+ job ##class(%hi.bye).okay(bye):namespace:10
+---
+
+(source_file
+  (statement
+    (command_job
+      (keyword_job)
+      (job_argument
+        (class_method_call
+          (class_ref
+            (keyword_pound_pound_class)
+            (bracket)
+            (class_name
+              (identifier))
+            (bracket))
+          (method_name
+            (identifier_segment_immediate))
+          (method_args
+            (bracket)
+            (method_arg
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (bracket)))
+        (lvn
+          (objectscript_identifier))
+        (timeout
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+===
+job statement with $namespace
+===
+ job hi^%bye.j[$namespace]
+---
+
+(source_file
+  (statement
+    (command_job
+      (keyword_job)
+      (job_argument
+        (routine_tag_call
+          (line_ref
+            (objectscript_identifier)
+            (routine_ref
+              (routine_name))))
+        (system_defined_variable)))))

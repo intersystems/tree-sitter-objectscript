@@ -93,3 +93,16 @@ s% instance var oref
             (method_args
               (bracket)
               (bracket))))))))
+
+====
+valid instance var %
+====
+ i%%x
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (instance_variable
+        (member_name
+          (identifier_segment_immediate_special))))))

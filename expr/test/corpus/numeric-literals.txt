@@ -1,0 +1,26 @@
+===
+trailing decimal point
+===
+ 0.
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (numeric_literal))))
+
+===
+trailing decimal point in expression
+===
+ 0.+1
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (numeric_literal))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))

@@ -1,0 +1,50 @@
+===
+oref parenthesis
+===
+ (dest).%ok=$ZB((x).%y,123,4)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (oref_chain_expr
+        (parenthetical_expression
+          (bracket)
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (bracket))
+        (oref_chain_segment
+          (oref_property
+            (property_name
+              (identifier_segment_immediate_special))))))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (system_defined_function
+            (dollar_function
+              (method_arg
+                (expression
+                  (expr_atom
+                    (oref_chain_expr
+                      (parenthetical_expression
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))
+                        (bracket))
+                      (oref_chain_segment
+                        (oref_property
+                          (property_name
+                            (identifier_segment_immediate_special))))))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal)))))))))))

@@ -299,16 +299,10 @@
 (else_block_dotted
   "." @punctuation.special.dots)
 
-(elseif_block_dotted
-  "." @punctuation.special.dots)
-
-(catch_block_dotted
-  "." @punctuation.special.dots)
-
 (variable_datatype
   "." @function.builtin)
 
-(instance_method_call
+(method_call
   "." @function.builtin)
 
 ; === END LOCAL ===

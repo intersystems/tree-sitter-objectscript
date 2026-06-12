@@ -1,6 +1,7 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
+// #include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -37,6 +38,8 @@ enum ObjectScript_Core_Scanner_TokenType {
   DOTTED_STATEMENT_BLOCK,
   _INTERMEDIATE_TERMINATION,
   BOL_EXTRA,
+  _DO_TERMINATION,
+  _BOL_BLOCK,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -77,7 +80,9 @@ static const char* token_names[] = {
   "ARGUMENTLESS_INLINE_COMMENT",
   "DOTTED_STATEMENT_BLOCK",
   "_INTERMEDIATE_TERMINATION",
-  "BOL_EXTRA"
+  "BOL_EXTRA",
+  "_DO_TERMINATION",
+  "_BOL_BLOCK",
 };
 
 #if 0
@@ -135,7 +140,7 @@ static inline bool is_valid_sql_marker_char(int32_t c) {
 }
 
 static inline bool is_short_circuit_continuation_operator(TSLexer *lexer) {
-  if (lexer->lookahead == ',') {
+  if (lexer->lookahead == ',' || lexer->lookahead == '!') {
     lexer->mark_end(lexer);
     return true;
   }
@@ -173,6 +178,10 @@ struct ObjectScript_Core_Scanner {
 
 static inline bool is_label_char(int32_t c) {
   return iswalnum(c) || c == '%';
+}
+
+static inline bool valid_tag_char(int32_t c) {
+  return iswalnum(c) || c == '%' || c == '.';
 }
 
 static inline int32_t ascii_toupper_i32(int32_t c) {
@@ -651,13 +660,26 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     bool valid_symbol_argumentless_command_end = valid_symbols[_ARGUMENTLESS_COMMAND_END];
     bool valid_symbol_argumentless_inline_comment = valid_symbols[ARGUMENTLESS_INLINE_COMMENT];
     bool valid_symbol_one_space = valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE];
+    bool valid_symbol_dotted_statement = valid_symbols[DOTTED_STATEMENT_BLOCK];
     unsigned count = 0;
+
+    // fprintf(stderr, "GOT HERE:valid_symbol_argumentless_command_end=%d\n",valid_symbol_argumentless_command_end);
+
 
     while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
       count ++;
       advance(lexer);
     }
 
+    // fprintf(stderr, "TERMINATION=%d\n, valid_symbol_intermediate_termination=%d\n,valid_symbol_statement_termination=%d\n,valid_symbol_argumentless_loop=%d\n,valid_symbol_argumentless_command_end=%d\n,valid_symbol_argumentless_inline_comment=%d\n,valid_symbol_one_space=%d\n,zw_block_valid=%d\n, count=%d\n",
+    //     valid_symbol_termination,valid_symbol_intermediate_termination,valid_symbol_statement_termination,valid_symbol_argumentless_loop,valid_symbol_argumentless_command_end,valid_symbol_argumentless_inline_comment,valid_symbol_one_space, count);
+    // fprintf(stderr, "DOTTED VALID=%d\n", valid_symbols[DOTTED_STATEMENT_BLOCK]);
+    // fprintf(stderr, "LEXER LOOKAHEAD=%c\n", lexer->lookahead);
+
+    if (count == 0 && valid_symbol_dotted_statement && lexer->lookahead=='{') {
+        lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
+        return true;
+    }
     // an argument that is exactly one space after the keyword
     if (count == 1 && (iswalnum(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_') && valid_symbol_one_space) {
       lexer->mark_end(lexer);
@@ -728,9 +750,14 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
           }
           else {
               if (valid_symbol_one_space && count == 1) {
+                scanner->terminated_newline = false;
                 lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
                 return true;
+              }
+              if (count > 0 && valid_symbols[_WHITESPACE]) {
                 scanner->terminated_newline = false;
+                lexer->result_symbol = _WHITESPACE;
+                return true;
               }
               scanner->terminated_newline = false;
               return false;
@@ -738,10 +765,17 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       }
 
       if (valid_symbol_one_space && count == 1) {
+        scanner->terminated_newline = false;
         lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
         return true;
-        scanner->terminated_newline = false;
       }
+      if (count > 0 && valid_symbols[_WHITESPACE]) {
+        scanner->terminated_newline = false;
+        lexer->result_symbol = _WHITESPACE;
+        return true;
+      }
+      scanner->terminated_newline = false;
+      return false;
     }
 
     else if (lexer->lookahead == '/') {
@@ -909,6 +943,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       }
 
       else {
+          // fprintf(stderr,"RETURNING WHITESPACE HERE");
         lexer->mark_end(lexer);
         lexer->result_symbol = _WHITESPACE;
         return true;
@@ -925,32 +960,33 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
       if (valid_symbols[DOTTED_STATEMENT_BLOCK]) {
         lexer->mark_end(lexer);
-        advance(lexer);
-        int curly_brace_count = 1;
-        while(!lexer->eof(lexer) && lexer->lookahead!= '\n' && curly_brace_count > 0) {
-          if (lexer->lookahead == '{') {
-            curly_brace_count++;
-          } else if (lexer->lookahead == '}') {
-            curly_brace_count--;
-          }
-          advance(lexer);
-        }
-        // this means we have a multiline block in a dotted statement
-        if (curly_brace_count > 0) {
-          lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
-          scanner->terminated_newline = false;
-          return true;
-        }
+        // advance(lexer);
+        // int curly_brace_count = 1;
+        // while(!lexer->eof(lexer) && lexer->lookahead!= '\n' && curly_brace_count > 0) {
+        //   if (lexer->lookahead == '{') {
+        //     curly_brace_count++;
+        //   } else if (lexer->lookahead == '}') {
+        //     curly_brace_count--;
+        //   }
+        //   advance(lexer);
+        // }
+        lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
+        // // this means we have a multiline block in a dotted statement
+        // if (curly_brace_count > 0) {
+        //   lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
+        //   scanner->terminated_newline = false;
+        //   return true;
+        // }
 
-        else if (valid_symbol_argumentless_loop) {
-          lexer->result_symbol = _ARGUMENTLESS_LOOP;
-          scanner->terminated_newline = false;
-          return true;
-        }
+        // else if (valid_symbol_argumentless_loop) {
+        //   lexer->result_symbol = _ARGUMENTLESS_LOOP;
+        //   scanner->terminated_newline = false;
+        //   return true;
+        // }
 
-        else {
-          return false;
-        }
+        // else {
+        //   return false;
+        // }
       }
 
       else if (valid_symbol_argumentless_loop) {
@@ -959,18 +995,10 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         scanner->terminated_newline = false;
         return true;
       }
-    }
 
-
-    if (lexer->eof(lexer) || lexer-> lookahead == '}') {
-        if (valid_symbol_statement_termination) {
-          lexer->result_symbol = _STATEMENT_TERMINATION;
-          scanner->terminated_newline = false;
-          return true;
-        }
-        lexer->result_symbol = _TERMINATION;
-        scanner->terminated_newline = false;
-        return true;
+      // else {
+      //     return false;
+      // }
     }
 
     if (count > 0 && valid_symbols[_WHITESPACE]) {
@@ -984,6 +1012,25 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       lexer->mark_end(lexer);
       lexer->result_symbol = _WHITESPACE;
       return true;
+    }
+
+    if (lexer->eof(lexer) || lexer-> lookahead == '}') {
+        if (valid_symbol_statement_termination) {
+            // if (valid_symbols[_BOL_BLOCK]) {
+            //     return false;
+            // }
+          lexer->result_symbol = _STATEMENT_TERMINATION;
+          scanner->terminated_newline = false;
+          return true;
+        }
+        else if (valid_symbols[_DO_TERMINATION] &&  lexer-> lookahead == '}') {
+            lexer->result_symbol = _DO_TERMINATION;
+            scanner->terminated_newline = false;
+            return true;
+        }
+        lexer->result_symbol = _TERMINATION;
+        scanner->terminated_newline = false;
+        return true;
     }
   }
 
@@ -1006,12 +1053,20 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
           advance(lexer);
       }
       if (lexer->lookahead == '.') {
+          while (lexer->lookahead == '.' || (iswspace(lexer->lookahead) && lexer->lookahead != '\n')) {
+              advance(lexer);
+          }
+          if (lexer->lookahead == '}') {
+              lexer->result_symbol = _BOL_BLOCK;
+              scanner->terminated_newline = false;
+              return true;
+          }
           lexer->result_symbol = _BOL;
           scanner->terminated_newline = false;
           return true;
       }
       else if (lexer->get_column(lexer) == 0 && is_label_char(lexer->lookahead)) {
-        while (is_label_char(lexer->lookahead)) advance(lexer);
+        while (valid_tag_char(lexer->lookahead)) advance(lexer);
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') advance(lexer);
 
         if (lexer->lookahead == '.') {
@@ -1057,7 +1112,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     do {
       if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
       advance(lexer);
-    } while (is_label_char(lexer->lookahead));
+    } while (valid_tag_char(lexer->lookahead));
 
     if (scanner->routine_token_mode &&
         valid_symbols[ROUTINE] &&
@@ -1201,7 +1256,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
   }
 
-  if (scanner->terminated_newline && lexer->lookahead == '.' && !valid_symbols[_BOL] && !valid_symbols[_INTERMEDIATE_TERMINATION]) {
+  if (scanner->terminated_newline && lexer->lookahead == '.' && !valid_symbols[_BOL] && !valid_symbols[_INTERMEDIATE_TERMINATION] && !valid_symbols[_BOL_BLOCK]) {
     while (lexer->lookahead == '.') {
       advance(lexer);
     }

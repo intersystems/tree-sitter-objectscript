@@ -866,13 +866,49 @@ Invalid View (incomplete offset:mode:length)
  VIEW ADDR:0:-4
 ---
 
-
-
 ===
-Invalid View (commas)
-:error
+View with multiple args
 ===
- VIEW ADDR,0,-4
+ V x:0:1:Y,x+1:0:1:X
 ---
 
-
+(source_file
+  (statements
+    (statement
+      (command_view
+        (keyword_view)
+        (view_parameter
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (view_parameter
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal)))))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (numeric_literal)))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))

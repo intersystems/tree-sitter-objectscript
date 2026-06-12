@@ -7,6 +7,7 @@ Do Statement No Param Passing
  NEW $NAMESPACE
  SET $NAMESPACE="USER"
  DO ^|"SAMPLES"|fibonacci
+ Do x^|"%SYS"|y(.$MVLOCKLIST)
 ---
 
 (source_file
@@ -14,7 +15,7 @@ Do Statement No Param Passing
     (command_do
       (keyword_do)
       (do_parameter
-        (instance_method_call
+        (method_call
           (lvn
             (objectscript_identifier))
           (oref_method
@@ -73,7 +74,23 @@ Do Statement No Param Passing
           (line_ref
             (routine_ref
               (string_literal)
-              (routine_name))))))))
+              (routine_name)))))))
+  (statement
+    (command_do
+      (keyword_do)
+      (do_parameter
+        (routine_tag_call
+          (line_ref
+            (objectscript_identifier)
+            (routine_ref
+              (string_literal)
+              (routine_name)))
+          (method_args
+            (bracket)
+            (method_arg
+              (byref_arg
+                (system_defined_variable)))
+            (bracket)))))))
 
 ===============================
 Do Statement With Param Passing
@@ -461,7 +478,7 @@ Do Statement Object Method
     (command_do
       (keyword_do)
       (do_parameter
-        (instance_method_call
+        (method_call
           (lvn
             (objectscript_identifier))
           (oref_method
@@ -474,7 +491,7 @@ Do Statement Object Method
     (command_do
       (keyword_do)
       (do_parameter
-        (instance_method_call
+        (method_call
           (relative_dot_method
             (oref_method
               (method_name
@@ -486,7 +503,7 @@ Do Statement Object Method
     (command_do
       (keyword_do)
       (do_parameter
-        (instance_method_call
+        (method_call
           (instance_variable
             (member_name
               (identifier_segment_immediate))
@@ -511,7 +528,8 @@ Do Statement Object Method
           (class_ref
             (keyword_pound_pound_class)
             (bracket)
-            (class_name)
+            (class_name
+              (identifier))
             (bracket))
           (method_name
             (identifier_segment_immediate))
@@ -1667,3 +1685,95 @@ do ##super()
           (method_args
             (bracket)
             (bracket)))))))
+
+===
+Do statement valid } special case
+===
+test
+ set x = 2
+ if x = 1 { w "hello" } else { s x = 1 d }
+ . w "goodbye"
+---
+
+(source_file
+  (statement
+    (tag_statement
+      (tag)))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (numeric_literal))))))
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (expr_atom
+          (lvn
+            (objectscript_identifier)))
+        (expr_tail
+          (binary_operator)
+          (expression
+            (expr_atom
+              (numeric_literal)))))
+      (statement
+        (command_write
+          (keyword_write)
+          (write_argument
+            (expression
+              (expr_atom
+                (string_literal))))))
+      (else_block
+        (keyword_else)
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (glvn
+                  (lvn
+                    (objectscript_identifier))))
+              (expression
+                (expr_atom
+                  (numeric_literal))))))
+        (keyword_do_old)
+        (dotted_statement
+          (statement
+            (command_write
+              (keyword_write)
+              (write_argument
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
+
+===
+Do parameter system function oref
+===
+ Do $System.x.y().orefMethod()
+---
+
+(source_file
+  (statement
+    (command_do
+      (keyword_do)
+      (do_parameter
+        (method_call
+          (system_defined_function
+            (dollarsf
+              (identifier_segment_immediate)
+              (identifier_segment_immediate)
+              (method_args
+                (bracket)
+                (bracket))))
+          (oref_method
+            (method_name
+              (identifier_segment_immediate))
+            (method_args
+              (bracket)
+              (bracket))))))))

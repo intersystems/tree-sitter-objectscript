@@ -1,5 +1,5 @@
 ===
-ole
+ole object ref with !
 ===
  _CDSrvPrint!txtPrint.Text
 ---
@@ -9,6 +9,22 @@ ole
     (expr_atom
       (ole_object_reference
         (identifier_segment_immediate)
+        (identifier_segment_immediate)
+        (oref_chain_segment
+          (oref_property
+            (property_name
+              (identifier_segment_immediate))))))))
+
+===
+ole object ref without !
+===
+ _txtVisMCancel.Text
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (oref_chain_expr
         (identifier_segment_immediate)
         (oref_chain_segment
           (oref_property

@@ -731,7 +731,8 @@ $LISTBUILD(##class(Sample.Person).GetName(),##class(Sample.Person).GetAge())
                   (class_ref
                     (keyword_pound_pound_class)
                     (bracket)
-                    (class_name)
+                    (class_name
+                      (identifier))
                     (bracket))
                   (method_name
                     (identifier_segment_immediate))
@@ -745,7 +746,8 @@ $LISTBUILD(##class(Sample.Person).GetName(),##class(Sample.Person).GetAge())
                   (class_ref
                     (keyword_pound_pound_class)
                     (bracket)
-                    (class_name)
+                    (class_name
+                      (identifier))
                     (bracket))
                   (method_name
                     (identifier_segment_immediate))
@@ -769,12 +771,14 @@ $LISTBUILD($$MAXLEN,$$DEFAULT)
             (expression
               (expr_atom
                 (extrinsic_function
-                  (objectscript_identifier)))))
+                  (line_ref
+                    (objectscript_identifier))))))
           (method_arg
             (expression
               (expr_atom
                 (extrinsic_function
-                  (objectscript_identifier))))))))))
+                  (line_ref
+                    (objectscript_identifier)))))))))))
 
 ====
 $LB argumentless

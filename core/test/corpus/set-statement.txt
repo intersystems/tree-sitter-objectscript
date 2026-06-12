@@ -71,7 +71,7 @@ Set Statement Oref MultiDimensional Property
         (keyword_set)
         (set_argument
           (set_target
-            (oref_set_target
+            (oref_chain_expr
               (lvn
                 (objectscript_identifier))
               (oref_chain_segment
@@ -559,3 +559,194 @@ Valid statements, mixed
                 (expr_atom
                   (lvn
                     (objectscript_identifier)))))))))))
+
+====
+set arg relative method
+====
+  set ..token($Increment(..token)) = tLexTerminator
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (relative_dot_method
+              (oref_method
+                (method_name
+                  (identifier_segment_immediate))
+                (method_args
+                  (bracket)
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (dollar_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (relative_dot_property
+                                    (oref_property
+                                      (property_name
+                                        (identifier_segment_immediate))))))))))))
+                  (bracket)))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))))
+
+===
+set statement indirection method
+===
+ Set tSC=$$@(x)^@(yZ)(.result)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (extrinsic_function
+                (line_ref
+                  (indirection
+                    (expression
+                      (expr_atom
+                        (parenthetical_expression
+                          (bracket)
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier))))
+                          (bracket)))))
+                  (routine_ref
+                    (indirection
+                      (parenthetical_expression
+                        (bracket)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))
+                        (bracket)))))
+                (method_args
+                  (bracket)
+                  (method_arg
+                    (byref_arg
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket))))))))))
+
+====================
+Set Statement Parenthesized Single Target
+====================
+ set ( target ) = 1
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier))))
+              (bracket)))
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+===
+period at end of statement
+===
+ set x = 0.
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (numeric_literal))))))))
+
+====
+set command with ^$ syntax
+====
+ s res=^$|nodes(node)|LOCK("^hi.hello.bye.goodbye("""_hey_""","""_bye_""")","OK",$j)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_set
+        (keyword_set)
+        (set_argument
+          (set_target
+            (glvn
+              (lvn
+                (objectscript_identifier))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)
+                (subscripts
+                  (bracket)
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier))))
+                  (bracket)))))
+          (identifier_segment_immediate)
+          (subscripts
+            (bracket)
+            (expression
+              (expr_atom
+                (string_literal))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal)))))
+            (expression
+              (expr_atom
+                (string_literal)))
+            (expression
+              (expr_atom
+                (system_defined_variable)))
+            (bracket)))))))

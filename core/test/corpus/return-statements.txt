@@ -80,7 +80,8 @@ Return Valid Statements
         (expression
           (expr_atom
             (extrinsic_function
-              (objectscript_identifier)
+              (line_ref
+                (objectscript_identifier))
               (method_args
                 (bracket)
                 (method_arg
@@ -149,3 +150,23 @@ postconditional colon, then illegal token
 ---
 
 
+
+===
+Return Json Literal Value Evaluated
+===
+ return [(val)]
+---
+
+(source_file
+  (statements
+    (statement
+      (command_return
+        (keyword_return)
+        (expression
+          (expr_atom
+            (json_array_literal
+              (json_objectscript_expr
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))))
