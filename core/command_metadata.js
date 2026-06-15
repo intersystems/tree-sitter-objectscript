@@ -65,7 +65,9 @@ const STATEMENT_RULE_NAMES = [
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
+  /zdn/i,
   /mv/i,
+  /MVNEWCOM/i,
   /MVDIM/i,
   /Za(llocate)?/i,
   /zd(eallocate)?/i,

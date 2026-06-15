@@ -557,12 +557,13 @@ Valid $View Statements
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
-                        (subscripts
+                        (method_args
                           (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
                           (bracket))))
                     (expr_tail
                       (binary_operator)
@@ -574,24 +575,26 @@ Valid $View Statements
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
-                        (subscripts
+                        (method_args
                           (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
                           (bracket))))))
                 (method_arg
                   (expression
                     (expr_atom
                       (lvn
                         (objectscript_identifier)
-                        (subscripts
+                        (method_args
                           (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
                           (bracket)))))))))))))
   (line_comment_3)
   (statement
@@ -735,8 +738,7 @@ Valid View Statements
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -826,8 +828,7 @@ Valid View Statements
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression

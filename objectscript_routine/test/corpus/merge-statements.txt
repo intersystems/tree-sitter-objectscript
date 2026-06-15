@@ -15,15 +15,16 @@ Valid Merge Statements
           (glvn
             (lvn
               (objectscript_identifier))))
-        (set_target
-          (glvn
+        (expression
+          (expr_atom
             (ssvn
               (identifier_segment_immediate)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (string_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
                 (bracket))))))))
   (statement
     (command_merge
@@ -32,17 +33,19 @@ Valid Merge Statements
         (set_target
           (glvn
             (gvn)))
-        (set_target
-          (glvn
+        (expression
+          (expr_atom
             (gvn
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket))))))))
   (statement
     (command_merge
@@ -51,8 +54,7 @@ Valid Merge Statements
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -62,30 +64,36 @@ Valid Merge Statements
         (set_target
           (glvn
             (gvn
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
-        (set_target
-          (glvn
+        (expression
+          (expr_atom
             (gvn
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))))

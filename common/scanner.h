@@ -1,7 +1,6 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
-// #include <stdio.h>
 
 enum ObjectScript_Core_Scanner_TokenType {
   _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
@@ -40,6 +39,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   BOL_EXTRA,
   _DO_TERMINATION,
   _BOL_BLOCK,
+  _POST_CONDITIONAL_END,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -83,6 +83,7 @@ static const char* token_names[] = {
   "BOL_EXTRA",
   "_DO_TERMINATION",
   "_BOL_BLOCK",
+  "_POST_CONDITIONAL_END"
 };
 
 #if 0
@@ -645,6 +646,12 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return true;
   }
 
+  if (valid_symbols[_POST_CONDITIONAL_END] && (iswspace(lexer->lookahead) || lexer->eof(lexer) || lexer->lookahead==',' || lexer->lookahead=='}')) {
+      lexer->result_symbol = _POST_CONDITIONAL_END;
+      scanner->terminated_newline = false;
+      return true;
+  }
+
   if (
       valid_symbols[_TERMINATION]
       || valid_symbols[_ARGUMENTLESS_LOOP]
@@ -663,18 +670,10 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     bool valid_symbol_dotted_statement = valid_symbols[DOTTED_STATEMENT_BLOCK];
     unsigned count = 0;
 
-    // fprintf(stderr, "GOT HERE:valid_symbol_argumentless_command_end=%d\n",valid_symbol_argumentless_command_end);
-
-
     while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
       count ++;
       advance(lexer);
     }
-
-    // fprintf(stderr, "TERMINATION=%d\n, valid_symbol_intermediate_termination=%d\n,valid_symbol_statement_termination=%d\n,valid_symbol_argumentless_loop=%d\n,valid_symbol_argumentless_command_end=%d\n,valid_symbol_argumentless_inline_comment=%d\n,valid_symbol_one_space=%d\n,zw_block_valid=%d\n, count=%d\n",
-    //     valid_symbol_termination,valid_symbol_intermediate_termination,valid_symbol_statement_termination,valid_symbol_argumentless_loop,valid_symbol_argumentless_command_end,valid_symbol_argumentless_inline_comment,valid_symbol_one_space, count);
-    // fprintf(stderr, "DOTTED VALID=%d\n", valid_symbols[DOTTED_STATEMENT_BLOCK]);
-    // fprintf(stderr, "LEXER LOOKAHEAD=%c\n", lexer->lookahead);
 
     if (count == 0 && valid_symbol_dotted_statement && lexer->lookahead=='{') {
         lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
@@ -936,14 +935,12 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             return true;
           }
         }
-        // lexer->mark_end(lexer);
         scanner->terminated_newline = false;
         lexer->result_symbol = _TERMINATION;
         return true;
       }
 
       else {
-          // fprintf(stderr,"RETURNING WHITESPACE HERE");
         lexer->mark_end(lexer);
         lexer->result_symbol = _WHITESPACE;
         return true;
@@ -960,33 +957,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
       if (valid_symbols[DOTTED_STATEMENT_BLOCK]) {
         lexer->mark_end(lexer);
-        // advance(lexer);
-        // int curly_brace_count = 1;
-        // while(!lexer->eof(lexer) && lexer->lookahead!= '\n' && curly_brace_count > 0) {
-        //   if (lexer->lookahead == '{') {
-        //     curly_brace_count++;
-        //   } else if (lexer->lookahead == '}') {
-        //     curly_brace_count--;
-        //   }
-        //   advance(lexer);
-        // }
         lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
-        // // this means we have a multiline block in a dotted statement
-        // if (curly_brace_count > 0) {
-        //   lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
-        //   scanner->terminated_newline = false;
-        //   return true;
-        // }
-
-        // else if (valid_symbol_argumentless_loop) {
-        //   lexer->result_symbol = _ARGUMENTLESS_LOOP;
-        //   scanner->terminated_newline = false;
-        //   return true;
-        // }
-
-        // else {
-        //   return false;
-        // }
       }
 
       else if (valid_symbol_argumentless_loop) {
@@ -995,10 +966,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         scanner->terminated_newline = false;
         return true;
       }
-
-      // else {
-      //     return false;
-      // }
     }
 
     if (count > 0 && valid_symbols[_WHITESPACE]) {
@@ -1016,9 +983,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
     if (lexer->eof(lexer) || lexer-> lookahead == '}') {
         if (valid_symbol_statement_termination) {
-            // if (valid_symbols[_BOL_BLOCK]) {
-            //     return false;
-            // }
           lexer->result_symbol = _STATEMENT_TERMINATION;
           scanner->terminated_newline = false;
           return true;

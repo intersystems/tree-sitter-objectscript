@@ -164,16 +164,18 @@ Set with Indirection
                   (oref_parameter
                     (member_name
                       (identifier_segment_immediate))))))
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
               (bracket))))
         (expression
           (expr_atom
@@ -242,11 +244,12 @@ Set With Indexing
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -259,11 +262,12 @@ Set With Indexing
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -328,12 +332,13 @@ Set With Indirection2
                               (expr_atom
                                 (lvn
                                   (objectscript_identifier))))
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier))))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (lvn
+                                      (objectscript_identifier)))))
                               (bracket)))))))))))))
       (statement
         (command_quit
@@ -342,8 +347,7 @@ Set With Indirection2
             (expression
               (expr_atom
                 (lvn
-                  (_base_variable
-                    (objectscript_identifier))))
+                  (objectscript_identifier)))
               (expr_tail
                 (binary_operator)
                 (expression
@@ -370,12 +374,13 @@ Set With Indirection2
                         (expr_atom
                           (lvn
                             (objectscript_identifier))))
-                      (subscripts
+                      (method_args
                         (bracket)
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))
                         (bracket))))))))))))
   (statement
     (command_zwrite
@@ -695,47 +700,114 @@ set command with ^$ syntax
               (objectscript_identifier))))
         (expression
           (expr_atom
-            (lvn
-              (objectscript_identifier)
-              (subscripts
+            (ssvn
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)
+                    (method_args
+                      (bracket)
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))
+                      (bracket)))))
+              (identifier_segment_immediate)
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (bracket)))))
-        (identifier_segment_immediate)
-        (subscripts
-          (bracket)
-          (expression
-            (expr_atom
-              (string_literal))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
-          (expression
-            (expr_atom
-              (string_literal)))
-          (expression
-            (expr_atom
-              (system_defined_variable)))
-          (bracket))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (system_defined_variable))))
+                (bracket)))))))))
+
+===
+set command $s
+===
+ s x=$s(x>1:HI(9)_S_HI(10))
+---
+
+(source_file
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (glvn
+            (lvn
+              (objectscript_identifier))))
+        (expression
+          (expr_atom
+            (system_defined_function
+              (dollar_select
+                (dollar_arg_pair
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (numeric_literal)))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)
+                        (method_args
+                          (bracket)
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (numeric_literal))))
+                          (bracket))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
+                              (bracket))))))))))))))))

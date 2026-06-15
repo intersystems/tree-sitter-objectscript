@@ -9,8 +9,6 @@
 
 const objectscript_expr = require('../expr/grammar');
 
-const {unspace: generate_post_conditionals} = require('./utils');
-
 const {
   commaSep1,
   commaSep,
@@ -63,12 +61,6 @@ function rule_refs($, ruleNames) {
   return ruleNames.map((ruleName) => $[ruleName]);
 }
 
-const post_conditional_rules = generate_post_conditionals(
-  // @ts-ignore
-  objectscript_expr.grammar,
-  [sym('method_args'), sym('subscripts')],
-);
-
 module.exports = grammar(objectscript_expr, {
   name: 'objectscript_core',
   externals: ($) => [
@@ -108,6 +100,7 @@ module.exports = grammar(objectscript_expr, {
     $.bol_extra,
     $._do_termination,
     $._bol_block,
+    $._post_conditional_end,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -130,12 +123,7 @@ module.exports = grammar(objectscript_expr, {
   ],
   // Note that adding the word key
   // makes tree sitter not like the one letter form of keyword write
-  precedences: ($, previous) => [
-    [$.oref_method_post_cond, $.oref_property_post_cond],
-    [$.oref_chain_expr_post_cond, $.expr_atom_post_cond],
-    [$.class_method_call_post_cond, $.oref_method_post_cond],
-    ...previous,
-  ],
+  precedences: ($, previous) => [...previous],
   // inline: ($, previous) => [$.set_target, ...previous],
 
   rules: {
@@ -390,23 +378,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     set_argument: ($) =>
       choice(
-        seq(
-          choice($.set_target, $.set_target_list),
-          '=',
-          choice(
-            seq(
-              '^$|',
-              $._expression_list,
-              '|',
-              choice(
-                $.identifier_segment_immediate,
-                $.identifier_segment_immediate_special,
-              ),
-              $.subscripts,
-            ),
-            $.expression,
-          ),
-        ),
+        seq(choice($.set_target, $.set_target_list), '=', $.expression),
         $.indirection,
       ),
 
@@ -725,8 +697,7 @@ module.exports = grammar(objectscript_expr, {
         // ),
       ),
 
-    timeout: ($) =>
-      seq(token.immediate(':'), alias($.expression_post_cond, $.expression)),
+    timeout: ($) => seq(token.immediate(':'), $.expression),
 
     // Reference: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RCOS_cread#RCOS_cread25
     command_read: ($) =>
@@ -795,9 +766,9 @@ module.exports = grammar(objectscript_expr, {
       ),
     close_parameter_option_value: ($) =>
       choice(
-        alias('"K"', $.string_literal),
-        alias('"D"', $.string_literal),
-        alias('"I"', $.string_literal),
+        alias(choice('"k"', '"K"'), $.string_literal),
+        alias(choice('"D"', '"d"'), $.string_literal),
+        alias(choice('"I"', '"i"'), $.string_literal),
         seq($.close_rename, $.device),
         seq(
           alias(/del(ete)?/i, $.mnemonic_name),
@@ -969,7 +940,7 @@ module.exports = grammar(objectscript_expr, {
               // jobLocation
               seq(
                 choice(token.immediate('['), token.immediate('|')),
-                $._routine_ref_namespace,
+                $.expression,
                 choice(token.immediate(']'), token.immediate('|')),
               ),
             ),
@@ -1003,9 +974,8 @@ module.exports = grammar(objectscript_expr, {
       build_command_rule_argumentful_block_allowed(
         $,
         $.keyword_merge,
-        commaSep1($.merge_argument),
+        commaSep1(alias($.set_argument, $.merge_argument)),
       ),
-    merge_argument: ($) => seq($.set_target, '=', $.set_target),
 
     command_return: ($) =>
       prec.right(
@@ -1178,7 +1148,7 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
     device: ($) => sep1Immediate($.expression, '/'),
-    _zkill_arg: ($) => choice($._target_var_arg, $.dollar_arg_pair),
+    _zkill_arg: ($) => choice($._target_variable, $.dollar_arg_pair),
 
     command_zkill: ($) =>
       build_command_rule_argumentful_block_allowed(
@@ -1374,8 +1344,9 @@ module.exports = grammar(objectscript_expr, {
       seq(
         $._post_conditional_id,
         token.immediate(':'),
-        alias($.expression_post_cond, $.expression),
+        $.expression,
+        $._post_conditional_end,
       ),
-    ...post_conditional_rules,
+    // ...post_conditional_rules,
   },
 });

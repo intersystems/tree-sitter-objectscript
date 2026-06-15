@@ -335,11 +335,12 @@ Do Statement With Param Passing
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -349,11 +350,12 @@ Do Statement With Param Passing
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -363,11 +365,12 @@ Do Statement With Param Passing
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (expression
           (expr_atom
@@ -507,12 +510,13 @@ Do Statement Object Method
           (instance_variable
             (member_name
               (identifier_segment_immediate))
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
               (bracket)))
           (oref_method
             (method_name
@@ -567,8 +571,7 @@ Do Statement with Indirection
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -671,8 +674,7 @@ Do Statement with Argument Postconditionals
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -686,8 +688,7 @@ Do Statement with Argument Postconditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -701,8 +702,7 @@ Do Statement with Argument Postconditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -719,8 +719,7 @@ Do Statement with Argument Postconditionals
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -734,8 +733,7 @@ Do Statement with Argument Postconditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -749,8 +747,7 @@ Do Statement with Argument Postconditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -772,8 +769,7 @@ Do Statement with Argument Postconditionals
                       (expression
                         (expr_atom
                           (lvn
-                            (_base_variable
-                              (objectscript_identifier))))
+                            (objectscript_identifier)))
                         (expr_tail
                           (binary_operator)
                           (expression
@@ -789,8 +785,7 @@ Do Statement with Argument Postconditionals
                           (expression
                             (expr_atom
                               (lvn
-                                (_base_variable
-                                  (objectscript_identifier))))
+                                (objectscript_identifier)))
                             (expr_tail
                               (binary_operator)
                               (expression
@@ -872,17 +867,18 @@ Do Statement with Argument Postconditionals
                 (expr_atom
                   (lvn
                     (objectscript_identifier)
-                    (subscripts
+                    (method_args
                       (bracket)
-                      (expression
-                        (expr_atom
-                          (system_defined_function
-                            (dollar_function
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (lvn
-                                      (objectscript_identifier)))))))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (system_defined_function
+                              (dollar_function
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))))))
                       (bracket))))))))
         (post_conditional
           (expression
@@ -904,17 +900,18 @@ Do Statement with Argument Postconditionals
                 (expr_atom
                   (lvn
                     (objectscript_identifier)
-                    (subscripts
+                    (method_args
                       (bracket)
-                      (expression
-                        (expr_atom
-                          (system_defined_function
-                            (dollar_function
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (lvn
-                                      (objectscript_identifier)))))))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (system_defined_function
+                              (dollar_function
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))))))
                       (bracket))))))))
         (post_conditional
           (expression
@@ -1078,8 +1075,7 @@ Do While Statement and Quit
                 (expression
                   (expr_atom
                     (lvn
-                      (_base_variable
-                        (objectscript_identifier))))
+                      (objectscript_identifier)))
                   (expr_tail
                     (binary_operator)
                     (expression
@@ -1368,8 +1364,7 @@ Do Statement Dot Syntax
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -1394,8 +1389,7 @@ Do Statement Dot Syntax
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression

@@ -278,12 +278,13 @@ JOB statements
                       (expr_atom
                         (ssvn
                           (identifier_segment_immediate)
-                          (subscripts
+                          (method_args
                             (bracket)
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))
                             (bracket)))))))))))))
     (statement
       (command_set
@@ -302,12 +303,13 @@ JOB statements
                       (expr_atom
                         (ssvn
                           (identifier_segment_immediate)
-                          (subscripts
+                          (method_args
                             (bracket)
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier)))))
                             (bracket)))))))))))))
     (statement
       (command_set
@@ -326,11 +328,12 @@ JOB statements
                       (expr_atom
                         (ssvn
                           (identifier_segment_immediate)
-                          (subscripts
+                          (method_args
                             (bracket)
-                            (expression
-                              (expr_atom
-                                (string_literal)))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (string_literal))))
                             (bracket)))))))))))))
     (statement
       (command_write
@@ -378,8 +381,7 @@ JOB With Postconditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (pattern_operator
                 (pattern_expression)))))
@@ -412,7 +414,9 @@ JOB Doc Syntax: joblocation forms
             (line_ref
               (routine_ref
                 (routine_name))))
-          (string_literal))))
+          (expression
+            (expr_atom
+              (string_literal))))))
     (statement
       (command_job
         (keyword_job)
@@ -422,8 +426,10 @@ JOB Doc Syntax: joblocation forms
               (objectscript_identifier)
               (routine_ref
                 (routine_name))))
-          (lvn
-            (objectscript_identifier)))))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))))
     (statement
       (command_job
         (keyword_job)
@@ -454,7 +460,9 @@ JOB Doc Syntax: joblocation forms
                       (expr_atom
                         (numeric_literal))))))
               (bracket)))
-          (string_literal)
+          (expression
+            (expr_atom
+              (string_literal)))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -476,8 +484,10 @@ JOB Doc Syntax: joblocation forms
             (method_args
               (bracket)
               (bracket)))
-          (lvn
-            (objectscript_identifier))
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier))))
           (timeout
             (expression
               (expr_atom
@@ -536,4 +546,44 @@ job statement with $namespace
               (objectscript_identifier)
               (routine_ref
                 (routine_name))))
-          (system_defined_variable))))))
+          (expression
+            (expr_atom
+              (system_defined_variable))))))))
+
+===
+job with expression namespace
+===
+ j testing^%SYS.ok["^"_x_"^"_y]
+---
+
+(source_file
+  (statements
+    (statement
+      (command_job
+        (keyword_job)
+        (job_argument
+          (routine_tag_call
+            (line_ref
+              (objectscript_identifier)
+              (routine_ref
+                (routine_name))))
+          (expression
+            (expr_atom
+              (string_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))))))))))

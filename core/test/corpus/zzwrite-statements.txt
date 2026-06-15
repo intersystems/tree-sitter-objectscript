@@ -38,8 +38,7 @@ Valid ZZWRITE statements
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -223,14 +222,16 @@ zzwrite_global_variable_with_subscripts
         (expression
           (expr_atom
             (gvn
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))))
 
 ===
@@ -265,11 +266,12 @@ zzwrite_extended_global_reference_pipe_syntax
               (expression
                 (expr_atom
                   (string_literal)))
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))))
 
 ===
@@ -289,11 +291,12 @@ zzwrite_extended_global_reference_bracket_syntax
               (expression
                 (expr_atom
                   (string_literal)))
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))))
 
 ===
@@ -310,14 +313,16 @@ zzwrite_process_private_global
         (expression
           (expr_atom
             (gvn
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (string_literal)))
-                (expression
-                  (expr_atom
-                    (string_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (string_literal))))
                 (bracket)))))))))
 
 ===

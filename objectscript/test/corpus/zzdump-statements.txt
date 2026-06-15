@@ -37,8 +37,7 @@ Valid ZZDUMP statements
         (expression
           (expr_atom
             (lvn
-              (_base_variable
-                (objectscript_identifier))))
+              (objectscript_identifier)))
           (expr_tail
             (binary_operator)
             (expression
@@ -201,8 +200,7 @@ zzdump_with_postconditional_complex
               (expression
                 (expr_atom
                   (lvn
-                    (_base_variable
-                      (objectscript_identifier))))
+                    (objectscript_identifier)))
                 (expr_tail
                   (binary_operator)
                   (expression
@@ -217,8 +215,7 @@ zzdump_with_postconditional_complex
                         (expression
                           (expr_atom
                             (lvn
-                              (_base_variable
-                                (objectscript_identifier))))
+                              (objectscript_identifier)))
                           (expr_tail
                             (binary_operator)
                             (expression
@@ -248,14 +245,16 @@ zzdump_global_variable
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))))
 
 ===
@@ -288,11 +287,12 @@ zzdump_extended_ref_global
             (expression
               (expr_atom
                 (string_literal)))
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))))
 
 ===
@@ -322,14 +322,16 @@ zzdump_process_private_global
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (expression
-                (expr_atom
-                  (string_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
               (bracket))))))))
 
 ===
@@ -444,8 +446,7 @@ zzdump_postconditional_without_space
               (expression
                 (expr_atom
                   (lvn
-                    (_base_variable
-                      (objectscript_identifier))))
+                    (objectscript_identifier)))
                 (expr_tail
                   (binary_operator)
                   (expression
@@ -474,8 +475,7 @@ zzdump_postconditional_with_commas
               (expression
                 (expr_atom
                   (lvn
-                    (_base_variable
-                      (objectscript_identifier))))
+                    (objectscript_identifier)))
                 (expr_tail
                   (binary_operator)
                   (expression

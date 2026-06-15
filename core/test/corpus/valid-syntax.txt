@@ -118,11 +118,12 @@ MAX
             (expr_atom
               (lvn
                 (objectscript_identifier)
-                (subscripts
+                (method_args
                   (bracket)
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
                   (bracket))))))))
     (statement
       (command_set
@@ -135,14 +136,16 @@ MAX
           (expression
             (expr_atom
               (gvn
-                (subscripts
+                (method_args
                   (bracket)
-                  (expression
-                    (expr_atom
-                      (string_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
                   (bracket))))))))
     (statement
       (command_set
@@ -312,8 +315,7 @@ MAX
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -326,8 +328,7 @@ MAX
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression
@@ -350,8 +351,7 @@ MAX
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (binary_operator)
               (expression

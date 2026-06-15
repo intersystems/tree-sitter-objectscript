@@ -59,7 +59,6 @@ module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
     [$.oref_method, $.oref_property],
-    [$.method_arg, $.subscripts],
     [$.oref_chain_expr, $.expr_atom],
     [$.class_method_call, $.oref_method],
   ],
@@ -231,7 +230,7 @@ module.exports = grammar({
         seq(
           token.immediate('@'),
           $.parenthetical_expression,
-          optional(seq(token.immediate('@'), $.subscripts)),
+          optional(seq(token.immediate('@'), $.method_args)),
         ),
       ),
 
@@ -278,7 +277,7 @@ module.exports = grammar({
               /(?:\$\$\$)?[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
             ),
           ),
-          optional($.subscripts),
+          optional($.method_args),
         ),
       ),
     _global_reference_prefix: ($) =>
@@ -318,16 +317,17 @@ module.exports = grammar({
         repeat(choice('+', '-', '\'')),
         choice($.lvn, $.string_literal, $.system_defined_variable),
       ),
-    lvn: ($) => prec.right(seq($._base_variable, optional($.subscripts))),
+    lvn: ($) => prec.right(seq($._base_variable, optional($.method_args))),
     ssvn: ($) =>
       prec.right(
         seq(
           '^$',
+          optional($._global_reference_prefix),
           choice(
             $.identifier_segment_immediate,
             $.identifier_segment_immediate_special,
           ),
-          optional($.subscripts),
+          optional($.method_args),
         ),
       ),
     sql_field_reference: ($) =>
@@ -419,11 +419,11 @@ module.exports = grammar({
       // NOTE: Since a multidimensional property is indistinguishable from a method
       //       call (unless it's byref or has variadic args) we'll almost never match
       //       the subscripts clause.
-      seq(alias($.member_name, $.property_name), optional($.subscripts)),
+      alias($.member_name, $.property_name),
 
     instance_variable: ($) =>
       prec.right(
-        seq(token(/[irms]\%/i), $.member_name, optional($.subscripts)),
+        seq(token(/[irms]\%/i), $.member_name, optional($.method_args)),
       ),
     member_name: ($) =>
       choice(
@@ -438,14 +438,6 @@ module.exports = grammar({
         ),
       ),
     oref_parameter: ($) => seq(token.immediate('#'), $.member_name),
-    subscripts: ($) =>
-      seq(
-        alias(token.immediate('('), $.bracket),
-        $.expression,
-        repeat(seq(',', $.expression)),
-        alias(')', $.bracket),
-      ),
-
     relative_dot_method: ($) => build_relative_dot_fn($.oref_method),
     relative_dot_property: ($) => build_relative_dot_fn($.oref_property),
     relative_dot_parameter: ($) => build_relative_dot_fn($.oref_parameter),
@@ -459,6 +451,7 @@ module.exports = grammar({
         -1,
         token(
           choice(
+            /\$ZW/i,
             /\$mviostatus/i,
             /\$mvioerror/i,
             /\$MVLOCKLIST/i,
@@ -884,9 +877,9 @@ module.exports = grammar({
         choice(
           seq(
             repeat1(seq(',', $.dollar_arg_pair)),
-            optional(seq(',', ':', $.expression)),
+            optional(seq(',', ':', choice($.expression))),
           ),
-          seq(',', ':', $.expression),
+          seq(',', ':', $.expression, optional($.method_args)),
         ),
         ')',
       ),
@@ -955,7 +948,7 @@ module.exports = grammar({
         seq(
           '@',
           $.expression,
-          optional(seq(token.immediate('@'), $.subscripts)),
+          optional(seq(token.immediate('@'), $.method_args)),
         ),
       ),
 

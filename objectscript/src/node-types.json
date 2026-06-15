@@ -1,141 +1,5 @@
 [
   {
-    "type": "_base_variable",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_base_variable_immediate",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier_segment_immediate",
-          "named": true
-        },
-        {
-          "type": "identifier_segment_immediate_special",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_expression_list",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_extrinsic_reference",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "line_ref",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_global_reference_prefix",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "_expression_list",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_ole_server_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "_base_variable_immediate",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_routine_ref_namespace",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "lvn",
-          "named": true
-        },
-        {
-          "type": "string_literal",
-          "named": true
-        },
-        {
-          "type": "system_defined_variable",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "_routine_ref_prefix",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "_routine_ref_namespace",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "argument",
     "named": true,
     "fields": {},
@@ -1863,7 +1727,15 @@
           "named": true
         },
         {
+          "type": "instance_variable",
+          "named": true
+        },
+        {
           "type": "keyword_zkill",
+          "named": true
+        },
+        {
+          "type": "oref_chain_expr",
           "named": true
         },
         {
@@ -2484,6 +2356,10 @@
         },
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "method_args",
           "named": true
         }
       ]
@@ -3221,10 +3097,6 @@
       "required": true,
       "types": [
         {
-          "type": "_extrinsic_reference",
-          "named": true
-        },
-        {
           "type": "line_ref",
           "named": true
         },
@@ -3432,29 +3304,15 @@
       "required": false,
       "types": [
         {
-          "type": "_global_reference_prefix",
-          "named": true
-        },
-        {
           "type": "expression",
           "named": true
         },
         {
-          "type": "subscripts",
+          "type": "method_args",
           "named": true
         }
       ]
     }
-  },
-  {
-    "type": "identifier_segment_immediate",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "identifier_segment_immediate_special",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "import_code",
@@ -3745,11 +3603,11 @@
           "named": true
         },
         {
-          "type": "parenthetical_expression",
+          "type": "method_args",
           "named": true
         },
         {
-          "type": "subscripts",
+          "type": "parenthetical_expression",
           "named": true
         }
       ]
@@ -3768,7 +3626,7 @@
           "named": true
         },
         {
-          "type": "subscripts",
+          "type": "method_args",
           "named": true
         }
       ]
@@ -3803,19 +3661,11 @@
           "named": true
         },
         {
-          "type": "string_literal",
-          "named": true
-        },
-        {
           "type": "superclass_method_call",
           "named": true
         },
         {
           "type": "system_defined_function",
-          "named": true
-        },
-        {
-          "type": "system_defined_variable",
           "named": true
         },
         {
@@ -4104,14 +3954,6 @@
       "required": true,
       "types": [
         {
-          "type": "_base_variable",
-          "named": true
-        },
-        {
-          "type": "_routine_ref_prefix",
-          "named": true
-        },
-        {
           "type": "indirection",
           "named": true
         },
@@ -4229,7 +4071,7 @@
       "required": false,
       "types": [
         {
-          "type": "_base_variable",
+          "type": "method_args",
           "named": true
         },
         {
@@ -4238,10 +4080,6 @@
         },
         {
           "type": "objectscript_identifier_special",
-          "named": true
-        },
-        {
-          "type": "subscripts",
           "named": true
         }
       ]
@@ -4357,7 +4195,19 @@
       "required": true,
       "types": [
         {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "indirection",
+          "named": true
+        },
+        {
           "type": "set_target",
+          "named": true
+        },
+        {
+          "type": "set_target_list",
           "named": true
         }
       ]
@@ -4706,16 +4556,6 @@
     }
   },
   {
-    "type": "objectscript_identifier",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "objectscript_identifier_special",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "ole_object_reference",
     "named": true,
     "fields": {},
@@ -4723,14 +4563,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "_base_variable_immediate",
-          "named": true
-        },
-        {
-          "type": "_ole_server_name",
-          "named": true
-        },
         {
           "type": "identifier_segment_immediate",
           "named": true
@@ -4777,10 +4609,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "_ole_server_name",
-          "named": true
-        },
         {
           "type": "class_method_call",
           "named": true
@@ -4910,15 +4738,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "property_name",
-          "named": true
-        },
-        {
-          "type": "subscripts",
           "named": true
         }
       ]
@@ -5064,11 +4888,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "pattern_expression",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "pattern_operator",
@@ -6134,10 +5953,6 @@
       "required": true,
       "types": [
         {
-          "type": "_routine_ref_prefix",
-          "named": true
-        },
-        {
           "type": "indirection",
           "named": true
         },
@@ -6205,14 +6020,6 @@
           "named": true
         },
         {
-          "type": "identifier_segment_immediate",
-          "named": true
-        },
-        {
-          "type": "identifier_segment_immediate_special",
-          "named": true
-        },
-        {
           "type": "indirection",
           "named": true
         },
@@ -6222,10 +6029,6 @@
         },
         {
           "type": "set_target_list",
-          "named": true
-        },
-        {
-          "type": "subscripts",
           "named": true
         }
       ]
@@ -6371,11 +6174,6 @@
     "fields": {}
   },
   {
-    "type": "sql_field_modifier",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "sql_field_reference",
     "named": true,
     "fields": {},
@@ -6403,6 +6201,10 @@
       "required": true,
       "types": [
         {
+          "type": "expression",
+          "named": true
+        },
+        {
           "type": "identifier_segment_immediate",
           "named": true
         },
@@ -6411,7 +6213,7 @@
           "named": true
         },
         {
-          "type": "subscripts",
+          "type": "method_args",
           "named": true
         }
       ]
@@ -6717,25 +6519,6 @@
       "types": [
         {
           "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "subscripts",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "bracket",
-          "named": true
-        },
-        {
-          "type": "expression",
           "named": true
         }
       ]
@@ -7805,10 +7588,6 @@
     "named": false
   },
   {
-    "type": "^$|",
-    "named": false
-  },
-  {
     "type": "_",
     "named": false
   },
@@ -7875,6 +7654,14 @@
   },
   {
     "type": "identifier",
+    "named": true
+  },
+  {
+    "type": "identifier_segment_immediate",
+    "named": true
+  },
+  {
+    "type": "identifier_segment_immediate_special",
     "named": true
   },
   {
@@ -8327,7 +8114,19 @@
     "named": true
   },
   {
+    "type": "objectscript_identifier",
+    "named": true
+  },
+  {
+    "type": "objectscript_identifier_special",
+    "named": true
+  },
+  {
     "type": "paren_fenced_text",
+    "named": true
+  },
+  {
+    "type": "pattern_expression",
     "named": true
   },
   {
@@ -8352,6 +8151,10 @@
   },
   {
     "type": "routine_name",
+    "named": true
+  },
+  {
+    "type": "sql_field_modifier",
     "named": true
   },
   {

@@ -34,11 +34,12 @@ Kill Statements
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))
     (statement
       (command_kill
@@ -99,40 +100,46 @@ Kill Statements Array Node
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (kill_target
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))
         (kill_target
           (glvn
             (lvn
               (objectscript_identifier)
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
-                (expression
-                  (expr_atom
-                    (numeric_literal)))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
                 (bracket)))))))))
 
 ===========================
@@ -190,8 +197,7 @@ Kill With PostConditionals
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (pattern_operator
                 (pattern_expression)))))
@@ -214,11 +220,12 @@ Zkill
         (glvn
           (lvn
             (objectscript_identifier)
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))
     (statement
       (command_zkill
@@ -227,19 +234,19 @@ Zkill
           (expression
             (expr_atom
               (lvn
-                (_base_variable
-                  (objectscript_identifier))))
+                (objectscript_identifier)))
             (expr_tail
               (pattern_operator
                 (pattern_expression)))))
         (glvn
           (lvn
             (objectscript_identifier)
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))))
 
 ===

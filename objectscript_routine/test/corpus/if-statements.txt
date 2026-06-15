@@ -170,12 +170,13 @@ If Statements 1
                   (set_target
                     (glvn
                       (gvn
-                        (subscripts
+                        (method_args
                           (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))
                           (bracket)))))
                   (expression
                     (expr_atom
@@ -1168,18 +1169,20 @@ If + built in + set, valid
             (set_target
               (glvn
                 (gvn
-                  (subscripts
+                  (method_args
                     (bracket)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier_special)
-                          (subscripts
-                            (bracket)
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))
-                            (bracket)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (bracket)
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
+                              (bracket))))))
                     (bracket)))))
             (expression
               (expr_atom
@@ -1194,18 +1197,20 @@ If + built in + set, valid
                                 (expression
                                   (expr_atom
                                     (gvn
-                                      (subscripts
+                                      (method_args
                                         (bracket)
-                                        (expression
-                                          (expr_atom
-                                            (lvn
-                                              (objectscript_identifier_special)
-                                              (subscripts
-                                                (bracket)
-                                                (expression
-                                                  (expr_atom
-                                                    (numeric_literal)))
-                                                (bracket)))))
+                                        (method_arg
+                                          (expression
+                                            (expr_atom
+                                              (lvn
+                                                (objectscript_identifier_special)
+                                                (method_args
+                                                  (bracket)
+                                                  (method_arg
+                                                    (expression
+                                                      (expr_atom
+                                                        (numeric_literal))))
+                                                  (bracket))))))
                                         (bracket)))))))))))
                     (method_arg
                       (expression
@@ -1229,11 +1234,12 @@ If + built in + set, valid
                         (expr_atom
                           (lvn
                             (objectscript_identifier_special)
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
                               (bracket))))))
                     (dollar_arg_pair
                       (expression
@@ -1253,11 +1259,12 @@ If + built in + set, valid
                         (expr_atom
                           (lvn
                             (objectscript_identifier_special)
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
                               (bracket))))))
                     (dollar_arg_pair
                       (expression
@@ -1277,11 +1284,12 @@ If + built in + set, valid
                         (expr_atom
                           (lvn
                             (objectscript_identifier_special)
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
                               (bracket))))))
                     (dollar_arg_pair
                       (expression
@@ -1301,11 +1309,12 @@ If + built in + set, valid
                         (expr_atom
                           (lvn
                             (objectscript_identifier_special)
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
                               (bracket))))))
                     (dollar_arg_pair
                       (expression
@@ -1325,11 +1334,12 @@ If + built in + set, valid
                         (expr_atom
                           (lvn
                             (objectscript_identifier_special)
-                            (subscripts
+                            (method_args
                               (bracket)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal))))
                               (bracket))))))))))))))))
 
 ====
