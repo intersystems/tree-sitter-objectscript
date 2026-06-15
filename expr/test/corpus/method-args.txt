@@ -1,0 +1,87 @@
+===
+method arg byref indirection
+===
+ ##class(%SQL.Manager.ShowPlan).ShowPlanSQLError(.@wrtref)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (class_method_call
+        (class_ref
+          (keyword_pound_pound_class)
+          (bracket)
+          (class_name
+            (identifier))
+          (bracket))
+        (method_name
+          (identifier_segment_immediate))
+        (method_args
+          (bracket)
+          (method_arg
+            (byref_arg
+              (indirection
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))
+          (bracket))))))
+
+===
+by ref with instance variable
+===
+ $classmethod(i%%class,i%%query_"hi",.i%%methodprop)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_method
+          (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (instance_variable
+                  (member_name
+                    (identifier_segment_immediate_special))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (instance_variable
+                  (member_name
+                    (identifier_segment_immediate_special))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (method_arg
+            (byref_arg
+              (instance_variable
+                (member_name
+                  (identifier_segment_immediate_special)))))
+          (bracket))))))
+
+===
+by ref arg with system defined variable
+===
+  $classmethod(i%%class, .$MVLOCKLIST)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_method
+          (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (instance_variable
+                  (member_name
+                    (identifier_segment_immediate_special))))))
+          (method_arg
+            (byref_arg
+              (system_defined_variable)))
+          (bracket))))))

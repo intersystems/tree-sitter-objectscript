@@ -12,9 +12,10 @@ Special cases, user functions
         (expression
           (expr_atom
             (extrinsic_function
-              (objectscript_identifier)
-              (routine_ref
-                (routine_name))
+              (line_ref
+                (objectscript_identifier)
+                (routine_ref
+                  (routine_name)))
               (method_args
                 (bracket)
                 (method_arg
@@ -23,3 +24,113 @@ Special cases, user functions
                       (lvn
                         (objectscript_identifier)))))
                 (bracket)))))))))
+
+====
+Special cases, parenthesized indirect routine reference
+====
+ '$$test^@("x")(.s)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (unary_expression
+        (unary_operator)
+        (expression
+          (expr_atom
+            (extrinsic_function
+              (line_ref
+                (objectscript_identifier)
+                (routine_ref
+                  (indirection
+                    (parenthetical_expression
+                      (bracket)
+                      (expression
+                        (expr_atom
+                          (string_literal)))
+                      (bracket)))))
+              (method_args
+                (bracket)
+                (method_arg
+                  (byref_arg
+                    (lvn
+                      (objectscript_identifier))))
+                (bracket)))))))))
+
+===
+line ref with by ref arg system defined var
+===
+ $$x^|"%SYS"|y(.$MVLOCKLIST)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (extrinsic_function
+        (line_ref
+          (objectscript_identifier)
+          (routine_ref
+            (string_literal)
+            (routine_name)))
+        (method_args
+          (bracket)
+          (method_arg
+            (byref_arg
+              (system_defined_variable)))
+          (bracket))))))
+
+===
+line ref with namespace that has subscripts
+===
+ $$^$|nodes(node)|LOCK("^HI.Hello.BYE.Goodbye("""_hey_""","""_okay_""")",$j)
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (extrinsic_function
+        (line_ref
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (bracket)
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (bracket)))
+          (routine_name))
+        (method_args
+          (bracket)
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_variable))))
+          (bracket))))))

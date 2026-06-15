@@ -1,9 +1,9 @@
 ===
 valid dotted statement block
 ===
- if 1 d 
- . if 1 { 
- .   w "hi"
+ if 1 d
+ . if 1 {
+ .  w "hi"
  . }
 ---
 
@@ -32,18 +32,16 @@ valid dotted statement block
                       (write_argument
                         (expression
                           (expr_atom
-                            (string_literal)))))))
-                (dotted_statement)))))))))
+                            (string_literal)))))))))))))))
 
 ===
 valid dotted statement block with else
 ===
- d
- . . . i x { s x=-1  ;  collation
-	. . . } 
-    ... else { s x=0
-	. . . 	QUIT:x
-	. . . }
+     d
+    . . . i x {
+    	. . . } else {
+    	. . . 	QUIT:x
+    	. . . }
 ---
 
 (source_file
@@ -59,33 +57,9 @@ valid dotted statement block with else
                 (lvn
                   (objectscript_identifier))))
             (dotted_statement_block)
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))
-            (line_comment_3)
-            (dotted_statement)
             (else_block_dotted
               (keyword_else)
               (dotted_statement_block)
-              (statement
-                (command_set
-                  (keyword_set)
-                  (set_argument
-                    (set_target
-                      (glvn
-                        (lvn
-                          (objectscript_identifier))))
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))))
               (dotted_statement
                 (statement
                   (command_quit
@@ -94,15 +68,14 @@ valid dotted statement block with else
                       (expression
                         (expr_atom
                           (lvn
-                            (objectscript_identifier))))))))
-              (dotted_statement))))))))
+                            (objectscript_identifier)))))))))))))))
 
 ====
 Valid Dotted statements, quit after write
 ====
  d  d okay set x = 2
  . w !,"goodbye" d
- . . w !, x 
+ . . w !, x
  . quit
   quit
 ---
@@ -166,7 +139,7 @@ Valid Dotted statements, quit after write
 =====
 Do Statements Nested
 =====
-	i x d  d arr(.y,.z) GOTO filename 
+	i x d  d arr(.y,.z) GOTO filename
 	. set x = 2
 	. w hi
 ---
@@ -231,12 +204,12 @@ Do Statements Nested
 ===
 tag within do dotted statements
 ===
-tag 
+tag
  set x = 1
  set y = 1
- i 1 d   
+ i 1 d
  . s x = 2
- . if 1 d 
+ . if 1 d
  . . w !, "hi"
 keepit . . set y = 3
  . . w !, "bye"
@@ -338,16 +311,16 @@ keepit . . set y = 3
 ===
 dotted statements and labels and regular statements
 ===
-tag 
- i 1 d   
- . if 1 d 
+tag
+ i 1 d
+ . if 1 d
  . . w !, "hi"
 keepit . . set y = 3
  . . w !, "bye"
 	QUIT
 j2	; comment
 	; comment
-    n hey s x=0 
+    n hey s x=0
 ---
 
 (source_file
@@ -440,7 +413,7 @@ dotted statements, nested terminations
 ===
 test	n x,y
     d  q
-	... i $$x("y") i 1        
+	... i $$x("y") i 1
 	... e  i $$x("y")
 ---
 
@@ -472,7 +445,8 @@ test	n x,y
             (expression
               (expr_atom
                 (extrinsic_function
-                  (objectscript_identifier)
+                  (line_ref
+                    (objectscript_identifier))
                   (method_args
                     (bracket)
                     (method_arg
@@ -496,7 +470,8 @@ test	n x,y
                 (expression
                   (expr_atom
                     (extrinsic_function
-                      (objectscript_identifier)
+                      (line_ref
+                        (objectscript_identifier))
                       (method_args
                         (bracket)
                         (method_arg
@@ -511,7 +486,7 @@ dotted statements separated by Tags
 first
 	d  g hi
 	. w !,"bye"
- 
+
 second ; comment
 	d  g bye
 	. w !,"hi"
@@ -710,3 +685,85 @@ dotted statements within #if
                             (objectscript_identifier))))))))))))
       (statement
         (tag_end_if)))))
+
+===
+dotted if block, regular else old
+===
+    d
+    . If 1 {
+    . }
+    . Else  w "hi"
+---
+
+(source_file
+  (statement
+    (command_do
+      (keyword_do_old)
+      (dotted_statement
+        (dotted_block_statements
+          (command_if_dotted_block
+            (keyword_if)
+            (expression
+              (expr_atom
+                (numeric_literal)))
+            (dotted_statement_block))))
+      (dotted_statement
+        (statement
+          (command_else
+            (keyword_oldelse)
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))))
+
+====
+Dotted if old else
+====
+  If ..x(y) Do
+  . If 1 { }
+  . Else  w "hi"
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_old_if)
+      (expression
+        (expr_atom
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (identifier_segment_immediate))
+              (method_args
+                (bracket)
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (bracket))))))
+      (statement
+        (command_do
+          (keyword_do_old)
+          (dotted_statement
+            (dotted_block_statements
+              (command_if_dotted_block
+                (keyword_if)
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (dotted_statement_block))))
+          (dotted_statement
+            (statement
+              (command_else
+                (keyword_oldelse)
+                (statement
+                  (command_write
+                    (keyword_write)
+                    (write_argument
+                      (expression
+                        (expr_atom
+                          (string_literal))))))))))))))

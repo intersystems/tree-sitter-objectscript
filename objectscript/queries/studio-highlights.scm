@@ -374,23 +374,24 @@
 ; @variable.member.oref ->  blue fg, default bg
 (dollarsf
   [
-    (objectscript_identifier)
-    (objectscript_identifier_special)
+    (identifier_segment_immediate)
+    (identifier_segment_immediate_special)
   ] @type.builtin
   "."
   .
   [
-    (objectscript_identifier)
-    (objectscript_identifier_special)
+    (identifier_segment_immediate)
+    (identifier_segment_immediate_special)
   ] @variable.member.oref)
 
 ; end dollarsf
 ; start extrinsic_function
 (extrinsic_function
-  [
-    (objectscript_identifier)
-    (objectscript_identifier_special)
-  ] @label)
+  (line_ref
+    [
+      (objectscript_identifier)
+      (objectscript_identifier_special)
+    ] @label))
 
 ; end extrinsic_function
 ; start highlighting for code never touched
@@ -607,7 +608,7 @@
 
 ; start keywords
 ; @keyword.operator -> navy fg, default bg
-; 
+;
 [
   (xdata_keyword)
   (class_keyword)
@@ -861,7 +862,7 @@
 (variable_datatype
   "." @variable.builtin)
 
-(instance_method_call
+(method_call
   "." @variable.builtin)
 
 (class_method_call

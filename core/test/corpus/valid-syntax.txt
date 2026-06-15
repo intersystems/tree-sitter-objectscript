@@ -118,11 +118,12 @@ MAX
             (expr_atom
               (lvn
                 (objectscript_identifier)
-                (subscripts
+                (method_args
                   (bracket)
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
                   (bracket))))))))
     (statement
       (command_set
@@ -135,14 +136,16 @@ MAX
           (expression
             (expr_atom
               (gvn
-                (subscripts
+                (method_args
                   (bracket)
-                  (expression
-                    (expr_atom
-                      (string_literal)))
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))
                   (bracket))))))))
     (statement
       (command_set
@@ -220,7 +223,8 @@ MAX
                 (class_ref
                   (keyword_pound_pound_class)
                   (bracket)
-                  (class_name)
+                  (class_name
+                    (identifier))
                   (bracket))
                 (method_name
                   (identifier_segment_immediate))
@@ -238,9 +242,10 @@ MAX
           (expression
             (expr_atom
               (extrinsic_function
-                (objectscript_identifier)
-                (routine_ref
-                  (routine_name))
+                (line_ref
+                  (objectscript_identifier)
+                  (routine_ref
+                    (routine_name)))
                 (method_args
                   (bracket)
                   (method_arg

@@ -54,7 +54,8 @@ try catch tests
                   (class_ref
                     (keyword_pound_pound_class)
                     (bracket)
-                    (class_name)
+                    (class_name
+                      (identifier))
                     (bracket))
                   (method_name
                     (identifier_segment_immediate_special))
@@ -97,8 +98,8 @@ try catch tests
                   (expr_atom
                     (system_defined_function
                       (dollarsf
-                        (objectscript_identifier)
-                        (objectscript_identifier)
+                        (identifier_segment_immediate)
+                        (identifier_segment_immediate)
                         (method_args
                           (bracket)
                           (method_arg
@@ -232,3 +233,63 @@ try catch tests
         (statement
           (command_return
             (keyword_return)))))))
+
+===
+try catch dotted
+===
+test
+ d
+ . try { w "hi"
+ . } catch {
+ . w "bye"
+ . }
+---
+
+(source_file
+  (statement
+    (tag_statement
+      (tag)))
+  (statement
+    (command_do
+      (keyword_do_old)
+      (dotted_statement
+        (dotted_block_statements
+          (command_trycatch_dotted
+            (keyword_try)
+            (dotted_statement_block)
+            (statement
+              (command_write
+                (keyword_write)
+                (write_argument
+                  (expression
+                    (expr_atom
+                      (string_literal))))))
+            (keyword_catch)
+            (dotted_statement_block)
+            (dotted_statement
+              (statement
+                (command_write
+                  (keyword_write)
+                  (write_argument
+                    (expression
+                      (expr_atom
+                        (string_literal)))))))))))))
+
+===
+try catch dotted same line block
+===
+  d
+  . try {} catch {}
+---
+
+(source_file
+  (statement
+    (command_do
+      (keyword_do_old)
+      (dotted_statement
+        (dotted_block_statements
+          (command_trycatch_dotted
+            (keyword_try)
+            (dotted_statement_block)
+            (keyword_catch)
+            (dotted_statement_block)))))))

@@ -59,7 +59,10 @@
 
 (macro_constant) @constant.macro
 
-(objectscript_identifier) @variable
+[
+  (objectscript_identifier)
+  (identifier_segment_immediate)
+] @variable
 
 [
   (ssvn)
@@ -70,6 +73,7 @@
 [
   (gvn)
   (objectscript_identifier_special)
+  (identifier_segment_immediate_special)
   (instance_variable)
 ] @variable.member
 
@@ -265,7 +269,7 @@
   (argumentless_inline_comment)
 ] @comment
 
-(tag) @label
+(tag) @function.method
 
 [
   (pound_if_special_case_else)
@@ -295,16 +299,10 @@
 (else_block_dotted
   "." @punctuation.special.dots)
 
-(elseif_block_dotted
-  "." @punctuation.special.dots)
-
-(catch_block_dotted
-  "." @punctuation.special.dots)
-
 (variable_datatype
   "." @function.builtin)
 
-(instance_method_call
+(method_call
   "." @function.builtin)
 
 ; === END CORE ===

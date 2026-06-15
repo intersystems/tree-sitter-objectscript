@@ -4,6 +4,7 @@
 // @ts-check
 
 const STATEMENT_RULE_NAMES = [
+  'command_mvcall',
   'print_statement',
   'command_set',
   'command_write',
@@ -60,11 +61,13 @@ const STATEMENT_RULE_NAMES = [
   'tag_statement',
   'tag_end_if',
   'procedure',
-  'command_zload'
+  'command_zload',
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
+  /zdn/i,
   /mv/i,
+  /MVNEWCOM/i,
   /MVDIM/i,
   /Za(llocate)?/i,
   /zd(eallocate)?/i,
@@ -91,10 +94,7 @@ const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
   /zu(se)?/i,
 ];
 
-const PRINTLIST_COMMAND_PATTERNS = [
-  /MVC(RT)?/i,
-  /MV(PRINT)?/i,
-];
+const PRINTLIST_COMMAND_PATTERNS = [/MVC(RT)?/i, /MVP(RINT)?/i];
 
 module.exports = {
   STATEMENT_RULE_NAMES,

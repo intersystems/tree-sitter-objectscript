@@ -153,11 +153,12 @@ ZWRITE
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket)))))))
   (statement
     (command_zwrite
@@ -165,11 +166,12 @@ ZWRITE
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (string_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
               (bracket)))))))
   (statement
     (command_zwrite
@@ -177,7 +179,9 @@ ZWRITE
       (expression
         (expr_atom
           (gvn
-            (string_literal))))))
+            (expression
+              (expr_atom
+                (string_literal))))))))
   (statement
     (command_zwrite
       (keyword_zwrite)
@@ -187,7 +191,8 @@ ZWRITE
             (class_ref
               (keyword_pound_pound_class)
               (bracket)
-              (class_name)
+              (class_name
+                (identifier))
               (bracket))
             (method_name
               (identifier_segment_immediate_special))
@@ -253,10 +258,11 @@ ZWRITE
         (expr_atom
           (system_defined_function
             (dollar_list
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))
               (method_arg
                 (expression
                   (expr_atom

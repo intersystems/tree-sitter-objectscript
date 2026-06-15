@@ -59,7 +59,10 @@
 
 (macro_constant) @constant.macro
 
-(objectscript_identifier) @variable
+[
+  (objectscript_identifier)
+  (identifier_segment_immediate)
+] @variable
 
 [
   (ssvn)
@@ -70,6 +73,7 @@
 [
   (gvn)
   (objectscript_identifier_special)
+  (identifier_segment_immediate_special)
   (instance_variable)
 ] @variable.member
 
@@ -265,7 +269,7 @@
   (argumentless_inline_comment)
 ] @comment
 
-(tag) @label
+(tag) @function.method
 
 [
   (pound_if_special_case_else)
@@ -295,16 +299,10 @@
 (else_block_dotted
   "." @punctuation.special.dots)
 
-(elseif_block_dotted
-  "." @punctuation.special.dots)
-
-(catch_block_dotted
-  "." @punctuation.special.dots)
-
 (variable_datatype
   "." @function.builtin)
 
-(instance_method_call
+(method_call
   "." @function.builtin)
 
 ; === END CORE ===
@@ -317,13 +315,9 @@
   (keyword_includegenerator)
 ] @keyword.import
 
-[
-  (keyword_method)
-  (keyword_classmethod)
-] @keyword.function
+(keyword_class) @module
 
 [
-  (keyword_class)
   (keyword_extends)
   (keyword_property)
   (keyword_relationship)
@@ -335,6 +329,12 @@
   (keyword_trigger)
   (keyword_xdata)
   (keyword_storage)
+  (keyword_method)
+  (keyword_classmethod)
+  (keyword_not)
+  (keyword_references)
+  (keyword_byref)
+  (keyword_output)
 ] @keyword.type
 
 [
@@ -342,8 +342,8 @@
   (call_method_keyword)
   (extent_index_keyword)
   (method_keyword)
-  (class_keywords)
-  (query_keywords)
+  (class_keyword)
+  (query_keyword)
   (trigger_keyword)
   (method_keyword_language)
   (relationship_keyword)
@@ -354,13 +354,9 @@
   (xdata_keyword)
   (xdata_keyword_mimetype)
   (property_keyword)
-  (keyword_not)
-  (keyword_references)
-  (keyword_byref)
-  (keyword_output)
 ] @keyword.modifier
 
-(documatic_line) @comment.documentation @spell
+(documatic_line) @comment.documentation
 
 [
   (query_name)

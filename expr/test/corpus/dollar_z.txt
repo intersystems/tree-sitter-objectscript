@@ -24,3 +24,58 @@ Internal zobjclassmethod
               (expr_atom
                 (string_literal))))
           (bracket))))))
+
+===
+$ZOBJVAL inside of data
+===
+ $DATA($ZOBJVAL(oref,slot+1,0,3,slot+1)) # 2
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (system_defined_function
+        (dollar_function
+          (method_arg
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (dollar_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))
+                        (expr_tail
+                          (binary_operator)
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))))))))
+    (expr_tail
+      (binary_operator)
+      (expression
+        (expr_atom
+          (numeric_literal))))))

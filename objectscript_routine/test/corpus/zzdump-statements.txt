@@ -245,14 +245,16 @@ zzdump_global_variable
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))))
 
 ===
@@ -282,12 +284,15 @@ zzdump_extended_ref_global
       (expression
         (expr_atom
           (gvn
-            (string_literal)
-            (subscripts
+            (expression
+              (expr_atom
+                (string_literal)))
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
               (bracket))))))))
 
 ===
@@ -317,14 +322,16 @@ zzdump_process_private_global
       (expression
         (expr_atom
           (gvn
-            (subscripts
+            (method_args
               (bracket)
-              (expression
-                (expr_atom
-                  (string_literal)))
-              (expression
-                (expr_atom
-                  (string_literal)))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
               (bracket))))))))
 
 ===

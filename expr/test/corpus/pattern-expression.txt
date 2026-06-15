@@ -1,0 +1,23 @@
+===
+valid pattern expression
+===
+ '(x?1(1.3N3(1"."1.3N).1(1":"1.5N),.1"[".4(1N,1"a",1"A",1"b",1"B",1"c",1"C",1"d",1"D",1"e",1"E",1"f",1"F")2.7(1":".4(1N,1"a",1"A",1"b",1"B",1"c",1"C",1"d",1"D",1"e",1"E",1"f",1"F")).1(1(1"|",1"]:")1.5N)))
+---
+
+(source_file
+  (expression
+    (expr_atom
+      (unary_expression
+        (unary_operator)
+        (expression
+          (expr_atom
+            (parenthetical_expression
+              (bracket)
+              (expression
+                (expr_atom
+                  (lvn
+                    (objectscript_identifier)))
+                (expr_tail
+                  (pattern_operator
+                    (pattern_expression))))
+              (bracket))))))))

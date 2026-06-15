@@ -11,6 +11,8 @@ OPEN VALID STATEMENTS
   OPEN device:::mnespace
   OPEN device:"test"::mnespace
   OPEN device::10:mnespace
+  Open device:(/test=t...):hi
+  open device:(/test="t":/args="t","hi:bye",T:/OK)
   o d
 ---
 
@@ -222,6 +224,53 @@ OPEN VALID STATEMENTS
           (expr_atom
             (lvn
               (objectscript_identifier)))))))
+  (statement
+    (command_open
+      (keyword_open)
+      (open_argument
+        (device
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (device_params
+          (device_keywords
+            (mnemonic_name)
+            (variadic_arg
+              (lvn
+                (objectscript_identifier)))))
+        (expression
+          (expr_atom
+            (lvn
+              (objectscript_identifier)))))))
+  (statement
+    (command_open
+      (keyword_open)
+      (open_argument
+        (device
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (device_params
+          (device_keywords
+            (mnemonic_name)
+            (expression
+              (expr_atom
+                (string_literal))))
+          (device_keywords
+            (mnemonic_name)
+            (expression
+              (expr_atom
+                (string_literal))))
+          (string_literal)
+          (device_keywords
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
+          (device_keywords
+            (mnemonic_name))))))
   (statement
     (command_open
       (keyword_open)

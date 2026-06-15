@@ -191,7 +191,8 @@ WRITE OBJECT PROPERTIES
               (class_ref
                 (keyword_pound_pound_class)
                 (bracket)
-                (class_name)
+                (class_name
+                  (identifier))
                 (bracket))
               (method_name
                 (identifier_segment_immediate_special))
@@ -225,7 +226,8 @@ WRITE OBJECT PROPERTIES
               (class_ref
                 (keyword_pound_pound_class)
                 (bracket)
-                (class_name)
+                (class_name
+                  (identifier))
                 (bracket))
               (method_name
                 (identifier_segment_immediate_special))
@@ -271,7 +273,8 @@ WRITE: CASCADING DOT SYNTAX
               (class_ref
                 (keyword_pound_pound_class)
                 (bracket)
-                (class_name)
+                (class_name
+                  (identifier))
                 (bracket)
                 (lvn
                   (objectscript_identifier)))
@@ -297,7 +300,8 @@ WRITE: CASCADING DOT SYNTAX
               (class_ref
                 (keyword_pound_pound_class)
                 (bracket)
-                (class_name)
+                (class_name
+                  (identifier))
                 (bracket)
                 (lvn
                   (objectscript_identifier)))
@@ -514,12 +518,13 @@ Write with Indirections
                 (expr_atom
                   (lvn
                     (objectscript_identifier))))
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (bracket))))))))
   (statement
     (command_write
@@ -535,16 +540,18 @@ Write with Indirections
                 (expr_atom
                   (lvn
                     (objectscript_identifier))))
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (bracket))))))))
   (statement
     (command_write
@@ -560,20 +567,23 @@ Write with Indirections
                 (expr_atom
                   (lvn
                     (objectscript_identifier))))
-              (subscripts
+              (method_args
                 (bracket)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (bracket)))))))))
 
 ===========================

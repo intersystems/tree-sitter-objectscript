@@ -6,6 +6,7 @@ Goto Valid Statements
  GOTO Young:age<30,Midage:(age>29)&(age<60),Elder:age>59
  GOTO Branch+7
  GOTO c
+ GOTO 1
 ---
 
 (source_file
@@ -100,4 +101,9 @@ Goto Valid Statements
       (keyword_goto)
       (goto_argument
         (line_ref
-          (objectscript_identifier))))))
+          (objectscript_identifier)))))
+  (statement
+    (command_goto
+      (keyword_goto)
+      (goto_argument
+        (numeric_literal)))))

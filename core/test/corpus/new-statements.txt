@@ -88,3 +88,32 @@ New with Postconditional
           (command_new_item
             (lvn
               (objectscript_identifier))))))))
+
+===
+New with indirection
+===
+ New @("%x"_y)
+---
+
+(source_file
+  (statements
+    (statement
+      (command_new
+        (keyword_new)
+        (command_new_argument
+          (command_new_item
+            (indirection
+              (expression
+                (expr_atom
+                  (parenthetical_expression
+                    (bracket)
+                    (expression
+                      (expr_atom
+                        (string_literal))
+                      (expr_tail
+                        (binary_operator)
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))
+                    (bracket)))))))))))
