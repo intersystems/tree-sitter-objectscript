@@ -65,7 +65,9 @@ const STATEMENT_RULE_NAMES = [
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
-  /zedit/i,
+  /ze(dit)?/i,
+  /zed/i,
+  /zedi/i,
   /zdn/i,
   /mv/i,
   /MVNEWCOM/i,
