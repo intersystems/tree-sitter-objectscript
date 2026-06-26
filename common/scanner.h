@@ -253,6 +253,10 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "ZDELETE")) return true;
   if (ascii_upper_eq(text, len, "ZERASE")) return true;
   if (ascii_upper_eq(text, len, "ZETRAP")) return true;
+  if (ascii_upper_eq(text, len, "ZEDIT")) return true;
+  if (ascii_upper_eq(text, len, "ZED")) return true;
+  if (ascii_upper_eq(text, len, "ZE")) return true;
+  if (ascii_upper_eq(text, len, "ZEDI")) return true;
   if (ascii_upper_eq(text, len, "ZFILE")) return true;
   if (ascii_upper_eq(text, len, "ZGO")) return true;
   if (ascii_upper_eq(text, len, "ZHTRAP")) return true;
