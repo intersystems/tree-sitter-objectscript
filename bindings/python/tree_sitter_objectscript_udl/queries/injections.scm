@@ -87,7 +87,7 @@
   (#set! injection.language "sql")
   (#set! injection.include-children "true"))
 
-  (query
+(query
   (return_type
     (typename
       (type_with_params
