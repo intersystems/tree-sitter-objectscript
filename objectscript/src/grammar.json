@@ -1587,17 +1587,8 @@
             ]
           },
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "identifier_segment_immediate"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "identifier_segment_immediate_special"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "_base_variable_immediate"
           },
           {
             "type": "CHOICE",
@@ -1913,56 +1904,55 @@
         ]
       }
     },
+    "quoted_member_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "\""
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^\"]+"
+              },
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "STRING",
+                  "value": "\"\""
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\""
+        }
+      ]
+    },
     "member_name": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "IMMEDIATE_TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "\""
-              }
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "PATTERN",
-                    "value": "[^\"]+"
-                  },
-                  {
-                    "type": "IMMEDIATE_TOKEN",
-                    "content": {
-                      "type": "STRING",
-                      "value": "\"\""
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "\""
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "quoted_member_name"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "identifier_segment_immediate"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "identifier_segment_immediate_special"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "identifier_segment_immediate"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier_segment_immediate_special"
         }
       ]
     },
@@ -4940,12 +4930,22 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "identifier_segment_immediate_special"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier_segment_immediate_special"
+          },
+          "named": true,
+          "value": "objectscript_identifier_special"
         },
         {
-          "type": "SYMBOL",
-          "name": "identifier_segment_immediate"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier_segment_immediate"
+          },
+          "named": true,
+          "value": "objectscript_identifier"
         }
       ]
     },
@@ -6193,17 +6193,8 @@
                 }
               },
               {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier_segment_immediate_special"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier_segment_immediate"
-                  }
-                ]
+                "type": "SYMBOL",
+                "name": "_base_variable_immediate"
               }
             ]
           }
@@ -20068,6 +20059,10 @@
     {
       "type": "SYMBOL",
       "name": "_post_conditional_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "compiled_header"
     },
     {
       "type": "SYMBOL",

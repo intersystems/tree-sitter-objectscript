@@ -101,6 +101,7 @@ module.exports = grammar(objectscript_expr, {
     $._do_termination,
     $._bol_block,
     $._post_conditional_end,
+    $.compiled_header,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -243,15 +244,7 @@ module.exports = grammar(objectscript_expr, {
     variable_datatype: ($) =>
       seq(
         choice($._base_variable, $.instance_variable, $.macro),
-        repeat(
-          seq(
-            token.immediate('.'),
-            choice(
-              $.identifier_segment_immediate_special,
-              $.identifier_segment_immediate,
-            ),
-          ),
-        ),
+        repeat(seq(token.immediate('.'), $._base_variable_immediate)),
       ),
     keyword_of: (_) => /Of/i,
     pound_dim: ($) =>

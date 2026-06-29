@@ -87,6 +87,17 @@
   (#set! injection.language "sql")
   (#set! injection.include-children "true"))
 
+  (query
+  (return_type
+    (typename
+      (type_with_params
+        (identifier) @_querytype)
+      (#any-of? @_querytype "%SqlQuery" "%sqlquery" "%SQLQUERY" "%Sqlquery" "%SQLQuery")))
+  (query_body
+    (query_body_content) @injection.content)
+  (#set! injection.language "sql")
+  (#set! injection.include-children "true"))
+
 ; XDATA blocks:
 ; - xdata_any requires a keyword list that includes MimeType
 ; - xdata_xml allows an optional keyword list and defaults to XML

@@ -59,10 +59,7 @@
 
 (macro_constant) @constant.macro
 
-[
-  (objectscript_identifier)
-  (identifier_segment_immediate)
-] @variable
+(objectscript_identifier) @variable
 
 [
   (ssvn)
@@ -73,7 +70,6 @@
 [
   (gvn)
   (objectscript_identifier_special)
-  (identifier_segment_immediate_special)
   (instance_variable)
 ] @variable.member
 

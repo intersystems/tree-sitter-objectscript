@@ -323,10 +323,7 @@ module.exports = grammar({
         seq(
           '^$',
           optional($._global_reference_prefix),
-          choice(
-            $.identifier_segment_immediate,
-            $.identifier_segment_immediate_special,
-          ),
+          $._base_variable_immediate,
           optional($.method_args),
         ),
       ),
@@ -425,17 +422,17 @@ module.exports = grammar({
       prec.right(
         seq(token(/[irms]\%/i), $.member_name, optional($.method_args)),
       ),
+    quoted_member_name: (_) =>
+      seq(
+        token.immediate('"'),
+        repeat(choice(/[^"]+/, token.immediate('""'))),
+        '"',
+      ),
     member_name: ($) =>
       choice(
-        seq(
-          token.immediate('"'),
-          repeat(choice(/[^"]+/, token.immediate('""'))),
-          '"',
-        ),
-        choice(
-          $.identifier_segment_immediate,
-          $.identifier_segment_immediate_special,
-        ),
+        $.quoted_member_name,
+        $.identifier_segment_immediate,
+        $.identifier_segment_immediate_special,
       ),
     oref_parameter: ($) => seq(token.immediate('#'), $.member_name),
     relative_dot_method: ($) => build_relative_dot_fn($.oref_method),
@@ -972,8 +969,11 @@ module.exports = grammar({
     objectscript_identifier: (_) => /[A-Za-z][A-Za-z0-9]*/,
     _base_variable_immediate: ($) =>
       choice(
-        $.identifier_segment_immediate_special,
-        $.identifier_segment_immediate,
+        alias(
+          $.identifier_segment_immediate_special,
+          $.objectscript_identifier_special,
+        ),
+        alias($.identifier_segment_immediate, $.objectscript_identifier),
       ),
     _base_variable: ($) =>
       choice($.objectscript_identifier, $.objectscript_identifier_special),
