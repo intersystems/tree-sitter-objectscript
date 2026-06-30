@@ -7,7 +7,6 @@
  *
  */
 
-
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 const keyword_rules = require('../common/keywords');
@@ -65,7 +64,7 @@ module.exports = define_grammar(objectscript_core, {
     class_definition: ($) =>
       seq(
         $.keyword_class,
-        alias($.quote_permitting_identifier, $.class_name),
+        alias($._quote_permitting_identifier, $.class_name),
         optional($.class_extends),
         optional($.class_keywords),
         $.class_body,
@@ -115,7 +114,7 @@ module.exports = define_grammar(objectscript_core, {
     query: ($) =>
       seq(
         $.keyword_query,
-        alias($.quote_permitting_identifier, $.query_name),
+        alias($._quote_permitting_identifier, $.query_name),
         $.arguments,
         $.return_type,
         optional($.query_keywords),
@@ -132,7 +131,7 @@ module.exports = define_grammar(objectscript_core, {
     trigger: ($) =>
       seq(
         $.keyword_trigger,
-        alias($.quote_permitting_identifier, $.trigger_name),
+        alias($._quote_permitting_identifier, $.trigger_name),
         choice($.core_trigger, $.external_trigger),
       ),
 
@@ -149,7 +148,7 @@ module.exports = define_grammar(objectscript_core, {
     property: ($) =>
       seq(
         $.keyword_property,
-        alias($.quote_permitting_identifier, $.property_name),
+        alias($._quote_permitting_identifier, $.property_name),
         optional($.return_type),
         optional($.property_keywords),
         ';',
@@ -158,7 +157,7 @@ module.exports = define_grammar(objectscript_core, {
     relationship: ($) =>
       seq(
         alias(/Relationship/i, $.keyword_relationship),
-        alias($.quote_permitting_identifier, $.relationship_name),
+        alias($._quote_permitting_identifier, $.relationship_name),
         optional($.return_type),
         $.relationship_keywords,
         ';',
@@ -167,17 +166,19 @@ module.exports = define_grammar(objectscript_core, {
     foreignkey: ($) =>
       seq(
         $.keyword_foreignkey,
-        alias($.quote_permitting_identifier, $.foreignkey_name),
+        alias($._quote_permitting_identifier, $.foreignkey_name),
         alias(token.immediate('('), $.bracket),
-        alias($.quote_permitting_identifier, $.property_name),
-        repeat(seq(',', alias($.quote_permitting_identifier, $.property_name))),
+        alias($._quote_permitting_identifier, $.property_name),
+        repeat(
+          seq(',', alias($._quote_permitting_identifier, $.property_name)),
+        ),
         alias(token.immediate(')'), $.bracket),
         $.keyword_references,
-        alias($.quote_permitting_identifier, $.class_name),
+        alias($._quote_permitting_identifier, $.class_name),
         optional(
           seq(
             alias('(', $.bracket),
-            alias($.quote_permitting_identifier, $.index_name),
+            alias($._quote_permitting_identifier, $.index_name),
             alias(')', $.bracket),
           ),
         ),
@@ -206,7 +207,7 @@ module.exports = define_grammar(objectscript_core, {
     parameter: ($) =>
       seq(
         $.keyword_parameter,
-        alias($.quote_permitting_identifier, $.parameter_name),
+        alias($._quote_permitting_identifier, $.parameter_name),
         optional($.parameter_type),
         optional($.parameter_keywords),
         optional(seq('=', $.default_argument_value)),
@@ -216,7 +217,7 @@ module.exports = define_grammar(objectscript_core, {
     projection: ($) =>
       seq(
         $.keyword_projection,
-        alias($.quote_permitting_identifier, $.projection_name),
+        alias($._quote_permitting_identifier, $.projection_name),
         $.return_type,
         optional($.projection_keywords),
         ';',
@@ -226,14 +227,14 @@ module.exports = define_grammar(objectscript_core, {
       choice(
         seq(
           $.keyword_index,
-          alias($.quote_permitting_identifier, $.index_name),
+          alias($._quote_permitting_identifier, $.index_name),
           seq($.keyword_on, $.index_properties),
           optional($.index_keywords),
           ';',
         ),
         seq(
           $.keyword_index,
-          alias($.quote_permitting_identifier, $.index_name),
+          alias($._quote_permitting_identifier, $.index_name),
           $.extent_index_keywords,
           ';',
         ),
@@ -248,7 +249,7 @@ module.exports = define_grammar(objectscript_core, {
       seq($.index_property, optional(seq($.keyword_as, $.index_type))),
     index_property: ($) =>
       seq(
-        $.quote_permitting_identifier,
+        $._quote_permitting_identifier,
         optional(
           seq(
             alias('(', $.bracket),
@@ -278,7 +279,7 @@ module.exports = define_grammar(objectscript_core, {
     xdata: ($) =>
       seq(
         $.keyword_xdata,
-        alias($.quote_permitting_identifier, $.xdata_name),
+        alias($._quote_permitting_identifier, $.xdata_name),
         choice($.xdata_xml, $.xdata_any),
       ),
 
@@ -296,14 +297,14 @@ module.exports = define_grammar(objectscript_core, {
     storage: ($) =>
       seq(
         $.keyword_storage,
-        alias($.quote_permitting_identifier, $.storage_name),
+        alias($._quote_permitting_identifier, $.storage_name),
         optional($.storage_keywords),
         $.storage_body,
       ),
 
     method_definition: ($) =>
       seq(
-        alias($.quote_permitting_identifier, $.method_name),
+        alias($._quote_permitting_identifier, $.method_name),
         $.arguments,
         optional($.return_type),
         choice(

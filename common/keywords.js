@@ -453,10 +453,10 @@ module.exports = {
         /Data/i,
         '=',
         choice(
-          alias($.quote_permitting_identifier, $.property_name),
+          alias($._quote_permitting_identifier, $.property_name),
           seq(
             '(',
-            commaSep1(alias($.quote_permitting_identifier, $.property_name)),
+            commaSep1(alias($._quote_permitting_identifier, $.property_name)),
             ')',
           ),
         ),

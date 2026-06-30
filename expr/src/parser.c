@@ -129,7 +129,7 @@ enum ts_symbol_identifiers {
   anon_sym_false = 99,
   sym_json_null_literal = 100,
   sym_identifier = 101,
-  aux_sym_quote_permitting_identifier_token1 = 102,
+  aux_sym__quote_permitting_identifier_token1 = 102,
   sym_source_file = 103,
   sym_expression = 104,
   sym_expr_atom = 105,
@@ -210,7 +210,7 @@ enum ts_symbol_identifiers {
   sym_json_array_literal = 180,
   sym_json_boolean_literal = 181,
   sym__expression_list = 182,
-  sym_quote_permitting_identifier = 183,
+  sym__quote_permitting_identifier = 183,
   aux_sym_expression_repeat1 = 184,
   aux_sym_dollarsf_repeat1 = 185,
   aux_sym__method_arg_list_repeat1 = 186,
@@ -336,7 +336,7 @@ static const char * const ts_symbol_names[] = {
   [anon_sym_false] = "false",
   [sym_json_null_literal] = "json_null_literal",
   [sym_identifier] = "identifier",
-  [aux_sym_quote_permitting_identifier_token1] = "quote_permitting_identifier_token1",
+  [aux_sym__quote_permitting_identifier_token1] = "identifier",
   [sym_source_file] = "source_file",
   [sym_expression] = "expression",
   [sym_expr_atom] = "expr_atom",
@@ -417,7 +417,7 @@ static const char * const ts_symbol_names[] = {
   [sym_json_array_literal] = "json_array_literal",
   [sym_json_boolean_literal] = "json_boolean_literal",
   [sym__expression_list] = "_expression_list",
-  [sym_quote_permitting_identifier] = "class_name",
+  [sym__quote_permitting_identifier] = "class_name",
   [aux_sym_expression_repeat1] = "expression_repeat1",
   [aux_sym_dollarsf_repeat1] = "dollarsf_repeat1",
   [aux_sym__method_arg_list_repeat1] = "_method_arg_list_repeat1",
@@ -543,7 +543,7 @@ static const TSSymbol ts_symbol_map[] = {
   [anon_sym_false] = anon_sym_false,
   [sym_json_null_literal] = sym_json_null_literal,
   [sym_identifier] = sym_identifier,
-  [aux_sym_quote_permitting_identifier_token1] = aux_sym_quote_permitting_identifier_token1,
+  [aux_sym__quote_permitting_identifier_token1] = sym_identifier,
   [sym_source_file] = sym_source_file,
   [sym_expression] = sym_expression,
   [sym_expr_atom] = sym_expr_atom,
@@ -624,7 +624,7 @@ static const TSSymbol ts_symbol_map[] = {
   [sym_json_array_literal] = sym_json_array_literal,
   [sym_json_boolean_literal] = sym_json_boolean_literal,
   [sym__expression_list] = sym__expression_list,
-  [sym_quote_permitting_identifier] = sym_quote_permitting_identifier,
+  [sym__quote_permitting_identifier] = sym__quote_permitting_identifier,
   [aux_sym_expression_repeat1] = aux_sym_expression_repeat1,
   [aux_sym_dollarsf_repeat1] = aux_sym_dollarsf_repeat1,
   [aux_sym__method_arg_list_repeat1] = aux_sym__method_arg_list_repeat1,
@@ -1056,9 +1056,9 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [aux_sym_quote_permitting_identifier_token1] = {
-    .visible = false,
-    .named = false,
+  [aux_sym__quote_permitting_identifier_token1] = {
+    .visible = true,
+    .named = true,
   },
   [sym_source_file] = {
     .visible = true,
@@ -1380,7 +1380,7 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = false,
     .named = true,
   },
-  [sym_quote_permitting_identifier] = {
+  [sym__quote_permitting_identifier] = {
     .visible = true,
     .named = true,
   },
@@ -8643,7 +8643,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           ('a' <= lookahead && lookahead <= 'z')) ADVANCE(1006);
       END_STATE();
     case 1007:
-      ACCEPT_TOKEN(aux_sym_quote_permitting_identifier_token1);
+      ACCEPT_TOKEN(aux_sym__quote_permitting_identifier_token1);
       if (lookahead == '"') ADVANCE(19);
       END_STATE();
     default:
@@ -28531,10 +28531,10 @@ static const uint16_t ts_small_parse_table[] = {
       aux_sym_json_array_literal_repeat1,
   [13708] = 2,
     STATE(683), 1,
-      sym_quote_permitting_identifier,
+      sym__quote_permitting_identifier,
     ACTIONS(1051), 2,
       sym_identifier,
-      aux_sym_quote_permitting_identifier_token1,
+      aux_sym__quote_permitting_identifier_token1,
   [13716] = 2,
     ACTIONS(1053), 1,
       anon_sym_DOT,
@@ -30754,7 +30754,7 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [1289] = {.entry = {.count = 1, .reusable = true}}, SHIFT(268),
   [1291] = {.entry = {.count = 1, .reusable = true}}, SHIFT(188),
   [1293] = {.entry = {.count = 1, .reusable = true}}, SHIFT(404),
-  [1295] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_quote_permitting_identifier, 1, 0, 0),
+  [1295] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym__quote_permitting_identifier, 1, 0, 0),
   [1297] = {.entry = {.count = 1, .reusable = true}}, SHIFT(712),
   [1299] = {.entry = {.count = 1, .reusable = true}}, SHIFT(709),
   [1301] = {.entry = {.count = 1, .reusable = true}}, SHIFT(713),
@@ -30829,7 +30829,7 @@ TS_PUBLIC const TSLanguage *tree_sitter_objectscript_expr(void) {
     .metadata = {
       .major_version = 1,
       .minor_version = 9,
-      .patch_version = 5,
+      .patch_version = 6,
     },
   };
   return &language;

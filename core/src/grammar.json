@@ -409,7 +409,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "quote_permitting_identifier"
+            "name": "_quote_permitting_identifier"
           },
           "named": true,
           "value": "class_name"
@@ -5101,12 +5101,17 @@
         }
       ]
     },
-    "quote_permitting_identifier": {
+    "_quote_permitting_identifier": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "PATTERN",
-          "value": "\"((?:\"\"|[^\"])*)\""
+          "type": "ALIAS",
+          "content": {
+            "type": "PATTERN",
+            "value": "\"((?:\"\"|[^\"])*)\""
+          },
+          "named": true,
+          "value": "identifier"
         },
         {
           "type": "SYMBOL",

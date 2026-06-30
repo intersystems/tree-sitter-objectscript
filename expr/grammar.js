@@ -173,7 +173,7 @@ module.exports = grammar({
       seq(
         $.keyword_pound_pound_class,
         alias(token.immediate('('), $.bracket),
-        alias($.quote_permitting_identifier, $.class_name),
+        alias($._quote_permitting_identifier, $.class_name),
         alias(token.immediate(')'), $.bracket),
         optional(
           // Class cast syntax
@@ -1035,7 +1035,7 @@ module.exports = grammar({
     json_null_literal: (_) => 'null',
     identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z0-9][A-Za-z0-9]*)*/,
     _expression_list: ($) => commaSep1($.expression),
-    quote_permitting_identifier: ($) =>
-      choice(/"((?:""|[^"])*)"/, $.identifier),
+    _quote_permitting_identifier: ($) =>
+      choice(alias(/"((?:""|[^"])*)"/, $.identifier), $.identifier),
   },
 });
