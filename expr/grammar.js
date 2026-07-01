@@ -165,7 +165,7 @@ module.exports = grammar({
         seq(
           $.class_ref,
           token.immediate('.'),
-          alias($.member_name, $.method_name),
+          alias($._member_name, $.method_name),
           $.method_args,
         ),
       ),
@@ -411,30 +411,28 @@ module.exports = grammar({
         choice($.oref_property, $.oref_method, $.oref_parameter),
       ),
 
-    oref_method: ($) => seq(alias($.member_name, $.method_name), $.method_args),
+    oref_method: ($) =>
+      seq(alias($._member_name, $.method_name), $.method_args),
     oref_property: ($) =>
       // NOTE: Since a multidimensional property is indistinguishable from a method
       //       call (unless it's byref or has variadic args) we'll almost never match
       //       the subscripts clause.
-      alias($.member_name, $.property_name),
+      alias($._member_name, $.property_name),
 
     instance_variable: ($) =>
       prec.right(
-        seq(token(/[irms]\%/i), $.member_name, optional($.method_args)),
+        seq(
+          token(/[irms]\%/i),
+          alias($._member_name, $.property_name),
+          optional($.method_args),
+        ),
       ),
-    quoted_member_name: (_) =>
-      seq(
-        token.immediate('"'),
-        repeat(choice(/[^"]+/, token.immediate('""'))),
-        '"',
-      ),
-    member_name: ($) =>
-      choice(
-        $.quoted_member_name,
-        $.identifier_segment_immediate,
-        $.identifier_segment_immediate_special,
-      ),
-    oref_parameter: ($) => seq(token.immediate('#'), $.member_name),
+    _quoted_member_name: ($) =>
+      seq(token.immediate('"'), alias(/((?:""|[^"])*)/, $.identifier), '"'),
+    _member_name: ($) =>
+      choice($._quoted_member_name, $._base_variable_immediate),
+    oref_parameter: ($) =>
+      seq(token.immediate('#'), alias($._member_name, $.parameter_name)),
     relative_dot_method: ($) => build_relative_dot_fn($.oref_method),
     relative_dot_property: ($) => build_relative_dot_fn($.oref_property),
     relative_dot_parameter: ($) => build_relative_dot_fn($.oref_parameter),

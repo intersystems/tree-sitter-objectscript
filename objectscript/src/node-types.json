@@ -3622,11 +3622,11 @@
       "required": true,
       "types": [
         {
-          "type": "member_name",
+          "type": "method_args",
           "named": true
         },
         {
-          "type": "method_args",
+          "type": "property_name",
           "named": true
         }
       ]
@@ -4168,29 +4168,6 @@
     "fields": {}
   },
   {
-    "type": "member_name",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier_segment_immediate",
-          "named": true
-        },
-        {
-          "type": "identifier_segment_immediate_special",
-          "named": true
-        },
-        {
-          "type": "quoted_member_name",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "merge_argument",
     "named": true,
     "fields": {},
@@ -4521,15 +4498,11 @@
           "named": true
         },
         {
-          "type": "identifier_segment_immediate",
+          "type": "objectscript_identifier",
           "named": true
         },
         {
-          "type": "identifier_segment_immediate_special",
-          "named": true
-        },
-        {
-          "type": "quoted_member_name",
+          "type": "objectscript_identifier_special",
           "named": true
         }
       ]
@@ -4735,7 +4708,7 @@
       "required": true,
       "types": [
         {
-          "type": "member_name",
+          "type": "parameter_name",
           "named": true
         }
       ]
@@ -4858,6 +4831,14 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier_special",
           "named": true
         }
       ]
@@ -5561,15 +5542,11 @@
           "named": true
         },
         {
-          "type": "identifier_segment_immediate",
+          "type": "objectscript_identifier",
           "named": true
         },
         {
-          "type": "identifier_segment_immediate_special",
-          "named": true
-        },
-        {
-          "type": "quoted_member_name",
+          "type": "objectscript_identifier_special",
           "named": true
         }
       ]
@@ -5689,11 +5666,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "quoted_member_name",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "read_argument",
@@ -7374,10 +7346,6 @@
     "named": false
   },
   {
-    "type": "\"\"",
-    "named": false
-  },
-  {
     "type": "#",
     "named": false
   },
@@ -7648,14 +7616,6 @@
   },
   {
     "type": "identifier",
-    "named": true
-  },
-  {
-    "type": "identifier_segment_immediate",
-    "named": true
-  },
-  {
-    "type": "identifier_segment_immediate_special",
     "named": true
   },
   {

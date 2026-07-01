@@ -420,8 +420,7 @@
           ] @label
           (oref_chain_segment
             (oref_property
-              (property_name
-                (identifier_segment_immediate) @label) @label)) @label)
+              (property_name) @label)) @label)
       ] @label)))
 
 ; end zload command

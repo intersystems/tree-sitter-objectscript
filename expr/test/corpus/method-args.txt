@@ -15,7 +15,7 @@ method arg byref indirection
             (identifier))
           (bracket))
         (method_name
-          (identifier_segment_immediate))
+          (objectscript_identifier))
         (method_args
           (bracket)
           (method_arg
@@ -43,14 +43,14 @@ by ref with instance variable
             (expression
               (expr_atom
                 (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))))
+                  (property_name
+                    (objectscript_identifier_special))))))
           (method_arg
             (expression
               (expr_atom
                 (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))
+                  (property_name
+                    (objectscript_identifier_special))))
               (expr_tail
                 (binary_operator)
                 (expression
@@ -59,8 +59,8 @@ by ref with instance variable
           (method_arg
             (byref_arg
               (instance_variable
-                (member_name
-                  (identifier_segment_immediate_special)))))
+                (property_name
+                  (objectscript_identifier_special)))))
           (bracket))))))
 
 ===
@@ -79,8 +79,8 @@ by ref arg with system defined variable
             (expression
               (expr_atom
                 (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))))
+                  (property_name
+                    (objectscript_identifier_special))))))
           (method_arg
             (byref_arg
               (system_defined_variable)))
