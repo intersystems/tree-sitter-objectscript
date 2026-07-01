@@ -1036,6 +1036,9 @@ module.exports = grammar({
     identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z0-9][A-Za-z0-9]*)*/,
     _expression_list: ($) => commaSep1($.expression),
     _quote_permitting_identifier: ($) =>
-      choice(alias(/"((?:""|[^"])*)"/, $.identifier), $.identifier),
+      choice(
+        seq('"', alias(/((?:""|[^"])*)/, $.identifier), '"'),
+        $.identifier,
+      ),
   },
 });
