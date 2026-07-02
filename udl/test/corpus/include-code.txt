@@ -12,8 +12,8 @@ Class MyPackage.MyClass {
 (source_file
   (include_code
     (keyword_include)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (class_definition
     (keyword_class)
     (class_name
@@ -33,11 +33,10 @@ Class barricade {
 (source_file
   (include_code
     (keyword_include)
-    (include_clause
-      (bracket)
-      (class_name)
-      (class_name)
-      (bracket)))
+    (class_name
+      (identifier))
+    (class_name
+      (identifier)))
   (class_definition
     (keyword_class)
     (class_name
@@ -55,8 +54,8 @@ Class name {}
 (source_file
   (import_code
     (keyword_import)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (class_definition
     (keyword_class)
     (class_name
@@ -80,16 +79,16 @@ Class package.shortclassname Extends superclasslist [ DependsOn = MyApp.Class1 ]
 (source_file
   (import_code
     (keyword_import)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (include_code
     (keyword_include)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (include_generator
     (keyword_includegenerator)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (documatic_line)
   (class_definition
     (keyword_class)
@@ -97,8 +96,8 @@ Class package.shortclassname Extends superclasslist [ DependsOn = MyApp.Class1 ]
       (identifier))
     (class_extends
       (keyword_extends)
+      (class_name
+        (identifier)))
+    (class_keyword
       (class_name))
-    (class_keywords
-      (class_keyword
-        (class_name)))
     (class_body)))

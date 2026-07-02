@@ -1,10 +1,7 @@
 ; === BEGIN LOCAL ===
 (pattern_expression) @string.regexp
 
-[
-  (json_number_literal)
-  (numeric_literal)
-] @number
+(numeric_literal) @number
 
 [
   (json_boolean_literal)
@@ -20,7 +17,7 @@
 ] @string
 
 [
-  (keyword_pound_pound_super)
+  (keyword_super)
   (keyword_pound_pound_class)
 ] @keyword.operator
 
@@ -123,7 +120,5 @@
   "!"
   "?"
 ] @operator
-
-(bracket) @punctuation.bracket
 
 ; === END LOCAL ===

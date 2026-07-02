@@ -8,7 +8,6 @@ Special cases, user functions
   (expression
     (expr_atom
       (unary_expression
-        (unary_operator)
         (expression
           (expr_atom
             (extrinsic_function
@@ -17,13 +16,11 @@ Special cases, user functions
                 (routine_ref
                   (routine_name)))
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
                       (lvn
-                        (objectscript_identifier)))))
-                (bracket)))))))))
+                        (objectscript_identifier)))))))))))))
 
 ====
 Special cases, parenthesized indirect routine reference
@@ -35,7 +32,6 @@ Special cases, parenthesized indirect routine reference
   (expression
     (expr_atom
       (unary_expression
-        (unary_operator)
         (expression
           (expr_atom
             (extrinsic_function
@@ -43,19 +39,14 @@ Special cases, parenthesized indirect routine reference
                 (objectscript_identifier)
                 (routine_ref
                   (indirection
-                    (parenthetical_expression
-                      (bracket)
-                      (expression
-                        (expr_atom
-                          (string_literal)))
-                      (bracket)))))
+                    (expression
+                      (expr_atom
+                        (string_literal))))))
               (method_args
-                (bracket)
                 (method_arg
                   (byref_arg
                     (lvn
-                      (objectscript_identifier))))
-                (bracket)))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 line ref with by ref arg system defined var
@@ -73,11 +64,9 @@ line ref with by ref arg system defined var
             (string_literal)
             (routine_name)))
         (method_args
-          (bracket)
           (method_arg
             (byref_arg
-              (system_defined_variable)))
-          (bracket))))))
+              (system_defined_variable))))))))
 
 ===
 line ref with namespace that has subscripts
@@ -93,16 +82,13 @@ line ref with namespace that has subscripts
           (lvn
             (objectscript_identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
                     (lvn
-                      (objectscript_identifier)))))
-              (bracket)))
+                      (objectscript_identifier)))))))
           (routine_name))
         (method_args
-          (bracket)
           (method_arg
             (expression
               (expr_atom
@@ -132,5 +118,4 @@ line ref with namespace that has subscripts
           (method_arg
             (expression
               (expr_atom
-                (system_defined_variable))))
-          (bracket))))))
+                (system_defined_variable)))))))))

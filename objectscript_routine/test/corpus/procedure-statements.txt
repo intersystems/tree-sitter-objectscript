@@ -418,19 +418,19 @@ Valid part of routine, no procedure
             (expression
               (expr_atom
                 (unary_expression
-                  (unary_operator)
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (gvn))))))))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (gvn
+                                (identifier))))))))))))
           (set_argument
             (set_target
               (glvn
-                (gvn)))
+                (gvn
+                  (identifier))))
             (expression
               (expr_atom
                 (string_literal))))))
@@ -447,7 +447,6 @@ Valid part of routine, no procedure
                     (routine_ref
                       (routine_name)))
                   (method_args
-                    (bracket)
                     (method_arg
                       (expression
                         (expr_atom
@@ -455,8 +454,7 @@ Valid part of routine, no procedure
                     (method_arg
                       (expression
                         (expr_atom
-                          (system_defined_variable))))
-                    (bracket))))))))))
+                          (system_defined_variable)))))))))))))
   (statement
     (command_return
       (keyword_return)

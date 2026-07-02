@@ -83,7 +83,6 @@ MAX
         (expression
           (expr_atom
             (unary_expression
-              (unary_operator)
               (expression
                 (expr_atom
                   (lvn
@@ -118,12 +117,10 @@ MAX
             (lvn
               (objectscript_identifier)
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
-                      (numeric_literal))))
-                (bracket))))))))
+                      (numeric_literal)))))))))))
   (statement
     (command_set
       (keyword_set)
@@ -135,8 +132,8 @@ MAX
         (expression
           (expr_atom
             (gvn
+              (identifier)
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
@@ -144,8 +141,7 @@ MAX
                 (method_arg
                   (expression
                     (expr_atom
-                      (numeric_literal))))
-                (bracket))))))))
+                      (numeric_literal)))))))))))
   (statement
     (command_set
       (keyword_set)
@@ -157,12 +153,11 @@ MAX
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))))))))))
   (statement
     (command_set
       (keyword_set)
@@ -198,7 +193,6 @@ MAX
                   (method_name
                     (objectscript_identifier))
                   (method_args
-                    (bracket)
                     (method_arg
                       (expression
                         (expr_atom
@@ -206,8 +200,7 @@ MAX
                     (method_arg
                       (expression
                         (expr_atom
-                          (numeric_literal))))
-                    (bracket))))))))))
+                          (numeric_literal)))))))))))))
   (statement
     (command_set
       (keyword_set)
@@ -221,15 +214,11 @@ MAX
             (class_method_call
               (class_ref
                 (keyword_pound_pound_class)
-                (bracket)
                 (class_name
-                  (identifier))
-                (bracket))
+                  (identifier)))
               (method_name
                 (objectscript_identifier))
-              (method_args
-                (bracket)
-                (bracket))))))))
+              (method_args)))))))
   (statement
     (command_set
       (keyword_set)
@@ -246,12 +235,10 @@ MAX
                 (routine_ref
                   (routine_name)))
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
-                      (numeric_literal))))
-                (bracket))))))))
+                      (numeric_literal)))))))))))
   (statement
     (command_set
       (keyword_set)
@@ -494,20 +481,19 @@ MAX
         (expression
           (expr_atom
             (system_defined_function
-              (built_in_func_with_pos_options
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                (block_comment)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))))))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (block_comment)
+              (method_arg
+                (expression
+                  (expr_atom
+                    (string_literal))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (numeric_literal))))))))
       (write_argument
         (write_device_control
           (write_device_fflf)))))

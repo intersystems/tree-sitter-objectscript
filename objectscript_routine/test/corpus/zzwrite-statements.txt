@@ -186,19 +186,18 @@ zzwrite_function_call_expression
       (expression
         (expr_atom
           (system_defined_function
-            (built_in_func_with_pos_options
-              (method_arg
-                (expression
-                  (expr_atom
-                    (string_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
 
 ===
 zzwrite_global_variable_with_subscripts
@@ -213,8 +212,8 @@ zzwrite_global_variable_with_subscripts
       (expression
         (expr_atom
           (gvn
+            (identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -222,8 +221,7 @@ zzwrite_global_variable_with_subscripts
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket))))))))
+                    (numeric_literal)))))))))))
 
 ===
 zzwrite_global_variable_no_subscripts
@@ -237,7 +235,8 @@ zzwrite_global_variable_no_subscripts
       (keyword_zz)
       (expression
         (expr_atom
-          (gvn))))))
+          (gvn
+            (identifier)))))))
 
 ===
 zzwrite_extended_global_reference_pipe_syntax
@@ -255,13 +254,12 @@ zzwrite_extended_global_reference_pipe_syntax
             (expression
               (expr_atom
                 (string_literal)))
+            (identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket))))))))
+                    (numeric_literal)))))))))))
 
 ===
 zzwrite_extended_global_reference_bracket_syntax
@@ -279,13 +277,12 @@ zzwrite_extended_global_reference_bracket_syntax
             (expression
               (expr_atom
                 (string_literal)))
+            (identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket))))))))
+                    (numeric_literal)))))))))))
 
 ===
 zzwrite_process_private_global
@@ -300,8 +297,8 @@ zzwrite_process_private_global
       (expression
         (expr_atom
           (gvn
+            (identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -309,8 +306,7 @@ zzwrite_process_private_global
               (method_arg
                 (expression
                   (expr_atom
-                    (string_literal))))
-              (bracket))))))))
+                    (string_literal)))))))))))
 
 ===
 zzwrite_special_variable
@@ -342,12 +338,10 @@ zzwrite_dynamic_object_literal
           (json_object_literal
             (json_object_literal_pair
               (json_string_literal)
-              (json_literal
-                (json_string_literal)))
+              (json_string_literal))
             (json_object_literal_pair
               (json_string_literal)
-              (json_literal
-                (json_number_literal))))))))
+              (numeric_literal)))))))
   (statement
     (command_zz
       (keyword_zz)
@@ -356,15 +350,13 @@ zzwrite_dynamic_object_literal
           (json_object_literal
             (json_object_literal_pair
               (json_string_literal)
-              (json_objectscript_expr
-                (expression
-                  (expr_atom
-                    (system_defined_function
-                      (dollar_function
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (numeric_literal))))))))))))))))
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))))))))))
 
 ===
 zzwrite_dynamic_array_literal
@@ -380,22 +372,17 @@ zzwrite_dynamic_array_literal
       (expression
         (expr_atom
           (json_array_literal
-            (json_literal
-              (json_number_literal))
-            (json_literal
-              (json_number_literal))
-            (json_literal
-              (json_number_literal)))))))
+            (numeric_literal)
+            (numeric_literal)
+            (numeric_literal))))))
   (statement
     (command_zz
       (keyword_zz)
       (expression
         (expr_atom
           (json_array_literal
-            (json_literal
-              (json_string_literal))
-            (json_literal
-              (json_string_literal))))))))
+            (json_string_literal)
+            (json_string_literal)))))))
 
 ===
 invalid - extra comma

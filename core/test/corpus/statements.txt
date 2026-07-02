@@ -32,27 +32,26 @@ TAG
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_select
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal)))))
-                    (expression
-                      (expr_atom
-                        (string_literal))))
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))))
+                (dollar_arg_pair
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
+                      (expression
+                        (expr_atom
+                          (string_literal)))))
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (dollar_arg_pair
+                  (expression
+                    (expr_atom
+                      (numeric_literal)))
+                  (expression
+                    (expr_atom
+                      (string_literal))))))))))
     (statement
       (tag_statement
         (tag)))))
@@ -142,15 +141,11 @@ Trap
                   (class_method_call
                     (class_ref
                       (keyword_pound_pound_class)
-                      (bracket)
                       (class_name
-                        (identifier))
-                      (bracket))
+                        (identifier)))
                     (method_name
                       (objectscript_identifier))
-                    (method_args
-                      (bracket)
-                      (bracket))))))))
+                    (method_args)))))))
         (set_argument
           (set_target
             (glvn
@@ -174,15 +169,11 @@ Trap
                   (class_method_call
                     (class_ref
                       (keyword_pound_pound_class)
-                      (bracket)
                       (class_name
-                        (identifier))
-                      (bracket))
+                        (identifier)))
                     (method_name
                       (objectscript_identifier))
-                    (method_args
-                      (bracket)
-                      (bracket))))))))
+                    (method_args)))))))
         (set_argument
           (set_target
             (glvn
@@ -197,16 +188,14 @@ Trap
         (expression
           (expr_atom
             (unary_expression
-              (unary_operator)
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier))))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))))))))
         (statement
           (command_set
             (keyword_set)
@@ -275,12 +264,10 @@ Trap
                     (method_name
                       (objectscript_identifier_special))
                     (method_args
-                      (bracket)
                       (method_arg
                         (expression
                           (expr_atom
-                            (string_literal))))
-                      (bracket)))))))
+                            (string_literal))))))))))
           (statement
             (command_set
               (keyword_set)
@@ -321,9 +308,7 @@ Trap
                           (oref_method
                             (method_name
                               (identifier))
-                            (method_args
-                              (bracket)
-                              (bracket)))))))))
+                            (method_args))))))))
               (statement
                 (command_set
                   (keyword_set)
@@ -375,7 +360,6 @@ Trap
                                   (method_name
                                     (identifier))
                                   (method_args
-                                    (bracket)
                                     (method_arg
                                       (expression
                                         (expr_atom
@@ -385,8 +369,7 @@ Trap
                                           (binary_operator)
                                           (expression
                                             (expr_atom
-                                              (numeric_literal))))))
-                                    (bracket))))))))))))
+                                              (numeric_literal)))))))))))))))))
               (statement
                 (command_set
                   (keyword_set)
@@ -523,33 +506,30 @@ Trap
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_select
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (system_defined_variable)))
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollarsf
-                          (objectscript_identifier)
-                          (objectscript_identifier)
-                          (method_args
-                            (bracket)
-                            (bracket)))))))
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollarsf
-                          (objectscript_identifier)
-                          (objectscript_identifier)
-                          (method_args
-                            (bracket)
-                            (bracket)))))))))))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_variable)))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (class_name
+                        (objectscript_identifier))
+                      (method_name
+                        (objectscript_identifier))
+                      (method_args)))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (class_name
+                        (objectscript_identifier))
+                      (method_name
+                        (objectscript_identifier))
+                      (method_args))))))))))
     (statement
       (tag_statement
         (tag)))
@@ -574,45 +554,43 @@ Trap
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_case
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (system_defined_variable))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (string_literal))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal))))))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (string_literal)))))
+                (dollar_arg_pair
                   (expression
                     (expr_atom
-                      (system_defined_function
-                        (built_in_func_with_pos_options
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (system_defined_variable))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (string_literal))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (string_literal)))))
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (string_literal)))
-                    (expression
-                      (expr_atom
-                        (string_literal))))
-                  (dollar_arg_pair
-                    (expression
-                      (expr_atom
-                        (string_literal)))
-                    (expression
-                      (expr_atom
-                        (string_literal))))
+                      (string_literal)))
                   (expression
                     (expr_atom
-                      (string_literal))))))))))
+                      (string_literal))))
+                (dollar_arg_pair
+                  (expression
+                    (expr_atom
+                      (string_literal)))
+                  (expression
+                    (expr_atom
+                      (string_literal))))
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))
     (statement
       (command_set
         (keyword_set)
@@ -624,33 +602,26 @@ Trap
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_method
-                  (bracket)
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (class_method_call
-                          (class_ref
-                            (keyword_pound_pound_class)
-                            (bracket)
-                            (class_name
-                              (identifier))
-                            (bracket))
-                          (method_name
-                            (objectscript_identifier))
-                          (method_args
-                            (bracket)
-                            (bracket))))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (system_defined_variable))))
-                  (bracket))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (class_method_call
+                        (class_ref
+                          (keyword_pound_pound_class)
+                          (class_name
+                            (identifier)))
+                        (method_name
+                          (objectscript_identifier))
+                        (method_args)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (system_defined_variable))))))))))
     (statement
       (command_throw
         (keyword_throw)

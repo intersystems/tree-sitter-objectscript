@@ -69,12 +69,9 @@ OPEN VALID STATEMENTS
             (device_keywords
               (expression
                 (expr_atom
-                  (parenthetical_expression
-                    (bracket)
-                    (expression
-                      (expr_atom
-                        (string_literal)))
-                    (bracket))))))
+                  (expression
+                    (expr_atom
+                      (string_literal)))))))
           (expression
             (expr_atom
               (numeric_literal))))))
@@ -349,21 +346,19 @@ OPEN Valid Statements
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))))
                 (expr_tail
                   (binary_operator)
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))))))))
     (statement
       (command_open
         (keyword_open)

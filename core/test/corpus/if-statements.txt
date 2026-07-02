@@ -131,16 +131,15 @@ If Statements 1
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (macro
-                              (macro_constant)))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (string_literal)))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (macro
+                            (macro_constant)))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (string_literal))))))))))
         (elseif_block
           (keyword_elseif)
           (expression
@@ -172,14 +171,13 @@ If Statements 1
                     (set_target
                       (glvn
                         (gvn
+                          (identifier)
                           (method_args
-                            (bracket)
                             (method_arg
                               (expression
                                 (expr_atom
                                   (lvn
-                                    (objectscript_identifier)))))
-                            (bracket)))))
+                                    (objectscript_identifier)))))))))
                     (expression
                       (expr_atom
                         (string_literal))))))
@@ -347,43 +345,36 @@ If Statements 3
         (keyword_old_if)
         (expression
           (expr_atom
-            (parenthetical_expression
-              (bracket)
-              (expression
-                (expr_atom
-                  (system_defined_function
-                    (built_in_func_with_pos_options
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier)))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal)))))
-              (bracket)))
+            (expression
+              (expr_atom
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (numeric_literal))))))
+              (expr_tail
+                (binary_operator)
+                (expression
+                  (expr_atom
+                    (string_literal))))))
           (expr_tail
             (binary_operator)
             (expression
               (expr_atom
-                (parenthetical_expression
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (numeric_literal)))))
-                  (bracket))))))
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier)))
+                  (expr_tail
+                    (binary_operator)
+                    (expression
+                      (expr_atom
+                        (numeric_literal)))))))))
         (statement
           (command_continue
             (keyword_continue)))))
@@ -414,7 +405,6 @@ If Statements 3
                   (macro
                     (macro_function
                       (method_args
-                        (bracket)
                         (method_arg
                           (expression
                             (expr_atom
@@ -423,8 +413,7 @@ If Statements 3
                         (method_arg
                           (expression
                             (expr_atom
-                              (string_literal))))
-                        (bracket)))))))))
+                              (string_literal))))))))))))
         (statement
           (command_quit
             (keyword_quit)))))
@@ -699,9 +688,7 @@ If Expression Indirection
               (routine_tag_call
                 (line_ref
                   (objectscript_identifier))
-                (method_args
-                  (bracket)
-                  (bracket))))))))))
+                (method_args)))))))))
 
 ====================================
 If with Expression, Block on newline
@@ -784,24 +771,18 @@ If with multiline && and no trailing whitespace
         (keyword_if)
         (expression
           (expr_atom
-            (parenthetical_expression
-              (bracket)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))
-              (bracket)))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier)))))
           (expr_tail
             (binary_operator)
             (expression
               (expr_atom
-                (parenthetical_expression
-                  (bracket)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))
-                  (bracket))))))))))
+                (expression
+                  (expr_atom
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ====
 Valid If
@@ -862,8 +843,7 @@ If statements, valid
                 (json_object_literal
                   (json_object_literal_pair
                     (json_string_literal)
-                    (json_literal
-                      (json_string_literal))))))))))))
+                    (json_string_literal)))))))))))
 
 =====
 Valid If Statement testing
@@ -922,7 +902,6 @@ If statements, built in funcs, byref
         (expression
           (expr_atom
             (unary_expression
-              (unary_operator)
               (expression
                 (expr_atom
                   (lvn
@@ -964,21 +943,19 @@ If statements, built in funcs, byref
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (string_literal))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (system_defined_function
-                                  (built_in_func_with_pos_options
-                                    (method_arg
-                                      (expression
-                                        (expr_atom
-                                          (lvn
-                                            (objectscript_identifier)))))))))))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (string_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (system_defined_function
+                                (method_arg
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier)))))))))))))
                 (set_argument
                   (set_target
                     (glvn
@@ -987,19 +964,18 @@ If statements, built in funcs, byref
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (numeric_literal))))))))))
             (else_block
               (keyword_else)
               (statement
@@ -1013,59 +989,55 @@ If statements, built in funcs, byref
                     (expression
                       (expr_atom
                         (system_defined_function
-                          (dollar_function
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (string_literal))))
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (system_defined_function
-                                    (built_in_func_with_pos_options
-                                      (method_arg
-                                        (expression
-                                          (expr_atom
-                                            (lvn
-                                              (objectscript_identifier))))))))))
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (indirection
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (system_defined_function
+                                  (method_arg
                                     (expression
                                       (expr_atom
                                         (lvn
-                                          (objectscript_identifier))))))))
-                            (method_arg
-                              (byref_arg
-                                (lvn
-                                  (objectscript_identifier))))))))))))))
+                                          (objectscript_identifier)))))))))
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (indirection
+                                  (expression
+                                    (expr_atom
+                                      (lvn
+                                        (objectscript_identifier))))))))
+                          (method_arg
+                            (byref_arg
+                              (lvn
+                                (objectscript_identifier)))))))))))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
                 (system_defined_function
-                  (dollar_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (string_literal))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (system_defined_function
-                            (built_in_func_with_pos_options
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (lvn
-                                      (objectscript_identifier))))))))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (string_literal))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (system_defined_function
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier)))))))))
+                  (method_arg
+                    (expression
+                      (expr_atom
+                        (lvn
+                          (objectscript_identifier)))))))
               (expression
                 (expr_atom
                   (system_defined_variable))))
@@ -1095,92 +1067,86 @@ If + built in + set, valid
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_select
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier_special)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier_special)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier_special)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier_special)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal))))))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (dollar_arg_pair
-                  (expression
-                    (expr_atom
-                      (numeric_literal)))
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier_special)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier_special)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier_special)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier_special)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier_special)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))
+                (expression
+                  (expr_atom
+                    (numeric_literal))))
+              (dollar_arg_pair
+                (expression
+                  (expr_atom
+                    (numeric_literal)))
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier_special)))))
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (numeric_literal)))))))))))
         (statement
           (command_set
             (keyword_set)
@@ -1188,178 +1154,155 @@ If + built in + set, valid
               (set_target
                 (glvn
                   (gvn
+                    (identifier)
                     (method_args
-                      (bracket)
                       (method_arg
                         (expression
                           (expr_atom
                             (lvn
                               (objectscript_identifier_special)
                               (method_args
-                                (bracket)
                                 (method_arg
                                   (expression
                                     (expr_atom
-                                      (numeric_literal))))
-                                (bracket))))))
-                      (bracket)))))
+                                      (numeric_literal)))))))))))))
               (expression
                 (expr_atom
                   (system_defined_function
-                    (dollar_list
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (gvn
-                                        (method_args
-                                          (bracket)
-                                          (method_arg
-                                            (expression
-                                              (expr_atom
-                                                (lvn
-                                                  (objectscript_identifier_special)
-                                                  (method_args
-                                                    (bracket)
-                                                    (method_arg
-                                                      (expression
-                                                        (expr_atom
-                                                          (numeric_literal))))
-                                                    (bracket))))))
-                                          (bracket)))))))))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal))))
-                      (dollar_arg_pair
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier_special)))))
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))))))
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier_special)
-                              (method_args
-                                (bracket)
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))
-                                (bracket))))))
-                      (dollar_arg_pair
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier_special)))))
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))))))
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier_special)
-                              (method_args
-                                (bracket)
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))
-                                (bracket))))))
-                      (dollar_arg_pair
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier_special)))))
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))))))
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier_special)
-                              (method_args
-                                (bracket)
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))
-                                (bracket))))))
-                      (dollar_arg_pair
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier_special)))))
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))))))
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier_special)
-                              (method_args
-                                (bracket)
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))
-                                (bracket))))))
-                      (dollar_arg_pair
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier_special)))))
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))))))
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier_special)
-                              (method_args
-                                (bracket)
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (numeric_literal))))
-                                (bracket)))))))))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (gvn
+                                    (identifier)
+                                    (method_args
+                                      (method_arg
+                                        (expression
+                                          (expr_atom
+                                            (lvn
+                                              (objectscript_identifier_special)
+                                              (method_args
+                                                (method_arg
+                                                  (expression
+                                                    (expr_atom
+                                                      (numeric_literal))))))))))))))))))
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (numeric_literal))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier_special)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier_special)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier_special)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier_special)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))
+                    (dollar_arg_pair
+                      (expression
+                        (expr_atom
+                          (system_defined_function
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (lvn
+                                    (objectscript_identifier_special)))))
+                            (method_arg
+                              (expression
+                                (expr_atom
+                                  (numeric_literal)))))))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier_special)
+                            (method_args
+                              (method_arg
+                                (expression
+                                  (expr_atom
+                                    (numeric_literal)))))))))))))))))))
 
 ====
 If, no space before newline, block
@@ -1486,17 +1429,15 @@ If statement, valid with multiple lines of comments and a block
         (expression
           (expr_atom
             (system_defined_function
-              (dollar_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))))))))
+              (method_arg
+                (expression
+                  (expr_atom
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier)))))))))))
           (expr_tail
             (binary_operator)
             (expression

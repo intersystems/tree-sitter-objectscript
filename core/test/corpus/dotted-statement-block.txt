@@ -167,7 +167,6 @@ Do Statements Nested
                     (line_ref
                       (objectscript_identifier))
                     (method_args
-                      (bracket)
                       (method_arg
                         (byref_arg
                           (lvn
@@ -175,8 +174,7 @@ Do Statements Nested
                       (method_arg
                         (byref_arg
                           (lvn
-                            (objectscript_identifier))))
-                      (bracket))))))
+                            (objectscript_identifier)))))))))
             (do_statement_after
               (command_goto
                 (keyword_goto)
@@ -455,12 +453,10 @@ test	n x,y
                     (line_ref
                       (objectscript_identifier))
                     (method_args
-                      (bracket)
                       (method_arg
                         (expression
                           (expr_atom
-                            (string_literal))))
-                      (bracket)))))
+                            (string_literal))))))))
               (statement
                 (command_if
                   (keyword_old_if)
@@ -480,12 +476,10 @@ test	n x,y
                         (line_ref
                           (objectscript_identifier))
                         (method_args
-                          (bracket)
                           (method_arg
                             (expression
                               (expr_atom
-                                (string_literal))))
-                          (bracket))))))))))))))
+                                (string_literal)))))))))))))))))
 
 ===
 dotted statements separated by Tags
@@ -586,7 +580,6 @@ dotted statements within #if
               (expression
                 (expr_atom
                   (unary_expression
-                    (unary_operator)
                     (expression
                       (expr_atom
                         (numeric_literal)))))))))
@@ -668,13 +661,10 @@ dotted statements within #if
                   (keyword_old_if)
                   (expression
                     (expr_atom
-                      (parenthetical_expression
-                        (bracket)
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier))))
-                        (bracket)))
+                      (expression
+                        (expr_atom
+                          (lvn
+                            (objectscript_identifier)))))
                     (expr_tail
                       (binary_operator)
                       (expression
@@ -749,13 +739,11 @@ Dotted if old else
                 (method_name
                   (objectscript_identifier))
                 (method_args
-                  (bracket)
                   (method_arg
                     (expression
                       (expr_atom
                         (lvn
-                          (objectscript_identifier)))))
-                  (bracket))))))
+                          (objectscript_identifier))))))))))
         (statement
           (command_do
             (keyword_do_old)

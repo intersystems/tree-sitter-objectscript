@@ -50,17 +50,14 @@ Valid Znspace commands
         (post_conditional
           (expression
             (expr_atom
-              (parenthetical_expression
-                (bracket)
-                (expression
-                  (expr_atom
-                    (system_defined_function
-                      (dollar_function
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (gvn))))))))
-                (bracket)))))
+              (expression
+                (expr_atom
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (expr_atom
+                          (gvn
+                            (identifier)))))))))))
         (expression
           (expr_atom
             (string_literal)))))
@@ -69,7 +66,8 @@ Valid Znspace commands
         (keyword_zn)
         (expression
           (expr_atom
-            (gvn)))))))
+            (gvn
+              (identifier))))))))
 
 ===
 Invalid ZNSPACE command (Argumentless)
@@ -104,12 +102,11 @@ Valid $ZNSPACE
           (expression
             (expr_atom
               (system_defined_function
-                (dollarsf
-                  (objectscript_identifier)
-                  (objectscript_identifier)
-                  (method_args
-                    (bracket)
-                    (bracket)))))))))
+                (class_name
+                  (objectscript_identifier))
+                (method_name
+                  (objectscript_identifier))
+                (method_args)))))))
     (statement
       (command_set
         (keyword_set)

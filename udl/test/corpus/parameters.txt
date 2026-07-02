@@ -29,15 +29,16 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
 (source_file
   (include_code
     (keyword_include)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (class_definition
     (keyword_class)
     (class_name
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (parameter
@@ -45,7 +46,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (parameter_name
             (identifier))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (property
           (keyword_property)
@@ -94,9 +95,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (method_definition
             (method_name
               (identifier))
-            (arguments
-              (bracket)
-              (bracket))
+            (arguments)
             (return_type
               (keyword_as)
               (typename
@@ -109,26 +108,26 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
             (method_name
               (identifier))
             (arguments
-              (bracket)
               (argument
                 (method_arg
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier))))
               (argument
                 (method_arg
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
                 (return_type
                   (keyword_as)
                   (typename
-                    (identifier))))
-              (bracket))
+                    (identifier)))))
             (return_type
               (keyword_as)
               (typename
@@ -165,7 +164,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -177,7 +176,7 @@ Class hi {
             (parameter_keyword
               (typename)))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -186,7 +185,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -195,7 +194,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -204,7 +203,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -213,7 +212,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -222,7 +221,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (typename)))))))
+            (string_literal)))))))
 
 ========================
 Calling Parameters
@@ -255,9 +254,7 @@ Class hi {
           (method_definition
             (method_name
               (identifier))
-            (arguments
-              (bracket)
-              (bracket))
+            (arguments)
             (statement
               (command_write
                 (keyword_write)
@@ -267,10 +264,8 @@ Class hi {
                       (oref_chain_expr
                         (class_ref
                           (keyword_pound_pound_class)
-                          (bracket)
                           (class_name
-                            (identifier))
-                          (bracket))
+                            (identifier)))
                         (oref_chain_segment
                           (oref_parameter
                             (parameter_name
@@ -318,17 +313,16 @@ Class hi {
                   (expression
                     (expr_atom
                       (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))))))))))))))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))
+                        (method_arg
+                          (expression
+                            (expr_atom
+                              (lvn
+                                (objectscript_identifier)))))))))))))))))
 
 ========================
 InValid Parameter Keywords Placement

@@ -30,12 +30,11 @@ $SYSTEM.Status.OK method call
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args)))))
 
 ==================================
 $SYSTEM.Status.Error with arguments
@@ -47,20 +46,19 @@ $SYSTEM.Status.Error with arguments
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (numeric_literal))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $SYSTEM.SQL.Execute method call
@@ -72,16 +70,15 @@ $SYSTEM.SQL.Execute method call
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $SYSTEM.OBJ.Load with multiple arguments
@@ -93,20 +90,19 @@ $SYSTEM.OBJ.Load with multiple arguments
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))))
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal)))))))))
 
 ==================================
 $SYSTEM.Process.UserName
@@ -118,12 +114,11 @@ $SYSTEM.Process.UserName
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args)))))
 
 ==================================
 $SYSTEM case insensitive
@@ -135,12 +130,11 @@ $SYSTEM case insensitive
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args)))))
 
 ==================================
 $SYSTEM with variable reference in class position
@@ -152,17 +146,16 @@ $SYSTEM with variable reference in class position
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $SYSTEM.Version.GetNumber
@@ -174,12 +167,11 @@ $SYSTEM.Version.GetNumber
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args)))))
 
 ==================================
 $SYSTEM with percent class name
@@ -191,12 +183,11 @@ $SYSTEM with percent class name
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier_special)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier_special))
+        (method_name
+          (objectscript_identifier))
+        (method_args)))))
 
 ==================================
 $SYSTEM in expression context
@@ -208,17 +199,16 @@ $SYSTEM in expression context
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))
     (expr_tail
       (binary_operator)
       (expression
@@ -235,20 +225,19 @@ $SYSTEM with optional arguments (byref)
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (method_arg
-              (byref_arg
-                (lvn
-                  (objectscript_identifier))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (string_literal))))
+          (method_arg
+            (byref_arg
+              (lvn
+                (objectscript_identifier)))))))))
 
 ==================================
 $SYSTEM with empty argument slots
@@ -260,16 +249,15 @@ $SYSTEM with empty argument slots
   (expression
     (expr_atom
       (system_defined_function
-        (dollarsf
-          (objectscript_identifier)
-          (objectscript_identifier)
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (numeric_literal))))
-            (bracket)))))))
+        (class_name
+          (objectscript_identifier))
+        (method_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (expr_atom
+                (numeric_literal)))))))))
 
 ==================================
 $SYSTEM variable in comparison

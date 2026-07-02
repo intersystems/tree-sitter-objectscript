@@ -36,15 +36,11 @@ Valid Dim
           (class_method_call
             (class_ref
               (keyword_pound_pound_class)
-              (bracket)
               (class_name
-                (identifier))
-              (bracket))
+                (identifier)))
             (method_name
               (objectscript_identifier_special))
-            (method_args
-              (bracket)
-              (bracket)))))))
+            (method_args))))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -56,15 +52,11 @@ Valid Dim
           (class_method_call
             (class_ref
               (keyword_pound_pound_class)
-              (bracket)
               (class_name
-                (identifier))
-              (bracket))
+                (identifier)))
             (method_name
               (objectscript_identifier_special))
-            (method_args
-              (bracket)
-              (bracket)))))))
+            (method_args))))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -79,8 +71,7 @@ Valid Dim
           (json_object_literal
             (json_object_literal_pair
               (json_string_literal)
-              (json_literal
-                (json_string_literal))))))))
+              (json_string_literal)))))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -93,10 +84,8 @@ Valid Dim
       (expression
         (expr_atom
           (json_array_literal
-            (json_literal
-              (json_string_literal))
-            (json_literal
-              (json_string_literal))))))))
+            (json_string_literal)
+            (json_string_literal)))))))
 
 ===
 valid
@@ -283,19 +272,18 @@ valid
       (expression
         (expr_atom
           (system_defined_function
-            (dollar_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (numeric_literal))))))))))
 
 ===
 valid
@@ -320,15 +308,11 @@ valid
           (class_method_call
             (class_ref
               (keyword_pound_pound_class)
-              (bracket)
               (class_name
-                (identifier))
-              (bracket))
+                (identifier)))
             (method_name
               (objectscript_identifier_special))
-            (method_args
-              (bracket)
-              (bracket))))))))
+            (method_args)))))))
 
 ===
 valid

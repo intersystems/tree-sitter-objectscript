@@ -25,7 +25,8 @@ Kill Statements
             (objectscript_identifier))))
       (kill_target
         (glvn
-          (gvn)))))
+          (gvn
+            (identifier))))))
   (statement
     (command_kill
       (keyword_kill)
@@ -34,12 +35,10 @@ Kill Statements
           (lvn
             (objectscript_identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket)))))))
+                    (numeric_literal))))))))))
   (statement
     (command_kill
       (keyword_kill)
@@ -57,10 +56,12 @@ Kill Statements
       (keyword_kill)
       (kill_target
         (glvn
-          (gvn)))
+          (gvn
+            (identifier))))
       (kill_target
         (glvn
-          (gvn)))
+          (gvn
+            (identifier))))
       (kill_target_list
         (set_target
           (glvn
@@ -99,7 +100,6 @@ Kill Statements Array Node
           (lvn
             (objectscript_identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -107,14 +107,12 @@ Kill Statements Array Node
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket)))))
+                    (numeric_literal))))))))
       (kill_target
         (glvn
           (lvn
             (objectscript_identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -122,14 +120,12 @@ Kill Statements Array Node
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket)))))
+                    (numeric_literal))))))))
       (kill_target
         (glvn
           (lvn
             (objectscript_identifier)
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -137,8 +133,7 @@ Kill Statements Array Node
               (method_arg
                 (expression
                   (expr_atom
-                    (numeric_literal))))
-              (bracket))))))))
+                    (numeric_literal)))))))))))
 
 ===========================
 Kill Using an Object Method
@@ -159,25 +154,21 @@ Kill Using an Object Method
               (method_name
                 (objectscript_identifier_special))
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
                       (lvn
-                        (objectscript_identifier)))))
-                (bracket))))
+                        (objectscript_identifier))))))))
           (oref_chain_segment
             (oref_method
               (method_name
                 (objectscript_identifier))
               (method_args
-                (bracket)
                 (method_arg
                   (expression
                     (expr_atom
                       (lvn
-                        (objectscript_identifier)))))
-                (bracket)))))))))
+                        (objectscript_identifier)))))))))))))
 
 ==========================
 Kill With PostConditionals
@@ -199,7 +190,8 @@ Kill With PostConditionals
               (pattern_expression)))))
       (kill_target
         (glvn
-          (gvn))))))
+          (gvn
+            (identifier)))))))
 
 =====
 Zkill
@@ -216,12 +208,10 @@ Zkill
         (lvn
           (objectscript_identifier)
           (method_args
-            (bracket)
             (method_arg
               (expression
                 (expr_atom
-                  (numeric_literal))))
-            (bracket))))))
+                  (numeric_literal)))))))))
   (statement
     (command_zkill
       (keyword_zkill)
@@ -237,12 +227,10 @@ Zkill
         (lvn
           (objectscript_identifier)
           (method_args
-            (bracket)
             (method_arg
               (expression
                 (expr_atom
-                  (numeric_literal))))
-            (bracket)))))))
+                  (numeric_literal))))))))))
 
 ===
 kill relative dot property

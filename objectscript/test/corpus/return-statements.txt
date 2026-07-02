@@ -47,9 +47,7 @@ Return Valid Statements
               (oref_method
                 (method_name
                   (objectscript_identifier))
-                (method_args
-                  (bracket)
-                  (bracket)))))))))
+                (method_args))))))))
   (statement
     (command_return
       (keyword_return)
@@ -81,29 +79,24 @@ Return Valid Statements
             (line_ref
               (objectscript_identifier))
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
                     (lvn
-                      (objectscript_identifier)))))
-              (bracket)))))))
+                      (objectscript_identifier)))))))))))
   (statement
     (command_return
       (keyword_return)
       (expression
         (expr_atom
-          (parenthetical_expression
-            (bracket)
-            (expression
-              (expr_atom
-                (numeric_literal))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))
-            (bracket))))))
+          (expression
+            (expr_atom
+              (numeric_literal))
+            (expr_tail
+              (binary_operator)
+              (expression
+                (expr_atom
+                  (numeric_literal)))))))))
   (statement
     (command_return
       (keyword_return)
@@ -161,8 +154,7 @@ Return Json Literal Value Evaluated
       (expression
         (expr_atom
           (json_array_literal
-            (json_objectscript_expr
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+            (expression
+              (expr_atom
+                (lvn
+                  (objectscript_identifier))))))))))

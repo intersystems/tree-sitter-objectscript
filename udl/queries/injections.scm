@@ -27,50 +27,41 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (external_method_keywords
-    (method_keyword_language
-      (typename) @_lang))
+  (method_keyword_external_language
+    (typename) @_lang)
   (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
-  (external_method_keywords
-    (method_keyword_language
-      (typename) @_lang))
+  (method_keyword_external_language
+    (typename) @_lang)
   (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "tsql" "TSQL" "tSQL" "tSql" "TSql")
   (#set! injection.language "tsql"))
 
 (method_definition
-  (external_method_keywords
-    (method_keyword_language
-      (typename) @_lang))
+  (method_keyword_external_language
+    (typename) @_lang)
   (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "ispl" "ISPL" "ISpl" "iSpl")
   (#set! injection.language "ispl"))
 
-; External trigger with python body
-((trigger
-  (external_trigger
-    (trigger_keywords
-      (method_keyword_language
-        (typename) @_lang))
-    (external_method_body_content) @injection.content))
+(trigger
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
-; External trigger with TSQL body
-((trigger
-  (external_trigger
-    (trigger_keywords
-      (method_keyword_language
-        (typename) @_lang))
-    (external_method_body_content) @injection.content))
+(trigger
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "tsql" "TSQL" "tSQL" "tSql" "TSql")
   (#set! injection.language "tsql"))
@@ -82,19 +73,7 @@
     (typename
       (identifier) @_querytype
       (#any-of? @_querytype "%SqlQuery" "%sqlquery" "%SQLQUERY" "%Sqlquery" "%SQLQuery")))
-  (query_body
-    (query_body_content) @injection.content)
-  (#set! injection.language "sql")
-  (#set! injection.include-children "true"))
-
-(query
-  (return_type
-    (typename
-      (type_with_params
-        (identifier) @_querytype)
-      (#any-of? @_querytype "%SqlQuery" "%sqlquery" "%SQLQUERY" "%Sqlquery" "%SQLQuery")))
-  (query_body
-    (query_body_content) @injection.content)
+  (external_method_body_content) @injection.content
   (#set! injection.language "sql")
   (#set! injection.include-children "true"))
 
@@ -105,67 +84,51 @@
 ; XDATA injections (MimeType)
 ; ----------------------------
 ; text/markdown
+;
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/markdown" "\"text/markdown\"")
   (#set! injection.language "markdown"))
 
-; XML MimeTypes
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/xml" "\"text/xml\"" "application/xml" "\"application/xml\"")
   (#set! injection.language "xml"))
 
-; text/html
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/html" "\"text/html\"")
   (#set! injection.language "html"))
 
-; application/json
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "application/json" "\"application/json\"")
   (#set! injection.language "json"))
 
-; text/yaml or application/yaml
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/yaml" "\"text/yaml\"" "application/yaml" "\"application/yaml\"")
   (#set! injection.language "yaml"))
 
-; text/css
 (xdata
-  (xdata_any
-    (xdata_keywords
-      (xdata_keyword_mimetype
-        (typename) @_mt))
-    (external_method_body_content) @injection.content)
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/css" "\"text/css\"")
   (#set! injection.language "css"))
@@ -174,16 +137,13 @@
 ; XDATA default (no MimeType): XML fallback
 ; -----------------------------------------
 (xdata
-  (xdata_xml
-    (xdata_keywords)?
-    (external_method_body_content) @injection.content)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#set! injection.language "xml"))
 
 ; Storage definition is XML
 (storage
-  (storage_body
-    (external_method_body_content) @injection.content)
+  (external_method_body_content) @injection.content
   (#set! injection.language "xml")
   (#set! injection.include-children "true"))
 

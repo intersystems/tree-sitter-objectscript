@@ -47,7 +47,6 @@ JOB statements
               (routine_ref
                 (routine_name)))
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -66,8 +65,7 @@ JOB statements
                     (binary_operator)
                     (expression
                       (expr_atom
-                        (numeric_literal))))))
-              (bracket))))))
+                        (numeric_literal)))))))))))
     (statement
       (command_job
         (keyword_job)
@@ -76,9 +74,7 @@ JOB statements
             (line_ref
               (routine_ref
                 (routine_name)))
-            (method_args
-              (bracket)
-              (bracket))))))
+            (method_args)))))
     (statement
       (command_job
         (keyword_job)
@@ -102,7 +98,6 @@ JOB statements
               (routine_ref
                 (routine_name)))
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -111,8 +106,7 @@ JOB statements
               (method_arg
                 (expression
                   (expr_atom
-                    (string_literal))))
-              (bracket)))
+                    (string_literal))))))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -126,15 +120,11 @@ JOB statements
           (class_method_call
             (class_ref
               (keyword_pound_pound_class)
-              (bracket)
               (class_name
-                (identifier))
-              (bracket))
+                (identifier)))
             (method_name
               (objectscript_identifier))
-            (method_args
-              (bracket)
-              (bracket)))
+            (method_args))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -150,17 +140,14 @@ JOB statements
         (keyword_job)
         (job_argument
           (system_defined_function
-            (dollar_method
-              (bracket)
-              (method_arg
-                (expression
-                  (expr_atom
-                    (string_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (string_literal))))
-              (bracket)))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal))))
+            (method_arg
+              (expression
+                (expr_atom
+                  (string_literal)))))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -175,14 +162,11 @@ JOB statements
       (command_job
         (keyword_job)
         (job_argument
-          (method_call
-            (relative_dot_method
-              (oref_method
-                (method_name
-                  (objectscript_identifier))
-                (method_args
-                  (bracket)
-                  (bracket)))))
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (objectscript_identifier))
+              (method_args)))
           (expression
             (expr_atom
               (numeric_literal)))
@@ -197,14 +181,11 @@ JOB statements
       (command_job
         (keyword_job)
         (job_argument
-          (method_call
-            (relative_dot_method
-              (oref_method
-                (method_name
-                  (objectscript_identifier))
-                (method_args
-                  (bracket)
-                  (bracket)))))
+          (relative_dot_method
+            (oref_method
+              (method_name
+                (objectscript_identifier))
+              (method_args)))
           (timeout
             (expression
               (expr_atom
@@ -272,20 +253,17 @@ JOB statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (ssvn
-                          (objectscript_identifier)
-                          (method_args
-                            (bracket)
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier)))))
-                            (bracket)))))))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (ssvn
+                        (objectscript_identifier)
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))))))))))))
     (statement
       (command_set
         (keyword_set)
@@ -297,20 +275,17 @@ JOB statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (ssvn
-                          (objectscript_identifier)
-                          (method_args
-                            (bracket)
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier)))))
-                            (bracket)))))))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (ssvn
+                        (objectscript_identifier)
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (lvn
+                                  (objectscript_identifier))))))))))))))))
     (statement
       (command_set
         (keyword_set)
@@ -322,19 +297,16 @@ JOB statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (ssvn
-                          (objectscript_identifier)
-                          (method_args
-                            (bracket)
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (string_literal))))
-                            (bracket)))))))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (ssvn
+                        (objectscript_identifier)
+                        (method_args
+                          (method_arg
+                            (expression
+                              (expr_atom
+                                (string_literal)))))))))))))))
     (statement
       (command_write
         (keyword_write)
@@ -356,15 +328,14 @@ JOB statements
           (expression
             (expr_atom
               (system_defined_function
-                (dollar_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (indirection
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))))))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (indirection
+                        (expression
+                          (expr_atom
+                            (lvn
+                              (objectscript_identifier))))))))))))))))
 
 =========================
 JOB With Postconditionals
@@ -439,7 +410,6 @@ JOB Doc Syntax: joblocation forms
               (routine_ref
                 (routine_name)))
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
@@ -458,8 +428,7 @@ JOB Doc Syntax: joblocation forms
                     (binary_operator)
                     (expression
                       (expr_atom
-                        (numeric_literal))))))
-              (bracket)))
+                        (numeric_literal))))))))
           (expression
             (expr_atom
               (string_literal)))
@@ -481,9 +450,7 @@ JOB Doc Syntax: joblocation forms
             (line_ref
               (routine_ref
                 (routine_name)))
-            (method_args
-              (bracket)
-              (bracket)))
+            (method_args))
           (expression
             (expr_atom
               (lvn
@@ -508,20 +475,16 @@ job, var could contain the process list
           (class_method_call
             (class_ref
               (keyword_pound_pound_class)
-              (bracket)
               (class_name
-                (identifier))
-              (bracket))
+                (identifier)))
             (method_name
               (objectscript_identifier))
             (method_args
-              (bracket)
               (method_arg
                 (expression
                   (expr_atom
                     (lvn
-                      (objectscript_identifier)))))
-              (bracket)))
+                      (objectscript_identifier)))))))
           (lvn
             (objectscript_identifier))
           (timeout

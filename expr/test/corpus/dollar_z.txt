@@ -8,22 +8,19 @@ Internal zobjclassmethod
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_method
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (bracket))))))
+        (method_arg
+          (expression
+            (expr_atom
+              (lvn
+                (objectscript_identifier)))))
+        (method_arg
+          (expression
+            (expr_atom
+              (string_literal))))
+        (method_arg
+          (expression
+            (expr_atom
+              (string_literal))))))))
 
 ===
 $ZOBJVAL inside of data
@@ -35,45 +32,43 @@ $ZOBJVAL inside of data
   (expression
     (expr_atom
       (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (dollar_function
-                    (method_arg
+        (method_arg
+          (expression
+            (expr_atom
+              (system_defined_function
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
                       (expression
                         (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (method_arg
+                          (numeric_literal))))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (numeric_literal))))
+                (method_arg
+                  (expression
+                    (expr_atom
+                      (lvn
+                        (objectscript_identifier)))
+                    (expr_tail
+                      (binary_operator)
                       (expression
                         (expr_atom
-                          (lvn
-                            (objectscript_identifier)))
-                        (expr_tail
-                          (binary_operator)
-                          (expression
-                            (expr_atom
-                              (numeric_literal))))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))
-                        (expr_tail
-                          (binary_operator)
-                          (expression
-                            (expr_atom
-                              (numeric_literal))))))))))))))
+                          (numeric_literal))))))))))))
     (expr_tail
       (binary_operator)
       (expression

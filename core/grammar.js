@@ -105,10 +105,9 @@ module.exports = grammar(objectscript_expr, {
   ],
   conflicts: ($, previous) =>
     previous.concat([
-      [$.xecute_argument, $.parenthetical_expression],
+      [$.xecute_argument, $._parenthetical_expression],
       [$.line_ref, $.line_ref],
-      [$.lvn, $._tag_or_line_ref],
-      [$._target_variable, $.set_target],
+      [$.lvn, $._text_line_ref],
       [$.expr_atom, $.device_params],
     ]),
 
@@ -386,13 +385,12 @@ module.exports = grammar(objectscript_expr, {
         $.relative_dot_method,
         $.system_defined_function,
         $.system_defined_variable,
-        $.parenthetical_expression,
+        $._parenthetical_expression,
         $.json_object_literal,
         $.json_array_literal,
         $.ole_object_reference,
         $.class_method_call,
         $.sql_field_reference,
-        $.oref_chain_expr,
         $._ole_server_name,
       ),
 
@@ -482,13 +480,7 @@ module.exports = grammar(objectscript_expr, {
 
     do_parameter: ($) =>
       seq(
-        choice(
-          $.routine_tag_call,
-          $.class_method_call,
-          $.system_defined_function,
-          $.superclass_method_call,
-          $.method_call,
-        ),
+        choice($.routine_tag_call, $.system_defined_function, $._method_call),
         optional($.post_conditional),
       ),
 
@@ -500,16 +492,18 @@ module.exports = grammar(objectscript_expr, {
         commaSep1($.do_parameter),
       ),
 
-    method_call: ($) =>
+    _method_call: ($) =>
       choice(
         $.relative_dot_method,
+        $.superclass_method_call,
+        $.class_method_call,
         seq(
           choice(
             $.lvn,
             $.instance_variable,
             $.relative_dot_property,
             $.relative_dot_method,
-            $.parenthetical_expression,
+            $._parenthetical_expression,
             $.macro,
             $.extrinsic_function,
             $.system_defined_function,
@@ -518,19 +512,12 @@ module.exports = grammar(objectscript_expr, {
           ),
           repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
-          token.immediate('.'),
+          alias(token.immediate('.'), $.method_dot),
           $.oref_method,
         ),
       ),
 
-    _tag_or_line_ref: ($) =>
-      choice(
-        prec(1, $.line_ref),
-        alias($._base_variable, $.line_ref),
-        $.numeric_literal,
-      ),
-
-    routine_tag_call: ($) => seq($._tag_or_line_ref, optional($.method_args)),
+    routine_tag_call: ($) => seq($._text_line_ref, optional($.method_args)),
     keyword_zremove: (_) => /zr(emove)?/i,
 
     print_statement: ($) => {
@@ -548,8 +535,8 @@ module.exports = grammar(objectscript_expr, {
     print_argument: ($) =>
       prec.right(
         seq(
-          $._tag_or_line_ref,
-          optional(seq(token.immediate(':'), $._tag_or_line_ref)),
+          $._text_line_ref,
+          optional(seq(token.immediate(':'), $._text_line_ref)),
         ),
       ),
 
@@ -912,7 +899,6 @@ module.exports = grammar(objectscript_expr, {
     command_trycatch_dotted: ($) =>
       seq(
         build_dotted_block_no_params($, $.keyword_try),
-        // choice($._statements_block, $._dotted_statements_block),
         $.keyword_catch,
         optional(build_arguments($._target_var_arg)),
         $._dotted_statements_block,
@@ -938,10 +924,8 @@ module.exports = grammar(objectscript_expr, {
               ),
             ),
           ),
-          $.class_method_call,
           $.system_defined_function,
-          $.superclass_method_call,
-          $.method_call,
+          $._method_call,
         ),
         optional(
           seq(
@@ -994,7 +978,7 @@ module.exports = grammar(objectscript_expr, {
           commaSep1(choice($.goto_argument, $.system_defined_function)),
         ),
       ),
-    goto_argument: ($) => seq($._tag_or_line_ref, optional($.post_conditional)),
+    goto_argument: ($) => seq($._text_line_ref, optional($.post_conditional)),
 
     command_halt_or_hang: ($) =>
       choice(
@@ -1034,10 +1018,10 @@ module.exports = grammar(objectscript_expr, {
 
         // Parameter-passing form: XECUTE ("cmdline", params... )[:pc]
         seq(
-          alias('(', $.bracket),
+          '(',
           $.expression,
           commaSepStart(choice($.byref_arg, $.expression)),
-          alias(')', $.bracket),
+          ')',
           optional($.post_conditional),
         ),
       ),
@@ -1077,7 +1061,7 @@ module.exports = grammar(objectscript_expr, {
         optional(choice('+', '-', '--')),
         choice(
           // code line location?,
-          $._tag_or_line_ref,
+          $._text_line_ref,
           // local var *var
           seq('*', $.objectscript_identifier),
           // single step breakpoint

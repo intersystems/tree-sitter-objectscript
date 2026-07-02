@@ -4,10 +4,7 @@
 ; === BEGIN EXPR ===
 (pattern_expression) @string.regexp
 
-[
-  (json_number_literal)
-  (numeric_literal)
-] @number
+(numeric_literal) @number
 
 [
   (json_boolean_literal)
@@ -23,7 +20,7 @@
 ] @string
 
 [
-  (keyword_pound_pound_super)
+  (keyword_super)
   (keyword_pound_pound_class)
 ] @keyword.operator
 
@@ -126,8 +123,6 @@
   "!"
   "?"
 ] @operator
-
-(bracket) @punctuation.bracket
 
 ; === END EXPR ===
 ; === BEGIN CORE ===
@@ -297,8 +292,7 @@
 (variable_datatype
   "." @function.builtin)
 
-(method_call
-  "." @function.builtin)
+(method_dot) @function.builtin
 
 ; === END CORE ===
 ; === BEGIN UDL ===
@@ -340,14 +334,14 @@
   (class_keyword)
   (query_keyword)
   (trigger_keyword)
-  (method_keyword_language)
+  (xdata_keyword_mimetype)
+  (method_keyword_external_language)
   (relationship_keyword)
   (foreignkey_keyword)
   (parameter_keyword)
   (projection_keyword)
   (index_keyword)
   (xdata_keyword)
-  (xdata_keyword_mimetype)
   (property_keyword)
 ] @keyword.modifier
 
@@ -365,6 +359,7 @@
   (storage_name)
   (xml_identifier)
   (index_property)
+  (column_name)
 ] @variable.member
 
 [
