@@ -98,8 +98,7 @@ Query composition rules:
   - `injections.scm`: `core + routine local`
 
 `scripts/sync_queries.py` only manages `highlights.scm`, `indents.scm`, and
-`injections.scm`. `studio-highlights.scm` files are intentionally excluded from
-query sync and from Python query-copy verification.
+`injections.scm`. 
 
 Manual query commands:
 
@@ -118,20 +117,17 @@ Run from repository root.
 cargo test --lib --package tree-sitter-objectscript
 
 ./scripts/rust_routine_crate.sh stage /tmp/tsroutine
-cp objectscript_routine/queries/studio-highlights.scm /tmp/tsroutine/objectscript_routine/queries/
+cp objectscript_routine/queries/highlights.scm /tmp/tsroutine/objectscript_routine/queries/
 cargo build --manifest-path /tmp/tsroutine/Cargo.toml
 
 ./scripts/rust_playground_crate.sh stage /tmp/tsplayground
-cp objectscript/queries/studio-highlights.scm /tmp/tsplayground/objectscript/queries/
+cp objectscript/queries/highlights.scm /tmp/tsplayground/objectscript/queries/
 cargo build --manifest-path /tmp/tsplayground/Cargo.toml
 ```
 
 The root `Cargo.toml` only covers the published UDL crate
 (`tree-sitter-objectscript`). The routine and playground crates are staged from
-their template directories before building or publishing. Their current Rust
-templates include `STUDIO_HIGHLIGHTS_QUERY`, so local staged builds need the
-matching `studio-highlights.scm` copied into the staged query directory until
-the staging scripts are updated to do that automatically.
+their template directories before building or publishing. 
 
 - Python:
 

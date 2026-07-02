@@ -11,7 +11,8 @@ extern "C" {
 /// The tree-sitter [`LanguageFn`] for ObjectScript playground grammar.
 ///
 /// [LanguageFn]: https://docs.rs/tree-sitter-language/*/tree_sitter_language/struct.LanguageFn.html
-pub const LANGUAGE_OBJECTSCRIPT: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_objectscript) };
+pub const LANGUAGE_OBJECTSCRIPT: LanguageFn =
+    unsafe { LanguageFn::from_raw(tree_sitter_objectscript) };
 
 /// The content of the [`node-types.json`][] file for ObjectScript playground grammar.
 ///
@@ -20,9 +21,6 @@ pub const NODE_TYPES: &str = include_str!("objectscript/src/node-types.json");
 
 /// The syntax highlighting query for ObjectScript.
 pub const HIGHLIGHTS_QUERY: &str = include_str!("objectscript/queries/highlights.scm");
-
-/// The syntax highlighting query for ObjectScript (Studio Version).
-pub const STUDIO_HIGHLIGHTS_QUERY: &str = include_str!("objectscript/queries/studio-highlights.scm");
 
 /// The injections query for ObjectScript.
 pub const INJECTIONS_QUERY: &str = include_str!("objectscript/queries/injections.scm");
@@ -53,10 +51,5 @@ mod tests {
     #[test]
     fn test_highlights_query_is_loaded() {
         assert!(super::HIGHLIGHTS_QUERY.contains("@keyword"));
-    }
-
-    #[test]
-    fn test_highlights_query_studio_is_loaded() {
-        assert!(super::STUDIO_HIGHLIGHTS_QUERY.contains("@keyword"));
     }
 }

@@ -11,7 +11,8 @@ extern "C" {
 /// The tree-sitter [`LanguageFn`] for ObjectScript UDL grammar.
 ///
 /// [LanguageFn]: https://docs.rs/tree-sitter-language/*/tree_sitter_language/struct.LanguageFn.html
-pub const LANGUAGE_OBJECTSCRIPT_UDL: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_objectscript_udl) };
+pub const LANGUAGE_OBJECTSCRIPT_UDL: LanguageFn =
+    unsafe { LanguageFn::from_raw(tree_sitter_objectscript_udl) };
 
 /// The content of the [`node-types.json`][] file for ObjectScript UDL grammar.
 ///
@@ -20,9 +21,6 @@ pub const NODE_TYPES: &str = include_str!("../../udl/src/node-types.json");
 
 /// The syntax highlighting query for ObjectScript UDL.
 pub const HIGHLIGHTS_QUERY: &str = include_str!("../../udl/queries/highlights.scm");
-
-/// The syntax highlighting query for ObjectScript UDL (Studio Version).
-pub const STUDIO_HIGHLIGHTS_QUERY: &str = include_str!("../../udl/queries/studio-highlights.scm");
 
 /// The injections query for ObjectScript UDL.
 pub const INJECTIONS_QUERY: &str = include_str!("../../udl/queries/injections.scm");

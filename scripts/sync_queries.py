@@ -47,7 +47,6 @@ OBJECTSCRIPT_DIR = ROOT / "objectscript" / "queries"
 ROUTINE_DIR = ROOT / "objectscript_routine" / "queries"
 
 QUERY_FILENAMES = ("highlights.scm", "indents.scm", "injections.scm")
-IGNORED_QUERY_FILENAMES = {"studio-highlights.scm"}
 
 GRAMMAR_DIRS: dict[str, Path] = {
     "expr": EXPR_DIR,
@@ -84,11 +83,26 @@ LOCAL_BEGIN_MARKERS = {"; === BEGIN LOCAL ===", "; BEGIN LOCAL"}
 LOCAL_END_MARKERS = {"; === END LOCAL ===", "; END LOCAL"}
 
 PYTHON_QUERY_DIRS: tuple[tuple[Path, Path], ...] = (
-    (OBJECTSCRIPT_DIR, ROOT / "bindings" / "python" / "tree_sitter_objectscript" / "queries"),
-    (CORE_DIR, ROOT / "bindings" / "python" / "tree_sitter_objectscript_core" / "queries"),
-    (UDL_DIR, ROOT / "bindings" / "python" / "tree_sitter_objectscript_udl" / "queries"),
-    (EXPR_DIR, ROOT / "bindings" / "python" / "tree_sitter_objectscript_expr" / "queries"),
-    (ROUTINE_DIR, ROOT / "bindings" / "python" / "tree_sitter_objectscript_routine" / "queries"),
+    (
+        OBJECTSCRIPT_DIR,
+        ROOT / "bindings" / "python" / "tree_sitter_objectscript" / "queries",
+    ),
+    (
+        CORE_DIR,
+        ROOT / "bindings" / "python" / "tree_sitter_objectscript_core" / "queries",
+    ),
+    (
+        UDL_DIR,
+        ROOT / "bindings" / "python" / "tree_sitter_objectscript_udl" / "queries",
+    ),
+    (
+        EXPR_DIR,
+        ROOT / "bindings" / "python" / "tree_sitter_objectscript_expr" / "queries",
+    ),
+    (
+        ROUTINE_DIR,
+        ROOT / "bindings" / "python" / "tree_sitter_objectscript_routine" / "queries",
+    ),
 )
 
 
@@ -159,23 +173,15 @@ def list_query_files() -> list[str]:
     names: set[str] = set(QUERY_FILENAMES)
     for directory in GRAMMAR_DIRS.values():
         if directory.exists():
-            names.update(
-                p.name
-                for p in directory.glob("*.scm")
-                if p.name not in IGNORED_QUERY_FILENAMES
-            )
+            names.update(p.name for p in directory.glob("*.scm"))
     return sorted(names)
 
 
 def sync_python_query_dir(src_dir: Path, dst_dir: Path) -> None:
     dst_dir.mkdir(parents=True, exist_ok=True)
 
-    src_files = {
-        p.name: p for p in src_dir.glob("*.scm") if p.name not in IGNORED_QUERY_FILENAMES
-    }
-    dst_files = {
-        p.name: p for p in dst_dir.glob("*.scm") if p.name not in IGNORED_QUERY_FILENAMES
-    }
+    src_files = {p.name: p for p in src_dir.glob("*.scm")}
+    dst_files = {p.name: p for p in dst_dir.glob("*.scm")}
 
     for stale_name in sorted(set(dst_files) - set(src_files)):
         dst_files[stale_name].unlink()
@@ -185,11 +191,7 @@ def sync_python_query_dir(src_dir: Path, dst_dir: Path) -> None:
 
 
 def read_query_files(path: Path) -> dict[str, str]:
-    return {
-        p.name: read_text(p)
-        for p in sorted(path.glob("*.scm"))
-        if p.name not in IGNORED_QUERY_FILENAMES
-    }
+    return {p.name: read_text(p) for p in sorted(path.glob("*.scm"))}
 
 
 def check_python_query_dirs() -> list[str]:
@@ -203,7 +205,9 @@ def check_python_query_dirs() -> list[str]:
         missing = sorted(src_names - dst_names)
         extra = sorted(dst_names - src_names)
         different = sorted(
-            name for name in (src_names & dst_names) if src_files[name] != dst_files[name]
+            name
+            for name in (src_names & dst_names)
+            if src_files[name] != dst_files[name]
         )
 
         if not missing and not extra and not different:
@@ -245,8 +249,7 @@ def main() -> None:
 
     local_layers: dict[str, dict[str, str]] = {
         grammar: {
-            name: extract_local_layer(read_text(directory / name))
-            for name in filenames
+            name: extract_local_layer(read_text(directory / name)) for name in filenames
         }
         for grammar, directory in GRAMMAR_DIRS.items()
     }
