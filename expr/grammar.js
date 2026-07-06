@@ -564,8 +564,8 @@ module.exports = grammar({
     _text_line_ref: ($) =>
       choice(
         prec(1, $.line_ref),
-        alias($._base_variable, $.line_ref),
-        alias($.numeric_literal, $.line_ref),
+        alias($._base_variable, $.method_name),
+        $.numeric_literal,
       ),
     _dollar_bitlogic: ($) =>
       seq(
