@@ -6,21 +6,16 @@ $SELECT with single condition
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+            (numeric_literal)))
+        (expression
+          (string_literal))))))
 
 ==================================
 $SELECT with multiple conditions
@@ -30,41 +25,30 @@ $SELECT with multiple conditions
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+            (numeric_literal)))
+        (expression
+          (string_literal)))
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (string_literal))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
-          (expression
-            (expr_atom
-              (string_literal))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+            (numeric_literal)))
+        (expression
+          (string_literal)))
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (string_literal))))))
 
 ==================================
 $SELECT with variable values
@@ -74,25 +58,20 @@ $SELECT with variable values
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $SELECT shorthand with conditions
@@ -102,24 +81,19 @@ $SELECT shorthand with conditions
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
-          (expression
-            (expr_atom
-              (numeric_literal))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (numeric_literal)))
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier)))
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $SELECT case insensitive
@@ -129,15 +103,12 @@ $SELECT case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (string_literal))))))
 
 ==================================
 $SELECT with nested functions
@@ -147,32 +118,25 @@ $SELECT with nested functions
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))
-          (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier)))))))
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (string_literal))))))
 
 ==================================
 $SELECT with complex conditions
@@ -182,41 +146,29 @@ $SELECT with complex conditions
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
+            (numeric_literal))
+          (binary_operator)
+          (expression
+            (expression
               (lvn
-                (objectscript_identifier)))
-            (expr_tail
+                (objectscript_identifier))
               (binary_operator)
               (expression
-                (expr_atom
-                  (numeric_literal))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (numeric_literal)))))))))
-          (expression
-            (expr_atom
-              (string_literal))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+                (numeric_literal)))))
+        (expression
+          (string_literal)))
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (string_literal))))))
 
 ==================================
 $STORAGE as system variable
@@ -226,8 +178,7 @@ $STORAGE as system variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $S without parentheses is $STORAGE
@@ -237,8 +188,7 @@ $S without parentheses is $STORAGE
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $S with parentheses is $SELECT
@@ -248,16 +198,13 @@ $S with parentheses is $SELECT
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $STORAGE case insensitive
@@ -267,8 +214,7 @@ $STORAGE case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $STORAGE in expression
@@ -278,13 +224,10 @@ $STORAGE in expression
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+    (system_defined_variable)
+    (binary_operator)
+    (expression
+      (numeric_literal))))
 
 ==================================
 $SELECT with string concatenation result
@@ -294,31 +237,22 @@ $SELECT with string concatenation result
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_arg_pair
+    (system_defined_function
+      (dollar_arg_pair
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal)))))
+            (string_literal)))
+        (expression
+          (string_literal)
+          (binary_operator)
           (expression
-            (expr_atom
-              (string_literal))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
-        (dollar_arg_pair
-          (expression
-            (expr_atom
-              (numeric_literal)))
-          (expression
-            (expr_atom
-              (string_literal))))))))
+            (lvn
+              (objectscript_identifier)))))
+      (dollar_arg_pair
+        (expression
+          (numeric_literal))
+        (expression
+          (string_literal))))))

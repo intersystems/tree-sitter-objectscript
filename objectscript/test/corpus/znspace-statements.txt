@@ -15,58 +15,48 @@ Valid Znspace commands
     (command_zn
       (keyword_zn)
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (command_zn
       (keyword_zn)
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (command_write
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (system_defined_variable))))))
+          (system_defined_variable)))))
   (statement
     (command_zn
       (keyword_zn)
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (command_zn
       (keyword_zn)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier))))))
+        (lvn
+          (objectscript_identifier)))))
   (statement
     (command_zn
       (keyword_zn)
       (post_conditional
         (expression
-          (expr_atom
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (gvn
-                          (identifier)))))))))))
+          (expression
+            (system_defined_function
+              (method_arg
+                (expression
+                  (gvn
+                    (identifier))))))))
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (command_zn
       (keyword_zn)
       (expression
-        (expr_atom
-          (gvn
-            (identifier)))))))
+        (gvn
+          (identifier))))))
 
 ===
 Invalid ZNSPACE command (Argumentless)
@@ -91,20 +81,18 @@ Valid $ZNSPACE
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (system_defined_variable))))))
+          (system_defined_variable)))))
   (statement
     (command_write
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (system_defined_function
-              (class_name
-                (objectscript_identifier))
-              (method_name
-                (objectscript_identifier))
-              (method_args)))))))
+          (system_defined_function
+            (class_name
+              (objectscript_identifier))
+            (method_name
+              (objectscript_identifier))
+            (method_args))))))
   (statement
     (command_set
       (keyword_set)
@@ -112,6 +100,5 @@ Valid $ZNSPACE
         (set_target
           (system_defined_variable))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))))))
+          (lvn
+            (objectscript_identifier)))))))

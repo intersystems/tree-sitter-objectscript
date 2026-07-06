@@ -53,9 +53,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -63,9 +62,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -78,15 +76,12 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ======================================================
 Valid — ClassMethod with no return type and arguments
@@ -115,9 +110,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -127,9 +121,8 @@ Class MyApp.Test {
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (write_argument
                   (write_device_control
                     (write_device_fflf)))))))))))
@@ -162,9 +155,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -182,9 +174,8 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant))))))))))))
+                  (macro
+                    (macro_constant)))))))))))
 
 ========================================================
 Valid — ClassMethod referenced as class member only
@@ -240,8 +231,7 @@ Class MyApp.Test {
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (string_literal))))
+                    (string_literal)))
                 (write_argument
                   (write_device_control
                     (write_device_fflf)))))))))))
@@ -280,16 +270,13 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (system_defined_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_variable))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))))))))
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (system_defined_variable)))
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))))))))
 
 ========================================================
 Valid — ClassMethod with ByRef and Output arguments
@@ -321,9 +308,8 @@ Class MyApp.Test {
                 (keyword_byref)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -332,9 +318,8 @@ Class MyApp.Test {
                 (keyword_output)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -352,14 +337,11 @@ Class MyApp.Test {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (string_literal))))))))
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
+                      (string_literal))))))
             (statement
               (command_set
                 (keyword_set)
@@ -369,15 +351,13 @@ Class MyApp.Test {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (macro
-                        (macro_constant)))))))
+                    (macro
+                      (macro_constant))))))
             (statement
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                  (numeric_literal))))))))))
 
 ======================================
 Invalid — missing parentheses on body
@@ -489,9 +469,8 @@ ClassMethod Test(flag As %Integer = 0)
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -527,17 +506,15 @@ ClassMethod Test(time As %Integer = {$horolog} )
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
                     (identifier)))
                 (default_argument_value
                   (expression
-                    (expr_atom
-                      (system_defined_variable))))))
+                    (system_defined_variable)))))
             (line_comment_1)))))))
 
 =====
@@ -567,9 +544,8 @@ ClassMethod Calculate(count As %Integer, name, state As %String = "CA")
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -577,15 +553,13 @@ ClassMethod Calculate(count As %Integer, name, state As %String = "CA")
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))
+                    (lvn
+                      (objectscript_identifier)))))
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -626,9 +600,8 @@ Method Swap(ByRef x As %Integer, ByRef y As %Integer)
                 (keyword_byref)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -637,9 +610,8 @@ Method Swap(ByRef x As %Integer, ByRef y As %Integer)
                 (keyword_byref)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -653,9 +625,8 @@ Method Swap(ByRef x As %Integer, ByRef y As %Integer)
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))
+                    (lvn
+                      (objectscript_identifier))))))
             (statement
               (command_set
                 (keyword_set)
@@ -665,9 +636,8 @@ Method Swap(ByRef x As %Integer, ByRef y As %Integer)
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))
+                    (lvn
+                      (objectscript_identifier))))))
             (statement
               (command_set
                 (keyword_set)
@@ -677,9 +647,8 @@ Method Swap(ByRef x As %Integer, ByRef y As %Integer)
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+                    (lvn
+                      (objectscript_identifier))))))))))))
 
 ====
 Method Arg Output
@@ -710,9 +679,8 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                 (keyword_output)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -730,22 +698,20 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (class_method_call
-                        (class_ref
-                          (keyword_pound_pound_class)
-                          (class_name
-                            (identifier)))
-                        (method_name
-                          (objectscript_identifier_special))
-                        (method_args)))))))
+                    (class_method_call
+                      (class_ref
+                        (keyword_pound_pound_class)
+                        (class_name
+                          (identifier)))
+                      (method_name
+                        (objectscript_identifier_special))
+                      (method_args))))))
             (statement
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant))))))))))))
+                  (macro
+                    (macro_constant)))))))))))
 
 ====
 ClassMethod Call
@@ -775,9 +741,8 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                 (keyword_output)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -795,19 +760,17 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (class_method_call
-                        (class_ref
-                          (keyword_pound_pound_class)
-                          (class_name
-                            (identifier)))
-                        (method_name
-                          (objectscript_identifier))
-                        (method_args
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (numeric_literal)))))))))))))))))
+                    (class_method_call
+                      (class_ref
+                        (keyword_pound_pound_class)
+                        (class_name
+                          (identifier)))
+                      (method_name
+                        (objectscript_identifier))
+                      (method_args
+                        (method_arg
+                          (expression
+                            (numeric_literal)))))))))))))))
 
 ===
 TSQL Method
@@ -864,15 +827,13 @@ Class test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))
+                    (lvn
+                      (objectscript_identifier)))))
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -882,9 +843,8 @@ Class test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -924,9 +884,8 @@ Method Double(val As %Integer) As %Integer [ CodeMode = expression ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -938,14 +897,11 @@ Method Double(val As %Integer) As %Integer [ CodeMode = expression ]
             (method_keyword_codemode_expression
               (typename))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal)))))))))
 
 ====
 MethodGenerator
@@ -995,24 +951,19 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
                     (method_args
                       (method_arg
                         (expression
-                          (expr_atom
-                            (string_literal))
-                          (expr_tail
-                            (binary_operator)
-                            (expression
-                              (expr_atom
-                                (oref_chain_expr
-                                  (lvn
-                                    (objectscript_identifier_special))
-                                  (oref_chain_segment
-                                    (oref_property
-                                      (property_name
-                                        (objectscript_identifier))))))))
-                          (expr_tail
-                            (binary_operator)
-                            (expression
-                              (expr_atom
-                                (string_literal)))))))))))
+                          (string_literal)
+                          (binary_operator)
+                          (expression
+                            (oref_chain_expr
+                              (lvn
+                                (objectscript_identifier_special))
+                              (oref_chain_segment
+                                (oref_property
+                                  (property_name
+                                    (objectscript_identifier))))))
+                          (binary_operator)
+                          (expression
+                            (string_literal)))))))))
             (statement
               (command_do
                 (keyword_do)
@@ -1026,15 +977,13 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
                     (method_args
                       (method_arg
                         (expression
-                          (expr_atom
-                            (string_literal)))))))))
+                          (string_literal))))))))
             (statement
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant))))))))))))
+                  (macro
+                    (macro_constant)))))))))))
 
 ===
 Call Method
@@ -1134,9 +1083,8 @@ Method Add(p1 As %String) As %String [ WebMethod ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1150,9 +1098,8 @@ Method Add(p1 As %String) As %String [ WebMethod ]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ===
 method keyword - WebMethod (no return type)
@@ -1212,9 +1159,8 @@ Method Add(p1 As %String) As %String [ Not WebMethod ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1229,9 +1175,8 @@ Method Add(p1 As %String) As %String [ Not WebMethod ]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ===
 method keyword - WebMethod with another keyword
@@ -1261,9 +1206,8 @@ Method Add(p1 As %String) As %String [ Private, WebMethod ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1278,9 +1222,8 @@ Method Add(p1 As %String) As %String [ Private, WebMethod ]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ===
 method keyword - WebMethod (class method; parses even if discouraged)
@@ -1310,9 +1253,8 @@ ClassMethod Add(p1 As %String) As %String [ WebMethod ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1326,9 +1268,8 @@ ClassMethod Add(p1 As %String) As %String [ WebMethod ]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ===
 method keyword - WebMethod (case-insensitive)
@@ -1358,9 +1299,8 @@ Method Add(p1 As %String) As %String [ wEbMeThOd ]
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1374,9 +1314,8 @@ Method Add(p1 As %String) As %String [ wEbMeThOd ]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))))
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ===
 invalid - WebMethod missing brackets
@@ -1481,21 +1420,17 @@ Method test() {
                   (keyword_on)
                   (device
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier_special))))
+                      (lvn
+                        (objectscript_identifier_special)))
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
+                      (lvn
+                        (objectscript_identifier)))
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))
+                      (lvn
+                        (objectscript_identifier)))
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))
+                      (lvn
+                        (objectscript_identifier)))))))
             (statement
               (command_set
                 (keyword_set)
@@ -1505,7 +1440,27 @@ Method test() {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
+                    (numeric_literal)))))
+            (statement
+              (command_zbreak
+                (keyword_zbreak)
+                (zbreak_arguments
+                  (mnemonic)
+                  (keyword_trace)
+                  (keyword_on)
+                  (device
+                    (expression
+                      (lvn
+                        (objectscript_identifier_special)))))))
+            (statement
+              (command_zbreak
+                (keyword_zbreak)
+                (zbreak_arguments
+                  (mnemonic)
+                  (keyword_trace)
+                  (keyword_on)
+                  (device
+                    (expression
                       (numeric_literal))))))
             (statement
               (command_zbreak
@@ -1516,29 +1471,5 @@ Method test() {
                   (keyword_on)
                   (device
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier_special))))))))
-            (statement
-              (command_zbreak
-                (keyword_zbreak)
-                (zbreak_arguments
-                  (mnemonic)
-                  (keyword_trace)
-                  (keyword_on)
-                  (device
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))
-            (statement
-              (command_zbreak
-                (keyword_zbreak)
-                (zbreak_arguments
-                  (mnemonic)
-                  (keyword_trace)
-                  (keyword_on)
-                  (device
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (lvn
+                        (objectscript_identifier)))))))))))))

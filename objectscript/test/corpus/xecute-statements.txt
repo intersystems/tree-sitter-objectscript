@@ -31,58 +31,46 @@ Valid Xecute Statements
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
+          (string_literal)))))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (string_literal)
+          (binary_operator)
+          (expression
             (string_literal))))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))))
+          (string_literal)))
+      (xecute_argument
+        (expression
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
+          (string_literal)
+          (binary_operator)
+          (expression
             (string_literal))))
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))
-      (xecute_argument
+          (string_literal))
         (expression
-          (expr_atom
-            (string_literal))))))
-  (statement
-    (command_xecute
-      (keyword_xecute)
-      (xecute_argument
-        (expression
-          (expr_atom
-            (string_literal)))
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (byref_arg
           (lvn
             (objectscript_identifier))))))
@@ -91,12 +79,10 @@ Valid Xecute Statements
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (byref_arg
           (lvn
             (objectscript_identifier))))))
@@ -105,12 +91,10 @@ Valid Xecute Statements
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (byref_arg
           (lvn
             (objectscript_identifier))))))
@@ -119,41 +103,33 @@ Valid Xecute Statements
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))
+            (lvn
+              (objectscript_identifier)))))
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+            (lvn
+              (objectscript_identifier)))))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (byref_arg
           (lvn
             (objectscript_identifier))))))
@@ -162,53 +138,46 @@ Valid Xecute Statements
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (oref_chain_expr
-              (lvn
-                (objectscript_identifier))
-              (oref_chain_segment
-                (oref_property
-                  (property_name
-                    (objectscript_identifier))))))))))
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier)))))))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_write
       (keyword_write)
@@ -217,39 +186,32 @@ Valid Xecute Statements
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_xecute
       (keyword_xecute)
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))
+          (string_literal))
         (expression
-          (expr_atom
-            (system_defined_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (string_literal))))))))))
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (string_literal))))))))
   (statement
     (command_xecute
       (keyword_xecute)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (xecute_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))
 
 ===
 Invalid XECUTE Argumentless

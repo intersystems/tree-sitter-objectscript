@@ -6,21 +6,18 @@ Special cases, user functions
 
 (source_file
   (expression
-    (expr_atom
-      (unary_expression
-        (expression
-          (expr_atom
-            (extrinsic_function
-              (line_ref
-                (objectscript_identifier)
-                (routine_ref
-                  (routine_name)))
-              (method_args
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+    (unary_expression
+      (expression
+        (extrinsic_function
+          (line_ref
+            (objectscript_identifier)
+            (routine_ref
+              (routine_name)))
+          (method_args
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ====
 Special cases, parenthesized indirect routine reference
@@ -30,23 +27,20 @@ Special cases, parenthesized indirect routine reference
 
 (source_file
   (expression
-    (expr_atom
-      (unary_expression
-        (expression
-          (expr_atom
-            (extrinsic_function
-              (line_ref
-                (objectscript_identifier)
-                (routine_ref
-                  (indirection
-                    (expression
-                      (expr_atom
-                        (string_literal))))))
-              (method_args
-                (method_arg
-                  (byref_arg
-                    (lvn
-                      (objectscript_identifier))))))))))))
+    (unary_expression
+      (expression
+        (extrinsic_function
+          (line_ref
+            (objectscript_identifier)
+            (routine_ref
+              (indirection
+                (expression
+                  (string_literal)))))
+          (method_args
+            (method_arg
+              (byref_arg
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ===
 line ref with by ref arg system defined var
@@ -56,17 +50,16 @@ line ref with by ref arg system defined var
 
 (source_file
   (expression
-    (expr_atom
-      (extrinsic_function
-        (line_ref
-          (objectscript_identifier)
-          (routine_ref
-            (string_literal)
-            (routine_name)))
-        (method_args
-          (method_arg
-            (byref_arg
-              (system_defined_variable))))))))
+    (extrinsic_function
+      (line_ref
+        (objectscript_identifier)
+        (routine_ref
+          (string_literal)
+          (routine_name)))
+      (method_args
+        (method_arg
+          (byref_arg
+            (system_defined_variable)))))))
 
 ===
 line ref with namespace that has subscripts
@@ -76,46 +69,34 @@ line ref with namespace that has subscripts
 
 (source_file
   (expression
-    (expr_atom
-      (extrinsic_function
-        (line_ref
-          (lvn
-            (objectscript_identifier)
-            (method_args
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))))
-          (routine_name))
-        (method_args
-          (method_arg
+    (extrinsic_function
+      (line_ref
+        (lvn
+          (objectscript_identifier)
+          (method_args
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
+        (routine_name))
+      (method_args
+        (method_arg
+          (expression
+            (string_literal)
+            (binary_operator)
             (expression
-              (expr_atom
-                (string_literal))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal))))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal))))))
-          (method_arg
+              (lvn
+                (objectscript_identifier)))
+            (binary_operator)
             (expression
-              (expr_atom
-                (system_defined_variable)))))))))
+              (string_literal))
+            (binary_operator)
+            (expression
+              (lvn
+                (objectscript_identifier)))
+            (binary_operator)
+            (expression
+              (string_literal))))
+        (method_arg
+          (expression
+            (system_defined_variable)))))))

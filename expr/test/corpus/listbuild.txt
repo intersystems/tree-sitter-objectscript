@@ -7,12 +7,10 @@ $LISTBUILD("Red")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD shorthand with single element
@@ -23,12 +21,10 @@ $LB("Red")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with multiple string elements
@@ -39,20 +35,16 @@ $LISTBUILD("Red","Blue","Green")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LB with multiple elements
@@ -63,20 +55,16 @@ $LB("Red","Blue","Green")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with numeric elements
@@ -87,20 +75,16 @@ $LISTBUILD(1,2,3)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $LISTBUILD with mixed types
@@ -111,20 +95,16 @@ $LISTBUILD("Name",42,3.14)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $LISTBUILD with empty list
@@ -135,8 +115,7 @@ $LISTBUILD()
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function))))
+    (system_defined_function)))
 
 ==================================
 $LB with empty list
@@ -147,8 +126,7 @@ $LB()
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function))))
+    (system_defined_function)))
 
 ==================================
 $LISTBUILD with undefined first element
@@ -159,16 +137,13 @@ $LISTBUILD(,"second","third")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with undefined middle element
@@ -179,16 +154,13 @@ $LISTBUILD("first",,"third")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with undefined last element
@@ -199,16 +171,13 @@ $LISTBUILD("first","second",)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with multiple undefined elements
@@ -219,12 +188,10 @@ $LISTBUILD(,,"third",,)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with all undefined elements
@@ -235,8 +202,7 @@ $LISTBUILD(,,,)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function))))
+    (system_defined_function)))
 
 ==================================
 $LISTBUILD with variable elements
@@ -247,23 +213,19 @@ $LISTBUILD(name,age,city)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $LISTBUILD with expressions
@@ -274,38 +236,28 @@ $LISTBUILD(x+1,y*2,z-3)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
-        (method_arg
+            (numeric_literal))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))
-        (method_arg
+            (numeric_literal))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+            (numeric_literal)))))))
 
 ==================================
 $LISTBUILD case insensitive lowercase
@@ -316,20 +268,16 @@ $listbuild("a","b","c")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LB case insensitive lowercase
@@ -340,20 +288,16 @@ $lb("a","b","c")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD case insensitive mixed
@@ -364,20 +308,16 @@ $ListBuild("a","b","c")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with nested list
@@ -388,24 +328,19 @@ $LISTBUILD($LB("inner1","inner2"),"outer")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (string_literal)))
+            (method_arg
+              (expression
+                (string_literal))))))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD with function call
@@ -416,34 +351,27 @@ $LISTBUILD($PIECE(str,",",1),$LENGTH(str))
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (string_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (string_literal)))
+            (method_arg
+              (expression
+                (numeric_literal))))))
+      (method_arg
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTBUILD with concatenated string
@@ -454,29 +382,22 @@ $LISTBUILD(firstName_" "_lastName,age)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
-        (method_arg
+            (string_literal))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+            (lvn
+              (objectscript_identifier)))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $LISTBUILD with subscripted variable
@@ -487,38 +408,31 @@ $LISTBUILD(arr(1),arr(2),arr(3))
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))))))
 
 ==================================
 $LISTBUILD with global variable
@@ -529,28 +443,23 @@ $LISTBUILD(^data(1),^data(2))
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))))))
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))))))
 
 ==================================
 $LISTBUILD with empty string element
@@ -561,20 +470,16 @@ $LISTBUILD("","value","")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD in expression
@@ -585,29 +490,22 @@ $LISTBUILD("a","b")_$LISTBUILD("c","d")
 
 (source_file
   (expression
-    (expr_atom
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))
+    (binary_operator)
+    (expression
       (system_defined_function
         (method_arg
           (expression
-            (expr_atom
-              (string_literal))))
+            (string_literal)))
         (method_arg
           (expression
-            (expr_atom
-              (string_literal))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (string_literal))))))))))
+            (string_literal)))))))
 
 ==================================
 $LISTBUILD with special characters in strings
@@ -618,20 +516,16 @@ $LISTBUILD("Hello, World!","Line1""Line2","Tab	here")
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $LISTBUILD single undefined element
@@ -642,8 +536,7 @@ $LISTBUILD(,)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function))))
+    (system_defined_function)))
 
 ==================================
 $LISTBUILD with object property
@@ -654,28 +547,25 @@ $LISTBUILD(obj.Name,obj.Age)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier)))))))
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier))))))))))
 
 ==================================
 $LISTBUILD with class method call
@@ -686,30 +576,27 @@ $LISTBUILD(##class(Sample.Person).GetName(),##class(Sample.Person).GetAge())
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (class_method_call
-                (class_ref
-                  (keyword_pound_pound_class)
-                  (class_name
-                    (identifier)))
-                (method_name
-                  (objectscript_identifier))
-                (method_args)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (class_method_call
-                (class_ref
-                  (keyword_pound_pound_class)
-                  (class_name
-                    (identifier)))
-                (method_name
-                  (objectscript_identifier))
-                (method_args)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (class_method_call
+            (class_ref
+              (keyword_pound_pound_class)
+              (class_name
+                (identifier)))
+            (method_name
+              (objectscript_identifier))
+            (method_args))))
+      (method_arg
+        (expression
+          (class_method_call
+            (class_ref
+              (keyword_pound_pound_class)
+              (class_name
+                (identifier)))
+            (method_name
+              (objectscript_identifier))
+            (method_args)))))))
 
 ==================================
 $LISTBUILD with macro
@@ -720,20 +607,17 @@ $LISTBUILD($$MAXLEN,$$DEFAULT)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (extrinsic_function
-                (line_ref
-                  (objectscript_identifier))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (extrinsic_function
-                (line_ref
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (extrinsic_function
+            (line_ref
+              (objectscript_identifier)))))
+      (method_arg
+        (expression
+          (extrinsic_function
+            (line_ref
+              (objectscript_identifier))))))))
 
 ====
 $LB argumentless

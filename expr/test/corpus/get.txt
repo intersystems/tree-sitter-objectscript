@@ -6,13 +6,11 @@ $GET with local variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $GET shorthand with local variable
@@ -22,13 +20,11 @@ $GET shorthand with local variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $GET with default value
@@ -38,17 +34,14 @@ $GET with default value
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $GET with numeric default
@@ -58,17 +51,14 @@ $GET with numeric default
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $GET with global variable
@@ -78,13 +68,11 @@ $GET with global variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)))))))
 
 ==================================
 $GET with subscripted local variable
@@ -94,22 +82,18 @@ $GET with subscripted local variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (numeric_literal))))))))))
 
 ==================================
 $GET with subscripted global variable
@@ -119,23 +103,19 @@ $GET with subscripted global variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (string_literal))))))))))
 
 ==================================
 $GET with subscripted variable and default
@@ -145,23 +125,19 @@ $GET with subscripted variable and default
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))))))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $GET case insensitive
@@ -171,13 +147,11 @@ $GET case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $GET with object property
@@ -187,18 +161,16 @@ $GET with object property
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier))))))))))
 
 ==================================
 $GET with object property chain
@@ -208,22 +180,20 @@ $GET with object property chain
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier))))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier))))))))))
 
 ==================================
 $GET with object property and default
@@ -233,22 +203,19 @@ $GET with object property and default
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier)))))))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $GET in expression
@@ -258,22 +225,17 @@ $GET in expression
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))
+    (binary_operator)
+    (expression
+      (numeric_literal))))
 
 ==================================
 $GET with structured system variable
@@ -283,19 +245,16 @@ $GET with structured system variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (ssvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (ssvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ==================================
 $GET with empty string default
@@ -305,17 +264,14 @@ $GET with empty string default
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $G with global and variable default
@@ -325,21 +281,17 @@ $G with global and variable default
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))

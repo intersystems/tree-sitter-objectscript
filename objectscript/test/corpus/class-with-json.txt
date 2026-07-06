@@ -40,9 +40,8 @@ Class test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -51,9 +50,8 @@ Class test {
                 (keyword_byref)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))
+                    (lvn
+                      (objectscript_identifier))))))
             (return_type
               (keyword_as)
               (typename
@@ -63,23 +61,88 @@ Class test {
               (command_if
                 (keyword_old_if)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (string_literal)))
+                (statement
+                  (command_return
+                    (keyword_return)
+                    (expression
+                      (json_object_literal
+                        (json_object_literal_pair
+                          (json_string_literal)
+                          (json_string_literal))))))))
+            (statement
+              (command_set
+                (keyword_set)
+                (set_argument
+                  (set_target
+                    (glvn
+                      (lvn
+                        (objectscript_identifier))))
+                  (expression
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (lvn
+                            (objectscript_identifier))))
+                      (method_arg
+                        (expression
+                          (string_literal))))))))
+            (statement
+              (command_if
+                (keyword_old_if)
+                (expression
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
+                      (objectscript_identifier))
                     (binary_operator)
                     (expression
-                      (expr_atom
+                      (string_literal)))
+                  (binary_operator)
+                  (expression
+                    (expression
+                      (lvn
+                        (objectscript_identifier))
+                      (binary_operator)
+                      (expression
                         (string_literal)))))
                 (statement
                   (command_return
                     (keyword_return)
                     (expression
-                      (expr_atom
-                        (json_object_literal
-                          (json_object_literal_pair
-                            (json_string_literal)
-                            (json_string_literal)))))))))
+                      (json_object_literal
+                        (json_object_literal_pair
+                          (json_string_literal)
+                          (json_string_literal))))))))
+            (statement
+              (command_if
+                (keyword_old_if)
+                (expression
+                  (expression
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
+                      (string_literal)))
+                  (binary_operator)
+                  (expression
+                    (expression
+                      (lvn
+                        (objectscript_identifier))
+                      (binary_operator)
+                      (expression
+                        (string_literal)))))
+                (statement
+                  (command_return
+                    (keyword_return)
+                    (expression
+                      (json_object_literal
+                        (json_object_literal_pair
+                          (json_string_literal)
+                          (json_string_literal))))))))
             (statement
               (command_set
                 (keyword_set)
@@ -89,224 +152,112 @@ Class test {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (system_defined_function
-                        (method_arg
-                          (expression
-                            (expr_atom
+                    (macro
+                      (macro_function
+                        (method_args
+                          (method_arg
+                            (expression
                               (lvn
-                                (objectscript_identifier)))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (string_literal))))))))))
+                                (objectscript_identifier)))))))))))
             (statement
               (command_if
-                (keyword_old_if)
+                (keyword_if)
                 (expression
-                  (expr_atom
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal))))))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier)))
-                          (expr_tail
-                            (binary_operator)
-                            (expression
-                              (expr_atom
-                                (string_literal)))))))))
-                (statement
-                  (command_return
-                    (keyword_return)
-                    (expression
-                      (expr_atom
-                        (json_object_literal
-                          (json_object_literal_pair
-                            (json_string_literal)
-                            (json_string_literal)))))))))
-            (statement
-              (command_if
-                (keyword_old_if)
-                (expression
-                  (expr_atom
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal))))))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier)))
-                          (expr_tail
-                            (binary_operator)
-                            (expression
-                              (expr_atom
-                                (string_literal)))))))))
-                (statement
-                  (command_return
-                    (keyword_return)
-                    (expression
-                      (expr_atom
-                        (json_object_literal
-                          (json_object_literal_pair
-                            (json_string_literal)
-                            (json_string_literal)))))))))
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
                   (expression
-                    (expr_atom
-                      (macro
-                        (macro_function
+                    (macro
+                      (macro_constant))))
+                (statement
+                  (command_return
+                    (keyword_return)
+                    (expression
+                      (relative_dot_method
+                        (oref_method
+                          (method_name
+                            (objectscript_identifier_special))
                           (method_args
                             (method_arg
                               (expression
-                                (expr_atom
-                                  (lvn
-                                    (objectscript_identifier)))))))))))))
+                                (lvn
+                                  (objectscript_identifier))))))))))))
             (statement
               (command_if
                 (keyword_if)
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (macro
-                          (macro_constant))))))
-                (statement
-                  (command_return
-                    (keyword_return)
-                    (expression
-                      (expr_atom
-                        (relative_dot_method
-                          (oref_method
-                            (method_name
-                              (objectscript_identifier_special))
-                            (method_args
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (lvn
-                                      (objectscript_identifier))))))))))))))
-            (statement
-              (command_if
-                (keyword_if)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (macro
-                          (macro_constant))))))
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (macro
+                      (macro_constant))))
                 (statement
                   (command_if
                     (keyword_old_if)
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal)))))
+                      (lvn
+                        (objectscript_identifier))
+                      (binary_operator)
+                      (expression
+                        (string_literal)))
                     (statement
                       (command_return
                         (keyword_return)
                         (expression
-                          (expr_atom
-                            (json_object_literal
-                              (json_object_literal_pair
-                                (json_string_literal)
-                                (json_string_literal))
-                              (json_object_literal_pair
-                                (json_string_literal)
-                                (json_string_literal)))))))))
+                          (json_object_literal
+                            (json_object_literal_pair
+                              (json_string_literal)
+                              (json_string_literal))
+                            (json_object_literal_pair
+                              (json_string_literal)
+                              (json_string_literal))))))))
                 (statement
                   (command_return
                     (keyword_return)
                     (expression
-                      (expr_atom
-                        (json_object_literal
-                          (json_object_literal_pair
-                            (json_string_literal)
-                            (json_string_literal)))))))))
+                      (json_object_literal
+                        (json_object_literal_pair
+                          (json_string_literal)
+                          (json_string_literal))))))))
             (statement
               (command_if
                 (keyword_if)
                 (expression
-                  (expr_atom
-                    (class_method_call
-                      (class_ref
-                        (keyword_pound_pound_class)
-                        (class_name
-                          (identifier)))
-                      (method_name
-                        (objectscript_identifier_special))
-                      (method_args
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))))))
+                  (class_method_call
+                    (class_ref
+                      (keyword_pound_pound_class)
+                      (class_name
+                        (identifier)))
+                    (method_name
+                      (objectscript_identifier_special))
+                    (method_args
+                      (method_arg
+                        (expression
+                          (lvn
+                            (objectscript_identifier)))))))
                 (statement
                   (command_return
                     (keyword_return)
                     (expression
-                      (expr_atom
-                        (relative_dot_method
-                          (oref_method
-                            (method_name
-                              (objectscript_identifier_special))
-                            (method_args
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (lvn
-                                      (objectscript_identifier)))))
-                              (method_arg
-                                (byref_arg
-                                  (lvn
-                                    (objectscript_identifier)))))))))))))
+                      (relative_dot_method
+                        (oref_method
+                          (method_name
+                            (objectscript_identifier_special))
+                          (method_args
+                            (method_arg
+                              (expression
+                                (lvn
+                                  (objectscript_identifier))))
+                            (method_arg
+                              (byref_arg
+                                (lvn
+                                  (objectscript_identifier))))))))))))
             (statement
               (command_return
                 (keyword_return)
                 (expression
-                  (expr_atom
-                    (json_object_literal
-                      (json_object_literal_pair
-                        (json_string_literal)
-                        (json_string_literal)))))))))))))
+                  (json_object_literal
+                    (json_object_literal_pair
+                      (json_string_literal)
+                      (json_string_literal))))))))))))

@@ -155,15 +155,15 @@ module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
     [$.oref_method, $.oref_property],
-    [$.oref_chain_expr, $.expr_atom],
+    [$.oref_chain_expr, $._expr_atom],
     [$.class_method_call, $.oref_method],
   ],
   conflicts: (_) => [],
   inline: (_) => [],
   rules: {
     source_file: ($) => $.expression, // expr grammar is for expressions only
-    expression: ($) => prec.left(seq($.expr_atom, repeat($.expr_tail))),
-    expr_atom: ($) =>
+    expression: ($) => prec.left(seq($._expr_atom, repeat($._expr_tail))),
+    _expr_atom: ($) =>
       choice(
         $.json_object_literal,
         $._parenthetical_expression,
@@ -202,7 +202,7 @@ module.exports = grammar({
         $.indirection,
       ),
 
-    expr_tail: ($) =>
+    _expr_tail: ($) =>
       prec.left(
         1,
         choice(seq($.binary_operator, $.expression), $.pattern_operator),
@@ -316,7 +316,7 @@ module.exports = grammar({
           choice($.routine_ref, seq($.label_offset, optional($.routine_ref))),
         ),
         // routine only (^routine)
-        seq($.routine_ref),
+        $.routine_ref,
         // Full indirection, optionally followed by ^routine or ^@(...)
         prec.right(seq($.indirection, optional($.routine_ref))),
       ),
@@ -590,7 +590,7 @@ module.exports = grammar({
         // nested bitlogic parens
         seq(token.immediate('('), $._bitlogic_expression, ')'),
         // reuse existing atoms (functions, vars, calls, strings, numbers, etc.)
-        $.expr_atom,
+        $._expr_atom,
       ),
     _dollar_mv: ($) =>
       seq(

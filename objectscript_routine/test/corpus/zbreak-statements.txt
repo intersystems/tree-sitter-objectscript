@@ -140,21 +140,17 @@ ZBreak valid device
         (keyword_on)
         (device
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier_special))))
+            (lvn
+              (objectscript_identifier_special)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+            (lvn
+              (objectscript_identifier)))))))
   (statement
     (command_set
       (keyword_set)
@@ -164,7 +160,27 @@ ZBreak valid device
             (lvn
               (objectscript_identifier))))
         (expression
-          (expr_atom
+          (numeric_literal)))))
+  (statement
+    (command_zbreak
+      (keyword_zbreak)
+      (zbreak_arguments
+        (mnemonic)
+        (keyword_trace)
+        (keyword_on)
+        (device
+          (expression
+            (lvn
+              (objectscript_identifier_special)))))))
+  (statement
+    (command_zbreak
+      (keyword_zbreak)
+      (zbreak_arguments
+        (mnemonic)
+        (keyword_trace)
+        (keyword_on)
+        (device
+          (expression
             (numeric_literal))))))
   (statement
     (command_zbreak
@@ -175,32 +191,8 @@ ZBreak valid device
         (keyword_on)
         (device
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier_special))))))))
-  (statement
-    (command_zbreak
-      (keyword_zbreak)
-      (zbreak_arguments
-        (mnemonic)
-        (keyword_trace)
-        (keyword_on)
-        (device
-          (expression
-            (expr_atom
-              (numeric_literal)))))))
-  (statement
-    (command_zbreak
-      (keyword_zbreak)
-      (zbreak_arguments
-        (mnemonic)
-        (keyword_trace)
-        (keyword_on)
-        (device
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+            (lvn
+              (objectscript_identifier))))))))
 
 ===================
 ZBreak valid debug
@@ -224,21 +216,17 @@ ZBreak valid debug
         (keyword_debug)
         (device
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier_special))))
+            (lvn
+              (objectscript_identifier_special)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+            (lvn
+              (objectscript_identifier)))))))
   (statement
     (command_set
       (keyword_set)
@@ -248,7 +236,25 @@ ZBreak valid debug
             (lvn
               (objectscript_identifier))))
         (expression
-          (expr_atom
+          (numeric_literal)))))
+  (statement
+    (command_zbreak
+      (keyword_zbreak)
+      (zbreak_arguments
+        (mnemonic)
+        (keyword_debug)
+        (device
+          (expression
+            (lvn
+              (objectscript_identifier_special)))))))
+  (statement
+    (command_zbreak
+      (keyword_zbreak)
+      (zbreak_arguments
+        (mnemonic)
+        (keyword_debug)
+        (device
+          (expression
             (numeric_literal))))))
   (statement
     (command_zbreak
@@ -258,30 +264,8 @@ ZBreak valid debug
         (keyword_debug)
         (device
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier_special))))))))
-  (statement
-    (command_zbreak
-      (keyword_zbreak)
-      (zbreak_arguments
-        (mnemonic)
-        (keyword_debug)
-        (device
-          (expression
-            (expr_atom
-              (numeric_literal)))))))
-  (statement
-    (command_zbreak
-      (keyword_zbreak)
-      (zbreak_arguments
-        (mnemonic)
-        (keyword_debug)
-        (device
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+            (lvn
+              (objectscript_identifier)))))))
   (statement
     (command_zbreak
       (keyword_zbreak)
@@ -635,14 +619,11 @@ ZBREAK Valid location::condition
             (objectscript_identifier))
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal)))))))))
 
 ======================================
 ZBREAK Valid location:action:condition
@@ -661,14 +642,11 @@ ZBREAK Valid location:action:condition
           (string_literal)
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal)))))))))
 
 =============================================
 ZBREAK Valid location::condition:execute_code
@@ -687,14 +665,11 @@ ZBREAK Valid location::condition:execute_code
             (objectscript_identifier))
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))
           (string_literal)))))
   (statement
     (command_zbreak
@@ -705,14 +680,11 @@ ZBREAK Valid location::condition:execute_code
             (objectscript_identifier))
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))
           (string_literal))))))
 
 ===================================================
@@ -733,14 +705,11 @@ ZBREAK Valid location:action:condition:execute_code
           (string_literal)
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))
           (string_literal)))))
   (statement
     (command_zbreak
@@ -752,14 +721,11 @@ ZBREAK Valid location:action:condition:execute_code
           (string_literal)
           (zbreak_condition
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))
           (string_literal))))))
 
 ==========================================

@@ -6,8 +6,7 @@ $IO as system variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $I without parentheses is $IO
@@ -17,8 +16,7 @@ $I without parentheses is $IO
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $IO case insensitive
@@ -28,8 +26,7 @@ $IO case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $IO in expression
@@ -39,13 +36,10 @@ $IO in expression
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (string_literal))))))
+    (system_defined_variable)
+    (binary_operator)
+    (expression
+      (string_literal))))
 
 ==================================
 $INCREMENT with local variable
@@ -55,13 +49,11 @@ $INCREMENT with local variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $I with parentheses is $INCREMENT
@@ -71,13 +63,11 @@ $I with parentheses is $INCREMENT
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $INCREMENT with increment value
@@ -87,17 +77,14 @@ $INCREMENT with increment value
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $INCREMENT with negative increment
@@ -107,17 +94,14 @@ $INCREMENT with negative increment
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $INCREMENT with decimal increment
@@ -127,17 +111,14 @@ $INCREMENT with decimal increment
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $INCREMENT with global variable
@@ -147,13 +128,11 @@ $INCREMENT with global variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)))))))
 
 ==================================
 $INCREMENT with subscripted global
@@ -163,23 +142,19 @@ $INCREMENT with subscripted global
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (gvn
-                (identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (string_literal))))))))))
 
 ==================================
 $INCREMENT with subscripted local
@@ -189,19 +164,16 @@ $INCREMENT with subscripted local
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)
-                (method_args
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier)))))))))))
 
 ==================================
 $INCREMENT with object property
@@ -211,18 +183,16 @@ $INCREMENT with object property
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (oref_chain_expr
-                (lvn
-                  (objectscript_identifier))
-                (oref_chain_segment
-                  (oref_property
-                    (property_name
-                      (objectscript_identifier))))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (oref_chain_expr
+            (lvn
+              (objectscript_identifier))
+            (oref_chain_segment
+              (oref_property
+                (property_name
+                  (objectscript_identifier))))))))))
 
 ==================================
 $INCREMENT with variable increment value
@@ -232,18 +202,15 @@ $INCREMENT with variable increment value
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $INCREMENT case insensitive
@@ -253,13 +220,11 @@ $INCREMENT case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $INCREMENT with null string (reset)
@@ -269,12 +234,10 @@ $INCREMENT with null string (reset)
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (string_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal))))))
 
 ==================================
 $INCREMENT in expression
@@ -284,18 +247,14 @@ $INCREMENT in expression
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))
+    (binary_operator)
+    (expression
+      (numeric_literal))))
 
 ==================================
 $I shorthand with increment
@@ -305,17 +264,14 @@ $I shorthand with increment
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $INCREMENT with expression as increment
@@ -325,20 +281,15 @@ $INCREMENT with expression as increment
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (method_arg
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (method_arg
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))))))))
+            (numeric_literal)))))))

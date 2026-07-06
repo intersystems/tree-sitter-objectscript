@@ -59,9 +59,8 @@ PRINT with postconditional and no line reference
         (keyword_print)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))))))
+            (lvn
+              (objectscript_identifier))))))))
 
 ===
 PRINT with one line reference
@@ -79,8 +78,7 @@ PRINT with one line reference
             (objectscript_identifier)
             (label_offset
               (expression
-                (expr_atom
-                  (numeric_literal))))
+                (numeric_literal)))
             (routine_ref
               (routine_name))))))))
 
@@ -108,8 +106,7 @@ ZPRINT with routine-only line reference
             (routine_ref
               (indirection
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 PRINT with line reference range
@@ -127,16 +124,14 @@ PRINT with line reference range
             (objectscript_identifier)
             (label_offset
               (expression
-                (expr_atom
-                  (numeric_literal))))
+                (numeric_literal)))
             (routine_ref
               (routine_name)))
           (line_ref
             (objectscript_identifier)
             (label_offset
               (expression
-                (expr_atom
-                  (numeric_literal))))
+                (numeric_literal)))
             (routine_ref
               (routine_name))))))))
 
@@ -153,24 +148,21 @@ ZP abbreviation with postconditional and range
         (keyword_zprint)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
+            (lvn
+              (objectscript_identifier))))
         (print_argument
           (line_ref
             (objectscript_identifier)
             (label_offset
               (expression
-                (expr_atom
-                  (numeric_literal))))
+                (numeric_literal)))
             (routine_ref
               (routine_name)))
           (line_ref
             (objectscript_identifier)
             (label_offset
               (expression
-                (expr_atom
-                  (numeric_literal))))
+                (numeric_literal)))
             (routine_ref
               (routine_name))))))))
 
@@ -189,17 +181,15 @@ ZPRINT with indirection line references
           (line_ref
             (indirection
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (routine_ref
               (routine_name)))
           (line_ref
             (indirection
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (routine_ref
               (routine_name))))))))
 
@@ -252,32 +242,25 @@ MVP and MVC
       (commands_with_printlist
         (command_keyword)
         (expression
-          (expr_atom
-            (system_defined_variable)))))
+          (system_defined_variable))))
     (statement
       (commands_with_printlist
         (command_keyword)
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (system_defined_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))))))
-                  (method_arg
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))))))))))
+          (string_literal)
+          (binary_operator)
+          (expression
+            (system_defined_function
+              (method_arg
+                (expression
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (lvn
+                          (objectscript_identifier)))))))
+              (method_arg
+                (expression
+                  (numeric_literal))))))))))
 
 ===
 MVP more than one space
@@ -293,25 +276,19 @@ MVP more than one space
         (command_keyword)
         (post_conditional
           (expression
-            (expr_atom
-              (system_defined_variable))))))
+            (system_defined_variable)))))
     (line_comment_1)
     (statement
       (commands_with_printlist
         (command_keyword)
         (post_conditional
           (expression
-            (expr_atom
-              (unary_expression
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))
+            (unary_expression
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (system_defined_variable)))))))))
+          (string_literal)
+          (binary_operator)
+          (expression
+            (system_defined_variable)))))))

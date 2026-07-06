@@ -108,7 +108,7 @@ module.exports = grammar(objectscript_expr, {
       [$.xecute_argument, $._parenthetical_expression],
       [$.line_ref, $.line_ref],
       [$.lvn, $._text_line_ref],
-      [$.expr_atom, $.device_params],
+      [$._expr_atom, $.device_params],
     ]),
 
   extras: ($) => [

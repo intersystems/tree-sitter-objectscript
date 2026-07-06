@@ -18,29 +18,20 @@ Valid Halt Statements
       (keyword_halt)
       (post_conditional
         (expression
-          (expr_atom
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal))))))
-          (expr_tail
+          (expression
+            (lvn
+              (objectscript_identifier))
             (binary_operator)
             (expression
-              (expr_atom
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (string_literal)))))))))))))
+              (string_literal)))
+          (binary_operator)
+          (expression
+            (expression
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (string_literal)))))))))
 
 ============================
 Invalid Halt (has arguments)

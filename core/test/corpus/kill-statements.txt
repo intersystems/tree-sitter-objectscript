@@ -38,8 +38,7 @@ Kill Statements
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))))))))
+                    (numeric_literal)))))))))
     (statement
       (command_kill
         (keyword_kill)
@@ -104,12 +103,10 @@ Kill Statements Array Node
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))
+                    (numeric_literal)))
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                    (numeric_literal)))))))
         (kill_target
           (glvn
             (lvn
@@ -117,12 +114,10 @@ Kill Statements Array Node
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))
+                    (numeric_literal)))
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                    (numeric_literal)))))))
         (kill_target
           (glvn
             (lvn
@@ -130,12 +125,10 @@ Kill Statements Array Node
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))
+                    (numeric_literal)))
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+                    (numeric_literal)))))))))))
 
 ===========================
 Kill Using an Object Method
@@ -159,9 +152,8 @@ Kill Using an Object Method
                 (method_args
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))
+                      (lvn
+                        (objectscript_identifier)))))))
             (oref_chain_segment
               (oref_method
                 (method_name
@@ -169,9 +161,8 @@ Kill Using an Object Method
                 (method_args
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ==========================
 Kill With PostConditionals
@@ -186,12 +177,10 @@ Kill With PostConditionals
         (keyword_kill)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (pattern_operator
-                (pattern_expression)))))
+            (lvn
+              (objectscript_identifier))
+            (pattern_operator
+              (pattern_expression))))
         (kill_target
           (glvn
             (gvn
@@ -215,27 +204,23 @@ Zkill
             (method_args
               (method_arg
                 (expression
-                  (expr_atom
-                    (numeric_literal)))))))))
+                  (numeric_literal))))))))
     (statement
       (command_zkill
         (keyword_zkill)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (pattern_operator
-                (pattern_expression)))))
+            (lvn
+              (objectscript_identifier))
+            (pattern_operator
+              (pattern_expression))))
         (glvn
           (lvn
             (objectscript_identifier)
             (method_args
               (method_arg
                 (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                  (numeric_literal))))))))))
 
 ===
 kill relative dot property

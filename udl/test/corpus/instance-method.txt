@@ -53,9 +53,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -63,9 +62,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -78,15 +76,12 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ======================================================
 Valid — Method with no return type and arguments
@@ -115,9 +110,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -127,9 +121,8 @@ Class MyApp.Test {
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (write_argument
                   (write_device_control
                     (write_device_fflf)))))))))))
@@ -162,9 +155,8 @@ Class MyApp.Test {
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -182,9 +174,8 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant))))))))))))
+                  (macro
+                    (macro_constant)))))))))))
 
 ========================================================
 Valid — Method referenced as class member only
@@ -240,8 +231,7 @@ Class MyApp.Test {
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (string_literal))))
+                    (string_literal)))
                 (write_argument
                   (write_device_control
                     (write_device_fflf)))))))))))
@@ -280,16 +270,13 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (system_defined_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_variable))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))))))))
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (system_defined_variable)))
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))))))))
 
 ========================================================
 Valid — Method with ByRef and Output arguments
@@ -321,9 +308,8 @@ Class MyApp.Test {
                 (keyword_byref)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -332,9 +318,8 @@ Class MyApp.Test {
                 (keyword_output)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -352,14 +337,11 @@ Class MyApp.Test {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (string_literal))))))))
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
+                      (string_literal))))))
             (statement
               (command_set
                 (keyword_set)
@@ -369,15 +351,13 @@ Class MyApp.Test {
                       (lvn
                         (objectscript_identifier))))
                   (expression
-                    (expr_atom
-                      (macro
-                        (macro_constant)))))))
+                    (macro
+                      (macro_constant))))))
             (statement
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                  (numeric_literal))))))))))
 
 ======================================
 Invalid — missing parentheses on body
@@ -494,9 +474,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -504,9 +483,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -522,15 +500,12 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 soapaction - empty value
@@ -572,8 +547,7 @@ Method Ping() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 soapaction - default sentinel string
@@ -615,8 +589,7 @@ Method M() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 soapaction - unquoted identifier value (as shown in docs example)
@@ -650,9 +623,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -660,9 +632,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -678,15 +649,12 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 soapaction - duplicate SoapAction values with SoapRequestMessage disambiguation
@@ -741,8 +709,7 @@ Method B() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal))))))))
+                  (string_literal)))))))
       (class_statement
         (method
           (keyword_method)
@@ -763,8 +730,7 @@ Method B() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 soapaction - alongside other soap keywords
@@ -818,8 +784,7 @@ Method M() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 invalid soapaction - missing '='
@@ -929,9 +894,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -939,9 +903,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -957,15 +920,12 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 soapmessagename - example-style name
@@ -999,9 +959,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1009,9 +968,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1027,15 +985,12 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 soapmessagename - valid XML-ish identifier characters (underscore/dot/hyphen)
@@ -1077,8 +1032,7 @@ Method M() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 Requires
@@ -1160,8 +1114,7 @@ Method M() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 soapmessagename - two methods with different response names
@@ -1212,8 +1165,7 @@ Method B() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal))))))))
+                  (string_literal)))))))
       (class_statement
         (method
           (keyword_method)
@@ -1232,8 +1184,7 @@ Method B() As %String
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 invalid soapmessagename - missing '='
@@ -1364,9 +1315,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="My
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1374,9 +1324,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="My
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1394,15 +1343,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ WebMethod, SoapAction="My
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 SoapRequestMessage allows underscore start
@@ -1438,9 +1384,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1448,9 +1393,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1465,15 +1409,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=_MyReq
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 SoapRequestMessage allows digits after first char
@@ -1509,9 +1450,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1519,9 +1459,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1536,15 +1475,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=Req123
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 SoapRequestMessage allows dot and hyphen
@@ -1580,9 +1516,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1590,9 +1525,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1607,15 +1541,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage=My.Req
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 SoapRequestMessage keyword is case-insensitive
@@ -1651,9 +1582,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq 
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1661,9 +1591,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq 
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1678,15 +1607,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ soaprequestmessage=MyReq 
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 SoapRequestMessage with spaces around equals
@@ -1722,9 +1648,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyRe
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1732,9 +1657,8 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyRe
               (argument
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
+                    (lvn
+                      (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
@@ -1749,15 +1673,12 @@ Method Add(a As %Integer, b As %Integer) As %Integer [ SoapRequestMessage = MyRe
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
                     (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (objectscript_identifier))))))))))))
 
 ===
 invalid SoapRequestMessage - string literal (your grammar expects xml_identifier)

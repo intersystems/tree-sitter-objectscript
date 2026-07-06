@@ -18,31 +18,25 @@ For Loop var = expr
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+                    (numeric_literal))))))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal)))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (string_literal)))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (method_args
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))
+                (lvn
+                  (objectscript_identifier)
+                  (method_args
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -68,8 +62,7 @@ For Loop var=start:increment:end
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (string_literal))))))
+            (string_literal)))))
     (statement
       (command_set
         (keyword_set)
@@ -79,13 +72,11 @@ For Loop var=start:increment:end
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+            (system_defined_function
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier)))))))))
     (statement
       (command_for
         (keyword_for)
@@ -95,37 +86,29 @@ For Loop var=start:increment:end
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal)))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (system_defined_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (lvn
+                        (objectscript_identifier))))
+                  (method_arg
+                    (expression
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ============================
 For Loop var=start:increment
@@ -147,54 +130,43 @@ For Loop var=start:increment
               (method_args
                 (method_arg
                   (expression
-                    (expr_atom
-                      (numeric_literal)))))))
+                    (numeric_literal))))))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))))
+              (numeric_literal))))
         (statement
           (command_quit
             (keyword_quit)
             (post_conditional
               (expression
-                (expr_atom
-                  (system_defined_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)
-                            (method_args
-                              (method_arg
-                                (expression
-                                  (expr_atom
-                                    (numeric_literal)))))))))))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (lvn
+                        (objectscript_identifier)
+                        (method_args
+                          (method_arg
+                            (expression
+                              (numeric_literal))))))))
+                (binary_operator)
+                (expression
+                  (numeric_literal))))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))
+                (string_literal)))
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (method_args
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal)))))))))
+                (lvn
+                  (objectscript_identifier)
+                  (method_args
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -216,44 +188,34 @@ For Loop with Multiple forparameters
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal))))
+              (numeric_literal)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal))))
+              (numeric_literal)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))))
+              (numeric_literal))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (write_argument
               (write_device_control
                 (write_device_fflf)))))))))
@@ -282,24 +244,21 @@ For Loop with New
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (numeric_literal))))
+            (numeric_literal)))
         (set_argument
           (set_target
             (glvn
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (numeric_literal))))
+            (numeric_literal)))
         (set_argument
           (set_target
             (glvn
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (numeric_literal))))))
+            (numeric_literal)))))
     (statement
       (command_for
         (keyword_for)
@@ -309,17 +268,14 @@ For Loop with New
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))
+              (lvn
+                (objectscript_identifier)))))
         (statement
           (command_write
             (keyword_write)
@@ -328,13 +284,11 @@ For Loop with New
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))
+                (string_literal)))
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (statement
           (command_new
             (keyword_new)
@@ -351,8 +305,7 @@ For Loop with New
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (statement
           (command_new
             (keyword_new)
@@ -365,8 +318,7 @@ For Loop with New
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))))))))
+                (string_literal)))))))))
 
 =====================
 For Loop Argumentless
@@ -400,14 +352,11 @@ For Loop Argumentless
             (keyword_quit)
             (post_conditional
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
+                  (string_literal))))))
         (statement
           (command_do
             (keyword_do)
@@ -418,9 +367,8 @@ For Loop Argumentless
                 (method_args
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ===============================
 Old Style For Loop Argumentless
@@ -450,14 +398,11 @@ Old Style For Loop Argumentless
             (keyword_quit)
             (post_conditional
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (string_literal))))))))
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
+                  (string_literal))))))
         (statement
           (command_do
             (keyword_do)
@@ -468,9 +413,8 @@ Old Style For Loop Argumentless
                 (method_args
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier))))))))))))))
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ==========================================
 Old Style For Loop var=start:increment:end
@@ -490,13 +434,11 @@ Old Style For Loop var=start:increment:end
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (system_defined_function
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))))
+            (system_defined_function
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier)))))))))
     (statement
       (command_for
         (keyword_old_for)
@@ -506,37 +448,29 @@ Old Style For Loop var=start:increment:end
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal)))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (system_defined_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))))))))
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (lvn
+                        (objectscript_identifier))))
+                  (method_arg
+                    (expression
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ======================================
 Old Style For Loop var=start:increment
@@ -557,8 +491,7 @@ Old Style For Loop var=start:increment
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (numeric_literal))))))
+            (numeric_literal)))))
     (statement
       (command_for
         (keyword_old_for)
@@ -568,11 +501,9 @@ Old Style For Loop var=start:increment
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))))
+              (numeric_literal))))
         (statement
           (command_do
             (keyword_do)
@@ -589,15 +520,12 @@ Old Style For Loop var=start:increment
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
               (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (objectscript_identifier)))))))))
 
 ===========================
 Old Style For Loop var=expr
@@ -618,8 +546,7 @@ Old Style For Loop var=expr
               (lvn
                 (objectscript_identifier))))
           (expression
-            (expr_atom
-              (numeric_literal))))))
+            (numeric_literal)))))
     (statement
       (command_for
         (keyword_old_for)
@@ -629,22 +556,18 @@ Old Style For Loop var=expr
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))
+              (lvn
+                (objectscript_identifier)))))
         (statement
           (command_write
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
+                  (numeric_literal))))))
         (statement
           (command_quit
             (keyword_quit)))))))
@@ -718,14 +641,11 @@ For with parameter, block on newline
               (objectscript_identifier)))
           (for_parameter_arg
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))
+              (numeric_literal))
             (expression
-              (expr_atom
-                (numeric_literal)))))))))
+              (numeric_literal))))))))
 
 ======
 For Valid Argumentless loop with comment
@@ -765,9 +685,8 @@ test
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
 
 =====
 For Argumentless Block with Block Comment, no new line before {
@@ -794,9 +713,8 @@ test
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ====
 For Argumentless, Block comment on the same line
@@ -819,6 +737,5 @@ test
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
