@@ -340,10 +340,17 @@ module.exports = grammar(objectscript_expr, {
         seq($.keyword_pound_elseif, $.expression, repeat($.statement)),
       ),
     pound_else: ($) => seq($.keyword_pound_else, repeat($.statement)),
-    class_name: (_) => /[%A-Za-z0-9][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
-    pound_import: ($) => seq($.keyword_pound_import, commaSep1($.class_name)),
+    pound_import: ($) =>
+      seq(
+        $.keyword_pound_import,
+        commaSep1(alias($._quote_permitting_identifier, $.class_name)),
+      ),
 
-    pound_include: ($) => seq($.keyword_pound_include, $.class_name),
+    pound_include: ($) =>
+      seq(
+        $.keyword_pound_include,
+        alias($._quote_permitting_identifier, $.class_name),
+      ),
 
     // TODO: Unimplemented preprocessor directives (lower priority):
     // #noshow, #show, #sqlcompile (audit/mode/path/select), #undef,
@@ -693,8 +700,8 @@ module.exports = grammar(objectscript_expr, {
       seq(
         choice(
           choice($._target_var_arg, $.mnemonic_name),
-          seq('*', $._assert_no_space_between_rules, $.glvn),
-          seq($.glvn, '#', $.expression),
+          seq('*', $._assert_no_space_between_rules, $._glvn),
+          seq($._glvn, '#', $.expression),
         ),
         optional(seq(token.immediate(':'), $.expression)),
       ),
@@ -1309,9 +1316,9 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     _target_variable: ($) =>
-      choice($.glvn, $.indirection, $.instance_variable, $.oref_chain_expr),
+      choice($._glvn, $.indirection, $.instance_variable, $.oref_chain_expr),
 
-    _target_var_arg: ($) => choice($.glvn, $.indirection),
+    _target_var_arg: ($) => choice($._glvn, $.indirection),
 
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>

@@ -358,7 +358,8 @@ module.exports = grammar({
     variadic_arg: ($) =>
       seq(choice($.lvn, $.json_object_literal), token.immediate('...')),
 
-    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $.macro)),
+    _glvn: ($) =>
+      choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $.macro)),
     gvn: ($) =>
       prec.right(
         seq(

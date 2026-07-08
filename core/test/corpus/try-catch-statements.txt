@@ -26,7 +26,8 @@ try catch tests
     (statement
       (pound_include
         (keyword_pound_include)
-        (class_name)))
+        (class_name
+          (identifier))))
     (statement
       (command_trycatch
         (keyword_try)
@@ -35,9 +36,8 @@ try catch tests
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
                 (string_literal)))))
         (statement
@@ -45,9 +45,8 @@ try catch tests
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
                 (class_method_call
                   (class_ref
@@ -62,9 +61,8 @@ try catch tests
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
                 (oref_chain_expr
                   (lvn
@@ -127,9 +125,8 @@ try catch tests
                   (keyword_return))))))
         (catch_block
           (keyword_catch)
-          (glvn
-            (lvn
-              (objectscript_identifier)))
+          (lvn
+            (objectscript_identifier))
           (statement
             (command_write
               (keyword_write)

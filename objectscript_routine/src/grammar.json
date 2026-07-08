@@ -1014,7 +1014,7 @@
         }
       ]
     },
-    "glvn": {
+    "_glvn": {
       "type": "CHOICE",
       "members": [
         {
@@ -6487,10 +6487,6 @@
         }
       ]
     },
-    "class_name": {
-      "type": "PATTERN",
-      "value": "[%A-Za-z0-9][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*"
-    },
     "pound_import": {
       "type": "SEQ",
       "members": [
@@ -6502,8 +6498,13 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "class_name"
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_quote_permitting_identifier"
+              },
+              "named": true,
+              "value": "class_name"
             },
             {
               "type": "REPEAT",
@@ -6515,8 +6516,13 @@
                     "value": ","
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "class_name"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_quote_permitting_identifier"
+                    },
+                    "named": true,
+                    "value": "class_name"
                   }
                 ]
               }
@@ -6533,8 +6539,13 @@
           "name": "keyword_pound_include"
         },
         {
-          "type": "SYMBOL",
-          "name": "class_name"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_quote_permitting_identifier"
+          },
+          "named": true,
+          "value": "class_name"
         }
       ]
     },
@@ -8796,7 +8807,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "glvn"
+                  "name": "_glvn"
                 }
               ]
             },
@@ -8805,7 +8816,7 @@
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "glvn"
+                  "name": "_glvn"
                 },
                 {
                   "type": "STRING",
@@ -13789,7 +13800,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "glvn"
+          "name": "_glvn"
         },
         {
           "type": "SYMBOL",
@@ -13810,7 +13821,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "glvn"
+          "name": "_glvn"
         },
         {
           "type": "SYMBOL",
