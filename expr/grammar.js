@@ -303,7 +303,7 @@ module.exports = grammar({
     _extrinsic_reference: ($) =>
       choice(
         alias($._extrinsic_named_ref, $.line_ref),
-        alias($.routine_ref, $.line_ref),
+        $.routine_ref,
         alias($._extrinsic_indirect_ref, $.line_ref),
       ),
 

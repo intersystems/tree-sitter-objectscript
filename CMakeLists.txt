@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(tree-sitter-objectscript
-        VERSION "1.9.10"
+        VERSION "1.9.11"
         DESCRIPTION "ObjectScript grammar for tree-sitter"
         HOMEPAGE_URL "https://github.com/intersystems/tree-sitter-objectscript"
         LANGUAGES C)
