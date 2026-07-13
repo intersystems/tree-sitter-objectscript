@@ -6,8 +6,8 @@ Basic global variable
 
 (source_file
   (expression
-    (expr_atom
-      (gvn))))
+    (gvn
+      (identifier))))
 
 ==================================
 Global variable beginning with %
@@ -17,8 +17,8 @@ Global variable beginning with %
 
 (source_file
   (expression
-    (expr_atom
-      (gvn))))
+    (gvn
+      (identifier))))
 
 ==================================
 Global variable with digits
@@ -28,8 +28,8 @@ Global variable with digits
 
 (source_file
   (expression
-    (expr_atom
-      (gvn))))
+    (gvn
+      (identifier))))
 
 ==================================
 Global variable with period
@@ -39,8 +39,8 @@ Global variable with period
 
 (source_file
   (expression
-    (expr_atom
-      (gvn))))
+    (gvn
+      (identifier))))
 
 ==================================
 Global variable with subscripts
@@ -50,19 +50,15 @@ Global variable with subscripts
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (string_literal)))
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Extended reference with |namespace|
@@ -72,18 +68,14 @@ Extended reference with |namespace|
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Extended reference with [namespace]
@@ -93,18 +85,14 @@ Extended reference with [namespace]
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Extended reference with namespace,volset in pipes
@@ -114,21 +102,16 @@ Extended reference with namespace,volset in pipes
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Extended reference with namespace,volset in brackets
@@ -138,21 +121,16 @@ Extended reference with namespace,volset in brackets
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global with || prefix
@@ -162,15 +140,12 @@ Process-private global with || prefix
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global with ^|"^"| prefix
@@ -180,18 +155,14 @@ Process-private global with ^|"^"| prefix
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global with ^["^"] prefix
@@ -201,18 +172,14 @@ Process-private global with ^["^"] prefix
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global with ^|"^","^^"| prefix
@@ -222,21 +189,16 @@ Process-private global with ^|"^","^^"| prefix
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global with ^["^","^^"] prefix
@@ -246,21 +208,16 @@ Process-private global with ^["^","^^"] prefix
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (expression
-          (expr_atom
-            (string_literal)))
-        (expression
-          (expr_atom
-            (string_literal)))
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (bracket))))))
+    (gvn
+      (expression
+        (string_literal))
+      (expression
+        (string_literal))
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 Process-private global beginning with %
@@ -270,15 +227,12 @@ Process-private global beginning with %
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
-        (method_args
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (bracket))))))
+    (gvn
+      (identifier)
+      (method_args
+        (method_arg
+          (expression
+            (string_literal)))))))
 
 ==================================
 Global variable starting with digit
@@ -306,18 +260,13 @@ Expression for namespace
 
 (source_file
   (expression
-    (expr_atom
-      (gvn
+    (gvn
+      (expression
+        (string_literal)
+        (binary_operator)
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (dollar_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (numeric_literal))))))))))))))
+          (system_defined_function
+            (method_arg
+              (expression
+                (numeric_literal))))))
+      (identifier))))

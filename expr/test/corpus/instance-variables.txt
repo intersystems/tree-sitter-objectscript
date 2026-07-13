@@ -6,26 +6,20 @@ i% instance var oref
 
 (source_file
   (expression
-    (expr_atom
-      (oref_chain_expr
-        (instance_variable
-          (member_name
-            (identifier_segment_immediate))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))
-        (oref_chain_segment
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))))))
+    (oref_chain_expr
+      (instance_variable
+        (property_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier))))))
+      (oref_chain_segment
+        (oref_method
+          (method_name
+            (objectscript_identifier))
+          (method_args))))))
 
 ====
 r% instance var
@@ -35,9 +29,9 @@ r% instance var
 
 (source_file
   (expression
-    (expr_atom
-      (instance_variable
-        (member_name)))))
+    (instance_variable
+      (property_name
+        (identifier)))))
 
 ====
 m% instance var oref
@@ -47,26 +41,20 @@ m% instance var oref
 
 (source_file
   (expression
-    (expr_atom
-      (oref_chain_expr
-        (instance_variable
-          (member_name
-            (identifier_segment_immediate))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))
-        (oref_chain_segment
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))))))
+    (oref_chain_expr
+      (instance_variable
+        (property_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier))))))
+      (oref_chain_segment
+        (oref_method
+          (method_name
+            (objectscript_identifier))
+          (method_args))))))
 
 ====
 s% instance var oref
@@ -76,26 +64,20 @@ s% instance var oref
 
 (source_file
   (expression
-    (expr_atom
-      (oref_chain_expr
-        (instance_variable
-          (member_name
-            (identifier_segment_immediate))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))
-        (oref_chain_segment
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))))))
+    (oref_chain_expr
+      (instance_variable
+        (property_name
+          (objectscript_identifier))
+        (method_args
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier))))))
+      (oref_chain_segment
+        (oref_method
+          (method_name
+            (objectscript_identifier))
+          (method_args))))))
 
 ====
 valid instance var %
@@ -105,7 +87,6 @@ valid instance var %
 
 (source_file
   (expression
-    (expr_atom
-      (instance_variable
-        (member_name
-          (identifier_segment_immediate_special))))))
+    (instance_variable
+      (property_name
+        (objectscript_identifier_special)))))

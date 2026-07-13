@@ -47,14 +47,14 @@ module.exports = {
   // special case: methods
   method_keyword_codemode_expression: ($) =>
     seq(/CodeMode/i, '=', alias(/expression/i, $.typename)),
-  expression_method_keywords: ($) =>
+  _expression_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.method_keyword_codemode_expression),
-  external_method_keywords: ($) =>
-    specialKeywords($.method_keyword, $.method_keyword_language),
-  call_method_keywords: ($) =>
+  _external_method_keywords: ($) =>
+    specialKeywords($.method_keyword, $.method_keyword_external_language),
+  _call_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.call_method_keyword),
   call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
-  method_keyword_language: ($) =>
+  method_keyword_external_language: ($) =>
     seq(/Language/i, '=', alias(/(?:python|tsql|ispl)/i, $.typename)),
   // regular method keywords
   _keyword_client_name: ($) =>
@@ -103,7 +103,7 @@ module.exports = {
     ),
   method_keyword: ($) =>
     choice($._method_keyword_no_arg, $._method_keyword_value),
-  method_keywords: ($) => buildKeywords($.method_keyword),
+  _method_keywords: ($) => buildKeywords($.method_keyword),
   _method_name_or_list: ($) =>
     choice(
       alias($.identifier, $.method_name),
@@ -199,7 +199,7 @@ module.exports = {
       alias($.identifier, $.class_name),
       seq('(', commaSep1(alias($.identifier, $.class_name)), ')'),
     ),
-  class_keywords: ($) => buildKeywords($.class_keyword),
+  _class_keywords: ($) => buildKeywords($.class_keyword),
   class_keyword: ($) => choice($._class_keyword_no_arg, $._class_keyword_value),
 
   /*
@@ -222,7 +222,7 @@ module.exports = {
       $._keyword_client_name,
     ),
   query_keyword: ($) => choice($._query_keyword_no_arg, $._query_keyword_value),
-  query_keywords: ($) => buildKeywords($.query_keyword),
+  _query_keywords: ($) => buildKeywords($.query_keyword),
 
   /*
       TRIGGER KEYWORDS
@@ -264,9 +264,9 @@ module.exports = {
     ),
   trigger_keyword: ($) =>
     choice($._trigger_keyword_no_arg, $._trigger_keyword_value),
-  trigger_keywords: ($) => buildKeywords($.trigger_keyword),
-  external_trigger_keywords: ($) =>
-    specialKeywords($.trigger_keyword, $.method_keyword_language),
+  _trigger_keywords: ($) => buildKeywords($.trigger_keyword),
+  _external_trigger_keywords: ($) =>
+    specialKeywords($.trigger_keyword, $.method_keyword_external_language),
 
   /*
     PROPERTY KEYWORDS
@@ -453,10 +453,10 @@ module.exports = {
         /Data/i,
         '=',
         choice(
-          alias($.quote_permitting_identifier, $.property_name),
+          alias($._quote_permitting_identifier, $.property_name),
           seq(
             '(',
-            commaSep1(alias($.quote_permitting_identifier, $.property_name)),
+            commaSep1(alias($._quote_permitting_identifier, $.property_name)),
             ')',
           ),
         ),
@@ -487,30 +487,27 @@ module.exports = {
   xdata_keyword: ($) =>
     choice(
       // NOTE: mimetype is INTENTIONALLY excluded, see $._xdata_any rule
-      seq(/SchemaSpec/i, '=', alias($.string_literal, $.typename)),
-      seq(/XMLNamespace/i, '=', alias($.string_literal, $.typename)),
+      seq(/SchemaSpec/i, '=', $.string_literal),
+      seq(/XMLNamespace/i, '=', $.string_literal),
       seq(optional($.keyword_not), /(?:Deprecated|Internal)/i),
     ),
   mime_type: (_) =>
     token(
       /[A-Za-z0-9!#$&^_.-]+\/[A-Za-z0-9!#$&^_.-]+(?:\+[A-Za-z0-9!#$&^_.-]+)*(?:;[A-Za-z0-9!#$&^_.-]+=[A-Za-z0-9!#$&^_.-]+)*/,
     ),
-
-  xdata_keywords: ($) => buildKeywords($.xdata_keyword),
-
   xdata_keyword_mimetype: ($) =>
     seq(
       /MimeType/i,
       '=',
       alias(choice($.mime_type, $.string_literal), $.typename),
     ),
-  xdata_keywords_any: ($) =>
-    specialKeywords($.xdata_keyword, $.xdata_keyword_mimetype),
+
+  _xdata_keywords: ($) =>
+    buildKeywords(choice($.xdata_keyword, $.xdata_keyword_mimetype)),
   /*
       STORAGE KEYWORDS
     */
   keyword_storage: (_) => /Storage/i,
-  storage_keywords: (_) => seq('[', ']'),
 
   // COMMON KEYWORDS
   keyword_include: (_) => /Include/i,

@@ -13,64 +13,53 @@ Kill Statements
       (command_kill
         (keyword_kill)
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (kill_target
-          (glvn
-            (gvn)))))
+          (gvn
+            (identifier)))))
     (statement
       (command_kill
         (keyword_kill)
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))))
     (statement
       (command_kill
         (keyword_kill)
         (kill_target_list
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier)))))))
+            (lvn
+              (objectscript_identifier))))))
     (statement
       (command_kill
         (keyword_kill)
         (kill_target
-          (glvn
-            (gvn)))
+          (gvn
+            (identifier)))
         (kill_target
-          (glvn
-            (gvn)))
+          (gvn
+            (identifier)))
         (kill_target_list
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier)))))))))
+            (lvn
+              (objectscript_identifier))))))))
 
 ==========================
 Kill Statements Array Node
@@ -86,61 +75,44 @@ Kill Statements Array Node
         (keyword_kill)
         (kill_target_list
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier))))
+            (lvn
+              (objectscript_identifier)))
           (set_target
-            (glvn
-              (lvn
-                (objectscript_identifier)))))))
+            (lvn
+              (objectscript_identifier))))))
     (statement
       (command_kill
         (keyword_kill)
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (numeric_literal))))))
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (numeric_literal))))))
         (kill_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal)))
+              (method_arg
+                (expression
+                  (numeric_literal))))))))))
 
 ===========================
 Kill Using an Object Method
@@ -160,27 +132,21 @@ Kill Using an Object Method
             (oref_chain_segment
               (oref_method
                 (method_name
-                  (identifier_segment_immediate_special))
+                  (objectscript_identifier_special))
                 (method_args
-                  (bracket)
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (bracket))))
+                      (lvn
+                        (objectscript_identifier)))))))
             (oref_chain_segment
               (oref_method
                 (method_name
-                  (identifier_segment_immediate))
+                  (objectscript_identifier))
                 (method_args
-                  (bracket)
                   (method_arg
                     (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))))
-                  (bracket))))))))))
+                      (lvn
+                        (objectscript_identifier)))))))))))))
 
 ==========================
 Kill With PostConditionals
@@ -195,15 +161,13 @@ Kill With PostConditionals
         (keyword_kill)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (pattern_operator
-                (pattern_expression)))))
+            (lvn
+              (objectscript_identifier))
+            (pattern_operator
+              (pattern_expression))))
         (kill_target
-          (glvn
-            (gvn)))))))
+          (gvn
+            (identifier)))))))
 
 =====
 Zkill
@@ -217,37 +181,27 @@ Zkill
     (statement
       (command_zkill
         (keyword_zkill)
-        (glvn
-          (lvn
-            (objectscript_identifier)
-            (method_args
-              (bracket)
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (bracket))))))
+        (lvn
+          (objectscript_identifier)
+          (method_args
+            (method_arg
+              (expression
+                (numeric_literal)))))))
     (statement
       (command_zkill
         (keyword_zkill)
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (pattern_operator
-                (pattern_expression)))))
-        (glvn
-          (lvn
-            (objectscript_identifier)
-            (method_args
-              (bracket)
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (bracket))))))))
+            (lvn
+              (objectscript_identifier))
+            (pattern_operator
+              (pattern_expression))))
+        (lvn
+          (objectscript_identifier)
+          (method_args
+            (method_arg
+              (expression
+                (numeric_literal)))))))))
 
 ===
 kill relative dot property
@@ -264,4 +218,4 @@ kill relative dot property
           (relative_dot_property
             (oref_property
               (property_name
-                (identifier_segment_immediate)))))))))
+                (objectscript_identifier)))))))))

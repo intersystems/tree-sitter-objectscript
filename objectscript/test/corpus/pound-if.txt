@@ -30,11 +30,11 @@ Valid #if Statements
     (command_kill
       (keyword_kill)
       (kill_target
-        (glvn
-          (gvn)))
+        (gvn
+          (identifier)))
       (kill_target
-        (glvn
-          (gvn)))))
+        (gvn
+          (identifier)))))
   (statement
     (pound_define
       (keyword_pound_define)
@@ -46,158 +46,133 @@ Valid #if Statements
     (pound_if
       (keyword_pound_if)
       (expression
-        (expr_atom
-          (macro
-            (macro_constant)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
+        (macro
+          (macro_constant))
+        (binary_operator)
+        (expression
+          (string_literal)))
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (gvn
+                (identifier)))
+            (expression
               (string_literal)))))
       (statement
         (command_set
           (keyword_set)
           (set_argument
             (set_target
-              (glvn
-                (gvn)))
+              (gvn
+                (identifier)))
             (expression
-              (expr_atom
-                (string_literal))))))
-      (statement
-        (command_set
-          (keyword_set)
-          (set_argument
-            (set_target
-              (glvn
-                (gvn)))
-            (expression
-              (expr_atom
+              (numeric_literal)))))
+      (pound_elseif
+        (keyword_pound_elseif)
+        (expression
+          (macro
+            (macro_constant))
+          (binary_operator)
+          (expression
+            (string_literal)))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (gvn
+                  (identifier)))
+              (expression
+                (string_literal)))))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (gvn
+                  (identifier)))
+              (expression
                 (numeric_literal))))))
       (pound_elseif
         (keyword_pound_elseif)
         (expression
-          (expr_atom
-            (macro
-              (macro_constant)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
+          (macro
+            (macro_constant))
+          (binary_operator)
+          (expression
+            (string_literal)))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (gvn
+                  (identifier)))
+              (expression
                 (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (string_literal))))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (gvn)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
+                (numeric_literal))))))
       (pound_elseif
         (keyword_pound_elseif)
         (expression
-          (expr_atom
-            (macro
-              (macro_constant)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
+          (macro
+            (macro_constant))
+          (binary_operator)
+          (expression
+            (string_literal)))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (gvn
+                  (identifier)))
+              (expression
                 (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (string_literal))))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (gvn)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
+                (numeric_literal))))))
       (pound_elseif
         (keyword_pound_elseif)
         (expression
-          (expr_atom
-            (macro
-              (macro_constant)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
+          (macro
+            (macro_constant))
+          (binary_operator)
+          (expression
+            (string_literal)))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (gvn
+                  (identifier)))
+              (expression
                 (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (string_literal))))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (gvn)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
-      (pound_elseif
-        (keyword_pound_elseif)
-        (expression
-          (expr_atom
-            (macro
-              (macro_constant)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (gvn)))
-              (expression
-                (expr_atom
-                  (string_literal))))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (glvn
-                  (gvn)))
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
+                (numeric_literal))))))
       (pound_else
         (keyword_pound_else)
         (statement
@@ -205,37 +180,34 @@ Valid #if Statements
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (numeric_literal)))))))
+                (numeric_literal))))))
       (keyword_pound_endif)))
   (statement
     (command_write
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (gvn))))
+          (gvn
+            (identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (gvn)))))))
+          (gvn
+            (identifier)))))))
 
 ====
 Invalid If (no #endif, #else, or #elseif)
@@ -294,12 +266,10 @@ Valid PoundIf Special Case Nested
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (tag_end_if))
   (statement
@@ -326,9 +296,8 @@ Valid Pound If, ENDIF, ELSE
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (tag_end_if)))
 
@@ -354,16 +323,14 @@ test
       (pound_if_special_case_else_if)
       (keyword_pound_elseif)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier))))
+        (lvn
+          (objectscript_identifier)))
       (statement
         (command_write
           (keyword_write)
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))))
+              (string_literal)))))
       (pound_else
         (keyword_pound_else)
         (statement
@@ -371,8 +338,7 @@ test
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal)))))))
+                (string_literal))))))
       (keyword_pound_endif))))
 
 ====
@@ -399,8 +365,7 @@ test
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))
 
 ====
 Valid, extra #else
@@ -425,8 +390,7 @@ test
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))
 
 ===
 inner #IF 0 must be closed
@@ -455,5 +419,4 @@ test
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))

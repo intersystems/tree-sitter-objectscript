@@ -29,15 +29,16 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
 (source_file
   (include_code
     (keyword_include)
-    (include_clause
-      (class_name)))
+    (class_name
+      (identifier)))
   (class_definition
     (keyword_class)
     (class_name
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (parameter
@@ -45,7 +46,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (parameter_name
             (identifier))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (property
           (keyword_property)
@@ -94,9 +95,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
           (method_definition
             (method_name
               (identifier))
-            (arguments
-              (bracket)
-              (bracket))
+            (arguments)
             (return_type
               (keyword_as)
               (typename
@@ -109,10 +108,9 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
             (method_name
               (identifier))
             (arguments
-              (bracket)
               (argument
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier))))
                 (return_type
@@ -121,14 +119,13 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
                     (identifier))))
               (argument
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
-                    (identifier))))
-              (bracket))
+                    (identifier)))))
             (return_type
               (keyword_as)
               (typename
@@ -165,7 +162,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -177,7 +174,7 @@ Class hi {
             (parameter_keyword
               (typename)))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -186,7 +183,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -195,7 +192,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -204,7 +201,7 @@ Class hi {
           (parameter_keywords
             (parameter_keyword))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -213,7 +210,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (typename))))
+            (string_literal))))
       (class_statement
         (parameter
           (keyword_parameter)
@@ -222,7 +219,7 @@ Class hi {
           (parameter_type
             (keyword_as))
           (default_argument_value
-            (typename)))))))
+            (string_literal)))))))
 
 ========================
 Calling Parameters
@@ -255,26 +252,21 @@ Class hi {
           (method_definition
             (method_name
               (identifier))
-            (arguments
-              (bracket)
-              (bracket))
+            (arguments)
             (statement
               (command_write
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (oref_chain_expr
-                        (class_ref
-                          (keyword_pound_pound_class)
-                          (bracket)
-                          (class_name
-                            (identifier))
-                          (bracket))
-                        (oref_chain_segment
-                          (oref_parameter
-                            (member_name
-                              (identifier_segment_immediate))))))))))
+                    (oref_chain_expr
+                      (class_ref
+                        (keyword_pound_pound_class)
+                        (class_name
+                          (identifier)))
+                      (oref_chain_segment
+                        (oref_parameter
+                          (parameter_name
+                            (objectscript_identifier)))))))))
             (statement
               (command_set
                 (keyword_set)
@@ -286,27 +278,23 @@ Class hi {
                       (oref_chain_segment
                         (oref_property
                           (property_name
-                            (identifier_segment_immediate))))))
+                            (objectscript_identifier))))))
                   (expression
-                    (expr_atom
-                      (relative_dot_parameter
-                        (oref_parameter
-                          (member_name
-                            (identifier_segment_immediate)))))))))
+                    (relative_dot_parameter
+                      (oref_parameter
+                        (parameter_name
+                          (objectscript_identifier))))))))
             (statement
               (command_if
                 (keyword_if)
                 (expression
-                  (expr_atom
-                    (relative_dot_parameter
-                      (oref_parameter
-                        (member_name
-                          (identifier_segment_immediate)))))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (numeric_literal)))))
+                  (relative_dot_parameter
+                    (oref_parameter
+                      (parameter_name
+                        (objectscript_identifier))))
+                  (binary_operator)
+                  (expression
+                    (numeric_literal)))
                 (line_comment_1)
                 (else_block
                   (keyword_else)
@@ -316,19 +304,15 @@ Class hi {
                 (keyword_write)
                 (write_argument
                   (expression
-                    (expr_atom
-                      (system_defined_function
-                        (dollar_function
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier)))))
-                          (method_arg
-                            (expression
-                              (expr_atom
-                                (lvn
-                                  (objectscript_identifier))))))))))))))))))
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (lvn
+                            (objectscript_identifier))))
+                      (method_arg
+                        (expression
+                          (lvn
+                            (objectscript_identifier)))))))))))))))
 
 ========================
 InValid Parameter Keywords Placement

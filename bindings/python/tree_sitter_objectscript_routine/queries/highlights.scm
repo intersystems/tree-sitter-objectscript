@@ -4,10 +4,7 @@
 ; === BEGIN EXPR ===
 (pattern_expression) @string.regexp
 
-[
-  (json_number_literal)
-  (numeric_literal)
-] @number
+(numeric_literal) @number
 
 [
   (json_boolean_literal)
@@ -23,7 +20,7 @@
 ] @string
 
 [
-  (keyword_pound_pound_super)
+  (keyword_super)
   (keyword_pound_pound_class)
 ] @keyword.operator
 
@@ -59,10 +56,7 @@
 
 (macro_constant) @constant.macro
 
-[
-  (objectscript_identifier)
-  (identifier_segment_immediate)
-] @variable
+(objectscript_identifier) @variable
 
 [
   (ssvn)
@@ -73,7 +67,6 @@
 [
   (gvn)
   (objectscript_identifier_special)
-  (identifier_segment_immediate_special)
   (instance_variable)
 ] @variable.member
 
@@ -92,7 +85,6 @@
   "']"
   "']]"
   "\""
-  "\"\""
   "["
   "]"
   "]]"
@@ -131,8 +123,6 @@
   "!"
   "?"
 ] @operator
-
-(bracket) @punctuation.bracket
 
 ; === END EXPR ===
 ; === BEGIN CORE ===
@@ -302,8 +292,7 @@
 (variable_datatype
   "." @function.builtin)
 
-(method_call
-  "." @function.builtin)
+(method_dot) @function.builtin
 
 ; === END CORE ===
 ; === BEGIN LOCAL ===

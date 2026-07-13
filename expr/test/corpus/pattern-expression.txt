@@ -6,18 +6,10 @@ valid pattern expression
 
 (source_file
   (expression
-    (expr_atom
-      (unary_expression
-        (unary_operator)
+    (unary_expression
+      (expression
         (expression
-          (expr_atom
-            (parenthetical_expression
-              (bracket)
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))
-                (expr_tail
-                  (pattern_operator
-                    (pattern_expression))))
-              (bracket))))))))
+          (lvn
+            (objectscript_identifier))
+          (pattern_operator
+            (pattern_expression)))))))

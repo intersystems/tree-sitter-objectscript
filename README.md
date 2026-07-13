@@ -62,8 +62,7 @@ make test
 
 The routine and playground Rust crates are staged from `bindings/rust-routine` and
 `bindings/rust-playground` via helper scripts. See
-[CONTRIBUTING.md](CONTRIBUTING.md) for the current local build workflow and the
-temporary `studio-highlights.scm` copy step those staged crates need today.
+[CONTRIBUTING.md](CONTRIBUTING.md) for the current local build workflow.
 
 For Node bindings specifically, `.nvmrc` pins the expected Node version.
 
@@ -96,8 +95,7 @@ If you change an upstream grammar (`expr` or `core`), regenerate downstream gram
 
 It composes the layered query trees for `core`, `udl`, `objectscript`, and
 `objectscript_routine`, then mirrors those composed files into the Python
-binding query directories. `studio-highlights.scm` files are intentionally left
-out of that sync process and are maintained separately.
+binding query directories. 
 
 ## Corpus Sync
 

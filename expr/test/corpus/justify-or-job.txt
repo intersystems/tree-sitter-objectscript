@@ -6,8 +6,7 @@ $JOB as system variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $J without parentheses is $JOB
@@ -17,8 +16,7 @@ $J without parentheses is $JOB
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $JOB case insensitive
@@ -28,8 +26,7 @@ $JOB case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ==================================
 $JOB in expression
@@ -39,13 +36,10 @@ $JOB in expression
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (numeric_literal))))))
+    (system_defined_variable)
+    (binary_operator)
+    (expression
+      (numeric_literal))))
 
 ==================================
 $JOB concatenation
@@ -55,13 +49,10 @@ $JOB concatenation
 
 (source_file
   (expression
-    (expr_atom
-      (string_literal))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_variable))))))
+    (string_literal)
+    (binary_operator)
+    (expression
+      (system_defined_variable))))
 
 ==================================
 $JUSTIFY shorthand
@@ -71,17 +62,13 @@ $JUSTIFY shorthand
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY right align string
@@ -91,17 +78,13 @@ $JUSTIFY right align string
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (string_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (string_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY right align number
@@ -111,17 +94,13 @@ $JUSTIFY right align number
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY with decimal places
@@ -131,22 +110,17 @@ $JUSTIFY with decimal places
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY no args
@@ -165,21 +139,16 @@ $JUSTIFY format currency
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY with zero decimal places
@@ -189,21 +158,16 @@ $JUSTIFY with zero decimal places
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $J shorthand with parentheses is $JUSTIFY
@@ -213,18 +177,14 @@ $J shorthand with parentheses is $JUSTIFY
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $J shorthand with decimal
@@ -234,22 +194,17 @@ $J shorthand with decimal
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY case insensitive
@@ -259,18 +214,14 @@ $JUSTIFY case insensitive
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY with variable width
@@ -280,19 +231,15 @@ $JUSTIFY with variable width
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ==================================
 $JUSTIFY with expression as value
@@ -302,24 +249,18 @@ $JUSTIFY with expression as value
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY with nested function
@@ -329,27 +270,20 @@ $JUSTIFY with nested function
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (system_defined_function
-                  (dollar_function
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier))))))))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (system_defined_function
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier)))))))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY in concatenation
@@ -359,27 +293,20 @@ $JUSTIFY in concatenation
 
 (source_file
   (expression
-    (expr_atom
-      (string_literal))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+    (string_literal)
+    (binary_operator)
+    (expression
+      (system_defined_function
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (numeric_literal)))
+        (method_arg
+          (expression
+            (numeric_literal)))))))
 
 ==================================
 $JUSTIFY with global variable value
@@ -389,29 +316,22 @@ $JUSTIFY with global variable value
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (gvn
-                  (method_args
-                    (bracket)
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (bracket))))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))))))
+      (method_arg
+        (expression
+          (numeric_literal)))
+      (method_arg
+        (expression
+          (numeric_literal))))))
 
 ==================================
 $JUSTIFY for column alignment
@@ -421,30 +341,21 @@ $JUSTIFY for column alignment
 
 (source_file
   (expression
-    (expr_atom
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (numeric_literal))))
+    (binary_operator)
+    (expression
       (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (numeric_literal)))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (numeric_literal)))))))

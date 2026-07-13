@@ -6,33 +6,23 @@ Special Case, macro resolves to var
 
 (source_file
   (expression
-    (expr_atom
-      (macro
-        (macro_function
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (macro
-                    (macro_function
-                      (method_args
-                        (bracket)
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))))
-                        (bracket)))))))
-            (bracket)))))))
+    (macro
+      (macro_function
+        (method_args
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier)))))
+        (method_args
+          (method_arg
+            (expression
+              (macro
+                (macro_function
+                  (method_args
+                    (method_arg
+                      (expression
+                        (lvn
+                          (objectscript_identifier))))))))))))))
 
 ====
 Special Case, macro part of oref
@@ -42,30 +32,22 @@ Special Case, macro part of oref
 
 (source_file
   (expression
-    (expr_atom
-      (macro
-        (macro_function
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (oref_chain_expr
-                    (macro
-                      (macro_constant))
-                    (oref_chain_segment
-                      (oref_method
-                        (method_name
-                          (identifier_segment_immediate_special))
-                        (method_args
-                          (bracket)
-                          (bracket))))))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (numeric_literal))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (numeric_literal))))
-            (bracket)))))))
+    (macro
+      (macro_function
+        (method_args
+          (method_arg
+            (expression
+              (oref_chain_expr
+                (macro
+                  (macro_constant))
+                (oref_chain_segment
+                  (oref_method
+                    (method_name
+                      (objectscript_identifier_special))
+                    (method_args))))))
+          (method_arg
+            (expression
+              (numeric_literal)))
+          (method_arg
+            (expression
+              (numeric_literal))))))))

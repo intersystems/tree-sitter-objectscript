@@ -15,35 +15,31 @@ Do Statement No Param Passing
     (command_do
       (keyword_do)
       (do_parameter
-        (method_call
-          (lvn
+        (lvn
+          (objectscript_identifier))
+        (method_dot)
+        (oref_method
+          (method_name
             (objectscript_identifier))
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket)))))))
+          (method_args)))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))
-          (method_args
-            (bracket)
-            (bracket))))))
+          (method_args)))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))))
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))))
       (do_parameter
         (routine_tag_call
@@ -64,8 +60,7 @@ Do Statement No Param Passing
         (set_target
           (system_defined_variable))
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (statement
     (command_do
       (keyword_do)
@@ -86,11 +81,9 @@ Do Statement No Param Passing
               (string_literal)
               (routine_name)))
           (method_args
-            (bracket)
             (method_arg
               (byref_arg
-                (system_defined_variable)))
-            (bracket)))))))
+                (system_defined_variable)))))))))
 
 ===============================
 Do Statement With Param Passing
@@ -119,28 +112,22 @@ Do Statement With Param Passing
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_write
       (keyword_write)
@@ -149,48 +136,39 @@ Do Statement With Param Passing
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))
           (method_args
-            (bracket)
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket))))))
+                (lvn
+                  (objectscript_identifier)))))))))
   (statement
     (command_write
       (keyword_write)
@@ -199,23 +177,19 @@ Do Statement With Param Passing
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_quit
       (keyword_quit)))
@@ -224,28 +198,22 @@ Do Statement With Param Passing
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_write
       (keyword_write)
@@ -254,43 +222,35 @@ Do Statement With Param Passing
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))
           (method_args
-            (bracket)
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
+                (lvn
+                  (objectscript_identifier))))
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket))))))
+                (lvn
+                  (objectscript_identifier)))))))))
   (statement
     (command_write
       (keyword_write)
@@ -299,23 +259,19 @@ Do Statement With Param Passing
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_quit
       (keyword_quit)))
@@ -324,71 +280,52 @@ Do Statement With Param Passing
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier)
-              (method_args
-                (bracket)
-                (method_arg
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))
-                (bracket)))))
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (numeric_literal))))))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))
           (method_args
-            (bracket)
             (method_arg
               (variadic_arg
                 (lvn
-                  (objectscript_identifier))))
-            (bracket))))))
+                  (objectscript_identifier)))))))))
   (statement
     (command_quit
       (keyword_quit)))
@@ -397,28 +334,22 @@ Do Statement With Param Passing
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_write
       (keyword_write)
@@ -427,32 +358,27 @@ Do Statement With Param Passing
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))
+          (string_literal)))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))
+          (lvn
+            (objectscript_identifier))))
       (write_argument
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))
           (method_args
-            (bracket)
             (method_arg
               (byref_arg
                 (lvn
@@ -464,8 +390,7 @@ Do Statement With Param Passing
             (method_arg
               (byref_arg
                 (lvn
-                  (objectscript_identifier))))
-            (bracket)))))))
+                  (objectscript_identifier))))))))))
 
 ==========================
 Do Statement Object Method
@@ -481,49 +406,39 @@ Do Statement Object Method
     (command_do
       (keyword_do)
       (do_parameter
-        (method_call
-          (lvn
+        (lvn
+          (objectscript_identifier))
+        (method_dot)
+        (oref_method
+          (method_name
             (objectscript_identifier))
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket)))))))
+          (method_args)))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
-        (method_call
-          (relative_dot_method
-            (oref_method
-              (method_name
-                (identifier_segment_immediate))
-              (method_args
-                (bracket)
-                (bracket))))))))
+        (relative_dot_method
+          (oref_method
+            (method_name
+              (objectscript_identifier))
+            (method_args))))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
-        (method_call
-          (instance_variable
-            (member_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (bracket)))
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket)))))))
+        (instance_variable
+          (property_name
+            (objectscript_identifier))
+          (method_args
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
+        (method_dot)
+        (oref_method
+          (method_name
+            (objectscript_identifier))
+          (method_args)))))
   (statement
     (command_do
       (keyword_do)
@@ -531,15 +446,11 @@ Do Statement Object Method
         (class_method_call
           (class_ref
             (keyword_pound_pound_class)
-            (bracket)
             (class_name
-              (identifier))
-            (bracket))
+              (identifier)))
           (method_name
-            (identifier_segment_immediate))
-          (method_args
-            (bracket)
-            (bracket)))))))
+            (objectscript_identifier))
+          (method_args))))))
 
 =============================
 Do Statement with Indirection
@@ -561,22 +472,18 @@ Do Statement with Indirection
         (string_literal))
       (read_argument
         (read_variable
-          (glvn
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_quit
       (keyword_quit)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (string_literal))))))
   (statement
     (command_do
       (keyword_do)
@@ -585,19 +492,12 @@ Do Statement with Indirection
           (line_ref
             (indirection
               (expression
-                (expr_atom
-                  (parenthetical_expression
-                    (bracket)
-                    (expression
-                      (expr_atom
-                        (string_literal))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (lvn
-                              (objectscript_identifier))))))
-                    (bracket)))))
+                (expression
+                  (string_literal)
+                  (binary_operator)
+                  (expression
+                    (lvn
+                      (objectscript_identifier))))))
             (routine_ref
               (routine_name)))))))
   (statement
@@ -608,42 +508,29 @@ Do Statement with Indirection
           (line_ref
             (indirection
               (expression
-                (expr_atom
-                  (parenthetical_expression
-                    (bracket)
-                    (expression
-                      (expr_atom
-                        (lvn
-                          (objectscript_identifier)))
-                      (expr_tail
-                        (binary_operator)
-                        (expression
-                          (expr_atom
-                            (string_literal)))))
-                    (bracket))))))))))
+                (expression
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (string_literal))))))))))
   (statement
     (command_set
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (string_literal))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))))))
+          (string_literal)
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))))))
   (statement
     (command_do
       (keyword_do)
@@ -652,9 +539,8 @@ Do Statement with Indirection
           (line_ref
             (indirection
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ===========================================
 Do Statement with Argument Postconditionals
@@ -672,251 +558,183 @@ Do Statement with Argument Postconditionals
       (keyword_do)
       (post_conditional
         (expression
-          (expr_atom
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (numeric_literal))))
+      (do_parameter
+        (routine_tag_call
+          (method_name
+            (objectscript_identifier)))
+        (post_conditional
+          (expression
             (lvn
-              (objectscript_identifier)))
-          (expr_tail
+              (objectscript_identifier))
             (binary_operator)
             (expression
-              (expr_atom
-                (numeric_literal))))))
+              (numeric_literal)))))
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier)))
         (post_conditional
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
+              (numeric_literal)))))
       (do_parameter
         (routine_tag_call
-          (line_ref
-            (objectscript_identifier)))
-        (post_conditional
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
-      (do_parameter
-        (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))))))
   (statement
     (command_do
       (keyword_do)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal))))))
-      (do_parameter
-        (routine_tag_call
-          (line_ref
-            (objectscript_identifier)))
-        (post_conditional
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
-      (do_parameter
-        (routine_tag_call
-          (line_ref
-            (objectscript_identifier)))
-        (post_conditional
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
-      (do_parameter
-        (routine_tag_call
-          (line_ref
-            (objectscript_identifier)))
-        (post_conditional
-          (expression
-            (expr_atom
-              (parenthetical_expression
-                (bracket)
-                (expression
-                  (expr_atom
-                    (parenthetical_expression
-                      (bracket)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))
-                        (expr_tail
-                          (binary_operator)
-                          (expression
-                            (expr_atom
-                              (numeric_literal)))))
-                      (bracket)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (parenthetical_expression
-                          (bracket)
-                          (expression
-                            (expr_atom
-                              (lvn
-                                (objectscript_identifier)))
-                            (expr_tail
-                              (binary_operator)
-                              (expression
-                                (expr_atom
-                                  (numeric_literal)))))
-                          (bracket))))))
-                (bracket))))))))
-  (statement
-    (command_do
-      (keyword_do)
-      (post_conditional
-        (expression
-          (expr_atom
             (numeric_literal))))
       (do_parameter
         (routine_tag_call
-          (line_ref
-            (objectscript_identifier))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))
+          (method_name
+            (objectscript_identifier)))
         (post_conditional
           (expression
-            (expr_atom
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
               (numeric_literal)))))
       (do_parameter
         (routine_tag_call
-          (line_ref
-            (objectscript_identifier))
-          (method_args
-            (bracket)
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))
-            (bracket)))
+          (method_name
+            (objectscript_identifier)))
         (post_conditional
           (expression
-            (expr_atom
-              (numeric_literal)))))))
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
+              (numeric_literal)))))
+      (do_parameter
+        (routine_tag_call
+          (method_name
+            (objectscript_identifier)))
+        (post_conditional
+          (expression
+            (expression
+              (expression
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
+                  (numeric_literal)))
+              (binary_operator)
+              (expression
+                (expression
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (numeric_literal))))))))))
   (statement
     (command_do
       (keyword_do)
       (post_conditional
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (do_parameter
-        (system_defined_function
-          (dollar_function
+        (routine_tag_call
+          (method_name
+            (objectscript_identifier))
+          (method_args
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (method_args
-                      (bracket)
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier))))))))))
-                      (bracket))))))))
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
         (post_conditional
           (expression
-            (expr_atom
-              (numeric_literal)))))))
+            (numeric_literal))))
+      (do_parameter
+        (routine_tag_call
+          (method_name
+            (objectscript_identifier))
+          (method_args
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier))))))
+        (post_conditional
+          (expression
+            (numeric_literal))))))
+  (statement
+    (command_do
+      (keyword_do)
+      (post_conditional
+        (expression
+          (numeric_literal)))
+      (do_parameter
+        (system_defined_function
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier)
+                (method_args
+                  (method_arg
+                    (expression
+                      (system_defined_function
+                        (method_arg
+                          (expression
+                            (lvn
+                              (objectscript_identifier))))))))))))
+        (post_conditional
+          (expression
+            (numeric_literal))))))
   (block_comment)
   (statement
     (command_do
       (keyword_do)
       (post_conditional
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (do_parameter
         (system_defined_function
-          (dollar_function
-            (method_arg
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)
-                    (method_args
-                      (bracket)
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_function
-                              (dollar_function
-                                (method_arg
-                                  (expression
-                                    (expr_atom
-                                      (lvn
-                                        (objectscript_identifier))))))))))
-                      (bracket))))))))
+          (method_arg
+            (expression
+              (lvn
+                (objectscript_identifier)
+                (method_args
+                  (method_arg
+                    (expression
+                      (system_defined_function
+                        (method_arg
+                          (expression
+                            (lvn
+                              (objectscript_identifier))))))))))))
         (post_conditional
           (expression
-            (expr_atom
-              (numeric_literal)))))))
+            (numeric_literal))))))
   (block_comment))
 
 ===============================
@@ -934,35 +752,26 @@ Do While Statement and Continue
           (keyword_set)
           (set_argument
             (set_target
-              (glvn
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))))
       (statement
         (command_if
           (keyword_if)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal))))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
+              (numeric_literal))
+            (binary_operator)
+            (expression
+              (numeric_literal)))
           (statement
             (command_continue
               (keyword_continue)))))
@@ -974,23 +783,18 @@ Do While Statement and Continue
               (write_device_fflf)))
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))
+              (string_literal)))
           (write_argument
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))))
+              (lvn
+                (objectscript_identifier))))))
       (keyword_while)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
+          (numeric_literal))))))
 
 ===========================
 Do While Statement and Quit
@@ -1016,20 +820,16 @@ Do While Statement and Quit
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))
+          (numeric_literal)))
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_dowhile
       (keyword_do)
@@ -1038,8 +838,7 @@ Do While Statement and Quit
           (keyword_write)
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))
+              (string_literal)))
           (write_argument
             (write_device_control
               (write_device_fflf)))))
@@ -1051,20 +850,17 @@ Do While Statement and Quit
               (keyword_write)
               (write_argument
                 (expression
-                  (expr_atom
-                    (string_literal))))))
+                  (string_literal)))))
           (statement
             (command_write
               (keyword_write)
               (write_argument
                 (expression
-                  (expr_atom
-                    (string_literal))))
+                  (string_literal)))
               (write_argument
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
+                  (lvn
+                    (objectscript_identifier))))
               (write_argument
                 (write_device_control
                   (write_device_fflf)))))
@@ -1073,53 +869,41 @@ Do While Statement and Quit
               (keyword_quit)
               (post_conditional
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))))))
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (numeric_literal))))))
           (statement
             (command_set
               (keyword_set)
               (set_argument
                 (set_target
-                  (glvn
-                    (lvn
-                      (objectscript_identifier))))
+                  (lvn
+                    (objectscript_identifier)))
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (numeric_literal))))))))
+                  (lvn
+                    (objectscript_identifier))
+                  (binary_operator)
+                  (expression
+                    (numeric_literal))))))
           (keyword_while)
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))
-            (expr_tail
-              (binary_operator)
-              (expression
-                (expr_atom
-                  (numeric_literal)))))))
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
+              (numeric_literal)))))
       (statement
         (command_write
           (keyword_write)
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))
+              (string_literal)))
           (write_argument
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
+              (lvn
+                (objectscript_identifier))))
           (write_argument
             (write_device_control
               (write_device_fflf)))))
@@ -1128,35 +912,27 @@ Do While Statement and Quit
           (keyword_set)
           (set_argument
             (set_target
-              (glvn
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal))))))))
+              (lvn
+                (objectscript_identifier))
+              (binary_operator)
+              (expression
+                (numeric_literal))))))
       (keyword_while)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (numeric_literal)))))))
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
+          (numeric_literal)))))
   (statement
     (command_write
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))
 
 ===========================
 Do While Statement and Goto
@@ -1181,13 +957,12 @@ Do While Statement and Goto
               (write_device_fflf)))
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))))
+              (string_literal)))))
       (statement
         (command_goto
           (keyword_goto)
           (goto_argument
-            (line_ref
+            (method_name
               (objectscript_identifier)))))
       (statement
         (command_write
@@ -1197,17 +972,13 @@ Do While Statement and Goto
               (write_device_fflf)))
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))))
+              (string_literal)))))
       (keyword_while)
       (expression
-        (expr_atom
-          (numeric_literal))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (numeric_literal)))))))
+        (numeric_literal)
+        (binary_operator)
+        (expression
+          (numeric_literal)))))
   (statement
     (command_write
       (keyword_write)
@@ -1216,8 +987,7 @@ Do While Statement and Goto
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal)))))))
+          (string_literal))))))
 
 =======================
 Do Statement Dot Syntax
@@ -1277,8 +1047,7 @@ Do Statement Dot Syntax
             (keyword_write)
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))
+                (string_literal)))
             (write_argument
               (write_device_control
                 (write_device_fflf))))))
@@ -1292,8 +1061,7 @@ Do Statement Dot Syntax
                   (keyword_write)
                   (write_argument
                     (expression
-                      (expr_atom
-                        (string_literal))))
+                      (string_literal)))
                   (write_argument
                     (write_device_control
                       (write_device_fflf))))))
@@ -1307,8 +1075,7 @@ Do Statement Dot Syntax
                   (keyword_write)
                   (write_argument
                     (expression
-                      (expr_atom
-                        (string_literal))))
+                      (string_literal)))
                   (write_argument
                     (write_device_control
                       (write_device_fflf))))))
@@ -1318,8 +1085,7 @@ Do Statement Dot Syntax
                   (keyword_write)
                   (write_argument
                     (expression
-                      (expr_atom
-                        (string_literal))))
+                      (string_literal)))
                   (write_argument
                     (write_device_control
                       (write_device_fflf))))))
@@ -1333,8 +1099,7 @@ Do Statement Dot Syntax
                   (keyword_write)
                   (write_argument
                     (expression
-                      (expr_atom
-                        (string_literal))))
+                      (string_literal)))
                   (write_argument
                     (write_device_control
                       (write_device_fflf)))))))))))
@@ -1343,7 +1108,27 @@ Do Statement Dot Syntax
       (keyword_write)
       (write_argument
         (expression
-          (expr_atom
+          (string_literal)))))
+  (statement
+    (command_read
+      (keyword_read)
+      (read_argument
+        (read_fchar))
+      (read_argument
+        (string_literal))
+      (read_argument
+        (read_variable
+          (lvn
+            (objectscript_identifier))))))
+  (statement
+    (command_quit
+      (keyword_quit)
+      (post_conditional
+        (expression
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
             (string_literal))))))
   (statement
     (command_read
@@ -1354,80 +1139,36 @@ Do Statement Dot Syntax
         (string_literal))
       (read_argument
         (read_variable
-          (glvn
-            (lvn
-              (objectscript_identifier)))))))
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_quit
       (keyword_quit)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))))
-  (statement
-    (command_read
-      (keyword_read)
-      (read_argument
-        (read_fchar))
-      (read_argument
-        (string_literal))
-      (read_argument
-        (read_variable
-          (glvn
-            (lvn
-              (objectscript_identifier)))))))
-  (statement
-    (command_quit
-      (keyword_quit)
-      (post_conditional
-        (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (string_literal))))))
   (statement
     (command_if
       (keyword_old_if)
       (expression
-        (expr_atom
-          (parenthetical_expression
-            (bracket)
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal)))))
-            (bracket)))
-        (expr_tail
+        (expression
+          (lvn
+            (objectscript_identifier))
           (binary_operator)
           (expression
-            (expr_atom
-              (parenthetical_expression
-                (bracket)
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (string_literal)))))
-                (bracket))))))
+            (string_literal)))
+        (binary_operator)
+        (expression
+          (expression
+            (lvn
+              (objectscript_identifier))
+            (binary_operator)
+            (expression
+              (string_literal)))))
       (statement
         (command_do
           (keyword_do_old)
@@ -1437,19 +1178,15 @@ Do Statement Dot Syntax
                 (keyword_set)
                 (set_argument
                   (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
+                    (lvn
+                      (objectscript_identifier)))
                   (expression
-                    (expr_atom
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
                       (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))
+                        (objectscript_identifier)))))))
             (inline_comment))
           (dotted_statement
             (statement
@@ -1460,13 +1197,11 @@ Do Statement Dot Syntax
                     (write_device_fflf)))
                 (write_argument
                   (expression
-                    (expr_atom
-                      (string_literal))))
+                    (string_literal)))
                 (write_argument
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))))))
+                    (lvn
+                      (objectscript_identifier)))))))))))
   (statement
     (command_else
       (keyword_oldelse)
@@ -1479,25 +1214,19 @@ Do Statement Dot Syntax
                 (keyword_set)
                 (set_argument
                   (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
+                    (lvn
+                      (objectscript_identifier)))
                   (expression
-                    (expr_atom
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
                       (lvn
                         (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier)))))))))
+                    (binary_operator)
+                    (expression
+                      (lvn
+                        (objectscript_identifier)))))))
             (inline_comment))
           (dotted_statement
             (statement
@@ -1508,13 +1237,11 @@ Do Statement Dot Syntax
                     (write_device_fflf)))
                 (write_argument
                   (expression
-                    (expr_atom
-                      (string_literal))))
+                    (string_literal)))
                 (write_argument
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))
+                    (lvn
+                      (objectscript_identifier)))))))
           (dotted_statement
             (statement
               (command_quit
@@ -1523,26 +1250,22 @@ Do Statement Dot Syntax
     (command_goto
       (keyword_goto)
       (goto_argument
-        (line_ref
+        (method_name
           (objectscript_identifier)))))
   (statement
     (command_for
       (keyword_old_for)
       (for_parameter
-        (glvn
-          (lvn
-            (objectscript_identifier)))
+        (lvn
+          (objectscript_identifier))
         (for_parameter_arg
           (expression
-            (expr_atom
-              (numeric_literal)))
+            (numeric_literal))
           (expression
-            (expr_atom
-              (numeric_literal)))
+            (numeric_literal))
           (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))
+            (lvn
+              (objectscript_identifier)))))
       (statement
         (command_do
           (keyword_do_old)
@@ -1552,19 +1275,15 @@ Do Statement Dot Syntax
                 (keyword_set)
                 (set_argument
                   (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
+                    (lvn
+                      (objectscript_identifier)))
                   (expression
-                    (expr_atom
+                    (lvn
+                      (objectscript_identifier))
+                    (binary_operator)
+                    (expression
                       (lvn
-                        (objectscript_identifier)))
-                    (expr_tail
-                      (binary_operator)
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier))))))))))
+                        (objectscript_identifier))))))))
           (dotted_statement
             (statement
               (command_write
@@ -1574,9 +1293,8 @@ Do Statement Dot Syntax
                     (write_device_fflf)))
                 (write_argument
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier))))))))
+                    (lvn
+                      (objectscript_identifier)))))))
           (dotted_statement
             (statement
               (command_quit
@@ -1589,8 +1307,7 @@ Do Statement Dot Syntax
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (line_comment_3)
   (statement
     (command_do
@@ -1630,8 +1347,7 @@ Do Statement Dot Syntax
           (write_device_fflf)))
       (write_argument
         (expression
-          (expr_atom
-            (string_literal))))))
+          (string_literal)))))
   (line_comment_3))
 
 ====================================================
@@ -1649,19 +1365,15 @@ do while block no whitespace in between do and block
           (keyword_write)
           (write_argument
             (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))))
+              (lvn
+                (objectscript_identifier))))))
       (keyword_while)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (numeric_literal))))))))
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
+          (numeric_literal))))))
 
 ============
 do ##super()
@@ -1675,10 +1387,8 @@ do ##super()
       (keyword_do)
       (do_parameter
         (superclass_method_call
-          (keyword_pound_pound_super)
-          (method_args
-            (bracket)
-            (bracket)))))))
+          (keyword_super)
+          (method_args))))))
 
 ===
 Do statement valid } special case
@@ -1698,31 +1408,25 @@ test
       (keyword_set)
       (set_argument
         (set_target
-          (glvn
-            (lvn
-              (objectscript_identifier))))
+          (lvn
+            (objectscript_identifier)))
         (expression
-          (expr_atom
-            (numeric_literal))))))
+          (numeric_literal)))))
   (statement
     (command_if
       (keyword_if)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (numeric_literal)))))
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
+          (numeric_literal)))
       (statement
         (command_write
           (keyword_write)
           (write_argument
             (expression
-              (expr_atom
-                (string_literal))))))
+              (string_literal)))))
       (else_block
         (keyword_else)
         (statement
@@ -1730,12 +1434,10 @@ test
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
-                (expr_atom
-                  (numeric_literal))))))
+                (numeric_literal)))))
         (keyword_do_old)
         (dotted_statement
           (statement
@@ -1743,8 +1445,7 @@ test
               (keyword_write)
               (write_argument
                 (expression
-                  (expr_atom
-                    (string_literal)))))))))))
+                  (string_literal))))))))))
 
 ===
 Do parameter system function oref
@@ -1757,17 +1458,14 @@ Do parameter system function oref
     (command_do
       (keyword_do)
       (do_parameter
-        (method_call
-          (system_defined_function
-            (dollarsf
-              (identifier_segment_immediate)
-              (identifier_segment_immediate)
-              (method_args
-                (bracket)
-                (bracket))))
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (bracket))))))))
+        (system_defined_function
+          (class_name
+            (objectscript_identifier))
+          (method_name
+            (objectscript_identifier))
+          (method_args))
+        (method_dot)
+        (oref_method
+          (method_name
+            (objectscript_identifier))
+          (method_args))))))

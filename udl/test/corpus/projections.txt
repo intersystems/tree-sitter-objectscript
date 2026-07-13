@@ -14,7 +14,8 @@ Projection JavaClient As %Projection.Java(ROOTDIR="c:\java");
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (projection
@@ -24,11 +25,9 @@ Projection JavaClient As %Projection.Java(ROOTDIR="c:\java");
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename))))))))))
+              (identifier)
+              (identifier)
+              (string_literal))))))))
 
 ===
 Projection Class
@@ -61,7 +60,8 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (parameter
@@ -76,10 +76,9 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
             (method_name
               (identifier))
             (arguments
-              (bracket)
               (argument
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier))))
                 (return_type
@@ -89,10 +88,9 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (argument
                 (keyword_byref)
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
-                      (objectscript_identifier)))))
-              (bracket))
+                      (objectscript_identifier))))))
             (return_type
               (keyword_as)
               (typename
@@ -102,9 +100,8 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant)))))))))
+                  (macro
+                    (macro_constant))))))))
       (documatic_line)
       (class_statement
         (classmethod
@@ -113,10 +110,9 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
             (method_name
               (identifier))
             (arguments
-              (bracket)
               (argument
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier))))
                 (return_type
@@ -126,19 +122,18 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (argument
                 (keyword_byref)
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier)))))
               (argument
                 (method_arg
-                  (expr_atom
+                  (expression
                     (lvn
                       (objectscript_identifier))))
                 (return_type
                   (keyword_as)
                   (typename
-                    (identifier))))
-              (bracket))
+                    (identifier)))))
             (return_type
               (keyword_as)
               (typename
@@ -148,9 +143,8 @@ ClassMethod RemoveProjection(cls As %String, ByRef params, recompile as %Boolean
               (command_quit
                 (keyword_quit)
                 (expression
-                  (expr_atom
-                    (macro
-                      (macro_constant))))))))))))
+                  (macro
+                    (macro_constant)))))))))))
 
 ===
 projection - minimal
@@ -227,14 +221,11 @@ Projection P1 As dc.proj.CustomProjection(FOO=1,BAR="baz");
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (typename))))))))))
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (string_literal))))))))
 
 ===
 projection - with keyword list [ Internal ]
@@ -314,14 +305,11 @@ Projection Combo As dc.proj.CustomProjection(ENABLED=1,MODE="fast") [ Internal ]
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (string_literal)))
           (projection_keywords
             (projection_keyword)))))))
 
@@ -359,11 +347,9 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
+              (identifier)
+              (identifier)
+              (numeric_literal)))
           (projection_keywords
             (projection_keyword))))
       (class_statement
@@ -374,14 +360,11 @@ Projection C As dc.proj.PC(Name="x",Flag=0);
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename))
-                (typename_param
-                  (identifier)
-                  (numeric_literal))))))))))
+              (identifier)
+              (identifier)
+              (string_literal)
+              (identifier)
+              (numeric_literal))))))))
 
 ===
 projection - allow whitespace/newlines in params
@@ -409,14 +392,11 @@ Projection W As dc.proj.CustomProjection(
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (string_literal)))
           (projection_keywords
             (projection_keyword)))))))
 

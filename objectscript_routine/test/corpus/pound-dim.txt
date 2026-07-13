@@ -19,8 +19,7 @@ Valid Dim
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -30,21 +29,16 @@ Valid Dim
       (keyword_as)
       (variable_datatype
         (objectscript_identifier)
-        (identifier_segment_immediate))
+        (objectscript_identifier))
       (expression
-        (expr_atom
-          (class_method_call
-            (class_ref
-              (keyword_pound_pound_class)
-              (bracket)
-              (class_name
-                (identifier))
-              (bracket))
-            (method_name
-              (identifier_segment_immediate_special))
-            (method_args
-              (bracket)
-              (bracket)))))))
+        (class_method_call
+          (class_ref
+            (keyword_pound_pound_class)
+            (class_name
+              (identifier)))
+          (method_name
+            (objectscript_identifier_special))
+          (method_args)))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -52,19 +46,14 @@ Valid Dim
       (objectscript_identifier)
       (objectscript_identifier)
       (expression
-        (expr_atom
-          (class_method_call
-            (class_ref
-              (keyword_pound_pound_class)
-              (bracket)
-              (class_name
-                (identifier))
-              (bracket))
-            (method_name
-              (identifier_segment_immediate_special))
-            (method_args
-              (bracket)
-              (bracket)))))))
+        (class_method_call
+          (class_ref
+            (keyword_pound_pound_class)
+            (class_name
+              (identifier)))
+          (method_name
+            (objectscript_identifier_special))
+          (method_args)))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -75,12 +64,10 @@ Valid Dim
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (json_object_literal
-            (json_object_literal_pair
-              (json_string_literal)
-              (json_literal
-                (json_string_literal))))))))
+        (json_object_literal
+          (json_object_literal_pair
+            (json_string_literal)
+            (json_string_literal))))))
   (statement
     (pound_dim
       (keyword_dim)
@@ -91,12 +78,9 @@ Valid Dim
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (json_array_literal
-            (json_literal
-              (json_string_literal))
-            (json_literal
-              (json_string_literal))))))))
+        (json_array_literal
+          (json_string_literal)
+          (json_string_literal))))))
 
 ===
 valid
@@ -129,7 +113,7 @@ valid
       (keyword_as)
       (variable_datatype
         (objectscript_identifier)
-        (identifier_segment_immediate)))))
+        (objectscript_identifier)))))
 
 ===
 valid
@@ -147,8 +131,7 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (numeric_literal))))))
+        (numeric_literal)))))
 
 ===
 valid
@@ -166,8 +149,7 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (string_literal))))))
+        (string_literal)))))
 
 ===
 valid
@@ -185,9 +167,8 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (macro
-            (macro_constant)))))))
+        (macro
+          (macro_constant))))))
 
 ===
 valid
@@ -202,8 +183,7 @@ valid
       (keyword_dim)
       (objectscript_identifier)
       (expression
-        (expr_atom
-          (numeric_literal))))))
+        (numeric_literal)))))
 
 ===
 valid
@@ -260,7 +240,7 @@ valid
       (keyword_of)
       (variable_datatype
         (objectscript_identifier_special)
-        (identifier_segment_immediate)))))
+        (objectscript_identifier)))))
 
 ===
 valid
@@ -281,21 +261,16 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+        (system_defined_function
+          (method_arg
+            (expression
+              (numeric_literal)))
+          (method_arg
+            (expression
+              (numeric_literal)))
+          (method_arg
+            (expression
+              (numeric_literal))))))))
 
 ===
 valid
@@ -316,19 +291,14 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (class_method_call
-            (class_ref
-              (keyword_pound_pound_class)
-              (bracket)
-              (class_name
-                (identifier))
-              (bracket))
-            (method_name
-              (identifier_segment_immediate_special))
-            (method_args
-              (bracket)
-              (bracket))))))))
+        (class_method_call
+          (class_ref
+            (keyword_pound_pound_class)
+            (class_name
+              (identifier)))
+          (method_name
+            (objectscript_identifier_special))
+          (method_args))))))
 
 ===
 valid
@@ -363,8 +333,7 @@ valid
       (variable_datatype
         (objectscript_identifier_special))
       (expression
-        (expr_atom
-          (numeric_literal))))))
+        (numeric_literal)))))
 
 ===
 invalid missing variable name before As

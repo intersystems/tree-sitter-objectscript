@@ -18,31 +18,25 @@ common	;
     (command_if
       (keyword_if)
       (expression
-        (expr_atom
-          (lvn
-            (objectscript_identifier))))
+        (lvn
+          (objectscript_identifier)))
       (statement
         (command_set
           (keyword_set)
           (set_argument
             (set_target
-              (glvn
-                (lvn
-                  (objectscript_identifier))))
+              (lvn
+                (objectscript_identifier)))
             (expression
-              (expr_atom
-                (system_defined_function
-                  (built_in_func_with_pos_options
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (macro
-                            (macro_constant)))))
-                    (method_arg
-                      (expression
-                        (expr_atom
-                          (lvn
-                            (objectscript_identifier))))))))))))
+              (system_defined_function
+                (method_arg
+                  (expression
+                    (macro
+                      (macro_constant))))
+                (method_arg
+                  (expression
+                    (lvn
+                      (objectscript_identifier)))))))))
       (statement
         (command_do
           (keyword_do)
@@ -50,20 +44,15 @@ common	;
             (class_method_call
               (class_ref
                 (keyword_pound_pound_class)
-                (bracket)
                 (class_name
-                  (identifier))
-                (bracket))
+                  (identifier)))
               (method_name
-                (identifier_segment_immediate))
+                (objectscript_identifier))
               (method_args
-                (bracket)
                 (method_arg
                   (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
-                (bracket))))))
+                    (lvn
+                      (objectscript_identifier)))))))))
       (statement
         (command_quit
           (keyword_quit))))))

@@ -578,6 +578,20 @@ function build_dotted_statement_special_block_version(
   );
 }
 
+/**
+ * @param {RuleOrLiteral} commandArgument
+ * @returns {RuleOrLiteral}
+ */
+function build_function_arguments(commandArgument) {
+  return choice(
+    commandArgument,
+    seq(
+      optional(commandArgument),
+      repeat1(seq(',', optional(commandArgument))),
+    ),
+  );
+}
+
 module.exports = {
   define_grammar,
   commaSep1,
@@ -617,4 +631,5 @@ module.exports = {
   build_command_rule_argumentless,
   build_argumentful_statement,
   command_keyword_alias,
+  build_function_arguments,
 };

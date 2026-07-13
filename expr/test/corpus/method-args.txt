@@ -6,26 +6,20 @@ method arg byref indirection
 
 (source_file
   (expression
-    (expr_atom
-      (class_method_call
-        (class_ref
-          (keyword_pound_pound_class)
-          (bracket)
-          (class_name
-            (identifier))
-          (bracket))
-        (method_name
-          (identifier_segment_immediate))
-        (method_args
-          (bracket)
-          (method_arg
-            (byref_arg
-              (indirection
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))))
-          (bracket))))))
+    (class_method_call
+      (class_ref
+        (keyword_pound_pound_class)
+        (class_name
+          (identifier)))
+      (method_name
+        (objectscript_identifier))
+      (method_args
+        (method_arg
+          (byref_arg
+            (indirection
+              (expression
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ===
 by ref with instance variable
@@ -35,33 +29,25 @@ by ref with instance variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_method
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))))
-          (method_arg
-            (expression
-              (expr_atom
-                (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (string_literal))))))
-          (method_arg
-            (byref_arg
-              (instance_variable
-                (member_name
-                  (identifier_segment_immediate_special)))))
-          (bracket))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (instance_variable
+            (property_name
+              (objectscript_identifier_special)))))
+      (method_arg
+        (expression
+          (instance_variable
+            (property_name
+              (objectscript_identifier_special)))
+          (binary_operator)
+          (expression
+            (string_literal))))
+      (method_arg
+        (byref_arg
+          (instance_variable
+            (property_name
+              (objectscript_identifier_special))))))))
 
 ===
 by ref arg with system defined variable
@@ -71,17 +57,12 @@ by ref arg with system defined variable
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_method
-          (bracket)
-          (method_arg
-            (expression
-              (expr_atom
-                (instance_variable
-                  (member_name
-                    (identifier_segment_immediate_special))))))
-          (method_arg
-            (byref_arg
-              (system_defined_variable)))
-          (bracket))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (instance_variable
+            (property_name
+              (objectscript_identifier_special)))))
+      (method_arg
+        (byref_arg
+          (system_defined_variable))))))

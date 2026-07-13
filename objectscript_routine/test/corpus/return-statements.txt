@@ -20,106 +20,78 @@ Return Valid Statements
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
           (lvn
             (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+        (binary_operator)
+        (expression
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
-          (oref_chain_expr
-            (lvn
-              (objectscript_identifier))
-            (oref_chain_segment
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args
-                  (bracket)
-                  (bracket)))))))))
+        (oref_chain_expr
+          (lvn
+            (objectscript_identifier))
+          (oref_chain_segment
+            (oref_method
+              (method_name
+                (objectscript_identifier))
+              (method_args)))))))
   (statement
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
-          (numeric_literal)))))
+        (numeric_literal))))
   (statement
     (command_return
       (keyword_return)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (numeric_literal))))
       (expression
-        (expr_atom
-          (numeric_literal)))))
+        (numeric_literal))))
   (statement
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
-          (extrinsic_function
-            (line_ref
-              (objectscript_identifier))
-            (method_args
-              (bracket)
-              (method_arg
-                (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
-              (bracket)))))))
+        (extrinsic_function
+          (line_ref
+            (objectscript_identifier))
+          (method_args
+            (method_arg
+              (expression
+                (lvn
+                  (objectscript_identifier)))))))))
   (statement
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
-          (parenthetical_expression
-            (bracket)
-            (expression
-              (expr_atom
-                (numeric_literal))
-              (expr_tail
-                (binary_operator)
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))
-            (bracket))))))
+        (expression
+          (numeric_literal)
+          (binary_operator)
+          (expression
+            (numeric_literal))))))
   (statement
     (command_return
       (keyword_return)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (numeric_literal))))
       (expression
-        (expr_atom
-          (string_literal))))))
+        (string_literal)))))
 
 ===
 Invalid RETURN PostConditional
@@ -159,10 +131,7 @@ Return Json Literal Value Evaluated
     (command_return
       (keyword_return)
       (expression
-        (expr_atom
-          (json_array_literal
-            (json_objectscript_expr
-              (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+        (json_array_literal
+          (expression
+            (lvn
+              (objectscript_identifier))))))))

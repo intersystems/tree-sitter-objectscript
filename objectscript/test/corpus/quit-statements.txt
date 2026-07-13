@@ -18,14 +18,11 @@ Valid Quit Statements
       (keyword_quit)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal))))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (numeric_literal))))))
   (statement
     (command_quit
       (keyword_quit)))
@@ -33,77 +30,61 @@ Valid Quit Statements
     (command_quit
       (keyword_quit)
       (expression
-        (expr_atom
+        (lvn
+          (objectscript_identifier))
+        (binary_operator)
+        (expression
           (lvn
             (objectscript_identifier)))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier)))))
-        (expr_tail
-          (binary_operator)
-          (expression
-            (expr_atom
-              (lvn
-                (objectscript_identifier))))))))
+        (binary_operator)
+        (expression
+          (lvn
+            (objectscript_identifier))))))
   (statement
     (command_quit
       (keyword_quit)
       (expression
-        (expr_atom
-          (numeric_literal)))))
+        (numeric_literal))))
   (statement
     (command_quit
       (keyword_quit)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (numeric_literal))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (numeric_literal))))
       (expression
-        (expr_atom
-          (string_literal)))))
+        (string_literal))))
   (statement
     (command_quit
       (keyword_quit)
       (expression
-        (expr_atom
-          (oref_chain_expr
-            (lvn
-              (objectscript_identifier))
-            (oref_chain_segment
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args
-                  (bracket)
-                  (bracket)))))))))
+        (oref_chain_expr
+          (lvn
+            (objectscript_identifier))
+          (oref_chain_segment
+            (oref_method
+              (method_name
+                (objectscript_identifier))
+              (method_args)))))))
   (statement
     (command_quit
       (keyword_quit)
       (post_conditional
         (expression
-          (expr_atom
-            (lvn
-              (objectscript_identifier)))
-          (expr_tail
-            (binary_operator)
-            (expression
-              (expr_atom
-                (string_literal))))))))
+          (lvn
+            (objectscript_identifier))
+          (binary_operator)
+          (expression
+            (string_literal))))))
   (statement
     (command_do
       (keyword_do)
       (do_parameter
         (routine_tag_call
-          (line_ref
+          (method_name
             (objectscript_identifier))))))
   (statement
     (command_quit
@@ -112,17 +93,14 @@ Valid Quit Statements
     (command_quit
       (keyword_quit)
       (expression
-        (expr_atom
-          (oref_chain_expr
-            (lvn
-              (objectscript_identifier))
-            (oref_chain_segment
-              (oref_method
-                (method_name
-                  (identifier_segment_immediate))
-                (method_args
-                  (bracket)
-                  (bracket))))))))))
+        (oref_chain_expr
+          (lvn
+            (objectscript_identifier))
+          (oref_chain_segment
+            (oref_method
+              (method_name
+                (objectscript_identifier))
+              (method_args))))))))
 
 ===
 Special Var $QUIT
@@ -145,12 +123,10 @@ Special Var $QUIT
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))
+                (string_literal)))
             (write_argument
               (expression
-                (expr_atom
-                  (system_defined_variable)))))))
+                (system_defined_variable))))))
       (dotted_statement
         (statement
           (command_quit

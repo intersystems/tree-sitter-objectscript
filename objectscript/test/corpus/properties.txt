@@ -37,17 +37,13 @@ Class barricade {
           (property_keywords
             (property_keyword
               (expression
-                (expr_atom
-                  (system_defined_function
-                    (dollar_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (string_literal))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal))))))))))))
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (string_literal)))
+                  (method_arg
+                    (expression
+                      (numeric_literal)))))))))
       (class_statement
         (property
           (keyword_property)
@@ -60,13 +56,10 @@ Class barricade {
           (property_keywords
             (property_keyword
               (expression
-                (expr_atom
-                  (system_defined_function
-                    (dollar_function
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal))))))))))))
+                (system_defined_function
+                  (method_arg
+                    (expression
+                      (numeric_literal)))))))))
       (documatic_line)
       (class_statement
         (property
@@ -80,11 +73,10 @@ Class barricade {
           (property_keywords
             (property_keyword
               (expression
-                (expr_atom
-                  (relative_dot_parameter
-                    (oref_parameter
-                      (member_name
-                        (identifier_segment_immediate))))))))))
+                (relative_dot_parameter
+                  (oref_parameter
+                    (parameter_name
+                      (objectscript_identifier)))))))))
       (documatic_line)
       (class_statement
         (property
@@ -98,14 +90,11 @@ Class barricade {
           (property_keywords
             (property_keyword
               (expression
-                (expr_atom
-                  (relative_dot_method
-                    (oref_method
-                      (method_name
-                        (identifier_segment_immediate))
-                      (method_args
-                        (bracket)
-                        (bracket))))))))))
+                (relative_dot_method
+                  (oref_method
+                    (method_name
+                      (objectscript_identifier))
+                    (method_args))))))))
       (class_statement
         (property
           (keyword_property)
@@ -119,38 +108,32 @@ Class barricade {
             (property_keyword
               (rhs_sql_compute_code
                 (expression
-                  (expr_atom
-                    (sql_field_reference
-                      (sql_field_identifier)))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (string_literal))))
-                  (expr_tail
-                    (binary_operator)
-                    (expression
-                      (expr_atom
-                        (sql_field_reference
-                          (sql_field_identifier))))))))
-            (property_keyword))))
-      (class_statement
-        (property
-          (keyword_property)
-          (property_name
-            (identifier))
-          (return_type
-            (keyword_as)
-            (typename
-              (identifier)))
-          (property_keywords
-            (property_keyword
-              (rhs_sql_compute_code
-                (expression
-                  (expr_atom
+                  (sql_field_reference
+                    (sql_field_identifier))
+                  (binary_operator)
+                  (expression
+                    (string_literal))
+                  (binary_operator)
+                  (expression
                     (sql_field_reference
                       (sql_field_identifier))))))
             (property_keyword))))
+      (class_statement
+        (property
+          (keyword_property)
+          (property_name
+            (identifier))
+          (return_type
+            (keyword_as)
+            (typename
+              (identifier)))
+          (property_keywords
+            (property_keyword
+              (rhs_sql_compute_code
+                (expression
+                  (sql_field_reference
+                    (sql_field_identifier)))))
+            (property_keyword))))
       (documatic_line)
       (class_statement
         (property
@@ -160,11 +143,9 @@ Class barricade {
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (identifier)
+              (identifier)
+              (string_literal)))
           (property_keywords
             (property_keyword))))
       (class_statement
@@ -180,17 +161,13 @@ Class barricade {
             (property_keyword
               (rhs_sql_compute_code
                 (expression
-                  (expr_atom
-                    (system_defined_function
-                      (dollar_function
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (system_defined_variable))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (numeric_literal))))))))))
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (system_defined_variable)))
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))
             (property_keyword)
             (property_keyword
               (typename)
@@ -250,11 +227,9 @@ Class Test {
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename))))))))))
+              (identifier)
+              (identifier)
+              (string_literal))))))))
 
 ===========================
 Property with keyword_list
@@ -312,11 +287,9 @@ Class Test {
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (identifier)
+              (identifier)
+              (string_literal)))
           (property_keywords
             (property_keyword)))))))
 
@@ -347,6 +320,7 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
+              (keyword_of)
               (identifier))))))))
 
 ==========================================
@@ -377,11 +351,10 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (keyword_of)
+              (identifier)
+              (identifier)
+              (string_literal)))
           (property_keywords
             (property_keyword
               (typename))
@@ -414,6 +387,7 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
+              (keyword_of)
               (identifier))))))))
 
 =========================================================
@@ -444,14 +418,12 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
+              (keyword_of)
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (numeric_literal)))
           (property_keywords
             (property_keyword)
             (property_keyword
@@ -575,11 +547,10 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (keyword_of)
+              (identifier)
+              (identifier)
+              (string_literal)))
           (property_keywords
             (property_keyword
               (typename))
@@ -612,6 +583,7 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
+              (keyword_of)
               (identifier))))))))
 
 ======================================================
@@ -646,14 +618,12 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
+              (keyword_of)
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (numeric_literal)))
           (property_keywords
             (property_keyword)
             (property_keyword)
@@ -661,8 +631,7 @@ Class Test {
             (property_keyword
               (rhs_sql_compute_code
                 (expression
-                  (expr_atom
-                    (numeric_literal)))))
+                  (numeric_literal))))
             (property_keyword
               (typename)
               (typename))))))))
@@ -726,13 +695,10 @@ Class Test {
             (property_keyword)
             (property_keyword
               (expression
-                (expr_atom
-                  (numeric_literal))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))
+                (numeric_literal)
+                (binary_operator)
+                (expression
+                  (numeric_literal))))
             (property_keyword)
             (property_keyword)
             (property_keyword)
@@ -784,17 +750,13 @@ Class Test {
             (property_keyword
               (rhs_sql_compute_code
                 (expression
-                  (expr_atom
-                    (system_defined_function
-                      (dollar_function
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (system_defined_variable))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (numeric_literal))))))))))
+                  (system_defined_function
+                    (method_arg
+                      (expression
+                        (system_defined_variable)))
+                    (method_arg
+                      (expression
+                        (numeric_literal)))))))
             (property_keyword)))))))
 
 ===================================

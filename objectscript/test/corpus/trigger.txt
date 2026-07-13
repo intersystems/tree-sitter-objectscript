@@ -21,44 +21,41 @@ Trigger LogEvent [ Event = INSERT, Time = AFTER ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename)))
-            (statement
-              (command_new
-                (keyword_new)
-                (command_new_argument
-                  (command_new_item
-                    (lvn
-                      (objectscript_identifier))))))
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (sql_field_reference
-                        (sql_field_identifier)))))))
-            (statement
-              (embedded_sql
-                (embedded_sql_amp
-                  (keyword_embedded_sql_amp)
-                  (paren_fenced_text))))))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (statement
+            (command_new
+              (keyword_new)
+              (command_new_argument
+                (command_new_item
+                  (lvn
+                    (objectscript_identifier))))))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (lvn
+                    (objectscript_identifier)))
+                (expression
+                  (sql_field_reference
+                    (sql_field_identifier))))))
+          (statement
+            (embedded_sql
+              (embedded_sql_amp
+                (keyword_embedded_sql_amp)
+                (paren_fenced_text)))))))))
 
 ===
 class: BEFORE UPDATE trigger
@@ -81,31 +78,28 @@ Trigger TBefore [ Event = UPDATE, Time = BEFORE ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename)))
-            (statement
-              (command_set
-                (keyword_set)
-                (set_argument
-                  (set_target
-                    (glvn
-                      (lvn
-                        (objectscript_identifier))))
-                  (expression
-                    (expr_atom
-                      (numeric_literal))))))))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (statement
+            (command_set
+              (keyword_set)
+              (set_argument
+                (set_target
+                  (lvn
+                    (objectscript_identifier)))
+                (expression
+                  (numeric_literal))))))))))
 
 ===
 class: multiple events using slash form
@@ -128,21 +122,20 @@ Trigger TAllEvents [ Event = INSERT/UPDATE/DELETE, Time = AFTER ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename)))
-            (line_comment_1)))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (line_comment_1))))))
 
 ===
 class: statement-level trigger (Foreach=statement)
@@ -165,23 +158,22 @@ Trigger TStatement [ Event = DELETE, Foreach = statement, Time = AFTER ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename))
-              (trigger_keyword
-                (typename)))
-            (line_comment_1)))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (trigger_keyword
+            (typename))
+          (line_comment_1))))))
 
 ===
 class: unified trigger (Foreach=row/object)
@@ -204,23 +196,22 @@ Trigger TUnified [ Event = UPDATE, Foreach = row/object, Time = AFTER ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename))
-              (trigger_keyword
-                (typename)))
-            (line_comment_1)))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (trigger_keyword
+            (typename))
+          (line_comment_1))))))
 
 ===
 class: transition tables (OldTable/NewTable) with underscores
@@ -243,25 +234,24 @@ Trigger TTransitionTables [ Event = UPDATE, OldTable = old_vals_tbl, NewTable = 
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (query_name))
-              (trigger_keyword
-                (query_name))
-              (trigger_keyword
-                (typename)))
-            (line_comment_1)))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (query_name))
+          (trigger_keyword
+            (query_name))
+          (trigger_keyword
+            (typename))
+          (line_comment_1))))))
 
 ===
 class: CodeMode objectgenerator
@@ -284,21 +274,20 @@ Trigger TGen [ Event = INSERT, CodeMode = objectgenerator ]
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (trigger
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (core_trigger
-            (trigger_keywords
-              (trigger_keyword
-                (trigger_event_value
-                  (typename)))
-              (trigger_keyword
-                (typename)))
-            (line_comment_1)))))))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (trigger_keyword
+            (typename))
+          (line_comment_1))))))
 
 ===
 invalid class: bad Time value

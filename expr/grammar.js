@@ -6,10 +6,120 @@
 
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
+const system_defined_variables = [
+  /\$ZW/i,
+  /\$mviostatus/i,
+  /\$mvioerror/i,
+  /\$MVLOCKLIST/i,
+  /\$D(EVICE)?/i, // $DEVICE
+  /\$EC(ODE)?/i, // $ECODE
+  /\$edetail/i,
+  /\$ES(TACK)?/i, // $ESTACK
+  /\$ET(RAP)?/i, // $ETRAP
+  /\$HALT/i, // $HALT
+  /\$H(OROLOG)?/i, // $HOROLOG
+  /\$I(O)?/i, // $IO
+  /\$J(OB)?/i, // $JOB
+  /\$K(EY)?/i, // $KEY
+  /\$NAMESPACE/i, // $NAMESPACE
+  /\$P(RINCIPAL)?/i, // $P[RINCIPAL] conflicts with $P[IECE]
+  /\$Q(UIT)?/i, // $QUIT
+  /\$ROLES/i, // $ROLES
+  /\$ST(ACK)?/i, // $STACK conflits with $STACK()
+  /\$S(TORAGE)?/i, // $S[TORAGE] conflicts with $S[ELECT]
+  /\$SY(STEM)?/i, // $SYSTEM
+  /\$T(EST)?/i, // $TEST
+  /\$THIS/i, // $THIS
+  /\$mvam/i,
+  /\$MVANS/i,
+  /\$MVCOMMAND/i,
+  /\$MVCONV/i,
+  /\$MVDATE/i,
+  /\$MVDAY/i,
+  /\$MVDICT/i,
+  /\$MVERRORS/i,
+  /\$MVFILENAME/i,
+  /\$MVFM/i,
+  /\$MVFOOTER/i,
+  /\$MVFORMAT/i,
+  /\$MVHEADER/i,
+  /\$MVID/i,
+  /\$MVLEVEL/i,
+  /\$MVMONTH/i,
+  /\$MVMORESUBVALUES/i,
+  /\$MVMOREVALUES/i,
+  /\$MVNB/i,
+  /\$MVND/i,
+  /\$MVNI/i,
+  /\$MVNS/i,
+  /\$MVNV/i,
+  /\$MVOPTIONS/i,
+  /\$MVPROCNAME/i,
+  /\$MVPROCERRORS/i,
+  /\$MVPARASENTENCE/i,
+  /\$MVPROCPIB/i,
+  /\$MVPROCPIBOFF/i,
+  /\$MVPROCPOB/i,
+  /\$MVPROCSIB/i,
+  /\$MVPROCSIBOFF/i,
+  /\$MVPROCSOB/i,
+  /\$MVRECORD/i,
+  /\$MVSELECTED/i,
+  /\$MVSENTENCE/i,
+  /\$MVSM/i,
+  /\$MVSTDFIL/i,
+  /\$MVSVM/i,
+  /\$MVSYSRETCODE/i,
+  /\$MVTIME/i,
+  /\$MVTM/i,
+  /\$MVTTY/i,
+  /\$MVUSERRETCODE/i,
+  /\$MVVM/i,
+  /\$MVYEAR/i,
+  /\$TID/i,
+  /\$TRESTART/i,
+  /\$TRS/i,
+  /\$ZL/i,
+  /\$ZLS/i,
+  /\$ZNODE/i,
+  /\$ZPIECE/i,
+  /\$THROWOBJ/i, // $THROWOBJ
+  /\$TL(EVEL)?/i, // $TLEVEL
+  /\$USERNAME/i, // $USERNAME
+  /\$X/i, // $X
+  /\$Y/i, // $Y
+  /\$ZA/i, // $ZA
+  /\$ZB/i, // $ZB
+  /\$ZC(HILD)?/i, // $ZCHILD
+  /\$ZEOF/i, // $ZEOF
+  /\$ZEOS/i, // $ZEOS
+  /\$ZE(RROR)?/i, // $ZERROR
+  /\$ZH(OROLOG)?/i, // $ZHOROLOG
+  /\$ZI(O)?/i, // $ZIO
+  /\$ZJ(OB)?/i, // $ZJOB
+  /\$ZM(ODE)?/i, // $ZMODE
+  /\$ZN(AME)?/i, // $ZNAME
+  /\$ZNSPACE/i, // $ZNSPACE
+  /\$ZO(RDER)?/i, // $ZORDER
+  /\$ZP(ARENT)?/i, // $ZPARENT
+  /\$ZPI/i, // $ZPI
+  /\$ZPOS(ITION)?/i, // $ZPOSITION
+  /\$ZR(EFERENCE)?/i, // $ZREFERENCE
+  /\$ZS(TORAGE)?/i, // $ZSTORAGE
+  /\$ZTIMESTAMP/i,
+  /\$ZTS/i,
+  /\$ZTIMEZONE/i,
+  /\$ZTZ/i,
+  /\$ZT(RAP)?/i, // $ZTRAP
+  /\$ZV(ERSION)?/i, // $ZVERSION
+];
 
+/// <reference types="tree-sitter-cli/dsl" />
+// @ts-check
 const {
   commaSep1,
   sep1ImmediateOptional,
+  build_function_arguments,
 } = require('../common/define_grammar');
 
 /**
@@ -18,20 +128,6 @@ const {
  */
 function build_relative_dot_fn(commandArgument) {
   return seq(token('..'), commandArgument);
-}
-
-/**
- * @param {RuleOrLiteral} commandArgument
- * @returns {RuleOrLiteral}
- */
-function build_function_arguments(commandArgument) {
-  return choice(
-    commandArgument,
-    seq(
-      optional(commandArgument),
-      repeat1(seq(',', optional(commandArgument))),
-    ),
-  );
 }
 
 // Pattern token fragments. We keep `pattern_expression` as a single token
@@ -59,18 +155,18 @@ module.exports = grammar({
   name: 'objectscript_expr',
   precedences: ($) => [
     [$.oref_method, $.oref_property],
-    [$.oref_chain_expr, $.expr_atom],
+    [$.oref_chain_expr, $._expr_atom],
     [$.class_method_call, $.oref_method],
   ],
   conflicts: (_) => [],
   inline: (_) => [],
   rules: {
     source_file: ($) => $.expression, // expr grammar is for expressions only
-    expression: ($) => prec.left(seq($.expr_atom, repeat($.expr_tail))),
-    expr_atom: ($) =>
+    expression: ($) => prec.left(seq($._expr_atom, repeat($._expr_tail))),
+    _expr_atom: ($) =>
       choice(
         $.json_object_literal,
-        $.parenthetical_expression,
+        $._parenthetical_expression,
         $.macro,
 
         // Literals
@@ -106,15 +202,14 @@ module.exports = grammar({
         $.indirection,
       ),
 
-    expr_tail: ($) =>
+    _expr_tail: ($) =>
       prec.left(
         1,
         choice(seq($.binary_operator, $.expression), $.pattern_operator),
       ),
 
-    parenthetical_expression: ($) =>
-      seq(alias('(', $.bracket), $.expression, alias(')', $.bracket)),
-    unary_operator: (_) => choice('+', '-', '\''),
+    _parenthetical_expression: ($) => seq('(', $.expression, ')'),
+    _unary_operator: (_) => choice('+', '-', '\''),
 
     // NOTE: ObjectScript operators have the same precendence level (left-associative)
     binary_operator: (_) =>
@@ -165,31 +260,32 @@ module.exports = grammar({
         seq(
           $.class_ref,
           token.immediate('.'),
-          alias($.member_name, $.method_name),
+          alias($._member_name, $.method_name),
           $.method_args,
         ),
       ),
     class_ref: ($) =>
       seq(
         $.keyword_pound_pound_class,
-        alias(token.immediate('('), $.bracket),
-        alias($.quote_permitting_identifier, $.class_name),
-        alias(token.immediate(')'), $.bracket),
+        token.immediate('('),
+        alias($._quote_permitting_identifier, $.class_name),
+        token.immediate(')'),
         optional(
           // Class cast syntax
           choice(
-            $.parenthetical_expression,
+            $._parenthetical_expression,
             $.lvn,
-            alias(/\$THIS/i, $.system_defined_function),
+            alias(
+              token(choice(/\$THIS/i, /##this/i)),
+              $.system_defined_function,
+            ),
           ),
         ),
       ),
 
-    keyword_pound_pound_class: (_) => /##CLASS/i,
-    superclass_method_call: ($) =>
-      seq($.keyword_pound_pound_super, $.method_args),
-    keyword_pound_pound_super: (_) => /##SUPER/i,
-
+    keyword_pound_pound_class: (_) => token(/##CLASS/i),
+    keyword_super: (_) => /##SUPER/i,
+    superclass_method_call: ($) => seq($.keyword_super, $.method_args),
     extrinsic_function: ($) =>
       // $$tag^rtn or $$@var
       prec.left(seq('$$', $._extrinsic_reference, optional($.method_args))),
@@ -207,7 +303,7 @@ module.exports = grammar({
     _extrinsic_reference: ($) =>
       choice(
         alias($._extrinsic_named_ref, $.line_ref),
-        alias($.routine_ref, $.line_ref),
+        $.routine_ref,
         alias($._extrinsic_indirect_ref, $.line_ref),
       ),
 
@@ -220,7 +316,7 @@ module.exports = grammar({
           choice($.routine_ref, seq($.label_offset, optional($.routine_ref))),
         ),
         // routine only (^routine)
-        seq($.routine_ref),
+        $.routine_ref,
         // Full indirection, optionally followed by ^routine or ^@(...)
         prec.right(seq($.indirection, optional($.routine_ref))),
       ),
@@ -229,28 +325,24 @@ module.exports = grammar({
       prec.right(
         seq(
           token.immediate('@'),
-          $.parenthetical_expression,
+          $._parenthetical_expression,
           optional(seq(token.immediate('@'), $.method_args)),
         ),
       ),
 
-    dollarsf: ($) =>
+    _dollarsf: ($) =>
       prec.right(
         seq(
           token(seq(/\$SYSTEM/i, token.immediate('.'))),
-          $._base_variable_immediate,
+          alias($._base_variable_immediate, $.class_name),
           token.immediate('.'),
-          $._base_variable_immediate,
+          alias($._base_variable_immediate, $.method_name),
           choice($.method_args, repeat1($.oref_chain_segment)),
         ),
       ),
 
     method_args: ($) =>
-      seq(
-        alias(token.immediate('('), $.bracket),
-        optional($._method_arg_list),
-        alias(')', $.bracket),
-      ),
+      seq(token.immediate('('), optional($._method_arg_list), ')'),
     _method_arg_list: ($) => build_function_arguments($.method_arg),
     method_arg: ($) => choice($.expression, $.byref_arg, $.variadic_arg),
     byref_arg: ($) =>
@@ -266,15 +358,19 @@ module.exports = grammar({
     variadic_arg: ($) =>
       seq(choice($.lvn, $.json_object_literal), token.immediate('...')),
 
-    glvn: ($) => choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $.macro)),
+    _glvn: ($) =>
+      choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $.macro)),
     gvn: ($) =>
       prec.right(
         seq(
           '^',
           optional($._global_reference_prefix),
           optional(
-            token.immediate(
-              /(?:\$\$\$)?[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+            alias(
+              token.immediate(
+                /(?:\$\$\$)?[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
+              ),
+              $.identifier,
             ),
           ),
           optional($.method_args),
@@ -323,10 +419,7 @@ module.exports = grammar({
         seq(
           '^$',
           optional($._global_reference_prefix),
-          choice(
-            $.identifier_segment_immediate,
-            $.identifier_segment_immediate_special,
-          ),
+          $._base_variable_immediate,
           optional($.method_args),
         ),
       ),
@@ -397,7 +490,7 @@ module.exports = grammar({
             $.system_defined_function,
             $.system_defined_variable,
             $.extrinsic_function,
-            $.parenthetical_expression,
+            $._parenthetical_expression,
             $.json_object_literal,
             $.json_array_literal,
             $.class_ref,
@@ -414,30 +507,28 @@ module.exports = grammar({
         choice($.oref_property, $.oref_method, $.oref_parameter),
       ),
 
-    oref_method: ($) => seq(alias($.member_name, $.method_name), $.method_args),
+    oref_method: ($) =>
+      seq(alias($._member_name, $.method_name), $.method_args),
     oref_property: ($) =>
       // NOTE: Since a multidimensional property is indistinguishable from a method
       //       call (unless it's byref or has variadic args) we'll almost never match
       //       the subscripts clause.
-      alias($.member_name, $.property_name),
+      alias($._member_name, $.property_name),
 
     instance_variable: ($) =>
       prec.right(
-        seq(token(/[irms]\%/i), $.member_name, optional($.method_args)),
-      ),
-    member_name: ($) =>
-      choice(
         seq(
-          token.immediate('"'),
-          repeat(choice(/[^"]+/, token.immediate('""'))),
-          '"',
-        ),
-        choice(
-          $.identifier_segment_immediate,
-          $.identifier_segment_immediate_special,
+          token(/[irms]\%/i),
+          alias($._member_name, $.property_name),
+          optional($.method_args),
         ),
       ),
-    oref_parameter: ($) => seq(token.immediate('#'), $.member_name),
+    _quoted_member_name: ($) =>
+      seq(token.immediate('"'), alias(/((?:""|[^"])*)/, $.identifier), '"'),
+    _member_name: ($) =>
+      choice($._quoted_member_name, $._base_variable_immediate),
+    oref_parameter: ($) =>
+      seq(token.immediate('#'), alias($._member_name, $.parameter_name)),
     relative_dot_method: ($) => build_relative_dot_fn($.oref_method),
     relative_dot_property: ($) => build_relative_dot_fn($.oref_property),
     relative_dot_parameter: ($) => build_relative_dot_fn($.oref_parameter),
@@ -447,134 +538,23 @@ module.exports = grammar({
     roles_token: (_) => token(/\$ROLES/i),
 
     system_defined_variable: (_) =>
-      prec(
-        -1,
-        token(
-          choice(
-            /\$ZW/i,
-            /\$mviostatus/i,
-            /\$mvioerror/i,
-            /\$MVLOCKLIST/i,
-            /\$D(EVICE)?/i, // $DEVICE
-            /\$EC(ODE)?/i, // $ECODE
-            /\$edetail/i,
-            /\$ES(TACK)?/i, // $ESTACK
-            /\$ET(RAP)?/i, // $ETRAP
-            /\$HALT/i, // $HALT
-            /\$H(OROLOG)?/i, // $HOROLOG
-            /\$I(O)?/i, // $IO
-            /\$J(OB)?/i, // $JOB
-            /\$K(EY)?/i, // $KEY
-            /\$NAMESPACE/i, // $NAMESPACE
-            /\$P(RINCIPAL)?/i, // $P[RINCIPAL] conflicts with $P[IECE]
-            /\$Q(UIT)?/i, // $QUIT
-            /\$ROLES/i, // $ROLES
-            /\$ST(ACK)?/i, // $STACK conflits with $STACK()
-            /\$S(TORAGE)?/i, // $S[TORAGE] conflicts with $S[ELECT]
-            /\$SY(STEM)?/i, // $SYSTEM
-            /\$T(EST)?/i, // $TEST
-            /\$THIS/i, // $THIS
-            /\$mvam/i,
-            /\$MVANS/i,
-            /\$MVCOMMAND/i,
-            /\$MVCONV/i,
-            /\$MVDATE/i,
-            /\$MVDAY/i,
-            /\$MVDICT/i,
-            /\$MVERRORS/i,
-            /\$MVFILENAME/i,
-            /\$MVFM/i,
-            /\$MVFOOTER/i,
-            /\$MVFORMAT/i,
-            /\$MVHEADER/i,
-            /\$MVID/i,
-            /\$MVLEVEL/i,
-            /\$MVMONTH/i,
-            /\$MVMORESUBVALUES/i,
-            /\$MVMOREVALUES/i,
-            /\$MVNB/i,
-            /\$MVND/i,
-            /\$MVNI/i,
-            /\$MVNS/i,
-            /\$MVNV/i,
-            /\$MVOPTIONS/i,
-            /\$MVPROCNAME/i,
-            /\$MVPROCERRORS/i,
-            /\$MVPARASENTENCE/i,
-            /\$MVPROCPIB/i,
-            /\$MVPROCPIBOFF/i,
-            /\$MVPROCPOB/i,
-            /\$MVPROCSIB/i,
-            /\$MVPROCSIBOFF/i,
-            /\$MVPROCSOB/i,
-            /\$MVRECORD/i,
-            /\$MVSELECTED/i,
-            /\$MVSENTENCE/i,
-            /\$MVSM/i,
-            /\$MVSTDFIL/i,
-            /\$MVSVM/i,
-            /\$MVSYSRETCODE/i,
-            /\$MVTIME/i,
-            /\$MVTM/i,
-            /\$MVTTY/i,
-            /\$MVUSERRETCODE/i,
-            /\$MVVM/i,
-            /\$MVYEAR/i,
-            /\$TID/i,
-            /\$TRESTART/i,
-            /\$TRS/i,
-            /\$ZL/i,
-            /\$ZLS/i,
-            /\$ZNODE/i,
-            /\$ZPIECE/i,
-            /\$THROWOBJ/i, // $THROWOBJ
-            /\$TL(EVEL)?/i, // $TLEVEL
-            /\$USERNAME/i, // $USERNAME
-            /\$X/i, // $X
-            /\$Y/i, // $Y
-            /\$ZA/i, // $ZA
-            /\$ZB/i, // $ZB
-            /\$ZC(HILD)?/i, // $ZCHILD
-            /\$ZEOF/i, // $ZEOF
-            /\$ZEOS/i, // $ZEOS
-            /\$ZE(RROR)?/i, // $ZERROR
-            /\$ZH(OROLOG)?/i, // $ZHOROLOG
-            /\$ZI(O)?/i, // $ZIO
-            /\$ZJ(OB)?/i, // $ZJOB
-            /\$ZM(ODE)?/i, // $ZMODE
-            /\$ZN(AME)?/i, // $ZNAME
-            /\$ZNSPACE/i, // $ZNSPACE
-            /\$ZO(RDER)?/i, // $ZORDER
-            /\$ZP(ARENT)?/i, // $ZPARENT
-            /\$ZPI/i, // $ZPI
-            /\$ZPOS(ITION)?/i, // $ZPOSITION
-            /\$ZR(EFERENCE)?/i, // $ZREFERENCE
-            /\$ZS(TORAGE)?/i, // $ZSTORAGE
-            /\$ZTIMESTAMP/i,
-            /\$ZTS/i,
-            /\$ZTIMEZONE/i,
-            /\$ZTZ/i,
-            /\$ZT(RAP)?/i, // $ZTRAP
-            /\$ZV(ERSION)?/i, // $ZVERSION
-          ),
-        ),
-      ),
+      prec(-1, token(choice(...system_defined_variables))),
     system_defined_function: ($) =>
       choice(
-        // Keep specialized rules before generic dollar_function to avoid conflicts.
-        $.dollar_list,
-        $.built_in_func_with_pos_options,
-        $.dollar_case,
-        $.dollar_select,
-        $.dollar_bitlogic,
-        $.dollar_method,
-        $.dollar_text,
-        $.dollarsf,
-        $.dollar_function,
-        $.dollar_mv,
+        // Keep specialized rules before generic _dollar_function to avoid conflicts.
+        $._dollar_list,
+        $._built_in_func_with_pos_options,
+        $._dollar_case,
+        $._dollar_select,
+        $._dollar_bitlogic,
+        $._dollar_method,
+        $._dollar_text,
+        $._dollarsf,
+        $._dollar_function,
+        $._dollar_mv,
       ),
 
-    dollar_text: ($) =>
+    _dollar_text: ($) =>
       seq(
         // $T or $TEXT, followed by '(' with no space
         token(seq(/\$T(EXT)?/i, token.immediate('('))),
@@ -585,40 +565,35 @@ module.exports = grammar({
     _text_line_ref: ($) =>
       choice(
         prec(1, $.line_ref),
-        alias($._base_variable, $.line_ref),
-        alias($._numeric_line_ref, $.line_ref),
+        alias($._base_variable, $.method_name),
+        $.numeric_literal,
       ),
-    _numeric_line_ref: ($) => $.numeric_literal,
-    dollar_bitlogic: ($) =>
+    _dollar_bitlogic: ($) =>
       seq(
         /\$BITLOGIC/i,
         token.immediate('('),
-        $.bitlogic_expression,
+        $._bitlogic_expression,
         optional(seq(',', $.expression)), // length/flags arg
         ')',
       ),
 
-    bitlogic_expression: ($) =>
+    _bitlogic_expression: ($) =>
       prec.left(
         seq(
           optional('~'),
-          $.bitlogic_atom,
-          repeat(seq(choice('&', '|', '^'), optional('~'), $.bitlogic_atom)),
+          $._bitlogic_atom,
+          repeat(seq(choice('&', '|', '^'), optional('~'), $._bitlogic_atom)),
         ),
       ),
 
-    bitlogic_atom: ($) =>
+    _bitlogic_atom: ($) =>
       choice(
         // nested bitlogic parens
-        seq(
-          alias(token.immediate('('), $.bracket),
-          $.bitlogic_expression,
-          alias(')', $.bracket),
-        ),
+        seq(token.immediate('('), $._bitlogic_expression, ')'),
         // reuse existing atoms (functions, vars, calls, strings, numbers, etc.)
-        $.expr_atom,
+        $._expr_atom,
       ),
-    dollar_mv: ($) =>
+    _dollar_mv: ($) =>
       seq(
         token(seq(/\$MV(AT)?/i, token.immediate('('))),
         optional(
@@ -627,7 +602,7 @@ module.exports = grammar({
         ')',
       ),
 
-    dollar_function: ($) =>
+    _dollar_function: ($) =>
       seq(
         token(
           seq(
@@ -668,7 +643,8 @@ module.exports = grammar({
               /\$zobjexport/i,
               /\$BIT/i,
               /\$D(ATA)?/i,
-              choice(/\$LISTSAME/i, /\$LS/i),
+              /\$LISTSAME/i,
+              /\$LS/i,
               /\$MATCH/i,
               /\$NORMALIZE/i,
               /\$QS(UBSCRIPT)?/i,
@@ -774,8 +750,10 @@ module.exports = grammar({
               /\$DOUBLE/i,
               /\$ISO(BJECT)?/i,
               /\$ISVECTOR/i,
-              choice(/\$LISTLENGTH/i, /\$LL/i),
-              choice(/\$LISTVALID/i, /\$LV/i),
+              /\$LISTLENGTH/i,
+              /\$LL/i,
+              /\$LISTVALID/i,
+              /\$LV/i,
               /\$QL(ENGTH)?/i,
               /\$RE(VERSE)?/i,
               /\$T(EXT)?/i,
@@ -815,8 +793,10 @@ module.exports = grammar({
               /\$J(USTIFY)?/i,
               /\$NC(ONVERT)?/i,
               /\$VE(CTOR)?/i,
-              choice(/\$VECTORDEFINED/i, /\$VD/i),
-              choice(/\$VECTOROP/i, /\$VOP/i),
+              /\$VECTORDEFINED/i,
+              /\$VD/i,
+              /\$VECTOROP/i,
+              /\$VOP/i,
               /\$TR(ANSLATE)?/i,
               /\$ZCRC/i,
               /\$ZPOSITION/i,
@@ -826,7 +806,8 @@ module.exports = grammar({
               /\$ISVALIDDOUBLE/i,
               /\$ISVALIDNUM/i,
               /\$LISTNEXT/i,
-              choice(/\$LISTFIND/i, /\$LF/i),
+              /\$LISTFIND/i,
+              /\$LF/i,
               /\$ZB(OOLEAN)?/i,
               /\$LOCATE/i,
               /\$PREPROCESS/i,
@@ -840,7 +821,8 @@ module.exports = grammar({
               /\$SEQ(UENCE)?/i,
               /\$REPLACE/i,
               /\$SC(ONVERT)?/i,
-              choice(/\$ZCONVERT/i, /\$ZCVT/i),
+              /\$ZCONVERT/i,
+              /\$ZCVT/i,
               /\$ZSTRIP/i,
               /\$SORTBEGIN/i,
               /\$SORTEND/i,
@@ -862,7 +844,7 @@ module.exports = grammar({
         optional($._method_arg_list),
         ')',
       ),
-    dollar_select: ($) =>
+    _dollar_select: ($) =>
       prec.right(
         seq(
           token(seq(/\$S(ELECT)?/i, token.immediate('('))),
@@ -870,7 +852,7 @@ module.exports = grammar({
           ')',
         ),
       ),
-    dollar_case: ($) =>
+    _dollar_case: ($) =>
       seq(
         token(seq(/\$CASE/i, token.immediate('('))),
         $.expression,
@@ -887,7 +869,7 @@ module.exports = grammar({
       build_function_arguments(
         choice($.method_arg, $.dollar_func_pos, $.dollar_arg_pair),
       ),
-    dollar_list: ($) =>
+    _dollar_list: ($) =>
       seq(
         token(
           seq(
@@ -898,7 +880,7 @@ module.exports = grammar({
         $._dollar_list_args,
         ')',
       ),
-    built_in_func_with_pos_options: ($) =>
+    _built_in_func_with_pos_options: ($) =>
       seq(
         token(
           seq(
@@ -931,17 +913,18 @@ module.exports = grammar({
           ),
         ),
       ),
-    dollar_method: ($) =>
+
+    _dollar_method: ($) =>
       seq(
         token(choice(/\$(ZOBJ)?METHOD/i, /\$(ZOBJ)?CLASSMETHOD/i)),
-        alias(token.immediate('('), $.bracket),
+        token.immediate('('),
         optional($._method_arg_list),
-        alias(')', $.bracket),
+        ')',
       ),
     dollar_arg_pair: ($) => seq($.expression, ':', $.expression),
     dollar_func_pos: ($) =>
       seq('*', optional(seq(choice('-', '+'), $.expression))),
-    unary_expression: ($) => seq($.unary_operator, $.expression),
+    unary_expression: ($) => seq($._unary_operator, $.expression),
 
     indirection: ($) =>
       prec.right(
@@ -962,8 +945,6 @@ module.exports = grammar({
           repeat($.oref_chain_segment),
         ),
       ),
-    // rules that can be reused:
-    // dotted_identifier_relaxed_token: (_) => token(DOTTED_ID_RELAXED), // routines only
     objectscript_identifier_special: (_) => /\%[A-Za-z0-9]*/,
     identifier_segment_immediate_special: (_) =>
       token.immediate(/\%[A-Za-z0-9]*/),
@@ -972,8 +953,11 @@ module.exports = grammar({
     objectscript_identifier: (_) => /[A-Za-z][A-Za-z0-9]*/,
     _base_variable_immediate: ($) =>
       choice(
-        $.identifier_segment_immediate_special,
-        $.identifier_segment_immediate,
+        alias(
+          $.identifier_segment_immediate_special,
+          $.objectscript_identifier_special,
+        ),
+        alias($.identifier_segment_immediate, $.objectscript_identifier),
       ),
     _base_variable: ($) =>
       choice($.objectscript_identifier, $.objectscript_identifier_special),
@@ -1004,14 +988,13 @@ module.exports = grammar({
       seq(
         $.json_string_literal,
         ':',
-        choice($.json_literal, $.json_objectscript_expr),
+        choice($._json_literal, $._parenthetical_expression),
       ),
-    json_objectscript_expr: ($) => seq('(', $.expression, ')'),
-    json_literal: ($) =>
+    _json_literal: ($) =>
       choice(
         $.json_object_literal,
         $.json_string_literal,
-        $.json_number_literal,
+        $.numeric_literal,
         $.json_array_literal,
         $.json_boolean_literal,
         $.json_null_literal,
@@ -1019,7 +1002,9 @@ module.exports = grammar({
     json_array_literal: ($) =>
       seq(
         '[',
-        optional(commaSep1(choice($.json_literal, $.json_objectscript_expr))),
+        optional(
+          commaSep1(choice($._json_literal, $._parenthetical_expression)),
+        ),
         ']',
       ),
     json_string_literal: (_) =>
@@ -1030,12 +1015,14 @@ module.exports = grammar({
           '"',
         ),
       ),
-    json_number_literal: (_) => token(/-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/),
     json_boolean_literal: (_) => choice('true', 'false'),
     json_null_literal: (_) => 'null',
     identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z0-9][A-Za-z0-9]*)*/,
     _expression_list: ($) => commaSep1($.expression),
-    quote_permitting_identifier: ($) =>
-      choice(/"((?:""|[^"])*)"/, $.identifier),
+    _quote_permitting_identifier: ($) =>
+      choice(
+        seq('"', alias(/((?:""|[^"])*)/, $.identifier), '"'),
+        $.identifier,
+      ),
   },
 });

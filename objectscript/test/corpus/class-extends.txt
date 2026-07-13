@@ -13,10 +13,10 @@ Class User.MySubclass Extends (%Library.Persistent, %Library.Populate)
       (identifier))
     (class_extends
       (keyword_extends)
-      (bracket)
-      (class_name)
-      (class_name)
-      (bracket))
+      (class_name
+        (identifier))
+      (class_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -36,7 +36,8 @@ Property Department As %String;
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (property
@@ -84,10 +85,10 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
-    (class_keywords
-      (class_keyword
-        (query_name)))
+      (class_name
+        (identifier)))
+    (class_keyword
+      (query_name))
     (class_body
       (documatic_line)
       (class_statement
@@ -96,11 +97,10 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
           (index_name
             (identifier))
           (keyword_on)
-          (index_properties
-            (index_item
-              (index_property
-                (quote_permitting_identifier
-                  (identifier)))))
+          (index_item
+            (index_property
+              (column_name
+                (identifier))))
           (index_keywords
             (index_keyword))))
       (documatic_line)
@@ -124,11 +124,9 @@ Property SSN As %String(PATTERN = "3N1""-""2N1""-""4N") [ Required ];
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename)))))
+              (identifier)
+              (identifier)
+              (string_literal)))
           (property_keywords
             (property_keyword)))))))
 
@@ -150,7 +148,8 @@ Class Sample.Invoice Extends %Persistent
       (identifier))
     (class_extends
       (keyword_extends)
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (class_statement
         (property
@@ -160,11 +159,9 @@ Class Sample.Invoice Extends %Persistent
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
+              (identifier)
+              (identifier)
+              (numeric_literal)))
           (property_keywords
             (property_keyword))))
       (class_statement

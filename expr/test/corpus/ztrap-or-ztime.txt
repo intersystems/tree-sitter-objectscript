@@ -6,8 +6,7 @@ $ZT Argumentless is $ZTRAP
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ====
 $ZTRAP
@@ -17,8 +16,7 @@ $ZTRAP
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_variable))))
+    (system_defined_variable)))
 
 ===
 $ZTRAP with arguments
@@ -37,14 +35,11 @@ $ZT with arguments is $ZTIME
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ===
 $ZT with tformat
@@ -54,19 +49,15 @@ $ZT with tformat
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ===
 $ZT with tformat and trailing ,
@@ -76,19 +67,15 @@ $ZT with tformat and trailing ,
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ===
 $ZT with precision and trailing ,
@@ -98,19 +85,15 @@ $ZT with precision and trailing ,
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ===
 $ZT with erropt and trailing ,
@@ -120,19 +103,15 @@ $ZT with erropt and trailing ,
 
 (source_file
   (expression
-    (expr_atom
-      (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))))
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))))
 
 ===
 $ZT with localeopt and trailing ,
@@ -142,105 +121,74 @@ $ZT with localeopt and trailing ,
 
 (source_file
   (expression
-    (expr_atom
+    (system_defined_function
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier))))
+      (method_arg
+        (expression
+          (lvn
+            (objectscript_identifier)))))
+    (binary_operator)
+    (expression
       (system_defined_function
-        (dollar_function
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier)))))
-          (method_arg
-            (expression
-              (expr_atom
-                (lvn
-                  (objectscript_identifier))))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))
+        (method_arg
+          (expression
+            (lvn
+              (objectscript_identifier))))))
+    (binary_operator)
+    (expression
+      (system_defined_function
+        (method_arg
+          (expression
+            (system_defined_function
               (method_arg
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
+                  (system_defined_variable)))
               (method_arg
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
+                  (string_literal)))
               (method_arg
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
+                  (numeric_literal))))))
+        (method_arg
+          (expression
+            (numeric_literal)))))
+    (binary_operator)
+    (expression
+      (system_defined_function
+        (method_arg
+          (expression
+            (system_defined_function
               (method_arg
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier)))))
+                  (system_defined_variable)))
               (method_arg
                 (expression
-                  (expr_atom
-                    (lvn
-                      (objectscript_identifier))))))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
+                  (string_literal)))
               (method_arg
                 (expression
-                  (expr_atom
-                    (system_defined_function
-                      (built_in_func_with_pos_options
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (system_defined_variable))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (string_literal))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (numeric_literal)))))))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))
-    (expr_tail
-      (binary_operator)
-      (expression
-        (expr_atom
-          (system_defined_function
-            (dollar_function
-              (method_arg
-                (expression
-                  (expr_atom
-                    (system_defined_function
-                      (built_in_func_with_pos_options
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (system_defined_variable))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (string_literal))))
-                        (method_arg
-                          (expression
-                            (expr_atom
-                              (numeric_literal)))))))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal))))
-              (method_arg
-                (expression
-                  (expr_atom
-                    (numeric_literal)))))))))))
+                  (numeric_literal))))))
+        (method_arg
+          (expression
+            (numeric_literal)))
+        (method_arg
+          (expression
+            (numeric_literal)))))))

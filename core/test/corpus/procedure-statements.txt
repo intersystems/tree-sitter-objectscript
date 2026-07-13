@@ -28,19 +28,16 @@ proc1() [a, b]
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
-                (expr_atom
-                  (numeric_literal))))))
+                (numeric_literal)))))
         (statement
           (command_write
             (keyword_write)
@@ -49,19 +46,16 @@ proc1() [a, b]
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
-                (expr_atom
-                  (numeric_literal))))))
+                (numeric_literal)))))
         (statement
           (command_write
             (keyword_write)
@@ -70,43 +64,34 @@ proc1() [a, b]
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
-                (expr_atom
-                  (numeric_literal))))))
+                (numeric_literal)))))
         (statement
           (command_set
             (keyword_set)
             (set_argument
               (set_target
-                (glvn
-                  (lvn
-                    (objectscript_identifier))))
+                (lvn
+                  (objectscript_identifier)))
               (expression
-                (expr_atom
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
                   (lvn
                     (objectscript_identifier)))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))
-                (expr_tail
-                  (binary_operator)
-                  (expression
-                    (expr_atom
-                      (lvn
-                        (objectscript_identifier)))))))))
+                (binary_operator)
+                (expression
+                  (lvn
+                    (objectscript_identifier)))))))
         (statement
           (command_write
             (keyword_write)
@@ -115,13 +100,11 @@ proc1() [a, b]
                 (write_device_fflf)))
             (write_argument
               (expression
-                (expr_atom
-                  (string_literal))))
+                (string_literal)))
             (write_argument
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ======================
 Valid Public Procedure
@@ -138,15 +121,13 @@ MyProc(x,y) PUBLIC { }
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (keyword_public)))))
 
 ========================
@@ -166,15 +147,13 @@ MyProc2(x,y) { }
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (keyword_private)))
     (statement
       (procedure
@@ -183,15 +162,13 @@ MyProc2(x,y) { }
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))))))
+                (lvn
+                  (objectscript_identifier))))))))))
 
 ================
 Valid Procedures
@@ -210,15 +187,13 @@ MyProc(x,y)[x] {
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (procedure_pub_vars
           (objectscript_identifier))
         (statement
@@ -259,15 +234,13 @@ Label1 // Label1 that is part of Rou1 and neither procedure
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (statement
           (tag_statement
             (tag)))
@@ -279,21 +252,18 @@ Label1 // Label1 that is part of Rou1 and neither procedure
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (statement
           (tag_statement
             (tag)))
@@ -327,15 +297,13 @@ Label1 ; The DO calls this label
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier))))))
+                (lvn
+                  (objectscript_identifier)))))
           (tag_parameter
             (method_arg
               (expression
-                (expr_atom
-                  (lvn
-                    (objectscript_identifier)))))))
+                (lvn
+                  (objectscript_identifier))))))
         (statement
           (command_do
             (keyword_do)
@@ -423,50 +391,39 @@ Valid part of routine, no procedure
             (keyword_set)
             (post_conditional
               (expression
-                (expr_atom
-                  (unary_expression
-                    (unary_operator)
-                    (expression
-                      (expr_atom
-                        (system_defined_function
-                          (dollar_function
-                            (method_arg
-                              (expression
-                                (expr_atom
-                                  (gvn))))))))))))
+                (unary_expression
+                  (expression
+                    (system_defined_function
+                      (method_arg
+                        (expression
+                          (gvn
+                            (identifier)))))))))
             (set_argument
               (set_target
-                (glvn
-                  (gvn)))
+                (gvn
+                  (identifier)))
               (expression
-                (expr_atom
-                  (string_literal))))))
+                (string_literal)))))
         (catch_block
           (keyword_catch)
           (statement
             (command_return
               (keyword_return)
               (expression
-                (expr_atom
-                  (extrinsic_function
-                    (line_ref
-                      (objectscript_identifier)
-                      (routine_ref
-                        (routine_name)))
-                    (method_args
-                      (bracket)
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (numeric_literal))))
-                      (method_arg
-                        (expression
-                          (expr_atom
-                            (system_defined_variable))))
-                      (bracket))))))))))
+                (extrinsic_function
+                  (line_ref
+                    (objectscript_identifier)
+                    (routine_ref
+                      (routine_name)))
+                  (method_args
+                    (method_arg
+                      (expression
+                        (numeric_literal)))
+                    (method_arg
+                      (expression
+                        (system_defined_variable)))))))))))
     (statement
       (command_return
         (keyword_return)
         (expression
-          (expr_atom
-            (numeric_literal)))))))
+          (numeric_literal))))))

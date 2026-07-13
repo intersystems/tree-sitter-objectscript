@@ -40,6 +40,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   _DO_TERMINATION,
   _BOL_BLOCK,
   _POST_CONDITIONAL_END,
+  COMPILED_HEADER,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -83,7 +84,8 @@ static const char* token_names[] = {
   "BOL_EXTRA",
   "_DO_TERMINATION",
   "_BOL_BLOCK",
-  "_POST_CONDITIONAL_END"
+  "_POST_CONDITIONAL_END",
+  "COMPILED_HEADER",
 };
 
 #if 0
@@ -368,6 +370,33 @@ static inline bool is_objectscript_special_symbol_i32(int32_t c) {
   return c == '+' || c == '-' || c == '\'' || c == '$'|| c == '*' || c == '!' ||
          c == '@' || c == '(' || c == '%' || c == '[' || c == '^' || c == '"' || c == '?' ||
          c == '.' ;
+}
+
+static bool lex_compiled_header(TSLexer *lexer) {
+  lexer->mark_end(lexer);
+  while(!lexer->eof(lexer) && lexer->lookahead != '\n') {
+    advance(lexer);
+  }
+  if (lexer->lookahead != '\n') return false;
+
+  advance(lexer);
+  if (lexer->lookahead != '%') return false;
+  advance(lexer);
+  if (lexer->lookahead != 'R') return false;
+  advance(lexer);
+  if (lexer->lookahead != 'O') return false;
+  advance(lexer);
+
+  lexer->result_symbol = COMPILED_HEADER;
+  int newline_count = 0;
+  while(newline_count < 2 && !lexer->eof(lexer)) {
+    if (lexer->lookahead == '\n') {
+      newline_count++;
+    }
+    advance(lexer);
+  }
+  lexer->mark_end(lexer);
+  return true;
 }
 
 static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) {
@@ -1091,6 +1120,44 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       return true;
     }
 
+    if (scanner->routine_token_mode && valid_symbols[COMPILED_HEADER]) {
+      lexer->mark_end(lexer);
+      while (lexer->lookahead != '\n' && !lexer->eof(lexer)) advance(lexer);
+      if (lexer->lookahead == '\n') {
+        advance(lexer);
+        if (lexer->lookahead != '%') {
+          lexer->result_symbol = TAG;
+          scanner->terminated_newline = false;
+          return true;
+        }
+        advance(lexer);
+        if (lexer->lookahead != 'R') {
+          lexer->result_symbol = TAG;
+          scanner->terminated_newline = false;
+          return true;
+        }
+        advance(lexer);
+        if (lexer->lookahead != 'O') {
+          lexer->result_symbol = TAG;
+          scanner->terminated_newline = false;
+          return true;
+        }
+        lexer->result_symbol = COMPILED_HEADER;
+        int newline_count = 0;
+        while(newline_count < 2 && !lexer->eof(lexer)) {
+          if (lexer->lookahead == '\n') {
+            newline_count++;
+          }
+          advance(lexer);
+        }
+        lexer->mark_end(lexer);
+        return true;
+      }
+      lexer->result_symbol = TAG;
+      scanner->terminated_newline = false;
+      return true;
+    }
+
     if (!scanner->column1_statement_mode) {
       lexer->result_symbol = TAG;
       scanner->terminated_newline = false;
@@ -1231,6 +1298,9 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     lexer->mark_end(lexer);
     lexer->result_symbol = BOL_EXTRA;
     scanner->terminated_newline = false;
+    return true;
+  }
+  if (valid_symbols[COMPILED_HEADER] && lex_compiled_header(lexer)) {
     return true;
   }
   scanner->terminated_newline = false;

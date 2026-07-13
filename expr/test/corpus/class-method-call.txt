@@ -6,28 +6,21 @@ new method
 
 (source_file
   (expression
-    (expr_atom
-      (oref_chain_expr
-        (class_method_call
-          (class_ref
-            (keyword_pound_pound_class)
-            (bracket)
-            (class_name
-              (identifier))
-            (bracket))
+    (oref_chain_expr
+      (class_method_call
+        (class_ref
+          (keyword_pound_pound_class)
+          (class_name
+            (identifier)))
+        (method_name
+          (objectscript_identifier_special))
+        (method_args))
+      (oref_chain_segment
+        (oref_method
           (method_name
-            (identifier_segment_immediate_special))
+            (objectscript_identifier))
           (method_args
-            (bracket)
-            (bracket)))
-        (oref_chain_segment
-          (oref_method
-            (method_name
-              (identifier_segment_immediate))
-            (method_args
-              (bracket)
-              (method_arg
-                (byref_arg
-                  (lvn
-                    (objectscript_identifier))))
-              (bracket))))))))
+            (method_arg
+              (byref_arg
+                (lvn
+                  (objectscript_identifier))))))))))

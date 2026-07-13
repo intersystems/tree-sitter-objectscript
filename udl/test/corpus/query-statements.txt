@@ -26,10 +26,9 @@ Query ByName(name As %String = "")
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier))))
               (return_type
@@ -37,28 +36,21 @@ Query ByName(name As %String = "")
                 (typename
                   (identifier)))
               (default_argument_value
-                (typename)))
-            (bracket))
+                (string_literal))))
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (numeric_literal))
-                (typename_param
-                  (identifier)
-                  (typename))
-                (typename_param
-                  (identifier)
-                  (typename)))))
-          (query_keywords
-            (query_keyword
-              (query_name))
-            (query_keyword))
-          (query_body
-            (query_body_content)))))))
+              (identifier)
+              (identifier)
+              (numeric_literal)
+              (identifier)
+              (string_literal)
+              (identifier)
+              (string_literal)))
+          (query_keyword
+            (query_name))
+          (query_keyword)
+          (external_method_body_content))))))
 
 ===
 Query With SELECT
@@ -86,10 +78,9 @@ SELECT ID,Name,Title FROM Employee
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier))))
               (return_type
@@ -97,25 +88,19 @@ SELECT ID,Name,Title FROM Employee
                 (typename
                   (identifier)))
               (default_argument_value
-                (typename)))
-            (bracket))
+                (string_literal))))
           (return_type
             (keyword_as)
             (typename
-              (type_with_params
-                (identifier)
-                (typename_param
-                  (identifier)
-                  (typename))
-                (typename_param
-                  (identifier)
-                  (numeric_literal)))))
-          (query_keywords
-            (query_keyword)
-            (query_keyword
-              (query_name)))
-          (query_body
-            (query_body_content)))))))
+              (identifier)
+              (identifier)
+              (string_literal)
+              (identifier)
+              (numeric_literal)))
+          (query_keyword)
+          (query_keyword
+            (query_name))
+          (external_method_body_content))))))
 
 ===
 Max Len
@@ -141,29 +126,23 @@ Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc]
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier))))
               (return_type
                 (keyword_as)
                 (typename
-                  (type_with_params
-                    (identifier)
-                    (typename_param
-                      (identifier)
-                      (numeric_literal))))))
-            (bracket))
+                  (identifier)
+                  (identifier)
+                  (numeric_literal)))))
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_keywords
-            (query_keyword))
-          (query_body
-            (query_body_content)))))))
+          (query_keyword)
+          (external_method_body_content))))))
 
 ===
 Query: minimal (no args, no keywords)
@@ -186,15 +165,12 @@ Class Test {
           (keyword_query)
           (query_name
             (identifier))
-          (arguments
-            (bracket)
-            (bracket))
+          (arguments)
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_body
-            (query_body_content)))))))
+          (external_method_body_content))))))
 
 ===
 Query: with arguments (untyped args)
@@ -220,19 +196,16 @@ Class Test {
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
-                    (objectscript_identifier)))))
-            (bracket))
+                    (objectscript_identifier))))))
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_body
-            (query_body_content)))))))
+          (external_method_body_content))))))
 
 ===
 Query: with multiple arguments
@@ -257,29 +230,26 @@ Class Test {
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier)))))
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier)))))
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
-                    (objectscript_identifier)))))
-            (bracket))
+                    (objectscript_identifier))))))
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_body
-            (query_body_content)))))))
+          (external_method_body_content))))))
 
 ===
 Query: name is quoted identifier
@@ -301,16 +271,14 @@ Class Test {
       (class_statement
         (query
           (keyword_query)
-          (query_name)
-          (arguments
-            (bracket)
-            (bracket))
+          (query_name
+            (identifier))
+          (arguments)
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_body
-            (query_body_content)))))))
+          (external_method_body_content))))))
 
 ===
 Query: with keyword list (smoke test)
@@ -334,18 +302,14 @@ Class Test {
           (keyword_query)
           (query_name
             (identifier))
-          (arguments
-            (bracket)
-            (bracket))
+          (arguments)
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_keywords
-            (query_keyword
-              (property_name)))
-          (query_body
-            (query_body_content)))))))
+          (query_keyword
+            (property_name))
+          (external_method_body_content))))))
 
 ===
 Query: with keyword list (multiple keywords, smoke test)
@@ -370,28 +334,24 @@ Class Test {
           (query_name
             (identifier))
           (arguments
-            (bracket)
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
                     (objectscript_identifier)))))
             (argument
               (method_arg
-                (expr_atom
+                (expression
                   (lvn
-                    (objectscript_identifier)))))
-            (bracket))
+                    (objectscript_identifier))))))
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_keywords
-            (query_keyword
-              (property_name))
-            (query_keyword))
-          (query_body
-            (query_body_content)))))))
+          (query_keyword
+            (property_name))
+          (query_keyword)
+          (external_method_body_content))))))
 
 ===
 Query: classname is custom query class
@@ -415,15 +375,12 @@ Class Test {
           (keyword_query)
           (query_name
             (identifier))
-          (arguments
-            (bracket)
-            (bracket))
+          (arguments)
           (return_type
             (keyword_as)
             (typename
               (identifier)))
-          (query_body
-            (query_body_content)))))))
+          (external_method_body_content))))))
 
 ===
 invalid: Query missing parentheses (your grammar requires arguments rule)
