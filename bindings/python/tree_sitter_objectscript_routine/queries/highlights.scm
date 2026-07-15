@@ -293,10 +293,10 @@
   "." @function.builtin)
 
 (do_parameter
-    "." @function.builtin)
+  "." @function.builtin)
 
 (job_argument
-    "." @function.builtin)
+  "." @function.builtin)
 
 ; === END CORE ===
 ; === BEGIN LOCAL ===
