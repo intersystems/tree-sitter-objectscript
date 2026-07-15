@@ -292,6 +292,10 @@
 (variable_datatype
   "." @function.builtin)
 
-(method_dot) @function.builtin
+(do_parameter
+    "." @function.builtin)
+
+(job_argument
+    "." @function.builtin)
 
 ; === END LOCAL ===

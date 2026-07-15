@@ -519,7 +519,7 @@ module.exports = grammar(objectscript_expr, {
           ),
           repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
-          alias(token.immediate('.'), $.method_dot),
+          token.immediate('.'),
           $.oref_method,
         ),
       ),
