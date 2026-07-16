@@ -19,11 +19,11 @@ function specialKeywords(rule, requiredRule) {
 }
 
 /**
- *
+ * @param {GrammarSymbols<string>} $
  * @param {RuleOrLiteral} keyword
  */
-function buildBoolKeywordArg(keyword) {
-  return seq(keyword, '=', /[0-1]/);
+function buildBoolKeywordArg($, keyword) {
+  return seq(keyword, '=', alias(/[0-1]/, $.numeric_literal));
 }
 
 /**
@@ -34,7 +34,7 @@ function buildKeywords(keyword) {
   return seq('[', commaSep(keyword), ']');
 }
 
-const {commaSep1, commaSep} = require('../common/define_grammar');
+const {commaSep1, commaSep, build_arguments} = require('../common/define_grammar');
 
 // Keyword rules
 module.exports = {
@@ -67,7 +67,7 @@ module.exports = {
     seq(
       /SoapNameSpace/i,
       '=',
-      choice($.objectscript_identifier, $.string_literal),
+      choice(alias($._base_variable, $.typename), $.string_literal),
     ),
   _method_keyword_no_arg: ($) =>
     seq(
@@ -82,9 +82,9 @@ module.exports = {
       $._keyword_soap_binding_style,
       $._keyword_soap_body_use,
       $._keyword_soap_namespace,
-      seq(/PublicList/i, '=', $._objectscript_method_name_or_list),
-      seq(/(?:GenerateAfter|PlaceAfter)/i, '=', $._method_name_or_list),
-      seq(/ExternalProcName/i, '=', $.objectscript_identifier),
+      seq(/PublicList/i, '=', $._method_names),
+      seq(/(?:GenerateAfter|PlaceAfter)/i, '=', $._method_names),
+      seq(/ExternalProcName/i, '=', alias($._base_variable, $.typename)),
       seq(/CodeMode/i, '=', alias(/(?:objectgenerator|code)/i, $.typename)),
       seq(/Language/i, '=', alias(/objectscript/i, $.typename)),
       seq(
@@ -95,7 +95,7 @@ module.exports = {
       seq(
         /SoapAction/i,
         '=',
-        alias(choice($.string_literal, $.objectscript_identifier), $.typename),
+        alias(choice($.string_literal, $._base_variable), $.typename),
       ),
       seq(/SoapMessageName/i, '=', $.xml_identifier),
       seq(/SoapRequestMessage/i, '=', $.xml_identifier),
@@ -104,16 +104,8 @@ module.exports = {
   method_keyword: ($) =>
     choice($._method_keyword_no_arg, $._method_keyword_value),
   _method_keywords: ($) => buildKeywords($.method_keyword),
-  _method_name_or_list: ($) =>
-    choice(
-      alias($.identifier, $.method_name),
-      seq('(', commaSep1(alias($.identifier, $.method_name)), ')'),
-    ),
-  _objectscript_method_name_or_list: ($) =>
-    choice(
-      alias($.objectscript_identifier, $.method_name),
-      seq('(', commaSep1(alias($.objectscript_identifier, $.method_name)), ')'),
-    ),
+  _method_names: ($) =>
+    build_arguments(alias($._quote_permitting_identifier, $.method_name)),
   xml_identifier: (_) => /[A-Za-z_][A-Za-z0-9._-]*/,
   /*
       CLASS KEYWORDS
@@ -132,13 +124,13 @@ module.exports = {
     seq(
       /(?:ConstraintClass|ProjectionClass|PropertyClass|CompileAfter|TriggerClass|DependsOn|IndexClass|QueryClass)/i,
       '=',
-      $._class_name_or_list,
+      build_arguments(alias($._quote_permitting_identifier, $.class_name)),
     ),
   _class_single_class_keyword: ($) =>
     seq(
       /(?:EmbeddedClass|GeneratedBy|membersuper)/i,
       '=',
-      alias($.identifier, $.class_name),
+      alias($._quote_permitting_identifier, $.class_name),
     ),
   _class_keyword_value: ($) =>
     choice(
@@ -190,14 +182,9 @@ module.exports = {
           $.typename,
         ),
       ),
-      seq(/StorageStrategy/i, '=', alias($.identifier, $.storage_name)),
+      seq(/StorageStrategy/i, '=', alias($._quote_permitting_identifier, $.storage_name)),
       seq(/System/i, '=', alias(/[0-4]/, $.numeric_literal)),
       seq(/ViewQuery/i, '=', '{', $.external_method_body_content, '}'),
-    ),
-  _class_name_or_list: ($) =>
-    choice(
-      alias($.identifier, $.class_name),
-      seq('(', commaSep1(alias($.identifier, $.class_name)), ')'),
     ),
   _class_keywords: ($) => buildKeywords($.class_keyword),
   class_keyword: ($) => choice($._class_keyword_no_arg, $._class_keyword_value),
@@ -283,11 +270,11 @@ module.exports = {
         /Aliases/i,
         '=',
         '{',
-        commaSep1(alias($.objectscript_identifier, $.property_name)),
+        commaSep1(alias($._base_variable, $.property_name)),
         '}',
       ),
       $._keyword_client_name,
-      buildBoolKeywordArg(/ComputeLocalOnly/i),
+      buildBoolKeywordArg($, /ComputeLocalOnly/i),
       $.keyword_server_only,
       seq(
         /InitialExpression/i,
@@ -295,7 +282,7 @@ module.exports = {
         choice(
           seq('{', $.expression, '}'),
           alias($.string_literal, $.typename),
-          alias($.objectscript_identifier, $.typename),
+          alias($._base_variable, $.typename),
         ),
       ),
       seq(/SqlColumnNumber/i, '=', $.numeric_literal),
@@ -310,7 +297,7 @@ module.exports = {
               '(',
               commaSep1(
                 choice(
-                  alias($.objectscript_identifier, $.typename),
+                  alias($._base_variable, $.typename),
                   $.oref_chain_expr,
                   alias('%%UPDATE', $.typename),
                   alias('%%INSERT', $.typename),
@@ -319,7 +306,7 @@ module.exports = {
               ')',
             ),
           ),
-          alias($.objectscript_identifier, $.typename),
+          alias($._base_variable, $.typename),
           $.oref_chain_expr,
           alias('%%UPDATE', $.typename),
           alias('%%INSERT', $.typename),
@@ -333,14 +320,14 @@ module.exports = {
         alias(/(?:DELIMITED|SUBNODE|LIST)/i, $.typename),
       ),
     ),
-  keyword_server_only: ($) => buildBoolKeywordArg(/ServerOnly/i),
+  keyword_server_only: ($) => buildBoolKeywordArg($, /ServerOnly/i),
   sql_id: (_) => /[A-Za-z%_][A-Za-z@_#$0-9]*/,
   rhs_sql_compute_code: ($) =>
     seq(
       '{',
       /Set/i,
       '{',
-      choice('*', $.objectscript_identifier),
+      choice('*', $.sql_id),
       '}',
       '=',
       choice(seq('{', $.expression, '}'), $.expression),
@@ -410,7 +397,7 @@ module.exports = {
     seq(
       /Constraint/i,
       '=',
-      choice($.string_literal, $.objectscript_identifier),
+      choice($.string_literal, alias($._base_variable, $.typename)),
     ),
   parameter_keyword: ($) =>
     choice(
@@ -448,18 +435,11 @@ module.exports = {
           seq('{', $.expression, '}'),
         ),
       ),
-      seq(/CoshardWith/i, '=', alias($.identifier, $.class_name)),
+      seq(/CoshardWith/i, '=', alias($._quote_permitting_identifier, $.class_name)),
       seq(
         /Data/i,
         '=',
-        choice(
-          alias($._quote_permitting_identifier, $.property_name),
-          seq(
-            '(',
-            commaSep1(alias($._quote_permitting_identifier, $.property_name)),
-            ')',
-          ),
-        ),
+        build_arguments(alias($._quote_permitting_identifier, $.property_name)),
       ),
       $._keyword_sql_name,
       seq(

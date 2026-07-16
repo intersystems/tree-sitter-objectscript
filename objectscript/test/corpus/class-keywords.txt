@@ -2,7 +2,7 @@
 DependsOn
 ====
 Class MyApp.MyClass [ DependsOn = MyApp.Class1 ] {
- //class members 
+ //class members
 }
 ---
 
@@ -12,7 +12,8 @@ Class MyApp.MyClass [ DependsOn = MyApp.Class1 ] {
     (class_name
       (identifier))
     (class_keyword
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (line_comment_1))))
 
@@ -20,7 +21,7 @@ Class MyApp.MyClass [ DependsOn = MyApp.Class1 ] {
 DependsOn List Version
 ====
 Class MyApp.MyClass [ DependsOn = (MyApp.Class1,MyApp.Class2) ] {
- //class members 
+ //class members
 }
 ---
 
@@ -30,8 +31,10 @@ Class MyApp.MyClass [ DependsOn = (MyApp.Class1,MyApp.Class2) ] {
     (class_name
       (identifier))
     (class_keyword
-      (class_name)
-      (class_name))
+      (class_name
+        (identifier))
+      (class_name
+        (identifier)))
     (class_body
       (line_comment_1))))
 
@@ -39,7 +42,7 @@ Class MyApp.MyClass [ DependsOn = (MyApp.Class1,MyApp.Class2) ] {
 Compile after
 ====
 Class MyApp.MyClass [ CompileAfter = MyApp.Class1 ] {
- //class members 
+ //class members
 }
 ---
 
@@ -49,7 +52,8 @@ Class MyApp.MyClass [ CompileAfter = MyApp.Class1 ] {
     (class_name
       (identifier))
     (class_keyword
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (line_comment_1))))
 
@@ -57,7 +61,7 @@ Class MyApp.MyClass [ CompileAfter = MyApp.Class1 ] {
 Compile after List of Classes
 ====
 Class MyApp.MyClass [ CompileAfter = (MyApp.Class1,MyApp.Class2,MyApp.Class3) ] {
- //class members 
+ //class members
 }
 ---
 
@@ -67,9 +71,12 @@ Class MyApp.MyClass [ CompileAfter = (MyApp.Class1,MyApp.Class2,MyApp.Class3) ] 
     (class_name
       (identifier))
     (class_keyword
-      (class_name)
-      (class_name)
-      (class_name))
+      (class_name
+        (identifier))
+      (class_name
+        (identifier))
+      (class_name
+        (identifier)))
     (class_body
       (line_comment_1))))
 
@@ -77,7 +84,7 @@ Class MyApp.MyClass [ CompileAfter = (MyApp.Class1,MyApp.Class2,MyApp.Class3) ] 
 ClientName
 ====
 Class MyApp.MyClass [ ClientName = clientclassname ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1114,7 +1121,7 @@ Class Test.LanguageObjectScript [ Language = objectscript ]
 Sharded
 ===
 Class MyApp.MyClass Extends %Persistent [ Sharded = 1 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1137,7 +1144,7 @@ Sharded Invalid
 :error
 ===
 Class MyApp.MyClass Extends %Persistent [ Sharded ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1148,7 +1155,7 @@ Sharded Invalid =
 :error
 ===
 Class MyApp.MyClass Extends %Persistent [ Sharded = 0 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1159,7 +1166,7 @@ Sharded Invalid Not
 :error
 ===
 Class MyApp.MyClass Extends %Persistent [ Not Sharded ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1270,7 +1277,7 @@ invalid - LegacyInstanceContext =
 :error
 ===
 Class MyApp.MyClass [ LegacyInstanceContext = 0]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1280,7 +1287,7 @@ Class MyApp.MyClass [ LegacyInstanceContext = 0]  {
 LegacyInstanceContext
 ===
 Class MyApp.MyClass [ LegacyInstanceContext ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1297,7 +1304,7 @@ Class MyApp.MyClass [ LegacyInstanceContext ]  {
 Not LegacyInstanceContext
 ===
 Class MyApp.MyClass [ Not LegacyInstanceContext ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -1869,7 +1876,7 @@ Class Test.OwnerInvalidQuoted [ Owner = "John Doe" ]
 PropertyClass
 ===
 Class PropClass.MyClass Extends %RegisteredObject [ PropertyClass = PropClass.MyPropertyClass ] {
- //class members 
+ //class members
 }
 ---
 
@@ -1883,7 +1890,8 @@ Class PropClass.MyClass Extends %RegisteredObject [ PropertyClass = PropClass.My
       (class_name
         (identifier)))
     (class_keyword
-      (class_name))
+      (class_name
+        (identifier)))
     (class_body
       (line_comment_1))))
 
@@ -1901,7 +1909,8 @@ Class Test.ServerOnly0 [ ServerOnly = 0 ]
     (class_name
       (identifier))
     (class_keyword
-      (keyword_server_only))
+      (keyword_server_only
+        (numeric_literal)))
     (class_body)))
 
 ===
@@ -1918,7 +1927,8 @@ Class Test.ServerOnly1 [ ServerOnly = 1 ]
     (class_name
       (identifier))
     (class_keyword
-      (keyword_server_only))
+      (keyword_server_only
+        (numeric_literal)))
     (class_body)))
 
 ===
@@ -1935,7 +1945,8 @@ Class Test.ServerOnlyWhitespace [   ServerOnly    =    1   ]
     (class_name
       (identifier))
     (class_keyword
-      (keyword_server_only))
+      (keyword_server_only
+        (numeric_literal)))
     (class_body)))
 
 ===
@@ -1952,7 +1963,8 @@ Class Test.ServerOnlyCase [ sErVeRoNlY = 0 ]
     (class_name
       (identifier))
     (class_keyword
-      (keyword_server_only))
+      (keyword_server_only
+        (numeric_literal)))
     (class_body)))
 
 ===
@@ -1971,7 +1983,8 @@ Class Test.ServerOnlyWithOther [ ClassType = Persistent, ServerOnly = 1 ]
     (class_keyword
       (typename))
     (class_keyword
-      (keyword_server_only))
+      (keyword_server_only
+        (numeric_literal)))
     (class_body)))
 
 ===
@@ -2770,7 +2783,7 @@ Class Test.SqlRowIdNameInvalidComma [ SqlRowIdName = Row,ID ]
 SqlRowIdPrivate
 ===
 Class MyApp.MyClass [ SqlRowIdPrivate ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -2787,7 +2800,7 @@ Class MyApp.MyClass [ SqlRowIdPrivate ]  {
 Not SqlRowIdPrivate
 ===
 Class MyApp.MyClass [ Not SqlRowIdPrivate ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -2948,7 +2961,7 @@ invalid - System rhs contains something not 0-4
 :error
 ===
 Class MyApp.Person Extends %Persistent [ System = n ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -2959,7 +2972,7 @@ invalid - System rhs contains something not 0-4
 :error
 ===
 Class MyApp.Person Extends %Persistent [ System = 5 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -2969,7 +2982,7 @@ Class MyApp.Person Extends %Persistent [ System = 5 ]  {
 valid - System rhs contains something 0-4
 ===
 Class MyApp.Person Extends %Persistent [ System = 4 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -2991,7 +3004,7 @@ Class MyApp.Person Extends %Persistent [ System = 4 ]  {
 valid - System rhs contains something 0-4
 ===
 Class MyApp.Person Extends %Persistent [ System = 3 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -3013,7 +3026,7 @@ Class MyApp.Person Extends %Persistent [ System = 3 ]  {
 valid - System rhs contains something 0-4
 ===
 Class MyApp.Person Extends %Persistent [ System = 2 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -3035,7 +3048,7 @@ Class MyApp.Person Extends %Persistent [ System = 2 ]  {
 valid - System rhs contains something 0-4
 ===
 Class MyApp.Person Extends %Persistent [ System = 1 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -3057,7 +3070,7 @@ Class MyApp.Person Extends %Persistent [ System = 1 ]  {
 valid - System rhs contains something 0-4
 ===
 Class MyApp.Person Extends %Persistent [ System = 0 ]  {
- //class members 
+ //class members
 }
 ---
 
@@ -3089,7 +3102,8 @@ Class Test.StorageStrategyDefault [ StorageStrategy = Default ]
     (class_name
       (identifier))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3106,7 +3120,8 @@ Class Test.StorageStrategyExtent [ StorageStrategy = Extent ]
     (class_name
       (identifier))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3123,7 +3138,8 @@ Class Test.StorageStrategyStream [ StorageStrategy = Stream ]
     (class_name
       (identifier))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3140,7 +3156,8 @@ Class Test.StorageStrategyValueCase [ StorageStrategy = dEfAuLt ]
     (class_name
       (identifier))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3157,7 +3174,8 @@ Class Test.StorageStrategyKeywordCase [ sToRaGeStRaTeGy = Extent ]
     (class_name
       (identifier))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3176,7 +3194,8 @@ Class Test.StorageStrategyWithOther [ ClassType = Persistent, StorageStrategy = 
     (class_keyword
       (typename))
     (class_keyword
-      (storage_name))
+      (storage_name
+        (identifier)))
     (class_body)))
 
 ===
@@ -3201,10 +3220,7 @@ Class Test.StorageStrategyInvalid3 [ StorageStrategy = ]
 
 
 
-===
-invalid - StorageStrategy rhs is quoted
-:error
-===
+
 Class Test.StorageStrategyInvalid4 [ StorageStrategy = "Default" ]
 {
 }

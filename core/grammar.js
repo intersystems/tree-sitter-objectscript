@@ -242,14 +242,14 @@ module.exports = grammar(objectscript_expr, {
       ),
     variable_datatype: ($) =>
       seq(
-        choice($._base_variable, $.instance_variable, $.macro),
-        repeat(seq(token.immediate('.'), $._base_variable_immediate)),
+        choice(alias($._base_variable, $.typename), $.instance_variable, $.macro),
+        repeat(seq(token.immediate('.'), alias($._base_variable_immediate, $.typename))),
       ),
     keyword_of: (_) => /Of/i,
     pound_dim: ($) =>
       seq(
         $.keyword_dim,
-        commaSep1($._base_variable),
+        commaSep1(alias($._base_variable, $.lvn)),
         optional(
           seq(
             $.keyword_as,
@@ -1070,7 +1070,7 @@ module.exports = grammar(objectscript_expr, {
           // code line location?,
           $._text_line_ref,
           // local var *var
-          seq('*', $.objectscript_identifier),
+          seq('*', alias($._base_variable_immediate, $.lvn)),
           // single step breakpoint
           '$',
         ),
@@ -1247,7 +1247,7 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     procedure_pub_vars: ($) =>
-      seq('[', optional(commaSep1(choice($._base_variable, $.macro))), ']'),
+      seq('[', optional(commaSep1(choice(alias($._base_variable, $.lvn), $.macro))), ']'),
 
     // Full procedure definitions: tagname(params) [public_vars] access_modifier { body }
     procedure: ($) =>

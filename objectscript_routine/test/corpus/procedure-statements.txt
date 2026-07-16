@@ -17,8 +17,10 @@ proc1() [a, b]
       (tag)
       (parameter_list)
       (procedure_pub_vars
-        (objectscript_identifier)
-        (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier)))
       (statement
         (command_write
           (keyword_write)
@@ -191,14 +193,16 @@ MyProc(x,y)[x] {
               (lvn
                 (objectscript_identifier))))))
       (procedure_pub_vars
-        (objectscript_identifier))
+        (lvn
+          (objectscript_identifier)))
       (statement
         (command_do
           (keyword_do)
           (do_parameter
             (routine_tag_call
               (line_ref
-                (objectscript_identifier)
+                (method_name
+                  (objectscript_identifier))
                 (routine_ref
                   (routine_name))))))))))
 
@@ -304,7 +308,8 @@ Label1 ; The DO calls this label
           (do_parameter
             (routine_tag_call
               (line_ref
-                (objectscript_identifier)
+                (method_name
+                  (objectscript_identifier))
                 (routine_ref
                   (routine_name)))))))
       (statement
@@ -405,7 +410,8 @@ Valid part of routine, no procedure
             (expression
               (extrinsic_function
                 (line_ref
-                  (objectscript_identifier)
+                  (method_name
+                    (objectscript_identifier))
                   (routine_ref
                     (routine_name)))
                 (method_args

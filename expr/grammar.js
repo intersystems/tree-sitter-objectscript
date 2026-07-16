@@ -293,7 +293,7 @@ module.exports = grammar({
     _extrinsic_named_ref: ($) =>
       prec.right(
         seq(
-          $._base_variable,
+          alias($._base_variable, $.method_name),
           optional($.label_offset),
           optional($.routine_ref),
         ),
@@ -312,7 +312,7 @@ module.exports = grammar({
         // label+offset+routine, label+routine, numeric+offset+routine, etc.
         seq(
           optional(choice('+', '-')),
-          choice($._base_variable, $.numeric_literal),
+          choice(alias($._base_variable, $.method_name), $.numeric_literal),
           choice($.routine_ref, seq($.label_offset, optional($.routine_ref))),
         ),
         // routine only (^routine)

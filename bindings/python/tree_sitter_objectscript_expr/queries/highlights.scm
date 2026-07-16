@@ -53,17 +53,19 @@
 
 (macro_constant) @constant.macro
 
-(objectscript_identifier) @variable
-
 [
   (ssvn)
   (system_defined_variable)
   "$$"
 ] @variable.builtin
 
+(lvn (objectscript_identifier) @variable)
+(lvn (objectscript_identifier_special) @variable.member)
+(ole_object_reference (objectscript_identifier) @variable)
+(ole_object_reference (objectscript_identifier_special) @variable.member)
+
 [
   (gvn)
-  (objectscript_identifier_special)
   (instance_variable)
 ] @variable.member
 

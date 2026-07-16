@@ -294,7 +294,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "identifier",
@@ -3434,7 +3434,17 @@
   {
     "type": "keyword_server_only",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "numeric_literal",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "kill_target",
@@ -3594,15 +3604,11 @@
           "named": true
         },
         {
+          "type": "method_name",
+          "named": true
+        },
+        {
           "type": "numeric_literal",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
           "named": true
         },
         {
@@ -3955,10 +3961,6 @@
           "named": true
         },
         {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
           "type": "property_name",
           "named": true
         },
@@ -4021,7 +4023,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "identifier",
@@ -4307,10 +4309,6 @@
           "named": true
         },
         {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
           "type": "string_literal",
           "named": true
         },
@@ -4532,11 +4530,7 @@
           "named": true
         },
         {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
+          "type": "lvn",
           "named": true
         },
         {
@@ -4869,15 +4863,11 @@
       "required": false,
       "types": [
         {
+          "type": "lvn",
+          "named": true
+        },
+        {
           "type": "macro",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
           "named": true
         }
       ]
@@ -5112,10 +5102,6 @@
       "types": [
         {
           "type": "keyword_not",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
           "named": true
         },
         {
@@ -5382,7 +5368,7 @@
           "named": true
         },
         {
-          "type": "objectscript_identifier",
+          "type": "sql_id",
           "named": true
         }
       ]
@@ -5930,7 +5916,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "identifier",
@@ -6288,6 +6274,14 @@
           "named": true
         },
         {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier_special",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         }
@@ -6349,11 +6343,7 @@
           "named": true
         },
         {
-          "type": "objectscript_identifier",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier_special",
+          "type": "typename",
           "named": true
         }
       ]
@@ -6734,15 +6724,15 @@
           "named": true
         },
         {
+          "type": "lvn",
+          "named": true
+        },
+        {
           "type": "method_name",
           "named": true
         },
         {
           "type": "numeric_literal",
-          "named": true
-        },
-        {
-          "type": "objectscript_identifier",
           "named": true
         }
       ]
@@ -7512,6 +7502,10 @@
   },
   {
     "type": "sql_field_modifier",
+    "named": true
+  },
+  {
+    "type": "sql_id",
     "named": true
   },
   {

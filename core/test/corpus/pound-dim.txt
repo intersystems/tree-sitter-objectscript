@@ -13,23 +13,50 @@ Valid Dim
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (string_literal))))
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier)
+          (typename
+            (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))
+        (expression
+          (class_method_call
+            (class_ref
+              (keyword_pound_pound_class)
+              (class_name
+                (identifier)))
+            (method_name
+              (objectscript_identifier_special))
+            (method_args)))))
+    (statement
+      (pound_dim
+        (keyword_dim)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
           (objectscript_identifier))
         (expression
           (class_method_call
@@ -43,27 +70,16 @@ Valid Dim
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (expression
-          (class_method_call
-            (class_ref
-              (keyword_pound_pound_class)
-              (class_name
-                (identifier)))
-            (method_name
-              (objectscript_identifier_special))
-            (method_args)))))
-    (statement
-      (pound_dim
-        (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (json_object_literal
             (json_object_literal_pair
@@ -72,12 +88,16 @@ Valid Dim
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (json_array_literal
             (json_string_literal)
@@ -95,10 +115,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))))))
+          (typename
+            (objectscript_identifier_special)))))))
 
 ===
 valid
@@ -112,11 +134,14 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier)
-          (objectscript_identifier))))))
+          (typename
+            (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))))))
 
 ===
 valid
@@ -130,10 +155,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (numeric_literal))))))
 
@@ -149,10 +176,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (string_literal))))))
 
@@ -168,10 +197,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (macro
             (macro_constant)))))))
@@ -188,7 +219,8 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (expression
           (numeric_literal))))))
 
@@ -204,12 +236,16 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
-        (objectscript_identifier)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))))))
+          (typename
+            (objectscript_identifier_special)))))))
 
 ===
 valid
@@ -223,13 +259,16 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))
         (keyword_of)
         (variable_datatype
-          (objectscript_identifier_special))))))
+          (typename
+            (objectscript_identifier_special)))))))
 
 ===
 valid
@@ -243,14 +282,18 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))
         (keyword_of)
         (variable_datatype
-          (objectscript_identifier_special)
-          (objectscript_identifier))))))
+          (typename
+            (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier)))))))
 
 ===
 valid
@@ -264,13 +307,16 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))
         (keyword_of)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (system_defined_function
             (method_arg
@@ -295,13 +341,16 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier))
+          (typename
+            (objectscript_identifier)))
         (keyword_of)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (class_method_call
             (class_ref
@@ -324,10 +373,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special)))))
+          (typename
+            (objectscript_identifier_special))))))
   (line_comment_4))
 
 ===
@@ -342,10 +393,12 @@ valid
     (statement
       (pound_dim
         (keyword_dim)
-        (objectscript_identifier)
+        (lvn
+          (objectscript_identifier))
         (keyword_as)
         (variable_datatype
-          (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier_special)))
         (expression
           (numeric_literal))))))
 
