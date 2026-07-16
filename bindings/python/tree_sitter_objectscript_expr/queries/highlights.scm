@@ -59,10 +59,17 @@
   "$$"
 ] @variable.builtin
 
-(lvn (objectscript_identifier) @variable)
-(lvn (objectscript_identifier_special) @variable.member)
-(ole_object_reference (objectscript_identifier) @variable)
-(ole_object_reference (objectscript_identifier_special) @variable.member)
+(lvn
+  (objectscript_identifier) @variable)
+
+(lvn
+  (objectscript_identifier_special) @variable.member)
+
+(ole_object_reference
+  (objectscript_identifier) @variable)
+
+(ole_object_reference
+  (objectscript_identifier_special) @variable.member)
 
 [
   (gvn)
