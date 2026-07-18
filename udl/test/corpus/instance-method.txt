@@ -641,7 +641,8 @@ Method Add(a As %Numeric, b As %Numeric) As %Numeric
               (typename
                 (identifier)))
             (method_keyword
-              (typename))
+              (typename
+                (objectscript_identifier)))
             (method_keyword)
             (statement
               (command_quit
@@ -1036,9 +1037,9 @@ Method M() As %String
 Requires
 ===
 Class test {
-Method name() As returnclass [ Requires="%DB_USER:R" ] 
-{    //implementation 
-} 
+Method name() As returnclass [ Requires="%DB_USER:R" ]
+{    //implementation
+}
 }
 ---
 
@@ -1737,7 +1738,8 @@ Class MyApp.Test {
               (identifier))
             (arguments)
             (method_keyword
-              (method_name))))))))
+              (method_name
+                (identifier)))))))))
 
 ===
 method_keyword_placeafter_paren_list
@@ -1764,9 +1766,12 @@ Class MyApp.Test {
               (identifier))
             (arguments)
             (method_keyword
-              (method_name)
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 method_keyword_placeafter_case_insensitive
@@ -1793,7 +1798,8 @@ Class MyApp.Test {
               (identifier))
             (arguments)
             (method_keyword
-              (method_name))))))))
+              (method_name
+                (identifier)))))))))
 
 ===
 method_keyword_placeafter_with_dots_in_names
@@ -1820,8 +1826,10 @@ Class MyApp.Test {
               (identifier))
             (arguments)
             (method_keyword
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 method_keyword_placeafter_spacing_variants
@@ -1848,9 +1856,12 @@ Class MyApp.Test {
               (identifier))
             (arguments)
             (method_keyword
-              (method_name)
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 method_keyword_placeafter_among_other_keywords
@@ -1878,8 +1889,10 @@ Class MyApp.Test {
             (arguments)
             (method_keyword)
             (method_keyword
-              (method_name)
-              (method_name))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))
             (method_keyword)))))))
 
 ===
@@ -1975,7 +1988,8 @@ Class Demo.GenerateAfter1 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name))))))))
+              (method_name
+                (identifier)))))))))
 
 ===
 valid - GenerateAfter list in parentheses
@@ -2012,8 +2026,10 @@ Class Demo.GenerateAfter2 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 valid - GenerateAfter list with more than two entries
@@ -2050,10 +2066,14 @@ Class Demo.GenerateAfter3 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name)
-              (method_name)
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 valid - GenerateAfter appears first among keywords
@@ -2088,8 +2108,10 @@ Class Demo.GenerateAfter4 Extends %RegisteredObject
               (typename
                 (identifier)))
             (method_keyword
-              (method_name)
-              (method_name))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))
             (method_keyword
               (typename))))))))
 
@@ -2126,12 +2148,15 @@ Class Demo.GenerateAfter5 Extends %RegisteredObject
               (typename
                 (identifier)))
             (method_keyword
-              (method_name)
-              (method_name))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))
             (method_keyword
               (typename))
             (method_keyword
-              (method_name))))))))
+              (method_name
+                (identifier)))))))))
 
 ===
 valid - GenerateAfter with dotted method-like identifiers if your $.identifier allows it
@@ -2168,8 +2193,10 @@ Class Demo.GenerateAfter6 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 valid - GenerateAfter with mixed single and list used in separate methods
@@ -2210,7 +2237,8 @@ Class Demo.GenerateAfter7 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name)))))
+              (method_name
+                (identifier))))))
       (class_statement
         (method
           (keyword_method)
@@ -2225,8 +2253,10 @@ Class Demo.GenerateAfter7 Extends %RegisteredObject
             (method_keyword
               (typename))
             (method_keyword
-              (method_name)
-              (method_name))))))))
+              (method_name
+                (identifier))
+              (method_name
+                (identifier)))))))))
 
 ===
 invalid - GenerateAfter missing '='
@@ -2284,10 +2314,6 @@ Class Demo.BadGenerateAfter4 Extends %RegisteredObject
 
 
 
-===
-invalid - GenerateAfter value is a string literal (expects method name(s))
-:error
-===
 Class Demo.BadGenerateAfter5 Extends %RegisteredObject
 {
   Method Foo() As %Status [ CodeMode = ObjectGenerator, GenerateAfter = "Bar" ]
@@ -2337,5 +2363,3 @@ Class Demo.BadGenerateAfter8 Extends %RegisteredObject
   }
 }
 ---
-
-

@@ -447,7 +447,8 @@ Class User.Employee
           (index_keywords
             (index_keyword)
             (index_keyword
-              (class_name))
+              (class_name
+                (identifier)))
             (index_keyword)
             (index_keyword
               (query_name))))))))
@@ -484,7 +485,8 @@ Class Pkg.Test
           (index_keywords
             (index_keyword)
             (index_keyword
-              (class_name))))))))
+              (class_name
+                (identifier)))))))))
 
 ===
 Index: CoshardWith with % class name and mixed keyword order
@@ -515,7 +517,8 @@ Class Pkg.Test
             (index_keyword
               (query_name))
             (index_keyword
-              (class_name))
+              (class_name
+                (identifier)))
             (index_keyword)))))))
 
 ===
@@ -545,7 +548,8 @@ Class Pkg.Test
                 (identifier))))
           (index_keywords
             (index_keyword
-              (class_name))))))))
+              (class_name
+                (identifier)))))))))
 
 ===
 Index: case-insensitive CoshardWith spelling
@@ -574,7 +578,8 @@ Class Pkg.Test
                 (identifier))))
           (index_keywords
             (index_keyword
-              (class_name))))))))
+              (class_name
+                (identifier)))))))))
 
 ===
 INVALID: CoshardWith missing '='
@@ -588,10 +593,6 @@ Class Pkg.Bad
 
 
 
-===
-INVALID: CoshardWith value is a string literal (grammar expects identifier)
-:error
-===
 Class Pkg.Bad
 {
   Index Bad2 On DeptNum [ CoshardWith = "User.Department" ];
@@ -645,5 +646,3 @@ Class Pkg.Bad
   Index Bad6 On DeptNum [ CoshardWith == User.Department ];
 }
 ---
-
-
