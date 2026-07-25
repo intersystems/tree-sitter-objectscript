@@ -34,10 +34,24 @@ module.exports = {
         repeat(seq(',', $.method_keyword)),
         ']',
       ),
+
+    // Same shape as external_method_keywords, but restricted to Language =
+    // python. Kept separate so the body can be lexed by a Python-aware
+    // scanner token (see python_method_body_content) rather than the
+    // language-agnostic brace counter.
+    python_method_keywords: ($) =>
+      seq(
+        '[',
+        repeat(seq($.method_keyword, ',')),
+        alias($.method_keyword_language_python, $.method_keyword_language),
+        repeat(seq(',', $.method_keyword)),
+        ']',
+      ),
     method_keyword_codemode_expression: ($) => seq(/CodeMode/i, '=', alias(/expression/i, $.typename)),
     method_keyword_codemode: ($) => seq(/CodeMode/i, '=', alias(choice(/code/i, /objectgenerator/i), $.typename)),
     method_keyword_language_objectscript: ($) => seq(/Language/i, '=', alias(/objectscript/i, $.typename)),
-    method_keyword_language: ($) => seq(/Language/i, '=', alias(choice(/python/i, /tsql/i, /ispl/i), $.typename)),
+    method_keyword_language: ($) => seq(/Language/i, '=', alias(choice(/tsql/i, /ispl/i), $.typename)),
+    method_keyword_language_python: ($) => seq(/Language/i, '=', alias(/python/i, $.typename)),
     method_keyword_external_proc_name: ($) => seq(/ExternalProcName/i, '=', $.objectscript_identifier),
     method_keyword_force_generate: ($) => seq(optional($.keyword_not), /ForceGenerate/i),
     method_keyword_not_inheritable: ($) => seq(optional($.keyword_not), /NotInheritable/i),
@@ -561,6 +575,17 @@ module.exports = {
         '[',
         repeat(seq($.trigger_keyword, ',')),
         $.method_keyword_language,
+        repeat(seq(',', $.trigger_keyword)),
+        ']',
+      ),
+
+    // Trigger counterpart of python_method_keywords: Language = python only,
+    // so the body gets the Python-aware scanner token.
+    python_trigger_keywords: ($) =>
+      seq(
+        '[',
+        repeat(seq($.trigger_keyword, ',')),
+        alias($.method_keyword_language_python, $.method_keyword_language),
         repeat(seq(',', $.trigger_keyword)),
         ']',
       ),

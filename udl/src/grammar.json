@@ -17387,6 +17387,15 @@
             {
               "type": "SYMBOL",
               "name": "external_trigger"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "python_trigger"
+              },
+              "named": true,
+              "value": "external_trigger"
             }
           ]
         }
@@ -17435,6 +17444,32 @@
         {
           "type": "SYMBOL",
           "name": "external_method_body_content"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "python_trigger": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "python_trigger_keywords"
+          },
+          "named": true,
+          "value": "trigger_keywords"
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "python_method_body_content"
         },
         {
           "type": "STRING",
@@ -18320,6 +18355,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "_python_method"
+            },
+            {
+              "type": "SYMBOL",
               "name": "_call_method"
             }
           ]
@@ -18419,6 +18458,32 @@
         {
           "type": "SYMBOL",
           "name": "external_method_body_content"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "_python_method": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "python_method_keywords"
+          },
+          "named": true,
+          "value": "external_method_keywords"
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "python_method_body_content"
         },
         {
           "type": "STRING",
@@ -18930,6 +18995,60 @@
         }
       ]
     },
+    "python_method_keywords": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "method_keyword"
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              }
+            ]
+          }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "method_keyword_language_python"
+          },
+          "named": true,
+          "value": "method_keyword_language"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "method_keyword"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
     "method_keyword_codemode_expression": {
       "type": "SEQ",
       "members": [
@@ -19031,11 +19150,6 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "python",
-                "flags": "i"
-              },
-              {
-                "type": "PATTERN",
                 "value": "tsql",
                 "flags": "i"
               },
@@ -19045,6 +19159,30 @@
                 "flags": "i"
               }
             ]
+          },
+          "named": true,
+          "value": "typename"
+        }
+      ]
+    },
+    "method_keyword_language_python": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "Language",
+          "flags": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "PATTERN",
+            "value": "python",
+            "flags": "i"
           },
           "named": true,
           "value": "typename"
@@ -22302,6 +22440,60 @@
         }
       ]
     },
+    "python_trigger_keywords": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "trigger_keyword"
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              }
+            ]
+          }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "method_keyword_language_python"
+          },
+          "named": true,
+          "value": "method_keyword_language"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "trigger_keyword"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
     "keyword_property": {
       "type": "PATTERN",
       "value": "Property",
@@ -24649,6 +24841,7 @@
       "method_keywords",
       "expression_method_keywords",
       "external_method_keywords",
+      "python_method_keywords",
       "call_method_keywords"
     ],
     [
@@ -24657,7 +24850,8 @@
     ],
     [
       "trigger_keywords",
-      "external_trigger_keywords"
+      "external_trigger_keywords",
+      "python_trigger_keywords"
     ]
   ],
   "precedences": [
@@ -24872,6 +25066,10 @@
     {
       "type": "SYMBOL",
       "name": "external_method_body_content"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "python_method_body_content"
     },
     {
       "type": "SYMBOL",

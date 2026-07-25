@@ -1,0 +1,235 @@
+===
+Python method with a brace inside a string literal
+===
+
+Class My.Brace
+{
+
+ClassMethod PyBad() [ Language = python ]
+{
+    s = "dict literal { unbalanced"
+    return s
+}
+
+ClassMethod Real() As %String
+{
+    Quit ##class(My.Tgt).Hit()
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (external_method_keywords
+              (method_keyword_language
+                (typename)))
+            (python_method_body_content))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (class_method_call
+                      (class_ref
+                        (keyword_pound_pound_class)
+                        (bracket)
+                        (class_name)
+                        (bracket))
+                      (method_name
+                        (identifier_segment_immediate))
+                      (method_args
+                        (bracket)
+                        (bracket)))))))))))))
+
+===
+Python method quoting edge cases
+===
+
+Class My.Edge
+{
+
+ClassMethod Quotes() [ Language = python ]
+{
+    a = "close } brace"
+    b = '{ open only'
+    c = f"fstring {a} interp"
+    d = """triple with } and { braces"""
+    e = '''other triple }'''
+    # comment with } and {
+    g = "escaped \" quote }"
+    h = r"raw \ backslash }"
+    i = {"k": "v"}
+    return i
+}
+
+ClassMethod After() As %String
+{
+    Quit "after"
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (external_method_keywords
+              (method_keyword_language
+                (typename)))
+            (python_method_body_content))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
+
+===
+Python trigger with a brace inside a string literal
+===
+
+Class My.Trig Extends %Persistent
+{
+
+Trigger MyTrig [ Event = INSERT, Language = python ]
+{
+    x = "brace } in trigger"
+}
+
+ClassMethod After() As %String
+{
+    Quit "after"
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_extends
+      (keyword_extends)
+      (class_name))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (trigger_name
+            (identifier))
+          (external_trigger
+            (trigger_keywords
+              (trigger_keyword
+                (trigger_keyword_event
+                  (trigger_event_value
+                    (typename))))
+              (method_keyword_language
+                (typename)))
+            (python_method_body_content))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (expr_atom
+                    (string_literal)))))))))))
+
+===
+Language = tsql method still uses the language-agnostic body token
+===
+
+Class My.Tsql
+{
+
+ClassMethod TSql() [ Language = tsql ]
+{
+    SELECT 1
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name)
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments
+              (bracket)
+              (bracket))
+            (external_method_keywords
+              (method_keyword_language
+                (typename)))
+            (external_method_body_content)))))))

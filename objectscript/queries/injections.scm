@@ -30,7 +30,7 @@
   (external_method_keywords
     (method_keyword_language
       (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
@@ -59,7 +59,7 @@
     (trigger_keywords
       (method_keyword_language
         (typename) @_lang))
-    (external_method_body_content) @injection.content))
+    (python_method_body_content) @injection.content))
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))

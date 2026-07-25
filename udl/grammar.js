@@ -21,13 +21,14 @@ const {
 // @ts-ignore
 module.exports = define_grammar(objectscript_core, {
   name: 'objectscript_udl',
-  externals: ($, previous) => previous.concat([$.external_method_body_content, $.iris_username]),
+  externals: ($, previous) => previous.concat([$.external_method_body_content, $.python_method_body_content, $.iris_username]),
   conflicts: ($, previous) =>
     previous.concat([
       [
         $.method_keywords,
         $.expression_method_keywords,
         $.external_method_keywords,
+        $.python_method_keywords,
         $.call_method_keywords,
       ],
       [
@@ -37,6 +38,7 @@ module.exports = define_grammar(objectscript_core, {
       [
         $.trigger_keywords,
         $.external_trigger_keywords,
+        $.python_trigger_keywords,
       ],
     ]),
 
@@ -180,7 +182,11 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         $.keyword_trigger,
         alias($.quote_permitting_identifier, $.trigger_name),
-        choice($.core_trigger, $.external_trigger),
+        choice(
+          $.core_trigger,
+          $.external_trigger,
+          alias($.python_trigger, $.external_trigger),
+        ),
       ),
 
     core_trigger: ($) =>
@@ -196,6 +202,14 @@ module.exports = define_grammar(objectscript_core, {
         alias($.external_trigger_keywords, $.trigger_keywords),
         '{',
         $.external_method_body_content,
+        '}',
+      ),
+
+    python_trigger: ($) =>
+      seq(
+        alias($.python_trigger_keywords, $.trigger_keywords),
+        '{',
+        $.python_method_body_content,
         '}',
       ),
 
@@ -389,7 +403,7 @@ module.exports = define_grammar(objectscript_core, {
         alias($.quote_permitting_identifier, $.method_name),
         $.arguments,
         optional($.return_type),
-        choice($._core_method, $._expression_method, $._external_method, $._call_method),
+        choice($._core_method, $._expression_method, $._external_method, $._python_method, $._call_method),
       ),
 
     _call_method: ($) =>
@@ -422,6 +436,14 @@ module.exports = define_grammar(objectscript_core, {
         $.external_method_keywords,
         '{',
        $.external_method_body_content,
+        '}',
+      ),
+
+    _python_method: ($) =>
+      seq(
+        alias($.python_method_keywords, $.external_method_keywords),
+        '{',
+        $.python_method_body_content,
         '}',
       ),
 
