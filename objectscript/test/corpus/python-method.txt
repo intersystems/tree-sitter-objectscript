@@ -1,0 +1,216 @@
+===
+Python method with a brace inside a string literal
+===
+
+Class My.Brace
+{
+
+ClassMethod PyBad() [ Language = python ]
+{
+    s = "dict literal { unbalanced"
+    return s
+}
+
+ClassMethod Real() As %String
+{
+    Quit ##class(My.Tgt).Hit()
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name
+      (identifier))
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (method_keyword_external_language
+              (typename))
+            (python_method_body_content))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (class_method_call
+                    (class_ref
+                      (keyword_pound_pound_class)
+                      (class_name
+                        (identifier)))
+                    (method_name
+                      (objectscript_identifier))
+                    (method_args)))))))))))
+
+===
+Python method quoting edge cases
+===
+
+Class My.Edge
+{
+
+ClassMethod Quotes() [ Language = python ]
+{
+    a = "close } brace"
+    b = '{ open only'
+    c = f"fstring {a} interp"
+    d = """triple with } and { braces"""
+    e = '''other triple }'''
+    # comment with } and {
+    g = "escaped \" quote }"
+    h = r"raw \ backslash }"
+    i = {"k": "v"}
+    return i
+}
+
+ClassMethod After() As %String
+{
+    Quit "after"
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name
+      (identifier))
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (method_keyword_external_language
+              (typename))
+            (python_method_body_content))))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (string_literal))))))))))
+
+===
+Python trigger with a brace inside a string literal
+===
+
+Class My.Trig Extends %Persistent
+{
+
+Trigger MyTrig [ Event = INSERT, Language = python ]
+{
+    x = "brace } in trigger"
+}
+
+ClassMethod After() As %String
+{
+    Quit "after"
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name
+      (identifier))
+    (class_extends
+      (keyword_extends)
+      (class_name
+        (identifier)))
+    (class_body
+      (class_statement
+        (trigger
+          (keyword_trigger)
+          (trigger_name
+            (identifier))
+          (trigger_keyword
+            (trigger_event_value
+              (typename)))
+          (method_keyword_external_language
+            (typename))
+          (python_method_body_content)))
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (return_type
+              (keyword_as)
+              (typename
+                (identifier)))
+            (statement
+              (command_quit
+                (keyword_quit)
+                (expression
+                  (string_literal))))))))))
+
+===
+Language = tsql method still uses the language-agnostic body token
+===
+
+Class My.Tsql
+{
+
+ClassMethod TSql() [ Language = tsql ]
+{
+    SELECT 1
+}
+
+}
+
+---
+
+(source_file
+  (class_definition
+    (keyword_class)
+    (class_name
+      (identifier))
+    (class_body
+      (class_statement
+        (classmethod
+          (keyword_classmethod)
+          (method_definition
+            (method_name
+              (identifier))
+            (arguments)
+            (method_keyword_external_language
+              (typename))
+            (external_method_body_content)))))))
