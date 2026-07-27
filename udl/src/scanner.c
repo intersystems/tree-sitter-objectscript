@@ -16,19 +16,43 @@ struct ObjectScript_Udl_Scanner {
 };
 
 static bool lex_fenced_text(TSLexer *lexer,
-                            enum TokenType desired_symbol, char l_delim,
-                            char r_delim) {
-  int leftRightDiff = 1;
+                            enum TokenType desired_symbol, int32_t l_delim,
+                            int32_t r_delim) {
+  int depth = 1;
   while (!lexer->eof(lexer)) {
-    if (lexer->lookahead == r_delim) {
-      leftRightDiff -= 1;
-    } else if (lexer->lookahead == l_delim) {
-      leftRightDiff += 1;
+    int32_t c = lexer->lookahead;
+
+    if (c == '\'' || c == '"') {
+      int32_t quote = c;
+      advance(lexer);
+      while (!lexer->eof(lexer)) {
+        if (lexer->lookahead == '\\') {
+          advance(lexer);
+          if (!lexer->eof(lexer)) advance(lexer);
+        } else if (lexer->lookahead == quote) {
+          advance(lexer);
+          if (lexer->lookahead == quote) {
+            advance(lexer);
+          } else {
+            break;
+          }
+        } else {
+          advance(lexer);
+        }
+      }
+      continue;
     }
-    if (leftRightDiff == 0) {
-      lexer->result_symbol = desired_symbol;
-      return true;
+
+    if (c == r_delim) {
+      depth--;
+      if (depth == 0) {
+        lexer->result_symbol = desired_symbol;
+        return true;
+      }
+    } else if (c == l_delim) {
+      depth++;
     }
+
     advance(lexer);
   }
   return false;

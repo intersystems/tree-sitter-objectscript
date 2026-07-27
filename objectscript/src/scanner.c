@@ -17,19 +17,43 @@ struct ObjectScript_Udl_Scanner {
 };
 
 static bool lex_fenced_text(TSLexer *lexer,
-                            enum TokenType desired_symbol, char l_delim,
-                            char r_delim) {
-  int leftRightDiff = 1;
+                            enum TokenType desired_symbol, int32_t l_delim,
+                            int32_t r_delim) {
+  int depth = 1;
   while (!lexer->eof(lexer)) {
-    if (lexer->lookahead == r_delim) {
-      leftRightDiff -= 1;
-    } else if (lexer->lookahead == l_delim) {
-      leftRightDiff += 1;
+    int32_t c = lexer->lookahead;
+
+    if (c == '\'' || c == '"') {
+      int32_t quote = c;
+      advance(lexer);
+      while (!lexer->eof(lexer)) {
+        if (lexer->lookahead == '\\') {
+          advance(lexer);
+          if (!lexer->eof(lexer)) advance(lexer);
+        } else if (lexer->lookahead == quote) {
+          advance(lexer);
+          if (lexer->lookahead == quote) {
+            advance(lexer);
+          } else {
+            break;
+          }
+        } else {
+          advance(lexer);
+        }
+      }
+      continue;
     }
-    if (leftRightDiff == 0) {
-      lexer->result_symbol = desired_symbol;
-      return true;
+
+    if (c == r_delim) {
+      depth--;
+      if (depth == 0) {
+        lexer->result_symbol = desired_symbol;
+        return true;
+      }
+    } else if (c == l_delim) {
+      depth++;
     }
+
     advance(lexer);
   }
   return false;
@@ -126,26 +150,7 @@ static bool lex_python_fenced_text(TSLexer *lexer,
 
 /// This is the interesting function. The rest is infrastructure
 static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
-  // struct Scanner *scanner = (struct Scanner *)payload;
-  //
-  // Tree sitter will mark all terminals as valid on error
-  // The sentinel should never be valid in a good parse, so this ensures
-  // we are not in error recovery mode
-  // printf("Lookahead: '%c'. Col %d. Tag is valid? %d", lexer->lookahead,
-  // lexer->get_column(lexer), valid_symbols[TAG]);
-  // printf("lexer->lookahead: '%c'\n", lexer->lookahead);
-  // printf("====\n");
-  // debug_enum(valid_symbols);
-  // printf("====\n");
   if (valid_symbols[SENTINEL]) {
-    //  printf("Thats not good!\n");
-    //  // TODO: ERROR RECOVERY MODE ?? Why would we be better than TS's
-    //  default? if (iswspace(lexer->lookahead)) {
-    //    skip(lexer);
-    //    eat_whitespace(lexer);
-    //    lexer->result_symbol = _WHITESPACE;
-    //    return true;
-    //  }
     return false;
   }
   if (valid_symbols[PYTHON_METHOD_BODY_CONTENT]) {
@@ -169,7 +174,7 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
       count++;
       advance(lexer);
     }
-    
+
 
     if(lexer->lookahead=='}') {
       lexer->mark_end(lexer);
@@ -179,7 +184,7 @@ static bool scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
     else {
       return false;
     }
-  
+
   }
 
 
