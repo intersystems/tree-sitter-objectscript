@@ -51,11 +51,24 @@ module.exports = {
     specialKeywords($.method_keyword, $.method_keyword_codemode_expression),
   _external_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.method_keyword_external_language),
+  // Same shape as _external_method_keywords, but restricted to
+  // Language = python so the body can be lexed by a Python-aware scanner
+  // token instead of the language-agnostic brace counter.
+  _python_method_keywords: ($) =>
+    specialKeywords(
+      $.method_keyword,
+      alias(
+        $.method_keyword_python_language,
+        $.method_keyword_external_language,
+      ),
+    ),
   _call_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.call_method_keyword),
   call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
   method_keyword_external_language: ($) =>
-    seq(/Language/i, '=', alias(/(?:python|tsql|ispl)/i, $.typename)),
+    seq(/Language/i, '=', alias(/(?:tsql|ispl)/i, $.typename)),
+  method_keyword_python_language: ($) =>
+    seq(/Language/i, '=', alias(/python/i, $.typename)),
   // regular method keywords
   _keyword_client_name: ($) =>
     seq(/ClientName/i, '=', alias(/[^\s'`,\[\]\(\)\{\}]+/, $.property_name)),
@@ -254,6 +267,15 @@ module.exports = {
   _trigger_keywords: ($) => buildKeywords($.trigger_keyword),
   _external_trigger_keywords: ($) =>
     specialKeywords($.trigger_keyword, $.method_keyword_external_language),
+  // Trigger counterpart of _python_method_keywords.
+  _python_trigger_keywords: ($) =>
+    specialKeywords(
+      $.trigger_keyword,
+      alias(
+        $.method_keyword_python_language,
+        $.method_keyword_external_language,
+      ),
+    ),
 
   /*
     PROPERTY KEYWORDS

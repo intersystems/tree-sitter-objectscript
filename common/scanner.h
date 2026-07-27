@@ -325,6 +325,51 @@ static bool ObjectScript_Core_Scanner_lex_fenced_text(
   return false;
 }
 
+static bool ObjectScript_Core_Scanner_lex_string_aware_fenced_text(
+    TSLexer *lexer,
+    enum ObjectScript_Core_Scanner_TokenType desired_symbol,
+    int32_t l_delim,
+    int32_t r_delim) {
+  int depth = 1;
+  while (!lexer->eof(lexer)) {
+    int32_t c = lexer->lookahead;
+
+    if (c == '\'' || c == '"') {
+      int32_t quote = c;
+      advance(lexer);
+      while (!lexer->eof(lexer)) {
+        if (lexer->lookahead == '\\') {
+          advance(lexer);
+          if (!lexer->eof(lexer)) advance(lexer);
+        } else if (lexer->lookahead == quote) {
+          advance(lexer);
+          if (lexer->lookahead == quote) {
+            advance(lexer);
+          } else {
+            break;
+          }
+        } else {
+          advance(lexer);
+        }
+      }
+      continue;
+    }
+
+    if (c == r_delim) {
+      depth--;
+      if (depth == 0) {
+        lexer->result_symbol = desired_symbol;
+        return true;
+      }
+    } else if (c == l_delim) {
+      depth++;
+    }
+
+    advance(lexer);
+  }
+  return false;
+}
+
 
 static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
     TSLexer *lexer,
@@ -1187,7 +1232,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return ok;
   }
   else if (valid_symbols[PAREN_FENCED_TEXT]) {
-    bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
+    bool ok = ObjectScript_Core_Scanner_lex_string_aware_fenced_text(
         lexer, PAREN_FENCED_TEXT, '(', ')');
     return ok;
   }
