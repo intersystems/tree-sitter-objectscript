@@ -44,7 +44,7 @@
   (angled_bracket_fenced_text) @injection.content
   (#set! injection.language "xml"))
 
-  ([
+([
   (line_comment_1)
   (line_comment_2)
   (line_comment_3)
@@ -52,7 +52,7 @@
   (block_comment)
   (inline_comment)
   (argumentless_inline_comment)
-  ] @injection.content
-    (#set! injection.language "comment"))
+] @injection.content
+  (#set! injection.language "comment"))
 
 ; === END LOCAL ===

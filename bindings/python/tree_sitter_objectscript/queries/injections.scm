@@ -27,7 +27,7 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-    (python_method_body_content) @injection.content
+  (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#set! injection.language "python"))
 
@@ -141,7 +141,7 @@
   (#set! injection.language "xml")
   (#set! injection.include-children "true"))
 
-  ([
+([
   (line_comment_1)
   (line_comment_2)
   (line_comment_3)
@@ -150,15 +150,15 @@
   (inline_comment)
   (argumentless_inline_comment)
   (documatic_line)
-  ] @injection.content
-    (#set! injection.language "comment"))
+] @injection.content
+  (#set! injection.language "comment"))
 
 ; === END UDL ===
 ; === BEGIN LOCAL ===
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-    (python_method_body_content) @injection.content
+  (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
   (#set! injection.language "python"))
 
@@ -272,7 +272,7 @@
   (#set! injection.language "xml")
   (#set! injection.include-children "true"))
 
-  ([
+([
   (line_comment_1)
   (line_comment_2)
   (line_comment_3)
@@ -281,7 +281,7 @@
   (inline_comment)
   (argumentless_inline_comment)
   (documatic_line)
-  ] @injection.content
-    (#set! injection.language "comment"))
+] @injection.content
+  (#set! injection.language "comment"))
 
 ; === END LOCAL ===
