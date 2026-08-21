@@ -177,6 +177,9 @@ struct ObjectScript_Core_Scanner {
   int32_t js_marker_buffer_reversed[MARKER_BUFFER_MAX_LEN];
   int js_marker_buffer_reversed_len;
   bool is_rtn_dot;
+  // Allows nested old-style commands to close before the same `. }` line
+  // is emitted as a dotted block end.
+  bool pending_dotted_block_end;
 };
 
 static inline bool is_label_char(int32_t c) {
@@ -541,6 +544,15 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   // we are not in error recovery mode
   if (valid_symbols[SENTINEL]) {
     return false;
+  }
+
+  if (scanner->pending_dotted_block_end) {
+    if (lexer->lookahead == '.' && valid_symbols[_TERMINATION]) {
+      lexer->mark_end(lexer);
+      lexer->result_symbol = _TERMINATION;
+      return true;
+    }
+    scanner->pending_dotted_block_end = false;
   }
   scanner-> is_rtn_dot = false;
 
@@ -1099,11 +1111,18 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
               advance(lexer);
           }
           if (lexer->lookahead == '}') {
+              if (valid_symbols[_TERMINATION]) {
+                  scanner->pending_dotted_block_end = true;
+                  lexer->result_symbol = _TERMINATION;
+                  return true;
+              }
               lexer->result_symbol = _BOL_BLOCK;
+              scanner->pending_dotted_block_end = false;
               scanner->terminated_newline = false;
               return true;
           }
           lexer->result_symbol = _BOL;
+          scanner->pending_dotted_block_end = false;
           scanner->terminated_newline = false;
           return true;
       }
@@ -1112,9 +1131,10 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') advance(lexer);
 
         if (lexer->lookahead == '.') {
-          lexer->result_symbol = _BOL;
-          scanner->terminated_newline = false;
-          return true;
+              lexer->result_symbol = _BOL;
+              scanner->pending_dotted_block_end = false;
+              scanner->terminated_newline = false;
+              return true;
         }
         else {
           lexer->mark_end(lexer);
@@ -1342,6 +1362,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
     lexer->mark_end(lexer);
     lexer->result_symbol = BOL_EXTRA;
+    scanner->pending_dotted_block_end = false;
     scanner->terminated_newline = false;
     return true;
   }
@@ -1361,4 +1382,5 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->special_pound_if_mode = false;
   scanner->special_pound_if_mode_if_depth = 0;
   scanner->is_rtn_dot = false;
+  scanner->pending_dotted_block_end = false;
 }
