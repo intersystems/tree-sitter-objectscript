@@ -27,11 +27,8 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (method_keyword_external_language
-    (typename) @_lang)
   (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
-  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
@@ -51,11 +48,8 @@
   (#set! injection.language "ispl"))
 
 (trigger
-  (method_keyword_external_language
-    (typename) @_lang)
   (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
-  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (trigger
@@ -146,17 +140,26 @@
   (external_method_body_content) @injection.content
   (#set! injection.language "xml")
   (#set! injection.include-children "true"))
+
+([
+  (line_comment_1)
+  (line_comment_2)
+  (line_comment_3)
+  (line_comment_4)
+  (block_comment)
+  (inline_comment)
+  (argumentless_inline_comment)
+  (documatic_line)
+] @injection.content
+  (#set! injection.language "comment"))
 
 ; === END UDL ===
 ; === BEGIN LOCAL ===
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (method_keyword_external_language
-    (typename) @_lang)
-  (external_method_body_content) @injection.content
+  (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
-  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
@@ -176,11 +179,8 @@
   (#set! injection.language "ispl"))
 
 (trigger
-  (method_keyword_external_language
-    (typename) @_lang)
-  (external_method_body_content) @injection.content
+  (python_method_body_content) @injection.content
   (#set! injection.include-children "true")
-  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (trigger
@@ -271,5 +271,17 @@
   (external_method_body_content) @injection.content
   (#set! injection.language "xml")
   (#set! injection.include-children "true"))
+
+([
+  (line_comment_1)
+  (line_comment_2)
+  (line_comment_3)
+  (line_comment_4)
+  (block_comment)
+  (inline_comment)
+  (argumentless_inline_comment)
+  (documatic_line)
+] @injection.content
+  (#set! injection.language "comment"))
 
 ; === END LOCAL ===
