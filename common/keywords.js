@@ -305,6 +305,7 @@ module.exports = {
           seq('{', $.expression, '}'),
           alias($.string_literal, $.typename),
           alias($._base_variable, $.typename),
+          alias($.numeric_literal, $.typename),
         ),
       ),
       seq(/SqlColumnNumber/i, '=', $.numeric_literal),

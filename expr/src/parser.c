@@ -2284,9 +2284,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           lookahead == ' ') ADVANCE(876);
       if (lookahead != 0 &&
           lookahead != '*' &&
-          lookahead != ':' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(875);
+          lookahead != ':') ADVANCE(875);
       END_STATE();
     case 3:
       ADVANCE_MAP(
@@ -2597,9 +2595,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 15:
       if (lookahead == '"') ADVANCE(981);
-      if (lookahead != 0 &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(15);
+      if (lookahead != 0) ADVANCE(15);
       END_STATE();
     case 16:
       ADVANCE_MAP(
@@ -2655,9 +2651,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '"') ADVANCE(984);
       if (lookahead == '\\') ADVANCE(159);
       if (lookahead != 0 &&
-          lookahead != '\n' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(18);
+          lookahead != '\n') ADVANCE(18);
       END_STATE();
     case 19:
       if (lookahead == '"') ADVANCE(874);
@@ -2725,25 +2719,19 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '"') ADVANCE(825);
       if (lookahead != 0 &&
           lookahead != '\n' &&
-          lookahead != '\r' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(25);
+          lookahead != '\r') ADVANCE(25);
       END_STATE();
     case 26:
       if (lookahead == '"') ADVANCE(29);
       if (lookahead != 0 &&
           lookahead != '\n' &&
-          lookahead != '\r' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(26);
+          lookahead != '\r') ADVANCE(26);
       END_STATE();
     case 27:
       if (lookahead == '"') ADVANCE(40);
       if (lookahead != 0 &&
           lookahead != '\n' &&
-          lookahead != '\r' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(27);
+          lookahead != '\r') ADVANCE(27);
       END_STATE();
     case 28:
       if (lookahead == '"') ADVANCE(882);
@@ -2804,9 +2792,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '"') ADVANCE(35);
       if (lookahead != 0 &&
           lookahead != '\n' &&
-          lookahead != '\r' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(34);
+          lookahead != '\r') ADVANCE(34);
       END_STATE();
     case 35:
       if (lookahead == '"') ADVANCE(34);
@@ -7652,9 +7638,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '"') ADVANCE(984);
       if (lookahead == '\\') ADVANCE(159);
       if (lookahead != 0 &&
-          lookahead != '\n' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(18);
+          lookahead != '\n') ADVANCE(18);
       END_STATE();
     case 875:
       ACCEPT_TOKEN(aux_sym_sql_field_identifier_token2);
@@ -7669,9 +7653,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           lookahead != '"' &&
           lookahead != '*' &&
           lookahead != ':' &&
-          lookahead != '\\' &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(875);
+          lookahead != '\\') ADVANCE(875);
       END_STATE();
     case 877:
       ACCEPT_TOKEN(aux_sym_sql_field_identifier_token3);
@@ -7690,16 +7672,12 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '"') ADVANCE(28);
       if (('\t' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ') ADVANCE(881);
-      if (lookahead != 0 &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(882);
+      if (lookahead != 0) ADVANCE(882);
       END_STATE();
     case 882:
       ACCEPT_TOKEN(aux_sym__quoted_member_name_token1);
       if (lookahead == '"') ADVANCE(28);
-      if (lookahead != 0 &&
-          lookahead != 0x17f &&
-          lookahead != 0x212a) ADVANCE(882);
+      if (lookahead != 0) ADVANCE(882);
       END_STATE();
     case 883:
       ACCEPT_TOKEN(anon_sym_POUND2);
@@ -30210,7 +30188,7 @@ TS_PUBLIC const TSLanguage *tree_sitter_objectscript_expr(void) {
     .metadata = {
       .major_version = 1,
       .minor_version = 9,
-      .patch_version = 14,
+      .patch_version = 16,
     },
   };
   return &language;
