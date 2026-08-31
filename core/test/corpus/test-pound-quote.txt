@@ -1,0 +1,25 @@
+===
+valid pound quote
+===
+ #define qtest ##quote(He said "Yes" after much debate)
+ w ##quote($$$HEYYY)
+---
+
+(source_file
+  (statements
+    (statement
+      (pound_define
+        (keyword_pound_define)
+        (macro_def
+          (objectscript_identifier))
+        (macro_value
+          (macro_value_line))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (pound_quote
+              (keyword_quote_directive)
+              (macro
+                (macro_constant)))))))))

@@ -4,16 +4,16 @@ Valid Properties and Parameters
 Include %occInclude
 Class MyClass Extends %Library.Persistent
 {
-Parameter MYPARAMETER = "ABC" ; 
+Parameter MYPARAMETER = "ABC" ;
 
-Property DateOfBirth As %Library.Date; 
+Property DateOfBirth As %Library.Date;
 
-Property Home As Sample.Address; 
+Property Home As Sample.Address;
 Property Prop1 as %Library.String [InitialExpression = "ABC"];
 
 Property Prop2 as %Library.String [InitialExpression = "DEF"];
 
-Method CurrentAge() As %Library.Integer 
+Method CurrentAge() As %Library.Integer
 {
  //details
 }
@@ -136,7 +136,7 @@ ClassMethod Addition(x As %Library.Integer, y As %Library.Integer) As %Library.I
 Valid Parameter Keywords
 ========================
 Class hi {
-    Parameter MYPARAMETER [Abstract] = "ABC" ; 
+    Parameter MYPARAMETER [Abstract] = "ABC" ;
     Parameter MYPARAM [ Constraint = "X,Y,Z", Flags = ENUM ] = "X";
     Parameter MYPARAM [ Deprecated ] = "X";
     Parameter MYPARAM [ Final ] = "X";
@@ -208,7 +208,9 @@ Class hi {
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))
+            (keyword_as)
+            (typename
+              (identifier)))
           (default_argument_value
             (string_literal))))
       (class_statement
@@ -217,7 +219,9 @@ Class hi {
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))
+            (keyword_as)
+            (typename
+              (identifier)))
           (default_argument_value
             (string_literal)))))))
 
@@ -228,9 +232,9 @@ Class hi {
     ClassMethod test() {
         w ##class(Package.Class).#PARMNAME
         set object.PropName=..#PARMNAME
-         if ..#PARMNAME=1 { 
+         if ..#PARMNAME=1 {
         //do something
-        } else { 
+        } else {
         //do something else
         }
         w $PARAMETER(classnameOrOref,parameter)
@@ -319,7 +323,7 @@ InValid Parameter Keywords Placement
 :error
 ========================
 Class hi {
-    Parameter MYPARAMETER  = "ABC" [Abstract]; 
+    Parameter MYPARAMETER  = "ABC" [Abstract];
 }
 ---
 
@@ -330,7 +334,7 @@ InValid Parameter , Has As but no parameter type
 :error
 ========================
 Class hi {
-    Parameter MYPARAMETER As  = "ABC" [Abstract]; 
+    Parameter MYPARAMETER As  = "ABC" [Abstract];
 }
 ---
 
@@ -341,7 +345,7 @@ InValid Parameter , Has As and keywords but no parameter type
 :error
 ========================
 Class hi {
-    Parameter MYPARAMETER As [Abstract] = "ABC"; 
+    Parameter MYPARAMETER As [Abstract] = "ABC";
 }
 ---
 
@@ -352,7 +356,7 @@ InValid Parameter , Has = but no value
 :error
 ========================
 Class hi {
-    Parameter MYPARAMETER As [Abstract] = ; 
+    Parameter MYPARAMETER As [Abstract] = ;
 }
 ---
 
@@ -363,29 +367,16 @@ InValid Parameter Keyword
 :error
 ========================
 Class hi {
-    Parameter MYPARAMETER [Private]; 
+    Parameter MYPARAMETER [Private];
 }
 ---
-
-
-
-========================
-InValid Parameter Type
-:error
-========================
-Class hi {
-    Parameter HI AS HELLO; 
-}
----
-
-
 
 ========================
 InValid Parameter Keyword Flags
 :error
 ========================
 Class hi {
-    Parameter HI [Flags = PRIVATE]; 
+    Parameter HI [Flags = PRIVATE];
 }
 ---
 
@@ -396,7 +387,7 @@ InValid Parameter Type Placement
 :error
 ========================
 Class hi {
-    Parameter HI [Final] As String; 
+    Parameter HI [Final] As String;
 }
 ---
 
@@ -406,7 +397,7 @@ Class hi {
 Valid Parameter Keyword Flags ENUM
 ========================
 Class hi {
-    Parameter HI [Flags = ENUM]; 
+    Parameter HI [Flags = ENUM];
 }
 ---
 
@@ -429,7 +420,7 @@ Class hi {
 Valid Parameter Keyword Flags LIST
 ========================
 Class hi {
-    Parameter HI [Flags = LIST]; 
+    Parameter HI [Flags = LIST];
 }
 ---
 
@@ -452,17 +443,17 @@ Class hi {
 Valid Parameter Types
 ========================
 Class hi {
-    Parameter HI As BOOLEAN; 
-    Parameter HI As CLASSNAME; 
-    Parameter HI As COSCODE; 
-    Parameter HI As COSEXPRESSION; 
-    Parameter HI As COSIDENTIFIER; 
-    Parameter HI As INTEGER; 
-    Parameter HI As SQL; 
-    Parameter HI As SQLIDENTIFIER; 
-    Parameter HI As STRING; 
-    Parameter HI As TEXT; 
-    Parameter HI As CONFIGVALUE; 
+    Parameter HI As BOOLEAN;
+    Parameter HI As CLASSNAME;
+    Parameter HI As COSCODE;
+    Parameter HI As COSEXPRESSION;
+    Parameter HI As COSIDENTIFIER;
+    Parameter HI As INTEGER;
+    Parameter HI As SQL;
+    Parameter HI As SQLIDENTIFIER;
+    Parameter HI As STRING;
+    Parameter HI As TEXT;
+    Parameter HI As CONFIGVALUE;
 }
 ---
 
@@ -478,85 +469,96 @@ Class hi {
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as))))
+            (keyword_as)
+            (typename
+              (identifier)))))
       (class_statement
         (parameter
           (keyword_parameter)
           (parameter_name
             (identifier))
           (parameter_type
-            (keyword_as)))))))
-
-========================
-InValid Parameter Type List
-:error
-========================
-Class hi {
-    Parameter HI As LIST; 
-}
----
-
-
+            (keyword_as)
+            (typename
+              (identifier))))))))

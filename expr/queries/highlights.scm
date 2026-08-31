@@ -19,7 +19,9 @@
 [
   (keyword_super)
   (keyword_pound_pound_class)
-] @keyword.operator
+  (keyword_quote_directive)
+  (keyword_pound_expression)
+] @keyword.directive
 
 (system_defined_function) @function.builtin
 
@@ -56,6 +58,7 @@
 [
   (ssvn)
   (system_defined_variable)
+  (keyword_this)
   "$$"
 ] @variable.builtin
 

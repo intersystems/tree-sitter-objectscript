@@ -150,6 +150,10 @@ const PATTERN_ITEM = `(?:${PATTERN_REPEAT})${PATTERN_ATOM_TOP}+`;
 const PATTERN_EXPRESSION_REGEX = new RegExp(
   `[ \\t]*[ \\n]*(?:${PATTERN_ITEM})+`,
 );
+const IDENT_CONTINUE = String.raw`[\p{Alphabetic}\p{Nd}]`;
+const IDENTIFIER = String.raw`\p{Alphabetic}${IDENT_CONTINUE}*`;
+const IDENTIFIER_SPECIAL = String.raw`%${IDENT_CONTINUE}*`;
+const DOTTED_IDENTIFIER = String.raw`(?:%|\p{Alphabetic})${IDENT_CONTINUE}*(?:\.(?:%|${IDENT_CONTINUE})${IDENT_CONTINUE}*)*`;
 
 module.exports = grammar({
   name: 'objectscript_expr',
@@ -200,6 +204,9 @@ module.exports = grammar({
         $.superclass_method_call,
         $.unary_expression,
         $.indirection,
+        $.pound_quote,
+
+        $.expression_call,
       ),
 
     _expr_tail: ($) =>
@@ -268,7 +275,7 @@ module.exports = grammar({
       seq(
         $.keyword_pound_pound_class,
         token.immediate('('),
-        alias($._quote_permitting_identifier, $.class_name),
+        choice(alias($._quote_permitting_identifier, $.class_name), prec.right(seq($.macro_constant, repeat(seq(token.immediate('.'), $.oref_property))))),
         token.immediate(')'),
         optional(
           // Class cast syntax
@@ -283,9 +290,21 @@ module.exports = grammar({
         ),
       ),
 
+    keyword_quote_directive: (_) => /##quote/i,
     keyword_pound_pound_class: (_) => token(/##CLASS/i),
+    pound_quote: ($) =>
+      seq(
+        $.keyword_quote_directive,
+        token.immediate('('),
+        choice(
+          $.macro,
+          repeat1(choice($.string_literal, $._base_variable)),
+        ),
+        (')'),
+      ),
     keyword_super: (_) => /##SUPER/i,
     superclass_method_call: ($) => seq($.keyword_super, $.method_args),
+    expression_call: ($) => seq(alias(/##expression/i, $.keyword_pound_expression), $.method_args),
     extrinsic_function: ($) =>
       // $$tag^rtn or $$@var
       prec.left(seq('$$', $._extrinsic_reference, optional($.method_args))),
@@ -341,6 +360,10 @@ module.exports = grammar({
         ),
       ),
 
+    macro_func_args: ($) => seq(
+      token.immediate('('),
+      optional(build_function_arguments(choice($.method_arg, '*'))),
+      ')'),
     method_args: ($) =>
       seq(token.immediate('('), optional($._method_arg_list), ')'),
     _method_arg_list: ($) => build_function_arguments($.method_arg),
@@ -427,7 +450,7 @@ module.exports = grammar({
       // For triggers, SQLComputeCode etc.
       prec(
         -1,
-        seq(
+        prec.right(seq(
           '{',
           choice(
             token.immediate('*'),
@@ -444,12 +467,13 @@ module.exports = grammar({
             ),
           ),
           token.immediate('}'),
-        ),
+          repeat($.oref_chain_segment),
+        )),
       ),
     sql_field_modifier: (_) => token.immediate(/[ONC]/),
     sql_field_identifier: (_) =>
       choice(
-        /[%A-Za-z][A-Za-z0-9]*/,
+        /(?:%%|%)?[A-Za-z][A-Za-z0-9]*/,
         seq(
           '"',
           repeat(
@@ -493,9 +517,8 @@ module.exports = grammar({
             $._parenthetical_expression,
             $.json_object_literal,
             $.json_array_literal,
-            $.class_ref,
             $._ole_server_name,
-            $.class_method_call,
+            $.class_ref,
           ),
           repeat1($.oref_chain_segment),
         ),
@@ -504,7 +527,7 @@ module.exports = grammar({
     oref_chain_segment: ($) =>
       seq(
         token.immediate('.'),
-        choice($.oref_property, $.oref_method, $.oref_parameter),
+        choice($.oref_property, $.oref_method, $.oref_parameter, $.macro),
       ),
 
     oref_method: ($) =>
@@ -528,7 +551,7 @@ module.exports = grammar({
     _member_name: ($) =>
       choice($._quoted_member_name, $._base_variable_immediate),
     oref_parameter: ($) =>
-      seq(token.immediate('#'), alias($._member_name, $.parameter_name)),
+      prec.right(seq(token.immediate('#'), alias($._member_name, $.parameter_name), optional($.method_args))),
     relative_dot_method: ($) => build_relative_dot_fn($.oref_method),
     relative_dot_property: ($) => build_relative_dot_fn($.oref_property),
     relative_dot_parameter: ($) => build_relative_dot_fn($.oref_parameter),
@@ -552,6 +575,7 @@ module.exports = grammar({
         $._dollarsf,
         $._dollar_function,
         $._dollar_mv,
+        alias(choice(/\$THIS/i, /##this/i), $.keyword_this),
       ),
 
     _dollar_text: ($) =>
@@ -945,12 +969,12 @@ module.exports = grammar({
           repeat($.oref_chain_segment),
         ),
       ),
-    objectscript_identifier_special: (_) => /\%[A-Za-z0-9]*/,
+    objectscript_identifier_special: (_) => new RustRegex(IDENTIFIER_SPECIAL),
     identifier_segment_immediate_special: (_) =>
-      token.immediate(/\%[A-Za-z0-9]*/),
+      token.immediate(new RustRegex(IDENTIFIER_SPECIAL)),
     identifier_segment_immediate: (_) =>
-      token.immediate(/[A-Za-z][A-Za-z0-9]*/),
-    objectscript_identifier: (_) => /[A-Za-z][A-Za-z0-9]*/,
+      token.immediate(new RustRegex(IDENTIFIER)),
+    objectscript_identifier: (_) => new RustRegex(IDENTIFIER),
     _base_variable_immediate: ($) =>
       choice(
         alias(
@@ -976,7 +1000,7 @@ module.exports = grammar({
         prec.right(
           seq(
             token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
-            $.method_args,
+            $.macro_func_args,
             optional($.method_args),
           ),
         ),
@@ -998,6 +1022,7 @@ module.exports = grammar({
         $.json_array_literal,
         $.json_boolean_literal,
         $.json_null_literal,
+        $.macro,
       ),
     json_array_literal: ($) =>
       seq(
@@ -1017,7 +1042,7 @@ module.exports = grammar({
       ),
     json_boolean_literal: (_) => choice('true', 'false'),
     json_null_literal: (_) => 'null',
-    identifier: (_) => /[%A-Za-z][A-Za-z0-9]*(?:\.[%A-Za-z0-9][A-Za-z0-9]*)*/,
+    identifier: (_) => new RustRegex(DOTTED_IDENTIFIER),
     _expression_list: ($) => commaSep1($.expression),
     _quote_permitting_identifier: ($) =>
       choice(
