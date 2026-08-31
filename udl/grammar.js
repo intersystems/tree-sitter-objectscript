@@ -127,9 +127,6 @@ module.exports = define_grammar(objectscript_core, {
     _external_trigger: ($) =>
       seq($._external_trigger_keywords, $._external_body),
 
-    // _python_trigger: ($) =>
-    //   seq($._python_trigger_keywords, $._python_body),
-
     property: ($) =>
       seq(
         $.keyword_property,
@@ -222,7 +219,7 @@ module.exports = define_grammar(objectscript_core, {
         optional(build_argument_list($.numeric_literal),
         ),
       ),
-    _index_property_args: ($) => build_argument_list(token(choice(/ELEMENTS/i, /KEYS/i))),
+    _index_property_args: ($) => build_argument_list(alias(token(choice(/ELEMENTS/i, /KEYS/i)), $.typename)),
 
     xdata: ($) =>
       seq(
@@ -233,11 +230,6 @@ module.exports = define_grammar(objectscript_core, {
       ),
 
     _external_body: ($) => seq('{', $.external_method_body_content, '}'),
-
-    // Language = python bodies are brace-balanced like the others, but braces
-    // inside Python strings and comments must not be counted.
-    // _python_body: ($) => seq('{', $.python_method_body_content, '}'),
-    // _javascript_body: ($) => seq('{', $.javascript_method_body_content, '}'),
     storage: ($) =>
       seq(
         $.keyword_storage,
@@ -265,7 +257,6 @@ module.exports = define_grammar(objectscript_core, {
           $._core_method,
           $._expression_method,
           $._external_method,
-          // $._python_method,
           $._call_method,
         ),
       ),
@@ -280,8 +271,6 @@ module.exports = define_grammar(objectscript_core, {
       seq($._expression_method_keywords, '{', $.expression, '}'),
 
     _external_method: ($) => seq($._external_method_keywords, $._external_body),
-
-    // _python_method: ($) => seq($._python_method_keywords, $._python_body),
 
     arguments: ($) =>
       seq(

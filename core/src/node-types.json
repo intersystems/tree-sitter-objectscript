@@ -770,7 +770,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "do_parameter",
@@ -790,6 +790,14 @@
         },
         {
           "type": "keyword_do_old",
+          "named": true
+        },
+        {
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -1412,6 +1420,25 @@
     }
   },
   {
+    "type": "command_zedit",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_zedit",
+          "named": true
+        },
+        {
+          "type": "routine_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "command_zkill",
     "named": true,
     "fields": {},
@@ -1897,6 +1924,10 @@
         },
         {
           "type": "command_zbreak",
+          "named": true
+        },
+        {
+          "type": "command_zedit",
           "named": true
         },
         {
@@ -3199,7 +3230,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "macro_func_args",
@@ -4227,6 +4258,21 @@
     }
   },
   {
+    "type": "routine_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "routine_ref",
     "named": true,
     "fields": {},
@@ -4630,6 +4676,10 @@
         },
         {
           "type": "command_zbreak",
+          "named": true
+        },
+        {
+          "type": "command_zedit",
           "named": true
         },
         {
@@ -5974,6 +6024,10 @@
     "named": true
   },
   {
+    "type": "keyword_zedit",
+    "named": true
+  },
+  {
     "type": "keyword_zkill",
     "named": true
   },
@@ -6051,10 +6105,6 @@
   },
   {
     "type": "pound_if_special_case_else_if",
-    "named": true
-  },
-  {
-    "type": "routine_name",
     "named": true
   },
   {

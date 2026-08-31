@@ -65,10 +65,6 @@ module.exports = {
         seq(alias(/python/i, $.typename), $._is_python),
       ),
     ),
-  // method_keyword_python_language: ($) =>
-  //   seq(/Language/i, '=', alias(/python/i, $.typename)),
-  // method_keyword_javascript_language: ($) =>
-  //   seq(/Language/i, '=', alias(/javascript/i, $.typename)),
   // regular method keywords
   _keyword_client_name: ($) =>
     seq(/ClientName/i, '=', alias(/[^\s'`,\[\]\(\)\{\}]+/, $.property_name)),

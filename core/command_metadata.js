@@ -63,12 +63,10 @@ const STATEMENT_RULE_NAMES = [
   'tag_end_if',
   'procedure',
   'command_zload',
+  'command_zedit'
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
-  /ze(dit)?/i,
-  /zed/i,
-  /zedi/i,
   /zdn/i,
   /mv/i,
   /MVNEWCOM/i,

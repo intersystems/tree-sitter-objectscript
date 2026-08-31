@@ -344,7 +344,7 @@ module.exports = grammar(objectscript_expr, {
     // TODO: Unimplemented preprocessor directives (lower priority):
     // #noshow, #show, #sqlcompile (audit/mode/path/select), #undef,
     // ##; ##beginquote/##EndQuote, ##expression, ##function, ##lit,
-    // ##quote, ##quoteExp, ##sql, ##stripq, ##unique
+    // ##quoteExp, ##sql, ##stripq, ##unique
 
     macro_arg: (_) => /\%[A-Za-z0-9]+/,
     macro_value_line: ($) =>
@@ -1297,9 +1297,9 @@ module.exports = grammar(objectscript_expr, {
       prec.right(
         seq(
           choice(
-            token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
+            alias(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)), $.macro_constant),
             seq(
-              token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/, token.immediate('('))),
+              alias(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/, token.immediate('('))), $.macro_function),
               optional(choice(
                 seq(
                   $.statement_in_macro,
@@ -1307,7 +1307,7 @@ module.exports = grammar(objectscript_expr, {
                 ),
                 $._method_arg_list,
               )),
-              ')',
+              alias(')', $.macro_function),
             ),
           ),
           optional($.post_conditional),
@@ -1332,6 +1332,12 @@ module.exports = grammar(objectscript_expr, {
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>
       seq(optional('&'), $.method_arg, optional(seq('=', $.expression))),
+    // from DataTree
+    command_zedit: ($) =>
+      seq(
+        alias(/ze(dit)?/i, $.keyword_zedit),
+        build_arguments(alias($._quote_permitting_identifier, $.routine_name)),
+      ),
 
     post_conditional: ($) =>
       seq(

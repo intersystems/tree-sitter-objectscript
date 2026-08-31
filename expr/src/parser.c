@@ -33540,7 +33540,7 @@ TS_PUBLIC const TSLanguage *tree_sitter_objectscript_expr(void) {
     .metadata = {
       .major_version = 1,
       .minor_version = 9,
-      .patch_version = 17,
+      .patch_version = 18,
     },
   };
   return &language;

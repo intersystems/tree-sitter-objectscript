@@ -182,6 +182,7 @@
   (keyword_pound_delay)
   (locktype)
   (tag_end_if)
+  (pound_execute)
 ] @keyword.directive
 
 [
@@ -245,6 +246,7 @@
   (keyword_throw)
   (keyword_try)
   (keyword_catch)
+  (keyword_zedit)
 ] @keyword
 
 [
@@ -340,6 +342,7 @@
   (keyword_storage)
   (keyword_method)
   (keyword_classmethod)
+  (keyword_clientmethod)
   (keyword_not)
   (keyword_references)
   (keyword_byref)
@@ -384,8 +387,6 @@
 [
   (return_type)
   (keyword_list)
-  (parameter_type)
-  (typename)
 ] @type.builtin
 
 ; === END UDL ===
