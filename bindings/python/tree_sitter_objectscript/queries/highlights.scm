@@ -384,10 +384,8 @@
   (column_name)
 ] @variable.member
 
-[
-  (return_type)
-  (keyword_list)
-] @type.builtin
+
+  (keyword_list) @type.builtin
 
 ; === END UDL ===
 ; === BEGIN LOCAL ===
