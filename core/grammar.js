@@ -102,6 +102,8 @@ module.exports = grammar(objectscript_expr, {
     $._bol_block,
     $._post_conditional_end,
     $.compiled_header,
+    $.external_method_body_content,
+    $.statement_in_macro,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -262,7 +264,7 @@ module.exports = grammar(objectscript_expr, {
 
     pound_define: ($) =>
       seq(
-        $.keyword_pound_define,
+        choice($.keyword_pound_define, $.keyword_pound_def1arg),
         prec(
           10,
           seq(
@@ -272,22 +274,9 @@ module.exports = grammar(objectscript_expr, {
         ),
         choice($.macro_value, $._statement_termination),
       ),
+
     pound_define_variable_args: ($) =>
       prec(15, build_argument_list_immediate(commaSep($.macro_arg))),
-    pound_def1arg: ($) =>
-      seq(
-        $.keyword_pound_def1arg,
-        prec(
-          10,
-          seq(
-            alias($._base_variable, $.macro_def),
-            optional($.pound_def1arg_variable_arg),
-          ),
-        ),
-        optional($.macro_value),
-      ),
-    pound_def1arg_variable_arg: ($) =>
-      prec(15, build_argument_list_immediate(optional($.macro_arg))),
     pound_execute: ($) => $.keyword_pound_execute,
     pound_if: ($) =>
       seq(
@@ -408,7 +397,7 @@ module.exports = grammar(objectscript_expr, {
           optional($.post_conditional),
           $._do_termination,
           '}',
-          repeat1($.dotted_statement),
+          repeat($.dotted_statement),
         ),
       ),
 
@@ -471,7 +460,7 @@ module.exports = grammar(objectscript_expr, {
             alias($.keyword_do, $.keyword_do_old),
             optional($.post_conditional),
             $._argumentless_command_end,
-            repeat1(alias($.statement, $.do_statement_after)),
+            repeat(alias($.statement, $.do_statement_after)),
             $._termination,
             repeat($.dotted_statement),
           ),
@@ -504,6 +493,7 @@ module.exports = grammar(objectscript_expr, {
         $.relative_dot_method,
         $.superclass_method_call,
         $.class_method_call,
+        $.macro,
         seq(
           choice(
             $.lvn,
@@ -520,7 +510,7 @@ module.exports = grammar(objectscript_expr, {
           repeat($.oref_chain_segment),
           // Whatever we have here must end in a method
           token.immediate('.'),
-          $.oref_method,
+          choice($.oref_method, $.macro_function),
         ),
       ),
 
@@ -863,6 +853,13 @@ module.exports = grammar(objectscript_expr, {
           alias($.keyword_if, $.keyword_old_if),
           $._expression_list,
         ),
+      ),
+    command_sqlcompile: ($) =>
+      seq(
+        alias(/#sqlcompile/i, $.keyword_sqlcompile),
+        alias(/select/i, $.keyword_select),
+        '=',
+        alias(/(?:Display|Logical|ODBC|Runtime|Text|FDBMS)/i, $.typename),
       ),
 
     else_block_dotted: ($) => build_dotted_block_no_params($, $.keyword_else),
@@ -1299,9 +1296,21 @@ module.exports = grammar(objectscript_expr, {
     command_macro: ($) =>
       prec.right(
         seq(
-          $.macro,
+          choice(
+            token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
+            seq(
+              token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/, token.immediate('('))),
+              optional(choice(
+                seq(
+                  $.statement_in_macro,
+                  $.statement,
+                ),
+                $._method_arg_list,
+              )),
+              ')',
+            ),
+          ),
           optional($.post_conditional),
-
           optional(
             choice(
               commaSepStart1($.do_parameter),

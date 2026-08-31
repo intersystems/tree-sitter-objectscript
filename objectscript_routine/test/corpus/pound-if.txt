@@ -45,6 +45,8 @@ Valid #if Statements
   (statement
     (pound_if
       (keyword_pound_if)
+      (pound_if_special_case_else_if)
+      (keyword_pound_elseif)
       (expression
         (macro
           (macro_constant))
@@ -69,32 +71,6 @@ Valid #if Statements
                 (identifier)))
             (expression
               (numeric_literal)))))
-      (pound_elseif
-        (keyword_pound_elseif)
-        (expression
-          (macro
-            (macro_constant))
-          (binary_operator)
-          (expression
-            (string_literal)))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (numeric_literal))))))
       (pound_elseif
         (keyword_pound_elseif)
         (expression

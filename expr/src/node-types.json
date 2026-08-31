@@ -102,6 +102,14 @@
           "named": true
         },
         {
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "oref_property",
+          "named": true
+        },
+        {
           "type": "system_defined_function",
           "named": true
         }
@@ -174,6 +182,10 @@
           "named": true
         },
         {
+          "type": "expression_call",
+          "named": true
+        },
+        {
           "type": "extrinsic_function",
           "named": true
         },
@@ -222,6 +234,10 @@
           "named": true
         },
         {
+          "type": "pound_quote",
+          "named": true
+        },
+        {
           "type": "relative_dot_method",
           "named": true
         },
@@ -259,6 +275,25 @@
         },
         {
           "type": "unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expression_call",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_pound_expression",
+          "named": true
+        },
+        {
+          "type": "method_args",
           "named": true
         }
       ]
@@ -381,6 +416,10 @@
           "named": true
         },
         {
+          "type": "macro",
+          "named": true
+        },
+        {
           "type": "numeric_literal",
           "named": true
         }
@@ -437,6 +476,10 @@
         },
         {
           "type": "json_string_literal",
+          "named": true
+        },
+        {
+          "type": "macro",
           "named": true
         },
         {
@@ -540,6 +583,21 @@
     "fields": {}
   },
   {
+    "type": "macro_func_args",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "method_arg",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "macro_function",
     "named": true,
     "fields": {},
@@ -547,6 +605,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "macro_func_args",
+          "named": true
+        },
         {
           "type": "method_args",
           "named": true
@@ -647,10 +709,6 @@
       "required": true,
       "types": [
         {
-          "type": "class_method_call",
-          "named": true
-        },
-        {
           "type": "class_ref",
           "named": true
         },
@@ -722,6 +780,10 @@
       "required": true,
       "types": [
         {
+          "type": "macro",
+          "named": true
+        },
+        {
           "type": "oref_method",
           "named": true
         },
@@ -760,9 +822,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "method_args",
+          "named": true
+        },
         {
           "type": "parameter_name",
           "named": true
@@ -822,6 +888,37 @@
         },
         {
           "type": "pattern_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pound_quote",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_quote_directive",
+          "named": true
+        },
+        {
+          "type": "macro",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier",
+          "named": true
+        },
+        {
+          "type": "objectscript_identifier_special",
+          "named": true
+        },
+        {
+          "type": "string_literal",
           "named": true
         }
       ]
@@ -960,6 +1057,10 @@
       "required": false,
       "types": [
         {
+          "type": "oref_chain_segment",
+          "named": true
+        },
+        {
           "type": "sql_field_identifier",
           "named": true
         },
@@ -1049,6 +1150,10 @@
           "named": true
         },
         {
+          "type": "expression_call",
+          "named": true
+        },
+        {
           "type": "extrinsic_function",
           "named": true
         },
@@ -1070,6 +1175,10 @@
         },
         {
           "type": "json_object_literal",
+          "named": true
+        },
+        {
+          "type": "keyword_this",
           "named": true
         },
         {
@@ -1110,6 +1219,10 @@
         },
         {
           "type": "oref_chain_segment",
+          "named": true
+        },
+        {
+          "type": "pound_quote",
           "named": true
         },
         {
@@ -1383,11 +1496,23 @@
     "named": true
   },
   {
+    "type": "keyword_pound_expression",
+    "named": true
+  },
+  {
     "type": "keyword_pound_pound_class",
     "named": true
   },
   {
+    "type": "keyword_quote_directive",
+    "named": true
+  },
+  {
     "type": "keyword_super",
+    "named": true
+  },
+  {
+    "type": "keyword_this",
     "named": true
   },
   {

@@ -41,6 +41,8 @@ enum ObjectScript_Core_Scanner_TokenType {
   _BOL_BLOCK,
   _POST_CONDITIONAL_END,
   COMPILED_HEADER,
+  EXTERNAL_METHOD_BODY_CONTENT,
+  STATEMENT_IN_MACRO,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -86,6 +88,8 @@ static const char* token_names[] = {
   "_BOL_BLOCK",
   "_POST_CONDITIONAL_END",
   "COMPILED_HEADER",
+  "EXTERNAL_METHOD_BODY_CONTENT",
+  "STATEMENT_IN_MACRO"
 };
 
 #if 0
@@ -180,14 +184,16 @@ struct ObjectScript_Core_Scanner {
   // Allows nested old-style commands to close before the same `. }` line
   // is emitted as a dotted block end.
   bool pending_dotted_block_end;
+  bool is_python;
+  bool is_text;
 };
 
 static inline bool is_label_char(int32_t c) {
-  return iswalnum(c) || c == '%';
+  return iswalnum(c) || c == '%' || c >= 0x80;
 }
 
 static inline bool valid_tag_char(int32_t c) {
-  return iswalnum(c) || c == '%' || c == '.';
+  return iswalnum(c) || c == '%' || c == '.' || c >= 0x80;
 }
 
 static inline int32_t ascii_toupper_i32(int32_t c) {
@@ -242,6 +248,7 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "MVC") || ascii_upper_eq(text, len, "MVCRT")) return true;
   if (ascii_upper_eq(text, len, "MVDIM")) return true;
   if (ascii_upper_eq(text, len, "MVPRINT")) return true;
+  if (ascii_upper_eq(text, len, "MVP")) return true;
   if (ascii_upper_eq(text, len, "Q") || ascii_upper_eq(text, len, "QUIT")) return true;
   if (ascii_upper_eq(text, len, "G") || ascii_upper_eq(text, len, "GOTO")) return true;
   if (ascii_upper_eq(text, len, "H") || ascii_upper_eq(text, len, "HALT") ||
@@ -290,6 +297,7 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "CLASS")) return true;
   if (ascii_upper_eq(text, len, "METHOD")) return true;
   if (ascii_upper_eq(text, len, "CLASSMETHOD")) return true;
+  if (ascii_upper_eq(text, len, "CLIENTMETHOD")) return true;
   if (ascii_upper_eq(text, len, "PROPERTY")) return true;
   if (ascii_upper_eq(text, len, "PARAMETER")) return true;
   if (ascii_upper_eq(text, len, "RELATIONSHIP")) return true;
@@ -303,59 +311,268 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   if (ascii_upper_eq(text, len, "IMPORT")) return true;
   if (ascii_upper_eq(text, len, "INCLUDE")) return true;
   if (ascii_upper_eq(text, len, "INCLUDEGENERATOR")) return true;
-
   return false;
 }
 
-static bool ObjectScript_Core_Scanner_lex_fenced_text(
-    TSLexer *lexer,
-    enum ObjectScript_Core_Scanner_TokenType desired_symbol,
-    char l_delim,
-    char r_delim) {
-  int leftRightDiff = 1;
-  while (!lexer->eof(lexer)) {
-    if (lexer->lookahead == r_delim) {
-      leftRightDiff -= 1;
-    } else if (lexer->lookahead == l_delim) {
-      leftRightDiff += 1;
-    }
-    if (leftRightDiff == 0) {
-      lexer->result_symbol = desired_symbol;
-      return true;
-    }
-    advance(lexer);
-  }
-  return false;
-}
-
-static bool ObjectScript_Core_Scanner_lex_string_aware_fenced_text(
-    TSLexer *lexer,
-    enum ObjectScript_Core_Scanner_TokenType desired_symbol,
-    int32_t l_delim,
-    int32_t r_delim) {
+static bool lex_fenced_text(TSLexer *lexer,
+                            enum ObjectScript_Core_Scanner_TokenType desired_symbol, int32_t l_delim,
+                            int32_t r_delim, bool is_xml, bool has_python_comment, bool is_text) {
   int depth = 1;
-  while (!lexer->eof(lexer)) {
-    int32_t c = lexer->lookahead;
-
-    if (c == '\'' || c == '"') {
-      int32_t quote = c;
+  const char *comment_start = "<!--";
+  const char *code_start = "<![CDATA[";
+  const char *code_end = "]]>";
+  const char *comment_end = "-->";
+  const char *script_start = "script";
+  const char *script_end = "</script>";
+  while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029 || iswalnum(lexer->lookahead)) {
       advance(lexer);
-      while (!lexer->eof(lexer)) {
-        if (lexer->lookahead == '\\') {
+  }
+  if (lexer->lookahead == '<') {
+      is_xml = true;
+  }
+  while (!lexer->eof(lexer)) {
+    while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029) {
+        advance(lexer);
+    }
+    int32_t c = lexer->lookahead;
+    if (c == '<' && is_xml) {
+        bool comment = true;
+        bool is_code = false;
+        for (unsigned i = 0; i < 4; i++) {
+            if (i > 1) {
+                is_code = true;
+            }
+            if (lexer->lookahead != comment_start[i]) {
+                comment = false;
+                break;
+            }
+            advance(lexer);
+        }
+        if (comment) {
+            bool is_comment_end = false;
+            while (!lexer->eof(lexer)) {
+                if (lexer->lookahead == '-') {
+                    is_comment_end = true;
+                    for (unsigned i = 0; i < 3; i++) {
+                        if (lexer->lookahead != comment_end[i]) {
+                            is_comment_end = false;
+                            break;
+                        }
+                        advance(lexer);
+                    }
+                }
+                if (is_comment_end) {
+                    break;
+                }
+                advance(lexer);
+            }
+            continue;
+        } else if (is_code) {
+            for (unsigned i = 2; i < 9; i++) {
+                while (iswspace(lexer->lookahead)) {
+                    advance(lexer);
+                }
+                if (lexer->lookahead != code_start[i]) {
+                    is_code = false;
+                    break;
+                }
+                advance(lexer);
+            }
+            // [CDATA[
+            if (is_code) {
+                bool is_code_end = false;
+                while (!lexer->eof(lexer)) {
+                    if (lexer->lookahead == ']') {
+                        is_code_end = true;
+                        for (unsigned i = 0; i < 3; i++) {
+                            while (iswspace(lexer->lookahead)) {
+                                advance(lexer);
+                            }
+                            if (lexer->lookahead != code_end[i]) {
+                                is_code_end = false;
+                                break;
+                            }
+                            advance(lexer);
+                        }
+                    }
+                    if (is_code_end) {
+                        break;
+                    }
+                    advance(lexer);
+                }
+                continue;
+            }
+        } else if (lexer->lookahead == 's') {
+            bool is_script = true;
+            for (unsigned i = 0; i < 6; i++) {
+                while (iswspace(lexer->lookahead)) {
+                    advance(lexer);
+                }
+                if (lexer->lookahead != script_start[i]) {
+                    is_script = false;
+                    break;
+                }
+                advance(lexer);
+            }
+            while (!lexer->eof(lexer) && lexer->lookahead != '>') {
+                if (lexer->lookahead == '"' || lexer->lookahead == '\'') {
+                  int32_t quote = lexer->lookahead;
+                  advance(lexer);
+                  while (!lexer->eof(lexer)) {
+                    if (lexer->lookahead == quote) {
+                      advance(lexer);
+                      if (lexer->lookahead == quote) {
+                        advance(lexer);
+                      } else {
+                        break;
+                      }
+                    } else {
+                      advance(lexer);
+                    }
+                  }
+                  continue;
+                }
+                advance(lexer);
+                continue;
+            }
+            if (lexer->lookahead == '>') {
+                advance(lexer);
+            }
+            if (!is_script) {
+                continue;
+            }
+
+            bool is_script_end = false;
+            while (!lexer->eof(lexer)) {
+                if (lexer->lookahead == '<') {
+                    is_script_end = true;
+                    for (unsigned i = 0; i < 9; i++) {
+                        while (iswspace(lexer->lookahead)) {
+                            advance(lexer);
+                        }
+                        if (lexer->lookahead != script_end[i]) {
+                            is_script_end = false;
+                            break;
+                        }
+                        advance(lexer);
+                    }
+                }
+                if (is_script_end) {
+                    break;
+                }
+                advance(lexer);
+            }
+            continue;
+
+        }
+
+        else {
+            while (!lexer->eof(lexer) && lexer->lookahead != '>') {
+                if (lexer->lookahead == '"' || lexer->lookahead == '\'') {
+                  int32_t quote = lexer->lookahead;
+                  advance(lexer);
+                  while (!lexer->eof(lexer)) {
+                     if (lexer->lookahead == quote) {
+                      advance(lexer);
+                      if (lexer->lookahead == quote) {
+                        advance(lexer);
+                      } else {
+                        break;
+                      }
+                    } else {
+                      advance(lexer);
+                    }
+                  }
+                  continue;
+                }
+                advance(lexer);
+                continue;
+            }
+            // consume the >
+            advance(lexer);
+            continue;
+        }
+    }
+
+    else if (!is_xml && (c == '"' || (c == '\'' && !is_text))) {
+          int32_t quote = c;
           advance(lexer);
-          if (!lexer->eof(lexer)) advance(lexer);
-        } else if (lexer->lookahead == quote) {
-          advance(lexer);
+
+          // Detect a triple-quoted string.
+          bool triple = false;
           if (lexer->lookahead == quote) {
             advance(lexer);
-          } else {
-            break;
+            if (lexer->lookahead == quote) {
+              advance(lexer);
+              triple = true;
+            } else {
+              // Empty string literal ('' or ""); nothing more to skip.
+              continue;
+            }
           }
-        } else {
-          advance(lexer);
-        }
+
+          // Consume the string contents.
+          while (!lexer->eof(lexer)) {
+            if (lexer->lookahead == '\\') {
+              advance(lexer);
+              if (!lexer->eof(lexer)) {
+                advance(lexer);
+              }
+              continue;
+            }
+            if (lexer->lookahead == quote) {
+              advance(lexer);
+              if (!triple) {
+                break;
+              }
+              if (lexer->lookahead == quote) {
+                advance(lexer);
+                if (lexer->lookahead == quote) {
+                  advance(lexer);
+                  break;
+                }
+              }
+              continue;
+            }
+            if (!triple && lexer->lookahead == '\n') {
+              // Unterminated single-quoted string; stop before consuming the
+              // newline so brace counting resumes on the next line.
+              break;
+            }
+            advance(lexer);
+          }
+          continue;
+
+    } if (c == '#' && !is_xml && has_python_comment) {
+      // Line comment: consume to end of line.
+      while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
+        advance(lexer);
       }
       continue;
+    } if (c == '/' && !is_xml) {
+        advance(lexer);
+        if (lexer->lookahead == '/') {
+            while (lexer->lookahead != 0 && lexer->lookahead != '\n' && lexer->lookahead != 0x2028 &&
+              lexer->lookahead != 0x2029) {
+              advance(lexer);
+              }
+            continue;
+        } else if (lexer->lookahead == '*') {
+            advance(lexer);
+            while (!lexer->eof(lexer)) {
+              if (lexer->lookahead == '*') {
+                  advance(lexer);
+                if (lexer->lookahead == '/') {
+                    advance(lexer);
+                    break;
+                }
+              }
+              else {
+                advance(lexer);
+              }
+            }
+            continue;
+        }
     }
 
     if (c == r_delim) {
@@ -372,7 +589,6 @@ static bool ObjectScript_Core_Scanner_lex_string_aware_fenced_text(
   }
   return false;
 }
-
 
 static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
     TSLexer *lexer,
@@ -448,7 +664,7 @@ static bool lex_compiled_header(TSLexer *lexer) {
 }
 
 static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) {
-  if (lexer->lookahead != '0') return false;
+  // if (lexer->lookahead != '0') return false;
 
   uint32_t depth = 1;
   bool at_line_start = false;
@@ -694,6 +910,32 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return true;
   }
 
+  if (valid_symbols[STATEMENT_IN_MACRO]) {
+      lexer->mark_end(lexer);
+      while (iswspace(lexer->lookahead)) {
+          advance(lexer);
+      }
+      int32_t ident[96];
+      uint32_t len = 0;
+      while (valid_tag_char(lexer->lookahead)) {
+          if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
+          advance(lexer);
+      }
+      if (is_statement_or_class_keyword(ident, len)) {
+          if (iswspace(lexer->lookahead)) {
+              advance(lexer);
+              if (valid_tag_char(lexer->lookahead)) {
+                  lexer->result_symbol = STATEMENT_IN_MACRO;
+                  scanner->terminated_newline = false;
+                  return true;
+              }
+          }
+
+      } else {
+          return false;
+      }
+  }
+
   if (valid_symbols[EMBEDDED_SQL_REVERSE_MARKER]) {
     while (scanner->sql_marker_buffer_len >0 && !lexer->eof(lexer)) {
       int32_t expected = scanner->sql_marker_buffer[scanner->sql_marker_buffer_len - 1];
@@ -770,7 +1012,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         return true;
     }
     // an argument that is exactly one space after the keyword
-    if (count == 1 && (iswalnum(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_') && valid_symbol_one_space) {
+    if (count == 1 && (is_label_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_') && valid_symbol_one_space) {
       lexer->mark_end(lexer);
       lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
       scanner->terminated_newline = false;
@@ -778,7 +1020,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
 
     // argumentless command has >= 2 spaces after the keyword
-    else if (count >=2 && (iswalnum(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead)) && valid_symbol_argumentless_command_end) {
+    else if (count >=2 && (is_label_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '&') && valid_symbol_argumentless_command_end) {
       lexer->mark_end(lexer);
       lexer->result_symbol = _ARGUMENTLESS_COMMAND_END;
       scanner->terminated_newline = false;
@@ -796,7 +1038,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     else if (lexer->lookahead == '#') {
       lexer->mark_end(lexer);
       advance(lexer);
-      if (towlower(lexer->lookahead) == 'e' && valid_symbols[TAG] && scanner->special_pound_if_mode && lexer->get_column(lexer) == 1) {
+      if (towlower(lexer->lookahead) == 'e' && valid_symbols[TAG] && scanner->special_pound_if_mode) {
         int32_t directive[16];
         uint32_t len = 0;
         while (len < (sizeof(directive) / sizeof(directive[0])) &&
@@ -982,7 +1224,37 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       }
 
       else if (lexer->lookahead == '{' && valid_symbol_argumentless_loop) {
+        bool valid_symbol_zw_block = valid_symbols[_ZW_BLOCK];
         lexer->mark_end(lexer);
+        if (count == 1 && valid_symbol_zw_block) {
+            advance(lexer);
+            while (iswspace(lexer->lookahead)) {
+                advance(lexer);
+            }
+            int32_t ident[96];
+            uint32_t len = 0;
+            bool potential_tag = false;
+            if (lexer->get_column(lexer) == 0) {
+                potential_tag = true;
+            }
+            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead)) {
+                if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
+                advance(lexer);
+            }
+            if (!is_statement_or_class_keyword(ident, len) && len > 0 && !potential_tag) {
+                if (len > 3) {
+                    if (ident[0] == '$' && ident[1] == '$' && ident[2] == '$') {
+                        lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                        scanner->terminated_newline = false;
+                        return true;
+                    }
+                }
+                lexer->result_symbol = _ZW_BLOCK;
+                scanner->terminated_newline = false;
+                return true;
+            }
+        }
+
         lexer->result_symbol = _ARGUMENTLESS_LOOP;
         scanner->terminated_newline = false;
         return true;
@@ -1038,24 +1310,58 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     }
 
     else if (lexer->lookahead == '{') {
-      // this token is for commands that allow blocks as part of their command ex: w {"hi": "bye"}
-      if (count == 1 && valid_symbols[_ZW_BLOCK]) {
-        lexer->result_symbol = _ZW_BLOCK;
-        scanner->terminated_newline = false;
-        return true;
-      }
-
       if (valid_symbols[DOTTED_STATEMENT_BLOCK]) {
         lexer->mark_end(lexer);
         lexer->result_symbol = DOTTED_STATEMENT_BLOCK;
       }
 
       else if (valid_symbol_argumentless_loop) {
+        bool valid_symbol_zw_block = valid_symbols[_ZW_BLOCK];
         lexer->mark_end(lexer);
+        if (count == 1 && valid_symbol_zw_block) {
+            advance(lexer);
+            while (iswspace(lexer->lookahead)) {
+                advance(lexer);
+            }
+            int32_t ident[96];
+            uint32_t len = 0;
+            bool potential_tag = false;
+            if (lexer->get_column(lexer) == 0) {
+                potential_tag = true;
+            }
+            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead)) {
+                if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
+                advance(lexer);
+            }
+            if (!is_statement_or_class_keyword(ident, len) && len > 0 && !potential_tag) {
+                if (len > 3) {
+                    if (ident[0] == '$' && ident[1] == '$' && ident[2] == '$') {
+                        lexer->result_symbol = _ARGUMENTLESS_LOOP;
+                        scanner->terminated_newline = false;
+                        return true;
+                    }
+                }
+                lexer->result_symbol = _ZW_BLOCK;
+                scanner->terminated_newline = false;
+                return true;
+            }
+        }
         lexer->result_symbol = _ARGUMENTLESS_LOOP;
         scanner->terminated_newline = false;
         return true;
+      } else if (count == 1 && valid_symbols[_ZW_BLOCK]) {
+          lexer->mark_end(lexer);
+          lexer->result_symbol = _ZW_BLOCK;
+          scanner->terminated_newline = false;
+          return true;
       }
+    }
+
+    if (lexer->lookahead == ')' && valid_symbol_termination) {
+      lexer->mark_end(lexer);
+      lexer->result_symbol = _TERMINATION;
+      scanner->terminated_newline = false;
+      return true;
     }
 
     if (count > 0 && valid_symbols[_WHITESPACE]) {
@@ -1247,14 +1553,28 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return false;
   }
   else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {
-    bool ok = ObjectScript_Core_Scanner_lex_fenced_text(
-        lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>');
-    return ok;
+    scanner->is_python = false;
+    scanner->is_text = false;
+    return lex_fenced_text(
+        lexer, ANGLED_BRACKET_FENCED_TEXT, '<', '>', true, scanner->is_python, false);
   }
   else if (valid_symbols[PAREN_FENCED_TEXT]) {
-    bool ok = ObjectScript_Core_Scanner_lex_string_aware_fenced_text(
-        lexer, PAREN_FENCED_TEXT, '(', ')');
-    return ok;
+    scanner->is_python = false;
+    scanner->is_text = false;
+    return lex_fenced_text(
+        lexer, PAREN_FENCED_TEXT, '(', ')', false, scanner->is_python, false);
+  }
+
+  else if (valid_symbols[EXTERNAL_METHOD_BODY_CONTENT]) {
+    // A valid method_body is one that is whose text fences
+    // are evenly balanced (so far only { })
+    // e.g. VALID: {{{ [^{}]* }}} INVALID: {{{ [^{}]* }
+    bool is_python = scanner->is_python;
+    bool is_text = scanner->is_text;
+    scanner->is_python=false;
+    scanner->is_text=false;
+    return lex_fenced_text(lexer, EXTERNAL_METHOD_BODY_CONTENT, '{',
+                           '}', false, is_python, is_text);
   }
 
   else if (valid_symbols[_LINE_COMMENT_INNER]) {
@@ -1383,4 +1703,6 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->special_pound_if_mode_if_depth = 0;
   scanner->is_rtn_dot = false;
   scanner->pending_dotted_block_end = false;
+  scanner->is_python = false;
+  scanner->is_text = false;
 }

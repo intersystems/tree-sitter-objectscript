@@ -239,7 +239,7 @@ function build_block_has_params($, commandKeyword, commandArgument) {
 function build_special_block_has_params($, commandKeyword, commandArgument) {
   return seq(
     commandKeyword,
-    $._immediate_single_whitespace_followed_by_non_whitespace,
+    choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
     commandArgument,
     optional($._intermediate_termination),
     $._statements_block,
@@ -264,7 +264,7 @@ function build_special_block_no_params($, commandKeyword) {
 function build_legacy_has_params($, commandKeyword, commandArgument) {
   return seq(
     commandKeyword,
-    $._immediate_single_whitespace_followed_by_non_whitespace,
+    choice($._immediate_single_whitespace_followed_by_non_whitespace, $._zw_block),
     commandArgument,
     repeat($.statement),
     $._termination,

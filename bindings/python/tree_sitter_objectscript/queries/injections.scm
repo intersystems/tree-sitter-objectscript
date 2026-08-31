@@ -27,8 +27,11 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (python_method_body_content) @injection.content
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
+  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
@@ -48,8 +51,11 @@
   (#set! injection.language "ispl"))
 
 (trigger
-  (python_method_body_content) @injection.content
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
+  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (trigger
@@ -86,6 +92,14 @@
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/markdown" "\"text/markdown\"")
   (#set! injection.language "markdown"))
+
+(xdata
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
+  (#set! injection.include-children "true")
+  (#any-of? @_mt "text/x-python" "\"text/x-python\"" "application/python" "\"application/python\"")
+  (#set! injection.language "python"))
 
 (xdata
   (xdata_keyword_mimetype
@@ -158,8 +172,11 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (python_method_body_content) @injection.content
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
+  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
@@ -179,8 +196,11 @@
   (#set! injection.language "ispl"))
 
 (trigger
-  (python_method_body_content) @injection.content
+  (method_keyword_external_language
+    (typename) @_lang)
+  (external_method_body_content) @injection.content
   (#set! injection.include-children "true")
+  (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (trigger
@@ -217,6 +237,14 @@
   (#set! injection.include-children "true")
   (#any-of? @_mt "text/markdown" "\"text/markdown\"")
   (#set! injection.language "markdown"))
+
+(xdata
+  (xdata_keyword_mimetype
+    (typename) @_mt)
+  (external_method_body_content) @injection.content
+  (#set! injection.include-children "true")
+  (#any-of? @_mt "text/x-python" "\"text/x-python\"" "application/python" "\"application/python\"")
+  (#set! injection.language "python"))
 
 (xdata
   (xdata_keyword_mimetype

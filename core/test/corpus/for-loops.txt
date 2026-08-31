@@ -672,8 +672,8 @@ test
 For Argumentless Block with Block Comment, no new line before {
 =====
 test
-  for /* 
-  
+  for /*
+
   */{
  	w hi
  }
@@ -719,3 +719,16 @@ test
               (expression
                 (lvn
                   (objectscript_identifier))))))))))
+
+===
+for empty block
+===
+ For {
+ }
+---
+
+(source_file
+  (statements
+    (statement
+      (command_for
+        (keyword_for)))))

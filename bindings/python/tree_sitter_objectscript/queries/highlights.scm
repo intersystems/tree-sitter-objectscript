@@ -22,7 +22,9 @@
 [
   (keyword_super)
   (keyword_pound_pound_class)
-] @keyword.operator
+  (keyword_quote_directive)
+  (keyword_pound_expression)
+] @keyword.directive
 
 (system_defined_function) @function.builtin
 
@@ -59,6 +61,7 @@
 [
   (ssvn)
   (system_defined_variable)
+  (keyword_this)
   "$$"
 ] @variable.builtin
 
@@ -167,6 +170,7 @@
   (keyword_pound_define)
   (keyword_pound_def1arg)
   (keyword_pound_if)
+  (keyword_sqlcompile)
   (keyword_pound_elseif)
   (keyword_pound_else)
   (keyword_pound_endif)
@@ -199,6 +203,7 @@
 
 [
   (keyword_print)
+  (keyword_select)
   (keyword_zprint)
   (keyword_set)
   (keyword_write)
@@ -307,6 +312,8 @@
 (job_argument
   "." @function.builtin)
 
+(typename) @type.builtin
+
 ; === END CORE ===
 ; === BEGIN UDL ===
 (iris_username) @keyword.directive
@@ -371,7 +378,6 @@
   (xdata_name)
   (storage_name)
   (xml_identifier)
-  (index_property)
   (column_name)
 ] @variable.member
 
@@ -379,8 +385,6 @@
   (return_type)
   (keyword_list)
   (parameter_type)
-  (index_type)
-  (index_property_type)
   (typename)
 ] @type.builtin
 

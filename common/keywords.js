@@ -43,6 +43,7 @@ module.exports = {
     */
   keyword_classmethod: (_) => /ClassMethod/i,
   keyword_method: (_) => /Method/i,
+  keyword_clientmethod: (_) => choice(/ClientMethod/i, /ClientClassMethod/i),
 
   // special case: methods
   method_keyword_codemode_expression: ($) =>
@@ -54,21 +55,20 @@ module.exports = {
   // Same shape as _external_method_keywords, but restricted to
   // Language = python so the body can be lexed by a Python-aware scanner
   // token instead of the language-agnostic brace counter.
-  _python_method_keywords: ($) =>
-    specialKeywords(
-      $.method_keyword,
-      alias(
-        $.method_keyword_python_language,
-        $.method_keyword_external_language,
-      ),
-    ),
   _call_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.call_method_keyword),
   call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
   method_keyword_external_language: ($) =>
-    seq(/Language/i, '=', alias(/(?:tsql|ispl)/i, $.typename)),
-  method_keyword_python_language: ($) =>
-    seq(/Language/i, '=', alias(/python/i, $.typename)),
+    seq(/Language/i, '=',
+      choice(
+        alias(/(?:tsql|ispl|javascript)/i, $.typename),
+        seq(alias(/python/i, $.typename), $._is_python),
+      ),
+    ),
+  // method_keyword_python_language: ($) =>
+  //   seq(/Language/i, '=', alias(/python/i, $.typename)),
+  // method_keyword_javascript_language: ($) =>
+  //   seq(/Language/i, '=', alias(/javascript/i, $.typename)),
   // regular method keywords
   _keyword_client_name: ($) =>
     seq(/ClientName/i, '=', alias(/[^\s'`,\[\]\(\)\{\}]+/, $.property_name)),
@@ -85,7 +85,7 @@ module.exports = {
   _method_keyword_no_arg: ($) =>
     seq(
       optional($.keyword_not),
-      /(?:ReturnResultsets|NotInheritable|ForceGenerate|Deprecated|Abstract|Internal|WebMethod|Private|SqlProc|Final)/i,
+      /(?:ReturnResultsets|NotInheritable|ForceGenerate|Deprecated|Abstract|Internal|WebMethod|Private|SqlProc|Final|ZenMethod)/i,
     ),
   _keyword_sql_name: ($) => seq(/SqlName/i, '=', alias($.sql_id, $.query_name)),
   _method_keyword_value: ($) =>
@@ -98,7 +98,7 @@ module.exports = {
       seq(/PublicList/i, '=', $._method_names),
       seq(/(?:GenerateAfter|PlaceAfter)/i, '=', $._method_names),
       seq(/ExternalProcName/i, '=', alias($._base_variable, $.typename)),
-      seq(/CodeMode/i, '=', alias(/(?:objectgenerator|code)/i, $.typename)),
+      seq(/CodeMode/i, '=', alias(/(?:objectgenerator|code|generator)/i, $.typename)),
       seq(/Language/i, '=', alias(/objectscript/i, $.typename)),
       seq(
         /ProcedureBlock/i,
@@ -267,15 +267,6 @@ module.exports = {
   _trigger_keywords: ($) => buildKeywords($.trigger_keyword),
   _external_trigger_keywords: ($) =>
     specialKeywords($.trigger_keyword, $.method_keyword_external_language),
-  // Trigger counterpart of _python_method_keywords.
-  _python_trigger_keywords: ($) =>
-    specialKeywords(
-      $.trigger_keyword,
-      alias(
-        $.method_keyword_python_language,
-        $.method_keyword_external_language,
-      ),
-    ),
 
   /*
     PROPERTY KEYWORDS
@@ -285,6 +276,17 @@ module.exports = {
     seq(
       optional($.keyword_not),
       /(?:Multidimensional|Calculated|Deprecated|SqlComputed|Transient|Deferred|Readonly|Required|Identity|Internal|Private|Final)/i,
+    ),
+  _initial_expression: ($) =>
+    seq(
+      /InitialExpression/i,
+      '=',
+      choice(
+        seq('{', $.expression, '}'),
+        alias($.string_literal, $.typename),
+        alias($._base_variable, $.typename),
+        alias($.numeric_literal, $.typename),
+      ),
     ),
   _property_keyword_value: ($) =>
     choice(
@@ -298,16 +300,7 @@ module.exports = {
       $._keyword_client_name,
       buildBoolKeywordArg($, /ComputeLocalOnly/i),
       $.keyword_server_only,
-      seq(
-        /InitialExpression/i,
-        '=',
-        choice(
-          seq('{', $.expression, '}'),
-          alias($.string_literal, $.typename),
-          alias($._base_variable, $.typename),
-          alias($.numeric_literal, $.typename),
-        ),
-      ),
+      $._initial_expression,
       seq(/SqlColumnNumber/i, '=', $.numeric_literal),
       seq(/SqlComputeCode/i, '=', $.rhs_sql_compute_code),
       seq(
@@ -348,12 +341,14 @@ module.exports = {
   rhs_sql_compute_code: ($) =>
     seq(
       '{',
-      /Set/i,
+      $.keyword_set,
       '{',
       choice('*', $.sql_id),
       '}',
       '=',
-      choice(seq('{', $.expression, '}'), $.expression),
+      choice(
+        seq('{', $.expression, '}'),
+        $.expression),
       '}',
     ),
 
@@ -364,7 +359,7 @@ module.exports = {
     RELATIONSHIP KEYWORDS
     */
   relationship_keyword: ($) =>
-    choice($._keyword_cardinality, $._keyword_inverse, $._keyword_on_delete),
+    choice($._keyword_cardinality, $._keyword_inverse, $._keyword_on_delete, /(?:required|readonly)/i, $._initial_expression),
   relationship_keywords: ($) => buildKeywords($.relationship_keyword),
   _keyword_cardinality: ($) =>
     seq(
@@ -491,18 +486,27 @@ module.exports = {
     choice(
       // NOTE: mimetype is INTENTIONALLY excluded, see $._xdata_any rule
       seq(/SchemaSpec/i, '=', $.string_literal),
-      seq(/XMLNamespace/i, '=', $.string_literal),
+      seq(/XMLNamespace/i, '=', choice($.string_literal, alias($.objectscript_identifier, $.typename))),
       seq(optional($.keyword_not), /(?:Deprecated|Internal)/i),
     ),
   mime_type: (_) =>
     token(
-      /[A-Za-z0-9!#$&^_.-]+\/[A-Za-z0-9!#$&^_.-]+(?:\+[A-Za-z0-9!#$&^_.-]+)*(?:;[A-Za-z0-9!#$&^_.-]+=[A-Za-z0-9!#$&^_.-]+)*/,
+      /[A-Za-z0-9!#$&^_.-]+(?:\/[A-Za-z0-9!#$&^_.-]+(?:\+[A-Za-z0-9!#$&^_.-]+)*)?(?:;[A-Za-z0-9!#$&^_.-]+=[A-Za-z0-9!#$&^_.-]+)*/,
     ),
+
   xdata_keyword_mimetype: ($) =>
     seq(
       /MimeType/i,
       '=',
-      alias(choice($.mime_type, $.string_literal), $.typename),
+      alias(
+        choice(
+          $.python_mime_type,
+          $.text_mime_type,
+          $.mime_type,
+          $.string_literal,
+        ),
+        $.typename,
+      ),
     ),
 
   _xdata_keywords: ($) =>
