@@ -384,7 +384,6 @@
   (column_name)
 ] @variable.member
 
-
-  (keyword_list) @type.builtin
+(keyword_list) @type.builtin
 
 ; === END LOCAL ===
