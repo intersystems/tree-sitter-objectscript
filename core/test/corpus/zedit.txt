@@ -57,3 +57,31 @@ Valid Zedit Shorthand Multiple Files
           (identifier))
         (routine_name
           (identifier))))))
+
+===
+Valid Zload
+===
+ Zload Foo.bar.1
+---
+
+(source_file
+  (statements
+    (statement
+      (z_file_commands
+        (keyword_zload)
+        (routine_name
+          (identifier))))))
+
+===
+Valid Zsave
+===
+ ZSave Foo.bar.1
+---
+
+(source_file
+  (statements
+    (statement
+      (z_file_commands
+        (keyword_zsave)
+        (routine_name
+          (identifier))))))

@@ -5650,7 +5650,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "command_zload"
+          "name": "z_file_commands"
         },
         {
           "type": "SYMBOL",
@@ -13538,11 +13538,6 @@
                     },
                     {
                       "type": "PATTERN",
-                      "value": "ZS(AVE)?",
-                      "flags": "i"
-                    },
-                    {
-                      "type": "PATTERN",
                       "value": "ZSYNC",
                       "flags": "i"
                     },
@@ -13707,11 +13702,6 @@
                     },
                     {
                       "type": "PATTERN",
-                      "value": "ZS(AVE)?",
-                      "flags": "i"
-                    },
-                    {
-                      "type": "PATTERN",
                       "value": "ZSYNC",
                       "flags": "i"
                     },
@@ -13779,15 +13769,30 @@
         }
       ]
     },
-    "command_zload": {
+    "z_file_commands": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_zload"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "keyword_zload"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "ZS(AVE)?",
+                    "flags": "i"
+                  },
+                  "named": true,
+                  "value": "keyword_zsave"
+                }
+              ]
             },
             {
               "type": "CHOICE",
@@ -13811,8 +13816,23 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "keyword_zload"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "keyword_zload"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "ZS(AVE)?",
+                    "flags": "i"
+                  },
+                  "named": true,
+                  "value": "keyword_zsave"
+                }
+              ]
             },
             {
               "type": "CHOICE",
@@ -13841,7 +13861,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "_expression_list"
+              "name": "_routine_arguments"
             }
           ]
         }
@@ -14179,6 +14199,68 @@
         ]
       }
     },
+    "_routine_arguments": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "("
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_quote_permitting_identifier"
+                  },
+                  "named": true,
+                  "value": "routine_name"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "ALIAS",
+                        "content": {
+                          "type": "SYMBOL",
+                          "name": "_quote_permitting_identifier"
+                        },
+                        "named": true,
+                        "value": "routine_name"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": ")"
+            }
+          ]
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_quote_permitting_identifier"
+          },
+          "named": true,
+          "value": "routine_name"
+        }
+      ]
+    },
     "_target_variable": {
       "type": "CHOICE",
       "members": [
@@ -14269,66 +14351,8 @@
           "value": "keyword_zedit"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "ALIAS",
-                      "content": {
-                        "type": "SYMBOL",
-                        "name": "_quote_permitting_identifier"
-                      },
-                      "named": true,
-                      "value": "routine_name"
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": ","
-                          },
-                          {
-                            "type": "ALIAS",
-                            "content": {
-                              "type": "SYMBOL",
-                              "name": "_quote_permitting_identifier"
-                            },
-                            "named": true,
-                            "value": "routine_name"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "STRING",
-                  "value": ")"
-                }
-              ]
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_quote_permitting_identifier"
-              },
-              "named": true,
-              "value": "routine_name"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "_routine_arguments"
         }
       ]
     },

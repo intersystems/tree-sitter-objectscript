@@ -232,6 +232,7 @@
   (keyword_zremove)
   (command_keyword)
   (keyword_zload)
+  (keyword_zsave)
   (keyword_for)
   (keyword_while)
   (keyword_continue)

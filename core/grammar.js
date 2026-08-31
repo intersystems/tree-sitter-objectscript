@@ -1267,11 +1267,11 @@ module.exports = grammar(objectscript_expr, {
         $._expression_list,
       ),
 
-    command_zload: ($) =>
+    z_file_commands: ($) =>
       build_command_rule_argumentless_or_argumentful_block_allowed(
         $,
-        $.keyword_zload,
-        $._expression_list,
+        choice($.keyword_zload, alias(/ZS(AVE)?/i, $.keyword_zsave)),
+        $._routine_arguments,
       ),
 
     // https://docs.intersystems.com/ens201817/csp/docbook/Doc.View.cls?KEY=RCOS_cmvcrt
@@ -1324,6 +1324,7 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
+    _routine_arguments: ($) => build_arguments(alias($._quote_permitting_identifier, $.routine_name)),
     _target_variable: ($) =>
       choice($._glvn, $.indirection, $.instance_variable, $.oref_chain_expr),
 
@@ -1336,7 +1337,7 @@ module.exports = grammar(objectscript_expr, {
     command_zedit: ($) =>
       seq(
         alias(/ze(dit)?/i, $.keyword_zedit),
-        build_arguments(alias($._quote_permitting_identifier, $.routine_name)),
+        $._routine_arguments,
       ),
 
     post_conditional: ($) =>
