@@ -62,7 +62,7 @@ const STATEMENT_RULE_NAMES = [
   'tag_statement',
   'tag_end_if',
   'procedure',
-  'command_zload',
+  'z_file_commands',
   'command_zedit'
 ];
 
@@ -87,7 +87,6 @@ const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
   /ZONERROR/i,
   /ZOS/i,
   /ZREAD/i,
-  /ZS(AVE)?/i,
   /ZSYNC/i,
   /ZTA/i,
   /ZTb/i,

@@ -1549,7 +1549,29 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       scanner->terminated_newline = false;
       lexer->mark_end(lexer);
       return true;
+    } else if (lexer->lookahead == '(') {
+        lexer->result_symbol = TAG;
+        scanner->terminated_newline = false;
+        lexer->mark_end(lexer);
+        return true;
+    } else if (iswspace(lexer->lookahead)) {
+        lexer->mark_end(lexer);
+        advance(lexer);
+        int32_t ident[96];
+        uint32_t len = 0;
+        while (valid_tag_char(lexer->lookahead)) {
+            if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
+            advance(lexer);
+        }
+        if (is_statement_or_class_keyword(ident, len)) {
+            lexer->result_symbol = TAG;
+            scanner->terminated_newline = false;
+            return true;
+        } else {
+            return false;
+        }
     }
+    lexer->mark_end(lexer);
     return false;
   }
   else if (valid_symbols[ANGLED_BRACKET_FENCED_TEXT]) {

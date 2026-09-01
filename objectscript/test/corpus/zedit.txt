@@ -1,0 +1,112 @@
+===
+Valid Zedit One File
+===
+ ZEDIT %Hi.int
+---
+
+(source_file
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zedit Shorthand One File
+===
+ ZE %Hi.int
+---
+
+(source_file
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zedit Multiple Files
+===
+ ZEDIT (%Hi.int, %AI.Agent.cls)
+---
+
+(source_file
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier))
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zedit Shorthand Multiple Files
+===
+ ZE (%Hi.int, %AI.Agent.cls)
+---
+
+(source_file
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier))
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zload
+===
+ Zload Foo.bar.1
+---
+
+(source_file
+  (statement
+    (z_file_commands
+      (keyword_zload)
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zsave
+===
+ ZSave Foo.bar.1
+---
+
+(source_file
+  (statement
+    (z_file_commands
+      (keyword_zsave)
+      (routine_name
+        (identifier)))))
+
+===
+Valid Zedit with keywords
+===
+ zedit User.test.int:/UNDEFINED
+ zedit %AI.Test:(/TRANSLATE=0:/IOTABLE="test")
+---
+
+(source_file
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier))
+      (device_params
+        (device_keywords
+          (mnemonic_name)))))
+  (statement
+    (command_zedit
+      (keyword_zedit)
+      (routine_name
+        (identifier))
+      (device_params
+        (device_keywords
+          (mnemonic_name)
+          (expression
+            (numeric_literal)))
+        (device_keywords
+          (mnemonic_name)
+          (expression
+            (string_literal)))))))

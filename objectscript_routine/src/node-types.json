@@ -1428,6 +1428,10 @@
       "required": true,
       "types": [
         {
+          "type": "device_params",
+          "named": true
+        },
+        {
           "type": "keyword_zedit",
           "named": true
         },
@@ -1484,29 +1488,6 @@
         },
         {
           "type": "ssvn",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "command_zload",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_zload",
-          "named": true
-        },
-        {
-          "type": "post_conditional",
           "named": true
         }
       ]
@@ -1935,10 +1916,6 @@
           "named": true
         },
         {
-          "type": "command_zload",
-          "named": true
-        },
-        {
           "type": "command_zn",
           "named": true
         },
@@ -2028,6 +2005,10 @@
         },
         {
           "type": "tag_statement",
+          "named": true
+        },
+        {
+          "type": "z_file_commands",
           "named": true
         }
       ]
@@ -4729,10 +4710,6 @@
           "named": true
         },
         {
-          "type": "command_zload",
-          "named": true
-        },
-        {
           "type": "command_zn",
           "named": true
         },
@@ -4822,6 +4799,10 @@
         },
         {
           "type": "tag_statement",
+          "named": true
+        },
+        {
+          "type": "z_file_commands",
           "named": true
         }
       ]
@@ -5303,6 +5284,33 @@
         },
         {
           "type": "post_conditional",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "z_file_commands",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_zload",
+          "named": true
+        },
+        {
+          "type": "keyword_zsave",
+          "named": true
+        },
+        {
+          "type": "post_conditional",
+          "named": true
+        },
+        {
+          "type": "routine_name",
           "named": true
         }
       ]
@@ -6080,6 +6088,10 @@
   },
   {
     "type": "keyword_zremove",
+    "named": true
+  },
+  {
+    "type": "keyword_zsave",
     "named": true
   },
   {

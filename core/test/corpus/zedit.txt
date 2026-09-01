@@ -57,3 +57,63 @@ Valid Zedit Shorthand Multiple Files
           (identifier))
         (routine_name
           (identifier))))))
+
+===
+Valid Zload
+===
+ Zload Foo.bar.1
+---
+
+(source_file
+  (statements
+    (statement
+      (z_file_commands
+        (keyword_zload)
+        (routine_name
+          (identifier))))))
+
+===
+Valid Zsave
+===
+ ZSave Foo.bar.1
+---
+
+(source_file
+  (statements
+    (statement
+      (z_file_commands
+        (keyword_zsave)
+        (routine_name
+          (identifier))))))
+
+===
+Valid Zedit with keywords
+===
+ zedit User.test.int:/UNDEFINED
+ zedit %AI.Test:(/TRANSLATE=0:/IOTABLE="test")
+---
+
+(source_file
+  (statements
+    (statement
+      (command_zedit
+        (keyword_zedit)
+        (routine_name
+          (identifier))
+        (device_params
+          (device_keywords
+            (mnemonic_name)))))
+    (statement
+      (command_zedit
+        (keyword_zedit)
+        (routine_name
+          (identifier))
+        (device_params
+          (device_keywords
+            (mnemonic_name)
+            (expression
+              (numeric_literal)))
+          (device_keywords
+            (mnemonic_name)
+            (expression
+              (string_literal))))))))
