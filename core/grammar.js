@@ -32,6 +32,7 @@ const {
   build_command_rule_argumentful_block_allowed,
   build_parameter_options_three,
   build_parameter_options_two,
+  build_parameter_option,
   build_dotted_block_no_params,
   build_block_no_params,
   build_special_dotted_block_has_params,
@@ -1337,7 +1338,8 @@ module.exports = grammar(objectscript_expr, {
     command_zedit: ($) =>
       seq(
         alias(/ze(dit)?/i, $.keyword_zedit),
-        $._routine_arguments,
+        build_arguments(alias($._quote_permitting_identifier, $.routine_name)),
+        optional(build_parameter_option($.device_params)),
       ),
 
     post_conditional: ($) =>

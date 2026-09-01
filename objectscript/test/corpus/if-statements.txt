@@ -1202,3 +1202,32 @@ If statement, valid with multiple lines of comments and a block
         (binary_operator)
         (expression
           (numeric_literal))))))
+
+===
+valid statement following else
+===
+ Else  &js<>
+---
+
+(source_file
+  (statement
+    (command_else
+      (keyword_oldelse)
+      (statement
+        (embedded_js
+          (keyword_js)
+          (angled_bracket_fenced_text))))))
+
+===
+valid if special do case
+===
+ If 1 { d  }
+---
+
+(source_file
+  (statement
+    (command_if
+      (keyword_if)
+      (expression
+        (numeric_literal))
+      (keyword_do_old))))

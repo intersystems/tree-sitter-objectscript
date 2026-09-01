@@ -916,3 +916,17 @@ Write Mnemonic Valid
         (write_device_control
           (write_mnemonic
             (mnemonic_name)))))))
+
+===
+write with empty block
+===
+ w {}
+---
+
+(source_file
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (json_object_literal))))))

@@ -357,6 +357,15 @@ function build_parameter_options_two(firstSlot, secondSlot) {
   );
 }
 
+
+/**
+ * @param {RuleOrLiteral} firstSlot
+ * @returns {RuleOrLiteral}
+ */
+function build_parameter_option(firstSlot) {
+  return seq(token.immediate(':'), firstSlot);
+}
+
 /**
  * @param {RuleOrLiteral} firstSlot
  * @param {RuleOrLiteral} secondSlot
@@ -619,6 +628,7 @@ module.exports = {
   build_command_rule_argumentful_block_allowed,
   build_parameter_options_three,
   build_parameter_options_two,
+  build_parameter_option,
   build_dotted_block_no_params,
   build_block_no_params,
   build_special_dotted_block_has_params,

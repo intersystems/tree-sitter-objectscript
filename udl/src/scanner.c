@@ -49,9 +49,16 @@ static bool scan(struct ObjectScript_Udl_Scanner *scanner, TSLexer *lexer, const
   }
 
   if (valid_symbols[PYTHON_MIME_TYPE]) {
-    lexer->mark_end(lexer);
+        lexer->mark_end(lexer);
+        int count = 0;
         while(iswspace(lexer->lookahead)) {
+            count ++;
             advance(lexer);
+        }
+        if (count > 0) {
+            lexer -> mark_end(lexer);
+            lexer->result_symbol = _WHITESPACE;
+            return true;
         }
         bool has_string = false;
         if (lexer->lookahead == '"') {

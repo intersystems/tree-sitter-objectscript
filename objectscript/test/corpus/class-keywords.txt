@@ -941,21 +941,40 @@ Class X Extends (A, B, C) [ Inheritance = right ]
 ---
 
 (source_file
-  (class_definition
-    (keyword_class)
-    (class_name
-      (identifier))
-    (class_extends
-      (keyword_extends)
-      (class_name
-        (identifier))
-      (class_name
-        (identifier))
-      (class_name
-        (identifier)))
-    (class_keyword
-      (typename))
-    (class_body)))
+  (statement
+    (tag_statement
+      (tag)))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))
+          (binary_operator)
+          (expression
+            (json_object_literal)))))))
 
 ===
 Inheritance right
@@ -966,21 +985,40 @@ Class X Extends (A, B, C) [ Inheritance = left ]
 ---
 
 (source_file
-  (class_definition
-    (keyword_class)
-    (class_name
-      (identifier))
-    (class_extends
-      (keyword_extends)
-      (class_name
-        (identifier))
-      (class_name
-        (identifier))
-      (class_name
-        (identifier)))
-    (class_keyword
-      (typename))
-    (class_body)))
+  (statement
+    (tag_statement
+      (tag)))
+  (statement
+    (command_xecute
+      (keyword_xecute)
+      (xecute_argument
+        (expression
+          (lvn
+            (objectscript_identifier)
+            (method_args
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))
+              (method_arg
+                (expression
+                  (lvn
+                    (objectscript_identifier))))))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))
+          (binary_operator)
+          (expression
+            (lvn
+              (objectscript_identifier)))
+          (binary_operator)
+          (expression
+            (json_object_literal)))))))
 
 ===
 class keyword - ClientName simple
