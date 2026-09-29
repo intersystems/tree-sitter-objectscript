@@ -50,3 +50,15 @@ class TestLanguage(TestCase):
             tree_sitter.Query(lang, tree_sitter_objectscript_routine.INDENTS_QUERY)
         except Exception:
             self.fail("Error loading objectscript routine query files")
+
+    def test_grammars_are_abi_15_and_load_under_the_declared_floor(self):
+        # The generated parsers declare LANGUAGE_VERSION 15, which py-tree-sitter
+        # only supports from 0.25 (the `abi_version` attribute itself only exists
+        # from 0.25). Older releases fail to load them with "Incompatible Language
+        # version 15", so the `core` extra pins tree-sitter>=0.25.
+        for loader in (
+            tree_sitter_objectscript.language_objectscript,
+            tree_sitter_objectscript_udl.language_objectscript_udl,
+            tree_sitter_objectscript_routine.language_objectscript_routine,
+        ):
+            self.assertEqual(tree_sitter.Language(loader()).abi_version, 15)

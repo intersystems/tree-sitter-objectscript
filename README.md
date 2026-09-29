@@ -51,7 +51,7 @@ npm ci
 cargo test --lib --package tree-sitter-objectscript
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install -U pip setuptools wheel pytest tree-sitter
+python3 -m pip install -U pip setuptools wheel pytest "tree-sitter>=0.25"
 python3 setup.py build_ext --inplace
 PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_binding.py
 npm test
