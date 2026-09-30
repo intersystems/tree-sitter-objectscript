@@ -6,7 +6,7 @@ Valid Embedded SQL
     WHERE %ID = 43)
     &sql()
     &sql(SELECT Name INTO :a FROM Sample.Person)
-    &sql(SELECT COUNT(*) INTO :count 
+    &sql(SELECT COUNT(*) INTO :count
     FROM MyApp.Student)
     &sql(SELECT * INTO :tflds() FROM Sample.Person )
     &sql(SELECT Name,Home_State
@@ -119,7 +119,7 @@ SQL Cursor
     &sql(FETCH C1)
 
     While (SQLCODE = 0) {
-        Write id, ":  ", name,!        
+        Write id, ":  ", name,!
     &sql(FETCH C1)
     }
 
@@ -270,7 +270,7 @@ Valid ## syntax
     ##sql(FETCH C1)
 
     While (SQLCODE = 0) {
-    Write id, ":  ", name,!        
+    Write id, ":  ", name,!
     ##sql(FETCH C1)
     }
 
@@ -345,4 +345,17 @@ Valid ## syntax
     (embedded_sql
       (embedded_sql_hash
         (keyword_embedded_sql_hash)
+        (paren_fenced_text)))))
+
+===
+embedded sql
+===
+	&sql(DELETE FROM Alert WHERE AlertTime < :Time)
+---
+
+(source_file
+  (statement
+    (embedded_sql
+      (embedded_sql_amp
+        (keyword_embedded_sql_amp)
         (paren_fenced_text)))))

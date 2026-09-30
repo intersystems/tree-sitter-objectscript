@@ -48,20 +48,20 @@ module.exports = {
   // special case: methods
   method_keyword_codemode_expression: ($) =>
     seq(/CodeMode/i, '=', alias(/expression/i, $.typename)),
-  _expression_method_keywords: ($) =>
+  expression_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.method_keyword_codemode_expression),
-  _external_method_keywords: ($) =>
-    specialKeywords($.method_keyword, $.method_keyword_external_language),
+  external_method_keywords: ($) =>
+    specialKeywords($.method_keyword, $.keyword_external_language),
   // Same shape as _external_method_keywords, but restricted to
   // Language = python so the body can be lexed by a Python-aware scanner
   // token instead of the language-agnostic brace counter.
-  _call_method_keywords: ($) =>
+  call_method_keywords: ($) =>
     specialKeywords($.method_keyword, $.call_method_keyword),
   call_method_keyword: ($) => seq(/CodeMode/i, '=', alias(/call/i, $.typename)),
-  method_keyword_external_language: ($) =>
+  keyword_external_language: ($) =>
     seq(/Language/i, '=',
       choice(
-        alias(/(?:tsql|ispl|javascript)/i, $.typename),
+        alias(/(?:tsql|ispl|javascript|basic)/i, $.typename),
         seq(alias(/python/i, $.typename), $._is_python),
       ),
     ),
@@ -112,7 +112,7 @@ module.exports = {
     ),
   method_keyword: ($) =>
     choice($._method_keyword_no_arg, $._method_keyword_value),
-  _method_keywords: ($) => buildKeywords($.method_keyword),
+  method_keywords: ($) => buildKeywords($.method_keyword),
   _method_names: ($) =>
     build_arguments(alias($._quote_permitting_identifier, $.method_name)),
   xml_identifier: (_) => /[A-Za-z_][A-Za-z0-9._-]*/,
@@ -218,7 +218,7 @@ module.exports = {
       $._keyword_client_name,
     ),
   query_keyword: ($) => choice($._query_keyword_no_arg, $._query_keyword_value),
-  _query_keywords: ($) => buildKeywords($.query_keyword),
+  query_keywords: ($) => buildKeywords($.query_keyword),
 
   /*
       TRIGGER KEYWORDS
@@ -260,9 +260,9 @@ module.exports = {
     ),
   trigger_keyword: ($) =>
     choice($._trigger_keyword_no_arg, $._trigger_keyword_value),
-  _trigger_keywords: ($) => buildKeywords($.trigger_keyword),
-  _external_trigger_keywords: ($) =>
-    specialKeywords($.trigger_keyword, $.method_keyword_external_language),
+  trigger_keywords: ($) => buildKeywords($.trigger_keyword),
+  external_trigger_keywords: ($) =>
+    specialKeywords($.trigger_keyword, $.keyword_external_language),
 
   /*
     PROPERTY KEYWORDS
@@ -355,8 +355,8 @@ module.exports = {
     RELATIONSHIP KEYWORDS
     */
   relationship_keyword: ($) =>
-    choice($._keyword_cardinality, $._keyword_inverse, $._keyword_on_delete, /(?:required|readonly)/i, $._initial_expression),
-  relationship_keywords: ($) => buildKeywords($.relationship_keyword),
+    choice($._keyword_cardinality, $._keyword_inverse, $._keyword_on_delete),
+  relationship_keywords: ($) => buildKeywords(choice(alias($.property_keyword, $.relationship_keyword), $.relationship_keyword)),
   _keyword_cardinality: ($) =>
     seq(
       /Cardinality/i,
@@ -505,7 +505,7 @@ module.exports = {
       ),
     ),
 
-  _xdata_keywords: ($) =>
+  xdata_keywords: ($) =>
     buildKeywords(choice($.xdata_keyword, $.xdata_keyword_mimetype)),
   /*
       STORAGE KEYWORDS

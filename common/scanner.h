@@ -324,11 +324,14 @@ static bool lex_fenced_text(TSLexer *lexer,
   const char *comment_end = "-->";
   const char *script_start = "script";
   const char *script_end = "</script>";
-  while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029 || iswalnum(lexer->lookahead)) {
+  while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029) {
       advance(lexer);
   }
   if (lexer->lookahead == '<') {
       is_xml = true;
+  }
+  while(iswalnum(lexer->lookahead) || iswspace(lexer->lookahead)) {
+      advance(lexer);
   }
   while (!lexer->eof(lexer)) {
     while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029) {

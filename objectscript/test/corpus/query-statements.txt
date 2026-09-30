@@ -47,9 +47,10 @@ Query ByName(name As %String = "")
               (string_literal)
               (identifier)
               (string_literal)))
-          (query_keyword
-            (query_name))
-          (query_keyword)
+          (query_keywords
+            (query_keyword
+              (query_name))
+            (query_keyword))
           (external_method_body_content))))))
 
 ===
@@ -97,9 +98,10 @@ SELECT ID,Name,Title FROM Employee
               (string_literal)
               (identifier)
               (numeric_literal)))
-          (query_keyword)
-          (query_keyword
-            (query_name))
+          (query_keywords
+            (query_keyword)
+            (query_keyword
+              (query_name)))
           (external_method_body_content))))))
 
 ===
@@ -141,7 +143,8 @@ Query MyQuery(MyParam As %String(MAXLEN = 200)) As %SQLQuery [SqlProc]
             (keyword_as)
             (typename
               (identifier)))
-          (query_keyword)
+          (query_keywords
+            (query_keyword))
           (external_method_body_content))))))
 
 ===
@@ -307,8 +310,9 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)))
-          (query_keyword
-            (property_name))
+          (query_keywords
+            (query_keyword
+              (property_name)))
           (external_method_body_content))))))
 
 ===
@@ -348,9 +352,10 @@ Class Test {
             (keyword_as)
             (typename
               (identifier)))
-          (query_keyword
-            (property_name))
-          (query_keyword)
+          (query_keywords
+            (query_keyword
+              (property_name))
+            (query_keyword))
           (external_method_body_content))))))
 
 ===

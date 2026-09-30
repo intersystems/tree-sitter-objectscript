@@ -359,7 +359,7 @@
   (query_keyword)
   (trigger_keyword)
   (xdata_keyword_mimetype)
-  (method_keyword_external_language)
+  (keyword_external_language)
   (relationship_keyword)
   (foreignkey_keyword)
   (parameter_keyword)
@@ -382,7 +382,6 @@
   (xdata_name)
   (storage_name)
   (xml_identifier)
-  (column_name)
 ] @variable.member
 
 (keyword_list) @type.builtin

@@ -167,9 +167,10 @@ Class MyApp.Test {
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword
-              (typename))
-            (method_keyword)
+            (method_keywords
+              (method_keyword
+                (typename))
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)
@@ -265,7 +266,8 @@ Class MyApp.Test {
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword)
+            (method_keywords
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)
@@ -789,8 +791,9 @@ ClassMethod TSQLTest() [ Language = tsql ]
             (method_name
               (identifier))
             (arguments)
-            (method_keyword_external_language
-              (typename))
+            (external_method_keywords
+              (keyword_external_language
+                (typename)))
             (external_method_body_content)))))))
 
 ====
@@ -844,8 +847,9 @@ Class test {
                     (identifier)))
                 (default_argument_value
                   (numeric_literal))))
-            (method_keyword_external_language
-              (typename))
+            (external_method_keywords
+              (keyword_external_language
+                (typename)))
             (external_method_body_content)))))))
 
 ===
@@ -887,8 +891,9 @@ Method Double(val As %Integer) As %Integer [ CodeMode = expression ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword_codemode_expression
-              (typename))
+            (expression_method_keywords
+              (method_keyword_codemode_expression
+                (typename)))
             (expression
               (lvn
                 (objectscript_identifier))
@@ -927,10 +932,11 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
             (method_name
               (identifier))
             (arguments)
-            (method_keyword
-              (typename))
-            (method_keyword
-              (false))
+            (method_keywords
+              (method_keyword
+                (typename))
+              (method_keyword
+                (false)))
             (statement
               (command_do
                 (keyword_do)
@@ -1000,8 +1006,9 @@ Class test {
             (method_name
               (identifier))
             (arguments)
-            (call_method_keyword
-              (typename))
+            (call_method_keywords
+              (call_method_keyword
+                (typename)))
             (routine_tag_call
               (line_ref
                 (method_name
@@ -1040,11 +1047,12 @@ Class MyApp.Person Extends %Persistent [DdlAllowed]
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (trigger_keyword
-            (trigger_event_value
+          (trigger_keywords
+            (trigger_keyword
+              (trigger_event_value
+                (typename)))
+            (trigger_keyword
               (typename)))
-          (trigger_keyword
-            (typename))
           (line_comment_1))))))
 
 ===
@@ -1085,7 +1093,8 @@ Method Add(p1 As %String) As %String [ WebMethod ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword)
+            (method_keywords
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)
@@ -1118,7 +1127,8 @@ Method Ping() [ WebMethod ]
             (method_name
               (identifier))
             (arguments)
-            (method_keyword)
+            (method_keywords
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)))))))))
@@ -1161,8 +1171,9 @@ Method Add(p1 As %String) As %String [ Not WebMethod ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword
-              (keyword_not))
+            (method_keywords
+              (method_keyword
+                (keyword_not)))
             (statement
               (command_quit
                 (keyword_quit)
@@ -1208,8 +1219,9 @@ Method Add(p1 As %String) As %String [ Private, WebMethod ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword)
-            (method_keyword)
+            (method_keywords
+              (method_keyword)
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)
@@ -1255,7 +1267,8 @@ ClassMethod Add(p1 As %String) As %String [ WebMethod ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword)
+            (method_keywords
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)
@@ -1301,7 +1314,8 @@ Method Add(p1 As %String) As %String [ wEbMeThOd ]
               (keyword_as)
               (typename
                 (identifier)))
-            (method_keyword)
+            (method_keywords
+              (method_keyword))
             (statement
               (command_quit
                 (keyword_quit)

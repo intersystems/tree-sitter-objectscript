@@ -304,7 +304,7 @@ module.exports = grammar({
       ),
     keyword_super: (_) => /##SUPER/i,
     superclass_method_call: ($) => seq($.keyword_super, $.method_args),
-    expression_call: ($) => seq(alias(/##expression/i, $.keyword_pound_expression), $.method_args),
+    expression_call: ($) => seq(alias(choice(/##expression/i, /##safeexpression/i), $.keyword_pound_expression), $.method_args),
     extrinsic_function: ($) =>
       // $$tag^rtn or $$@var
       prec.left(seq('$$', $._extrinsic_reference, optional($.method_args))),
