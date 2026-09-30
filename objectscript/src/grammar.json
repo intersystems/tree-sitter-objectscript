@@ -828,9 +828,19 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "PATTERN",
-            "value": "##expression",
-            "flags": "i"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "##expression",
+                "flags": "i"
+              },
+              {
+                "type": "PATTERN",
+                "value": "##safeexpression",
+                "flags": "i"
+              }
+            ]
           },
           "named": true,
           "value": "keyword_pound_expression"
