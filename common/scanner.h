@@ -314,6 +314,93 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   return false;
 }
 
+// Consumes an ObjectScript interpolation (#(...)# or ##(...)##) embedded in
+// &html/&xml text. Assumes lookahead is '#'. Inside the parens, '>' and '\''
+// are ObjectScript operators, not XML syntax, so they must not be treated as
+// tag ends or attribute quotes.
+static void skip_cos_interpolation(TSLexer *lexer) {
+  advance(lexer);
+  if (lexer->lookahead == '#') {
+    advance(lexer);
+  }
+  if (lexer->lookahead != '(') {
+    return;
+  }
+  int depth = 0;
+  while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
+    int32_t c = lexer->lookahead;
+    if (c == '"') {
+      advance(lexer);
+      while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
+        if (lexer->lookahead == '"') {
+          advance(lexer);
+          if (lexer->lookahead != '"') {
+            break;
+          }
+        }
+        advance(lexer);
+      }
+      continue;
+    }
+    advance(lexer);
+    if (c == '(') {
+      depth++;
+    } else if (c == ')') {
+      depth--;
+      if (depth == 0) {
+        break;
+      }
+    }
+  }
+  // consume the closing # (or ##)
+  if (lexer->lookahead == '#') {
+    advance(lexer);
+    if (lexer->lookahead == '#') {
+      advance(lexer);
+    }
+  }
+}
+
+// Consumes the rest of an XML tag up to (not including) the closing '>'.
+// A quote only opens an attribute value directly after '=', so stray quotes in
+// hand-written HTML (e.g. height=24") don't swallow the rest of the file.
+static void skip_xml_tag_body(TSLexer *lexer) {
+  int32_t prev = 0;
+  while (!lexer->eof(lexer) && lexer->lookahead != '>') {
+    int32_t c = lexer->lookahead;
+    if (c == '#') {
+      skip_cos_interpolation(lexer);
+      prev = '#';
+      continue;
+    }
+    if ((c == '"' || c == '\'') && prev == '=') {
+      advance(lexer);
+      while (!lexer->eof(lexer)) {
+        if (lexer->lookahead == '#') {
+          skip_cos_interpolation(lexer);
+          continue;
+        }
+        if (lexer->lookahead == c) {
+          advance(lexer);
+          if (lexer->lookahead == c) {
+            advance(lexer);
+          } else {
+            break;
+          }
+        } else {
+          advance(lexer);
+        }
+      }
+      prev = c;
+      continue;
+    }
+    if (!iswspace(c)) {
+      prev = c;
+    }
+    advance(lexer);
+  }
+}
+
 static bool lex_fenced_text(TSLexer *lexer,
                             enum ObjectScript_Core_Scanner_TokenType desired_symbol, int32_t l_delim,
                             int32_t r_delim, bool is_xml, bool has_python_comment, bool is_text) {
@@ -338,6 +425,10 @@ static bool lex_fenced_text(TSLexer *lexer,
         advance(lexer);
     }
     int32_t c = lexer->lookahead;
+    if (c == '#' && is_xml) {
+        skip_cos_interpolation(lexer);
+        continue;
+    }
     if (c == '<' && is_xml) {
         bool comment = true;
         bool is_code = false;
@@ -417,27 +508,7 @@ static bool lex_fenced_text(TSLexer *lexer,
                 }
                 advance(lexer);
             }
-            while (!lexer->eof(lexer) && lexer->lookahead != '>') {
-                if (lexer->lookahead == '"' || lexer->lookahead == '\'') {
-                  int32_t quote = lexer->lookahead;
-                  advance(lexer);
-                  while (!lexer->eof(lexer)) {
-                    if (lexer->lookahead == quote) {
-                      advance(lexer);
-                      if (lexer->lookahead == quote) {
-                        advance(lexer);
-                      } else {
-                        break;
-                      }
-                    } else {
-                      advance(lexer);
-                    }
-                  }
-                  continue;
-                }
-                advance(lexer);
-                continue;
-            }
+            skip_xml_tag_body(lexer);
             if (lexer->lookahead == '>') {
                 advance(lexer);
             }
@@ -470,27 +541,7 @@ static bool lex_fenced_text(TSLexer *lexer,
         }
 
         else {
-            while (!lexer->eof(lexer) && lexer->lookahead != '>') {
-                if (lexer->lookahead == '"' || lexer->lookahead == '\'') {
-                  int32_t quote = lexer->lookahead;
-                  advance(lexer);
-                  while (!lexer->eof(lexer)) {
-                     if (lexer->lookahead == quote) {
-                      advance(lexer);
-                      if (lexer->lookahead == quote) {
-                        advance(lexer);
-                      } else {
-                        break;
-                      }
-                    } else {
-                      advance(lexer);
-                    }
-                  }
-                  continue;
-                }
-                advance(lexer);
-                continue;
-            }
+            skip_xml_tag_body(lexer);
             // consume the >
             advance(lexer);
             continue;

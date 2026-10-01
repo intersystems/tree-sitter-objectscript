@@ -895,8 +895,14 @@ module.exports = grammar(objectscript_expr, {
           $.expression,
         ),
       ),
+    // #dim is a compile-time declaration, so IRIS allows it between the
+    // try block and its catch.
     command_trycatch: ($) =>
-      seq(build_block_no_params($, $.keyword_try), $.catch_block),
+      seq(
+        build_block_no_params($, $.keyword_try),
+        repeat($.pound_dim),
+        $.catch_block,
+      ),
 
     catch_block: ($) =>
       build_block($, $.keyword_catch, build_arguments($._target_var_arg)),
