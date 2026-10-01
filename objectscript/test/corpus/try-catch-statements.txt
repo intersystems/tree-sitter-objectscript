@@ -255,3 +255,52 @@ try catch dotted same line block
             (dotted_statement_block)
             (keyword_catch)
             (dotted_statement_block)))))))
+
+===
+try catch with #dim before catch
+===
+  TRY {
+    set x = 1
+  }
+  #dim e as %Exception.AbstractException
+  CATCH e {
+    set x = 2
+  }
+---
+
+(source_file
+  (statement
+    (command_trycatch
+      (keyword_try)
+      (statement
+        (command_set
+          (keyword_set)
+          (set_argument
+            (set_target
+              (lvn
+                (objectscript_identifier)))
+            (expression
+              (numeric_literal)))))
+      (pound_dim
+        (keyword_dim)
+        (lvn
+          (objectscript_identifier))
+        (keyword_as)
+        (variable_datatype
+          (typename
+            (objectscript_identifier_special))
+          (typename
+            (objectscript_identifier))))
+      (catch_block
+        (keyword_catch)
+        (lvn
+          (objectscript_identifier))
+        (statement
+          (command_set
+            (keyword_set)
+            (set_argument
+              (set_target
+                (lvn
+                  (objectscript_identifier)))
+              (expression
+                (numeric_literal)))))))))

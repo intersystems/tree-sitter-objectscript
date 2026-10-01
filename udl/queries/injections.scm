@@ -207,4 +207,9 @@
 ] @injection.content
   (#set! injection.language "comment"))
 
+(clientmethod
+  (external_method_body_content) @injection.content
+  (#set! injection.language "javascript")
+  (#set! injection.include-children "true"))
+
 ; === END LOCAL ===
