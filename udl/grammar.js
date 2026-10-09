@@ -262,7 +262,7 @@ module.exports = define_grammar(objectscript_core, {
       ),
 
     _call_method: ($) =>
-      seq($.call_method_keywords, '{', $.routine_tag_call, '}'),
+      seq($.call_method_keywords, '{', choice($.routine_tag_call, $._method_call), '}'),
 
     _core_method: ($) =>
       seq(optional($.method_keywords), $._class_statements_block),

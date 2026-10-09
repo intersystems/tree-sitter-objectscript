@@ -61,7 +61,7 @@ module.exports = {
   keyword_external_language: ($) =>
     seq(/Language/i, '=',
       choice(
-        alias(/(?:tsql|ispl|javascript|basic)/i, $.typename),
+        alias(/(?:tsql|ispl|javascript|basic|cpp)/i, $.typename),
         seq(alias(/python/i, $.typename), $._is_python),
       ),
     ),
@@ -137,14 +137,28 @@ module.exports = {
     ),
   _class_single_class_keyword: ($) =>
     seq(
-      /(?:EmbeddedClass|GeneratedBy|membersuper)/i,
+      /(?:EmbeddedClass|membersuper)/i,
       '=',
       alias($._quote_permitting_identifier, $.class_name),
+    ),
+  // GeneratedBy can name a generating class or a source file path,
+  // e.g. GeneratedBy = /path/to/AutoPage.csr or C:\path\to\AutoPage.csr
+  generated_by_path: (_) =>
+    token(/[A-Za-z0-9_.:%~$-]*[\/\\][A-Za-z0-9_.:%~$\/\\-]+/),
+  _class_generated_by_keyword: ($) =>
+    seq(
+      /GeneratedBy/i,
+      '=',
+      choice(
+        alias($._quote_permitting_identifier, $.class_name),
+        $.generated_by_path,
+      ),
     ),
   _class_keyword_value: ($) =>
     choice(
       $._class_name_list_keyword,
       $._class_single_class_keyword,
+      $._class_generated_by_keyword,
       $._class_sql_name_keyword,
       $._keyword_client_name,
       $.keyword_server_only,
@@ -337,16 +351,12 @@ module.exports = {
   rhs_sql_compute_code: ($) =>
     seq(
       '{',
-      $.keyword_set,
-      '{',
-      choice('*', $.sql_id),
-      '}',
-      '=',
-      choice(
-        seq('{', $.expression, '}'),
-        $.expression),
+      repeat1(
+        $.statement,
+      ),
       '}',
     ),
+
 
   property_keyword: ($) =>
     choice($._property_keyword_no_arg, $._property_keyword_value),
