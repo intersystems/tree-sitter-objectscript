@@ -266,14 +266,19 @@ module.exports = grammar(objectscript_expr, {
     pound_define: ($) =>
       seq(
         choice($.keyword_pound_define, $.keyword_pound_def1arg),
-        prec(
-          10,
+        prec(10, alias($._base_variable, $.macro_def)),
+        choice(
           seq(
-            alias($._base_variable, $.macro_def),
-            optional($.pound_define_variable_args),
+            prec(10, $.pound_define_variable_args),
+            choice(
+              // The value may follow the args directly, e.g. #define F(%a)(%a+1)
+              alias($._macro_value_after_args, $.macro_value),
+              $._statement_termination,
+            ),
           ),
+          $.macro_value,
+          $._statement_termination,
         ),
-        choice($.macro_value, $._statement_termination),
       ),
 
     pound_define_variable_args: ($) =>
@@ -350,13 +355,21 @@ module.exports = grammar(objectscript_expr, {
     macro_arg: (_) => /\%[A-Za-z0-9]+/,
     macro_value_line: ($) =>
       prec(0, seq(/[ \t]+/, /[^\n]*/, $._statement_termination)),
-    macro_value: ($) =>
+    // Lines after a ##continue line may start in column 0 (labels, #; comments)
+    _macro_value_line_unindented: ($) =>
+      seq(/[^\n]+/, $._statement_termination),
+    _macro_value_continued: ($) =>
       seq(
-        repeat(
-          // Multi-line macro (starts with continuation and can have more)
-          $.macro_value_line_with_continue,
-        ),
-        $.macro_value_line, // Final line without continuation
+        repeat1($.macro_value_line_with_continue),
+        // Final line without continuation
+        alias($._macro_value_line_unindented, $.macro_value_line),
+      ),
+    macro_value: ($) =>
+      choice($.macro_value_line, $._macro_value_continued),
+    _macro_value_after_args: ($) =>
+      choice(
+        alias($._macro_value_line_unindented, $.macro_value_line),
+        $._macro_value_continued,
       ),
 
     command_set: ($) =>
@@ -796,7 +809,7 @@ module.exports = grammar(objectscript_expr, {
       ),
     command_dowhile: ($) =>
       seq(
-        build_block_no_params($, $.keyword_do),
+        build_special_block_no_params($, $.keyword_do),
         $.keyword_while,
         $._expression_list,
       ),

@@ -465,6 +465,7 @@ module.exports = grammar({
                 ),
               ),
             ),
+            $.numeric_literal,
           ),
           token.immediate('}'),
           repeat($.oref_chain_segment),

@@ -1656,6 +1656,10 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "numeric_literal"
                 }
               ]
             },
@@ -6305,35 +6309,49 @@
           "type": "PREC",
           "value": 10,
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_base_variable"
-                },
-                "named": true,
-                "value": "macro_def"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "pound_define_variable_args"
-                  },
-                  {
-                    "type": "BLANK"
-                  }
-                ]
-              }
-            ]
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_base_variable"
+            },
+            "named": true,
+            "value": "macro_def"
           }
         },
         {
           "type": "CHOICE",
           "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "PREC",
+                  "value": 10,
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "pound_define_variable_args"
+                  }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_macro_value_after_args"
+                      },
+                      "named": true,
+                      "value": "macro_value"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_statement_termination"
+                    }
+                  ]
+                }
+              ]
+            },
             {
               "type": "SYMBOL",
               "name": "macro_value"
@@ -6776,19 +6794,68 @@
         ]
       }
     },
-    "macro_value": {
+    "_macro_value_line_unindented": {
       "type": "SEQ",
       "members": [
         {
-          "type": "REPEAT",
+          "type": "PATTERN",
+          "value": "[^\\n]+"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_statement_termination"
+        }
+      ]
+    },
+    "_macro_value_continued": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT1",
           "content": {
             "type": "SYMBOL",
             "name": "macro_value_line_with_continue"
           }
         },
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_macro_value_line_unindented"
+          },
+          "named": true,
+          "value": "macro_value_line"
+        }
+      ]
+    },
+    "macro_value": {
+      "type": "CHOICE",
+      "members": [
+        {
           "type": "SYMBOL",
           "name": "macro_value_line"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_macro_value_continued"
+        }
+      ]
+    },
+    "_macro_value_after_args": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_macro_value_line_unindented"
+          },
+          "named": true,
+          "value": "macro_value_line"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_macro_value_continued"
         }
       ]
     },
@@ -9925,6 +9992,10 @@
             {
               "type": "SYMBOL",
               "name": "keyword_do"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_argumentless_loop"
             },
             {
               "type": "SYMBOL",

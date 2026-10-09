@@ -496,13 +496,13 @@ static bool lex_fenced_text(TSLexer *lexer,
                 }
                 continue;
             }
-        } else if (lexer->lookahead == 's') {
+        } else if (towlower(lexer->lookahead) == 's') {
             bool is_script = true;
             for (unsigned i = 0; i < 6; i++) {
                 while (iswspace(lexer->lookahead)) {
                     advance(lexer);
                 }
-                if (lexer->lookahead != script_start[i]) {
+                if (towlower(lexer->lookahead) != script_start[i]) {
                     is_script = false;
                     break;
                 }
@@ -524,7 +524,7 @@ static bool lex_fenced_text(TSLexer *lexer,
                         while (iswspace(lexer->lookahead)) {
                             advance(lexer);
                         }
-                        if (lexer->lookahead != script_end[i]) {
+                        if (towlower(lexer->lookahead) != script_end[i]) {
                             is_script_end = false;
                             break;
                         }
@@ -834,7 +834,11 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     static const char pattern[] = "##continue";
     static const int  len       = sizeof(pattern)-1;
     int pos = 0;
-    if (!lexer->eof(lexer) && !iswspace(lexer->lookahead)) {
+    // _STATEMENT_TERMINATION is only valid right after the macro name/args,
+    // where the value must be separated by whitespace. On a line continued
+    // by ##continue it is not valid, and the line may start in column 0.
+    bool is_continued_line = !valid_symbols[_STATEMENT_TERMINATION];
+    if (!is_continued_line && !lexer->eof(lexer) && !iswspace(lexer->lookahead)) {
       scanner->terminated_newline = false;
       return false;
     }
@@ -1066,7 +1070,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
         return true;
     }
     // an argument that is exactly one space after the keyword
-    if (count == 1 && (is_label_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_') && valid_symbol_one_space) {
+    if (count == 1 && (is_label_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_' || (lexer->lookahead == '{' && !valid_symbol_argumentless_loop)) && valid_symbol_one_space) {
       lexer->mark_end(lexer);
       lexer->result_symbol = _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE;
       scanner->terminated_newline = false;

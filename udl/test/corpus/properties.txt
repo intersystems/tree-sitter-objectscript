@@ -107,17 +107,22 @@ Class barricade {
           (property_keywords
             (property_keyword
               (rhs_sql_compute_code
-                (keyword_set)
-                (expression
-                  (sql_field_reference
-                    (sql_field_identifier))
-                  (binary_operator)
-                  (expression
-                    (string_literal))
-                  (binary_operator)
-                  (expression
-                    (sql_field_reference
-                      (sql_field_identifier))))))
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (sql_field_reference))
+                      (expression
+                        (sql_field_reference
+                          (sql_field_identifier))
+                        (binary_operator)
+                        (expression
+                          (string_literal))
+                        (binary_operator)
+                        (expression
+                          (sql_field_reference
+                            (sql_field_identifier)))))))))
             (property_keyword))))
       (class_statement
         (property
@@ -131,10 +136,15 @@ Class barricade {
           (property_keywords
             (property_keyword
               (rhs_sql_compute_code
-                (keyword_set)
-                (expression
-                  (sql_field_reference
-                    (sql_field_identifier)))))
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (sql_field_reference))
+                      (expression
+                        (sql_field_reference
+                          (sql_field_identifier))))))))
             (property_keyword))))
       (documatic_line)
       (class_statement
@@ -162,15 +172,20 @@ Class barricade {
           (property_keywords
             (property_keyword
               (rhs_sql_compute_code
-                (keyword_set)
-                (expression
-                  (system_defined_function
-                    (method_arg
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (sql_field_reference))
                       (expression
-                        (system_defined_variable)))
-                    (method_arg
-                      (expression
-                        (numeric_literal)))))))
+                        (system_defined_function
+                          (method_arg
+                            (expression
+                              (system_defined_variable)))
+                          (method_arg
+                            (expression
+                              (numeric_literal))))))))))
             (property_keyword)
             (property_keyword
               (typename)
@@ -634,9 +649,15 @@ Class Test {
             (property_keyword)
             (property_keyword
               (rhs_sql_compute_code
-                (keyword_set)
-                (expression
-                  (numeric_literal))))
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (sql_field_reference))
+                      (expression
+                        (sql_field_reference
+                          (numeric_literal))))))))
             (property_keyword
               (typename)
               (typename))))))))
@@ -758,15 +779,20 @@ Class Test {
           (property_keywords
             (property_keyword
               (rhs_sql_compute_code
-                (keyword_set)
-                (expression
-                  (system_defined_function
-                    (method_arg
+                (statement
+                  (command_set
+                    (keyword_set)
+                    (set_argument
+                      (set_target
+                        (sql_field_reference))
                       (expression
-                        (system_defined_variable)))
-                    (method_arg
-                      (expression
-                        (numeric_literal)))))))
+                        (system_defined_function
+                          (method_arg
+                            (expression
+                              (system_defined_variable)))
+                          (method_arg
+                            (expression
+                              (numeric_literal))))))))))
             (property_keyword)))))))
 
 ===================================
