@@ -331,7 +331,7 @@ module.exports = grammar({
         // label+offset+routine, label+routine, numeric+offset+routine, etc.
         seq(
           optional(choice('+', '-')),
-          choice(alias($._base_variable, $.method_name), $.numeric_literal),
+          choice(alias($._base_variable, $.method_name), $.numeric_literal, $.macro),
           choice($.routine_ref, seq($.label_offset, optional($.routine_ref))),
         ),
         // routine only (^routine)

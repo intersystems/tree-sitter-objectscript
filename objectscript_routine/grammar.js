@@ -22,7 +22,6 @@ module.exports = define_grammar(objectscript_core, {
         choice($.compiled_header, $.routine_definition, $.statement),
         repeat(choice($.statement)),
       ),
-
     routine_definition: ($) =>
       seq(
         $.routine,
