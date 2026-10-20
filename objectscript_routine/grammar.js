@@ -21,7 +21,18 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         choice($.compiled_header, $.routine_definition, $.statement),
         repeat(choice($.statement)),
+        optional(alias($._unclosed_pound_ifndef, $.pound_ifndef)),
       ),
+    // An include guard (#ifndef X) is sometimes never closed, e.g. SMHEAP.inc.
+    // Only allowed as the last element of the file so that unclosed
+    // conditionals elsewhere are still errors and parser.c stays small.
+    _unclosed_pound_ifndef: ($) =>
+      prec.right(seq(
+        $.keyword_pound_ifndef,
+        $.expression,
+        repeat(choice($.statement, $.pound_elseif)),
+        optional($.pound_else),
+      )),
     routine_definition: ($) =>
       seq(
         $.routine,

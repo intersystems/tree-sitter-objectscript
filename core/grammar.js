@@ -342,7 +342,7 @@ module.exports = grammar(objectscript_expr, {
         $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        optional($._end_if),
+        $._end_if,
       )),
 
     pound_elseif: ($) =>
