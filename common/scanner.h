@@ -43,6 +43,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   COMPILED_HEADER,
   EXTERNAL_METHOD_BODY_CONTENT,
   STATEMENT_IN_MACRO,
+  _END_IF_END,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
@@ -89,7 +90,8 @@ static const char* token_names[] = {
   "_POST_CONDITIONAL_END",
   "COMPILED_HEADER",
   "EXTERNAL_METHOD_BODY_CONTENT",
-  "STATEMENT_IN_MACRO"
+  "STATEMENT_IN_MACRO",
+  "_END_IF_END"
 };
 
 #if 0
@@ -851,6 +853,21 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
 
         if (pos == len) {
           advance(lexer);
+          // Allow a trailing ##; comment, e.g. "##continue  ##; comment"
+          while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+            advance(lexer);
+          }
+          if (lexer->lookahead == '#') {
+            advance(lexer);
+            if (lexer->lookahead == '#') {
+              advance(lexer);
+              if (lexer->lookahead == ';') {
+                while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
+                  advance(lexer);
+                }
+              }
+            }
+          }
           int new_line_count = 0;
           while(iswspace(lexer->lookahead) && new_line_count<1) {
             if(lexer->lookahead=='\n') {
@@ -890,6 +907,15 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       scanner->terminated_newline = false;
       return true;
     }
+  }
+
+  if (valid_symbols[_END_IF_END]) {
+      while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
+          advance(lexer);
+      }
+      lexer->result_symbol = _END_IF_END;
+      scanner->terminated_newline = true;
+      return true;
   }
 
   if (valid_symbols[EMBEDDED_JS_SPECIAL_CASE_COMPLETE]) {
@@ -1096,7 +1122,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     else if (lexer->lookahead == '#') {
       lexer->mark_end(lexer);
       advance(lexer);
-      if (towlower(lexer->lookahead) == 'e' && valid_symbols[TAG] && scanner->special_pound_if_mode) {
+      if (towlower(lexer->lookahead) == 'e' && (valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
         int32_t directive[16];
         uint32_t len = 0;
         while (len < (sizeof(directive) / sizeof(directive[0])) &&
@@ -1109,6 +1135,13 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             scanner->special_pound_if_mode_if_depth -= 1;
             if (scanner->special_pound_if_mode_if_depth<1) {
               scanner->special_pound_if_mode=false;
+            }
+            // Anything after #endif on the same line is ignored (e.g. #endif ArgFor),
+            // but trailing comments are left for the comment rules
+            while (lexer->lookahead != '\n' && !lexer->eof(lexer) &&
+                   lexer->lookahead != ';' && lexer->lookahead != '/' &&
+                   lexer->lookahead != '#') {
+              advance(lexer);
             }
             lexer->result_symbol = TAG_END_IF;
             lexer->mark_end(lexer);
@@ -1727,7 +1760,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     lexer->result_symbol = _WHITESPACE;
     return true;
   }
-  else if (valid_symbols[TAG] && scanner->special_pound_if_mode) {
+  else if ((valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
     while (iswspace(lexer->lookahead)) {
       advance(lexer);
     }
@@ -1746,6 +1779,13 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
           scanner->special_pound_if_mode_if_depth -= 1;
           if (scanner->special_pound_if_mode_if_depth<1) {
             scanner->special_pound_if_mode=false;
+          }
+          // Anything after #endif on the same line is ignored (e.g. #endif ArgFor),
+          // but trailing comments are left for the comment rules
+          while (lexer->lookahead != '\n' && !lexer->eof(lexer) &&
+                 lexer->lookahead != ';' && lexer->lookahead != '/' &&
+                 lexer->lookahead != '#') {
+            advance(lexer);
           }
           lexer->result_symbol = TAG_END_IF;
           lexer->mark_end(lexer);

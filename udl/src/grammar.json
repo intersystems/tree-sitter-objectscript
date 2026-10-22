@@ -992,6 +992,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "numeric_literal"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "macro"
                 }
               ]
             },
@@ -5839,6 +5843,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "pound_undef"
+        },
+        {
+          "type": "SYMBOL",
           "name": "pound_execute"
         },
         {
@@ -5864,6 +5872,14 @@
         {
           "type": "SYMBOL",
           "name": "command_zedit"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_show"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_noshow"
         }
       ]
     },
@@ -5905,6 +5921,11 @@
       "value": "\\#include",
       "flags": "i"
     },
+    "keyword_pound_undef": {
+      "type": "PATTERN",
+      "value": "\\#undef",
+      "flags": "i"
+    },
     "keyword_pound_if": {
       "type": "PATTERN",
       "value": "\\#if",
@@ -5923,6 +5944,16 @@
     "keyword_pound_ifdef": {
       "type": "PATTERN",
       "value": "#ifdef",
+      "flags": "i"
+    },
+    "keyword_pound_show": {
+      "type": "PATTERN",
+      "value": "#show",
+      "flags": "i"
+    },
+    "keyword_pound_noshow": {
+      "type": "PATTERN",
+      "value": "#noshow",
       "flags": "i"
     },
     "keyword_pound_else": {
@@ -6536,8 +6567,21 @@
           "content": {
             "type": "ALIAS",
             "content": {
-              "type": "SYMBOL",
-              "name": "_base_variable"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_base_variable"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[0-9][A-Za-z0-9]*"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "%?[A-Za-z0-9]+(_[A-Za-z0-9]+)+"
+                }
+              ]
             },
             "named": true,
             "value": "macro_def"
@@ -6589,6 +6633,19 @@
         }
       ]
     },
+    "_end_if": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_endif"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_end_if_end"
+        }
+      ]
+    },
     "pound_define_variable_args": {
       "type": "PREC",
       "value": 15,
@@ -6603,35 +6660,52 @@
             }
           },
           {
-            "type": "CHOICE",
+            "type": "SEQ",
             "members": [
               {
-                "type": "SEQ",
+                "type": "CHOICE",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "macro_arg"
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "macro_arg"
+                      },
+                      {
+                        "type": "REPEAT",
+                        "content": {
+                          "type": "SEQ",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": ","
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "macro_arg"
+                            }
+                          ]
+                        }
+                      }
+                    ]
                   },
                   {
-                    "type": "REPEAT",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": ","
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "macro_arg"
-                        }
-                      ]
-                    }
+                    "type": "BLANK"
                   }
                 ]
               },
               {
-                "type": "BLANK"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               }
             ]
           },
@@ -6660,58 +6734,66 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "expression"
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
+              "type": "PREC_RIGHT",
+              "value": 0,
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "expression"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "statement"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "pound_elseif"
+                        }
+                      ]
+                    }
+                  },
+                  {
                     "type": "CHOICE",
                     "members": [
                       {
                         "type": "SYMBOL",
-                        "name": "statement"
+                        "name": "pound_else"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "pound_elseif"
+                        "type": "BLANK"
                       }
                     ]
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_end_if"
                   }
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "pound_else"
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "keyword_pound_endif"
-                }
-              ]
+                ]
+              }
             },
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "pound_if_special_case"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "keyword_pound_endif"
-                }
-              ]
+              "type": "PREC_RIGHT",
+              "value": 0,
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "pound_if_special_case"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_end_if"
+                  }
+                ]
+              }
             },
             {
               "type": "SEQ",
@@ -6750,51 +6832,118 @@
               ]
             },
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "pound_if_special_case_else_if"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "keyword_pound_elseif"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "expression"
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
+              "type": "PREC_RIGHT",
+              "value": 0,
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "pound_if_special_case_else_if"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "keyword_pound_elseif"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "expression"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "statement"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "pound_elseif"
+                        }
+                      ]
+                    }
+                  },
+                  {
                     "type": "CHOICE",
                     "members": [
                       {
                         "type": "SYMBOL",
-                        "name": "statement"
+                        "name": "pound_else"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "pound_elseif"
+                        "type": "BLANK"
                       }
                     ]
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_end_if"
                   }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "_dotted_block_pound_if": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_if"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_if_special_case"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_end_if"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_if_special_case_else"
                 },
                 {
                   "type": "CHOICE",
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "pound_else"
+                      "name": "keyword_pound_else"
                     },
                     {
-                      "type": "BLANK"
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "keyword_pound_elseif"
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "STRING",
+                            "value": "1"
+                          },
+                          "named": true,
+                          "value": "numeric_literal"
+                        }
+                      ]
                     }
                   ]
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "keyword_pound_endif"
                 }
               ]
             }
@@ -6803,94 +6952,102 @@
       ]
     },
     "pound_ifdef": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "keyword_pound_ifdef"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "keyword_pound_ifdef"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "statement"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_elseif"
+                }
+              ]
+            }
+          },
+          {
             "type": "CHOICE",
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "statement"
+                "name": "pound_else"
               },
               {
-                "type": "SYMBOL",
-                "name": "pound_elseif"
+                "type": "BLANK"
               }
             ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_end_if"
           }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "pound_else"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "keyword_pound_endif"
-        }
-      ]
+        ]
+      }
     },
     "pound_ifndef": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "keyword_pound_ifndef"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "keyword_pound_ifndef"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "statement"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_elseif"
+                }
+              ]
+            }
+          },
+          {
             "type": "CHOICE",
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "statement"
+                "name": "pound_else"
               },
               {
-                "type": "SYMBOL",
-                "name": "pound_elseif"
+                "type": "BLANK"
               }
             ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_end_if"
           }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "pound_else"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "keyword_pound_endif"
-        }
-      ]
+        ]
+      }
     },
     "pound_elseif": {
       "type": "PREC_RIGHT",
@@ -6917,20 +7074,24 @@
       }
     },
     "pound_else": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "keyword_pound_else"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
             "type": "SYMBOL",
-            "name": "statement"
+            "name": "keyword_pound_else"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "statement"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "pound_import": {
       "type": "SEQ",
@@ -6973,6 +7134,24 @@
               }
             }
           ]
+        }
+      ]
+    },
+    "pound_undef": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_undef"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_base_variable"
+          },
+          "named": true,
+          "value": "macro_def"
         }
       ]
     },
@@ -7672,8 +7851,26 @@
               {
                 "type": "REPEAT1",
                 "content": {
-                  "type": "SYMBOL",
-                  "name": "dotted_statement"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "dotted_statement"
+                    },
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_dotted_block_pound_if"
+                      },
+                      "named": true,
+                      "value": "pound_if"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "tag_end_if"
+                    }
+                  ]
                 }
               }
             ]
@@ -14585,8 +14782,13 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "&"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "&"
+              },
+              "named": true,
+              "value": "keyword_byref"
             },
             {
               "type": "BLANK"
@@ -20220,6 +20422,10 @@
     {
       "type": "SYMBOL",
       "name": "statement_in_macro"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_end_if_end"
     },
     {
       "type": "SYMBOL",

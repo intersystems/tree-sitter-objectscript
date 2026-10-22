@@ -105,6 +105,7 @@ module.exports = grammar(objectscript_expr, {
     $.compiled_header,
     $.external_method_body_content,
     $.statement_in_macro,
+    $._end_if_end,
   ],
   conflicts: ($, previous) =>
     previous.concat([
@@ -149,10 +150,13 @@ module.exports = grammar(objectscript_expr, {
     keyword_pound_execute: (_) => /\#execute/i,
     keyword_pound_import: (_) => /\#import/i,
     keyword_pound_include: (_) => /\#include/i,
+    keyword_pound_undef: (_) => /\#undef/i,
     keyword_pound_if: (_) => /\#if/i,
     keyword_pound_endif: (_) => /\#endif/i,
     keyword_pound_elseif: (_) => /\#elseif/i,
     keyword_pound_ifdef: (_) => /#ifdef/i,
+    keyword_pound_show: (_) => /#show/i,
+    keyword_pound_noshow: (_) => /#noshow/i,
     keyword_pound_else: (_) => /#else/i,
     keyword_pound_ifndef: (_) => choice(/\#ifndef/i, /\#ifundef/i),
     keyword_write: (_) => /[wW]([rR][iI][tT][eE])?/,
@@ -266,7 +270,13 @@ module.exports = grammar(objectscript_expr, {
     pound_define: ($) =>
       seq(
         choice($.keyword_pound_define, $.keyword_pound_def1arg),
-        prec(10, alias($._base_variable, $.macro_def)),
+        prec(10, alias(
+          choice(
+            $._base_variable,
+            /[0-9][A-Za-z0-9]*/,
+            // e.g. #define SQLEnumRowStatementROW_AND_OBJECT 3
+            /%?[A-Za-z0-9]+(_[A-Za-z0-9]+)+/),
+          $.macro_def)),
         choice(
           seq(
             prec(10, $.pound_define_variable_args),
@@ -281,20 +291,25 @@ module.exports = grammar(objectscript_expr, {
         ),
       ),
 
+    _end_if: ($) => seq(
+      $.keyword_pound_endif,
+      $._end_if_end,
+    ),
+
     pound_define_variable_args: ($) =>
-      prec(15, build_argument_list_immediate(commaSep($.macro_arg))),
+      prec(15, build_argument_list_immediate(seq(commaSep($.macro_arg), optional(',')))),
     pound_execute: ($) => $.keyword_pound_execute,
     pound_if: ($) =>
       seq(
         $.keyword_pound_if,
         choice(
-          seq(
+          prec.right(seq(
             $.expression,
             repeat(choice($.statement, $.pound_elseif)),
             optional($.pound_else),
-            $.keyword_pound_endif,
-          ),
-          seq($.pound_if_special_case, $.keyword_pound_endif),
+            $._end_if,
+          )),
+          prec.right(seq($.pound_if_special_case, $._end_if)),
           seq(
             $.pound_if_special_case_else,
             choice(
@@ -302,44 +317,64 @@ module.exports = grammar(objectscript_expr, {
               seq($.keyword_pound_elseif, alias('1', $.numeric_literal)),
             ),
           ),
-          seq(
+          prec.right(seq(
             $.pound_if_special_case_else_if,
             $.keyword_pound_elseif,
             $.expression,
             repeat(choice($.statement, $.pound_elseif)),
             optional($.pound_else),
-            $.keyword_pound_endif,
+            $._end_if,
+          )),
+        ),
+      ),
+    // #if between the dotted lines of an argumentless DO. Only the scanner's
+    // special cases are allowed (the first branch is skipped and any #else
+    // body is parsed inline) to keep the parse table small.
+    _dotted_block_pound_if: ($) =>
+      seq(
+        $.keyword_pound_if,
+        choice(
+          seq($.pound_if_special_case, $._end_if),
+          seq(
+            $.pound_if_special_case_else,
+            choice(
+              $.keyword_pound_else,
+              seq($.keyword_pound_elseif, alias('1', $.numeric_literal)),
+            ),
           ),
         ),
       ),
     pound_ifdef: ($) =>
-      seq(
+      prec.right(seq(
         $.keyword_pound_ifdef,
         $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        $.keyword_pound_endif,
-      ),
+        $._end_if,
+      )),
 
     pound_ifndef: ($) =>
-      seq(
+      prec.right(seq(
         $.keyword_pound_ifndef,
         $.expression,
         repeat(choice($.statement, $.pound_elseif)),
         optional($.pound_else),
-        $.keyword_pound_endif,
-      ),
+        $._end_if,
+      )),
 
     pound_elseif: ($) =>
       prec.right(
         seq($.keyword_pound_elseif, $.expression, repeat($.statement)),
       ),
-    pound_else: ($) => seq($.keyword_pound_else, repeat($.statement)),
+    pound_else: ($) => prec.right(seq($.keyword_pound_else, repeat($.statement))),
     pound_import: ($) =>
       seq(
         $.keyword_pound_import,
         commaSep1(alias($._quote_permitting_identifier, $.class_name)),
       ),
+
+    pound_undef: ($) =>
+      seq($.keyword_pound_undef, alias($._base_variable, $.macro_def)),
 
     pound_include: ($) =>
       seq(
@@ -466,7 +501,11 @@ module.exports = grammar(objectscript_expr, {
           seq(
             alias($.keyword_do, $.keyword_do_old),
             optional($.post_conditional),
-            repeat1($.dotted_statement),
+            repeat1(choice(
+              $.dotted_statement,
+              alias($._dotted_block_pound_if, $.pound_if),
+              $.tag_end_if,
+            )),
           ),
         ),
         prec.right(
@@ -1352,7 +1391,7 @@ module.exports = grammar(objectscript_expr, {
 
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>
-      seq(optional('&'), $.method_arg, optional(seq('=', $.expression))),
+      seq(optional(alias('&', $.keyword_byref)), $.method_arg, optional(seq('=', $.expression))),
     // from DataTree
     command_zedit: ($) =>
       seq(

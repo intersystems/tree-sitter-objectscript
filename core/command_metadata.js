@@ -57,13 +57,16 @@ const STATEMENT_RULE_NAMES = [
   'pound_import',
   'command_sqlcompile',
   'pound_include',
+  'pound_undef',
   'pound_execute',
   'command_macro',
   'tag_statement',
   'tag_end_if',
   'procedure',
   'z_file_commands',
-  'command_zedit'
+  'command_zedit',
+  'keyword_pound_show',
+  'keyword_pound_noshow',
 ];
 
 const OBJECTSCRIPT_BUILT_IN_COMMAND_PATTERNS = [
