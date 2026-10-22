@@ -6912,6 +6912,69 @@
         }
       ]
     },
+    "_dotted_block_pound_if": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "keyword_pound_if"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_if_special_case"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_end_if"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "pound_if_special_case_else"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "keyword_pound_else"
+                    },
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "keyword_pound_elseif"
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "STRING",
+                            "value": "1"
+                          },
+                          "named": true,
+                          "value": "numeric_literal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "pound_ifdef": {
       "type": "PREC_RIGHT",
       "value": 0,
@@ -7812,8 +7875,26 @@
               {
                 "type": "REPEAT1",
                 "content": {
-                  "type": "SYMBOL",
-                  "name": "dotted_statement"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "dotted_statement"
+                    },
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_dotted_block_pound_if"
+                      },
+                      "named": true,
+                      "value": "pound_if"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "tag_end_if"
+                    }
+                  ]
                 }
               }
             ]
@@ -14725,8 +14806,13 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "&"
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "&"
+              },
+              "named": true,
+              "value": "keyword_byref"
             },
             {
               "type": "BLANK"

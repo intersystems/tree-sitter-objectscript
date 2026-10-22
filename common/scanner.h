@@ -1122,7 +1122,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     else if (lexer->lookahead == '#') {
       lexer->mark_end(lexer);
       advance(lexer);
-      if (towlower(lexer->lookahead) == 'e' && valid_symbols[TAG] && scanner->special_pound_if_mode) {
+      if (towlower(lexer->lookahead) == 'e' && (valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
         int32_t directive[16];
         uint32_t len = 0;
         while (len < (sizeof(directive) / sizeof(directive[0])) &&
@@ -1760,7 +1760,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     lexer->result_symbol = _WHITESPACE;
     return true;
   }
-  else if (valid_symbols[TAG] && scanner->special_pound_if_mode) {
+  else if ((valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
     while (iswspace(lexer->lookahead)) {
       advance(lexer);
     }

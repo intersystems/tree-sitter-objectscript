@@ -327,6 +327,23 @@ module.exports = grammar(objectscript_expr, {
           )),
         ),
       ),
+    // #if between the dotted lines of an argumentless DO. Only the scanner's
+    // special cases are allowed (the first branch is skipped and any #else
+    // body is parsed inline) to keep the parse table small.
+    _dotted_block_pound_if: ($) =>
+      seq(
+        $.keyword_pound_if,
+        choice(
+          seq($.pound_if_special_case, $._end_if),
+          seq(
+            $.pound_if_special_case_else,
+            choice(
+              $.keyword_pound_else,
+              seq($.keyword_pound_elseif, alias('1', $.numeric_literal)),
+            ),
+          ),
+        ),
+      ),
     pound_ifdef: ($) =>
       prec.right(seq(
         $.keyword_pound_ifdef,
@@ -484,7 +501,11 @@ module.exports = grammar(objectscript_expr, {
           seq(
             alias($.keyword_do, $.keyword_do_old),
             optional($.post_conditional),
-            repeat1($.dotted_statement),
+            repeat1(choice(
+              $.dotted_statement,
+              alias($._dotted_block_pound_if, $.pound_if),
+              $.tag_end_if,
+            )),
           ),
         ),
         prec.right(
@@ -1370,7 +1391,7 @@ module.exports = grammar(objectscript_expr, {
 
     // A tag parameter can be just a name or a name with a default value
     tag_parameter: ($) =>
-      seq(optional('&'), $.method_arg, optional(seq('=', $.expression))),
+      seq(optional(alias('&', $.keyword_byref)), $.method_arg, optional(seq('=', $.expression))),
     // from DataTree
     command_zedit: ($) =>
       seq(

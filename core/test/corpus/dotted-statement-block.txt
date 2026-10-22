@@ -595,36 +595,34 @@ dotted statements within #if
                                   (objectscript_identifier)))
                               (expression
                                 (lvn
-                                  (objectscript_identifier)))))))))
-                  (statement
-                    (pound_if
-                      (keyword_pound_if)
-                      (pound_if_special_case_else)
-                      (keyword_pound_else)))
-                  (inline_comment))))
-            (dotted_statement
-              (statement
-                (command_if
-                  (keyword_old_if)
-                  (expression
-                    (expression
-                      (lvn
-                        (objectscript_identifier)))
-                    (binary_operator)
-                    (expression
-                      (string_literal)))
-                  (statement
-                    (command_set
-                      (keyword_set)
-                      (set_argument
-                        (set_target
-                          (lvn
-                            (objectscript_identifier)))
-                        (expression
-                          (lvn
-                            (objectscript_identifier)))))))))))
-        (statement
-          (tag_end_if))))))
+                                  (objectscript_identifier)))))))
+                      (pound_if
+                        (keyword_pound_if)
+                        (pound_if_special_case_else)
+                        (keyword_pound_else))
+                      (inline_comment)
+                      (dotted_statement
+                        (statement
+                          (command_if
+                            (keyword_old_if)
+                            (expression
+                              (expression
+                                (lvn
+                                  (objectscript_identifier)))
+                              (binary_operator)
+                              (expression
+                                (string_literal)))
+                            (statement
+                              (command_set
+                                (keyword_set)
+                                (set_argument
+                                  (set_target
+                                    (lvn
+                                      (objectscript_identifier)))
+                                  (expression
+                                    (lvn
+                                      (objectscript_identifier)))))))))
+                      (tag_end_if))))))))))))
 
 ===
 dotted if block, regular else old
