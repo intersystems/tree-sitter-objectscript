@@ -38,138 +38,162 @@ Valid #if Statements
   (statement
     (pound_define
       (keyword_pound_define)
-      (macro_def
-        (objectscript_identifier))
+      (macro_def)
       (macro_value
         (macro_value_line))))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else_if)
-      (keyword_pound_elseif)
       (expression
-        (macro
-          (macro_constant))
+        (macro_constant)
         (binary_operator)
         (expression
-          (string_literal)))
-      (statement
-        (command_set
-          (keyword_set)
-          (set_argument
-            (set_target
-              (gvn
-                (identifier)))
-            (expression
-              (string_literal)))))
-      (statement
-        (command_set
-          (keyword_set)
-          (set_argument
-            (set_target
-              (gvn
-                (identifier)))
-            (expression
-              (numeric_literal)))))
-      (pound_elseif
-        (keyword_pound_elseif)
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
         (expression
-          (macro
-            (macro_constant))
-          (binary_operator)
-          (expression
-            (string_literal)))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (numeric_literal))))))
-      (pound_elseif
-        (keyword_pound_elseif)
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
         (expression
-          (macro
-            (macro_constant))
-          (binary_operator)
-          (expression
-            (string_literal)))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (numeric_literal))))))
-      (pound_elseif
-        (keyword_pound_elseif)
+          (numeric_literal)))))
+  (statement
+    (pound_elseif
+      (keyword_pound_elseif)
+      (expression
+        (macro_constant)
+        (binary_operator)
         (expression
-          (macro
-            (macro_constant))
-          (binary_operator)
-          (expression
-            (string_literal)))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (numeric_literal))))))
-      (pound_else
-        (keyword_pound_else)
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (string_literal)))))
-        (statement
-          (command_set
-            (keyword_set)
-            (set_argument
-              (set_target
-                (gvn
-                  (identifier)))
-              (expression
-                (numeric_literal))))))
-      (keyword_pound_endif)))
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (numeric_literal)))))
+  (statement
+    (pound_elseif
+      (keyword_pound_elseif)
+      (expression
+        (macro_constant)
+        (binary_operator)
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (numeric_literal)))))
+  (statement
+    (pound_elseif
+      (keyword_pound_elseif)
+      (expression
+        (macro_constant)
+        (binary_operator)
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (numeric_literal)))))
+  (statement
+    (pound_elseif
+      (keyword_pound_elseif)
+      (expression
+        (macro_constant)
+        (binary_operator)
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (numeric_literal)))))
+  (statement
+    (pound_else
+      (keyword_pound_else)))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (string_literal)))))
+  (statement
+    (command_set
+      (keyword_set)
+      (set_argument
+        (set_target
+          (gvn
+            (identifier)))
+        (expression
+          (numeric_literal)))))
+  (statement
+    (keyword_pound_endif))
   (statement
     (command_write
       (keyword_write)
@@ -186,31 +210,21 @@ Valid #if Statements
             (identifier)))))))
 
 ====
-Invalid If (no #endif, #else, or #elseif)
-:error
-====
-#if $$$ColorDay="Monday"
- SET ^MyColor = "Red"
- SET ^MyNumber = 1
----
-
-
-
-====
 Valid PoundIf Special Case
 ====
 #if 0
  adsfkjads F
- this can have anything 
+ this can have anything
 #endif
 ---
 
 (source_file
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case)
-      (keyword_pound_endif))))
+      (pound_if_special_case)))
+  (statement
+    (keyword_pound_endif)))
 
 ====
 Valid PoundIf Special Case Nested
@@ -228,14 +242,18 @@ Valid PoundIf Special Case Nested
 
 (source_file
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_else
       (keyword_pound_else)))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_else
       (keyword_pound_else)))
   (statement
     (command_set
@@ -247,9 +265,9 @@ Valid PoundIf Special Case Nested
         (expression
           (string_literal)))))
   (statement
-    (tag_end_if))
+    (keyword_pound_endif))
   (statement
-    (tag_end_if)))
+    (keyword_pound_endif)))
 
 ====
 Valid Pound If, ENDIF, ELSE
@@ -263,9 +281,11 @@ Valid Pound If, ENDIF, ELSE
 
 (source_file
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_else
       (keyword_pound_else)))
   (statement
     (command_write
@@ -275,7 +295,7 @@ Valid Pound If, ENDIF, ELSE
           (lvn
             (objectscript_identifier))))))
   (statement
-    (tag_end_if)))
+    (keyword_pound_endif)))
 
 ====
 Valid #if #elseif #else
@@ -284,7 +304,7 @@ test
 #if 0
 #elseif x
  w "second scenario"
-#else 
+#else
  w "back into global"
 #endif
 ---
@@ -294,28 +314,32 @@ test
     (tag_statement
       (tag)))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else_if)
+      (pound_if_special_case)))
+  (statement
+    (pound_elseif
       (keyword_pound_elseif)
       (expression
         (lvn
-          (objectscript_identifier)))
-      (statement
-        (command_write
-          (keyword_write)
-          (write_argument
-            (expression
-              (string_literal)))))
-      (pound_else
-        (keyword_pound_else)
-        (statement
-          (command_write
-            (keyword_write)
-            (write_argument
-              (expression
-                (string_literal))))))
-      (keyword_pound_endif))))
+          (objectscript_identifier)))))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (string_literal)))))
+  (statement
+    (pound_else
+      (keyword_pound_else)))
+  (statement
+    (command_write
+      (keyword_write)
+      (write_argument
+        (expression
+          (string_literal)))))
+  (statement
+    (keyword_pound_endif)))
 
 ====
 Valid #if #elseif 1
@@ -331,11 +355,14 @@ test
     (tag_statement
       (tag)))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_elseif
       (keyword_pound_elseif)
-      (numeric_literal)))
+      (expression
+        (numeric_literal))))
   (statement
     (command_write
       (keyword_write)
@@ -357,9 +384,11 @@ test
     (tag_statement
       (tag)))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_else
       (keyword_pound_else)))
   (statement
     (command_write
@@ -372,12 +401,12 @@ test
 inner #IF 0 must be closed
 ===
 test
-#if 0    
-#if 0    
-#else    
- this never gets reached 
-#endif   
-#else 
+#if 0
+#if 0
+#else
+ this never gets reached
+#endif
+#else
  w "goodbye"
 ---
 
@@ -386,9 +415,11 @@ test
     (tag_statement
       (tag)))
   (statement
-    (pound_if
+    (conditional_directive
       (keyword_pound_if)
-      (pound_if_special_case_else)
+      (pound_if_special_case)))
+  (statement
+    (pound_else
       (keyword_pound_else)))
   (statement
     (command_write

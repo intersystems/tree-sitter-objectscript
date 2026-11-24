@@ -21,13 +21,15 @@ unsigned tree_sitter_objectscript_core_external_scanner_serialize(
   struct ObjectScript_Core_Scanner *s = (struct ObjectScript_Core_Scanner *)payload;
 
   unsigned i = 0;
-  const unsigned char version = 2;
+  const unsigned char version = 3;
   unsigned char mlen = (unsigned char)(s->marker_buffer_len);
 
   // Ensure we never overrun TREE_SITTER_SERIALIZATION_BUFFER_SIZE (usually 1024).
-  // Worst-case here: 1 + 1 + 1 + 30*4 = 123 bytes.
+  // Worst-case here: 1 + 1 + 4 + 1 + 30*4 = 127 bytes.
   buffer[i++] = (char)version;
   buffer[i++] = s->pending_dotted_block_end ? 1 : 0;
+  memcpy(buffer + i, &s->num_conditional_directives, sizeof(unsigned));
+  i += (unsigned)sizeof(unsigned);
   buffer[i++] = (char)mlen;
 
   for (int j = 0; j < s->marker_buffer_len; j++) {
@@ -41,7 +43,7 @@ unsigned tree_sitter_objectscript_core_external_scanner_serialize(
   }
 
   // If we truncated, fix the recorded length
-  buffer[2] = (char)mlen;
+  buffer[2 + sizeof(unsigned)] = (char)mlen;
   return i;
 }
 
@@ -51,6 +53,7 @@ void tree_sitter_objectscript_core_external_scanner_deserialize(
 
   s->marker_buffer_len = 0;
   s->pending_dotted_block_end = false;
+  s->num_conditional_directives = 0;
 
   if (!buffer || length == 0) return;
 
@@ -64,6 +67,12 @@ void tree_sitter_objectscript_core_external_scanner_deserialize(
   } else if (version == 2) {
     s->pending_dotted_block_end = buffer[i++] != 0;
     if (i >= length) return;
+    mlen = (unsigned char)buffer[i++];
+  } else if (version == 3) {
+    s->pending_dotted_block_end = buffer[i++] != 0;
+    if (i + sizeof(unsigned) >= length) return;
+    memcpy(&s->num_conditional_directives, buffer + i, sizeof(unsigned));
+    i += (unsigned)sizeof(unsigned);
     mlen = (unsigned char)buffer[i++];
   } else {
     return;

@@ -113,8 +113,7 @@ If Statements 1
                 (system_defined_function
                   (method_arg
                     (expression
-                      (macro
-                        (macro_constant))))
+                      (macro_constant)))
                   (method_arg
                     (expression
                       (string_literal))))))))
@@ -336,16 +335,10 @@ If Statements 3
                 (lvn
                   (objectscript_identifier)))
               (expression
-                (macro
-                  (macro_function
-                    (macro_func_args
-                      (method_arg
-                        (expression
-                          (macro
-                            (macro_constant))))
-                      (method_arg
-                        (expression
-                          (string_literal))))))))))
+                (macro_function
+                  (macro_function)
+                  (statement_in_macro)
+                  (macro_function))))))
         (statement
           (command_quit
             (keyword_quit)))))
@@ -1256,3 +1249,23 @@ valid if special do case
         (expression
           (numeric_literal))
         (keyword_do_old)))))
+
+===
+if SQL_ID
+===
+ if {ROUTINE_TEST} = "SQL" {
+ }
+---
+
+(source_file
+  (statements
+    (statement
+      (command_if
+        (keyword_if)
+        (expression
+          (sql_field_reference
+            (sql_field_identifier)
+            (sql_field_identifier))
+          (binary_operator)
+          (expression
+            (string_literal)))))))

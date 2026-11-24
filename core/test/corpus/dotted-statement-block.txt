@@ -596,33 +596,35 @@ dotted statements within #if
                               (expression
                                 (lvn
                                   (objectscript_identifier)))))))
-                      (pound_if
+                      (conditional_directive
                         (keyword_pound_if)
-                        (pound_if_special_case_else)
-                        (keyword_pound_else))
-                      (inline_comment)
-                      (dotted_statement
-                        (statement
-                          (command_if
-                            (keyword_old_if)
-                            (expression
-                              (expression
-                                (lvn
-                                  (objectscript_identifier)))
-                              (binary_operator)
-                              (expression
-                                (string_literal)))
-                            (statement
-                              (command_set
-                                (keyword_set)
-                                (set_argument
-                                  (set_target
-                                    (lvn
-                                      (objectscript_identifier)))
-                                  (expression
-                                    (lvn
-                                      (objectscript_identifier)))))))))
-                      (tag_end_if))))))))))))
+                        (pound_if_special_case))))
+                  (statement
+                    (pound_else
+                      (keyword_pound_else)))
+                  (inline_comment))))
+            (dotted_statement
+              (statement
+                (command_if
+                  (keyword_old_if)
+                  (expression
+                    (expression
+                      (lvn
+                        (objectscript_identifier)))
+                    (binary_operator)
+                    (expression
+                      (string_literal)))
+                  (statement
+                    (command_set
+                      (keyword_set)
+                      (set_argument
+                        (set_target
+                          (lvn
+                            (objectscript_identifier)))
+                        (expression
+                          (lvn
+                            (objectscript_identifier)))))))))
+            (keyword_pound_endif)))))))
 
 ===
 dotted if block, regular else old

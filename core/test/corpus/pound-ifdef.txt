@@ -15,47 +15,33 @@ Valid ifDef Statements
     (statement
       (pound_define
         (keyword_pound_define)
-        (macro_def
-          (objectscript_identifier))))
+        (macro_def)))
     (statement
-      (pound_ifdef
+      (conditional_directive
         (keyword_pound_ifdef)
         (expression
           (lvn
-            (objectscript_identifier)))
-        (statement
-          (command_write
-            (keyword_write)
-            (write_argument
-              (expression
-                (string_literal)))
-            (write_argument
-              (write_device_control
-                (write_device_fflf)))))
-        (pound_else
-          (keyword_pound_else)
-          (statement
-            (command_write
-              (keyword_write)
-              (write_argument
-                (expression
-                  (string_literal)))
-              (write_argument
-                (write_device_control
-                  (write_device_fflf))))))
-        (keyword_pound_endif)))))
-
-====
-Invalid ifDef Statements (no #endif)
-:error
-====
-#define Heads
- 
-#ifDef Heads
-  WRITE "The coin landed heads up.",!
-#else
-  WRITE "The coin landed tails up.",!
-
----
-
-
+            (objectscript_identifier)))))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (string_literal)))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (pound_else
+        (keyword_pound_else)))
+    (statement
+      (command_write
+        (keyword_write)
+        (write_argument
+          (expression
+            (string_literal)))
+        (write_argument
+          (write_device_control
+            (write_device_fflf)))))
+    (statement
+      (keyword_pound_endif))))

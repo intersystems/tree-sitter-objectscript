@@ -16,7 +16,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "indirection",
@@ -70,7 +70,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -163,7 +167,15 @@
           "named": true
         },
         {
+          "type": "macro_function",
+          "named": true
+        },
+        {
           "type": "oref_property",
+          "named": true
+        },
+        {
+          "type": "sql_field_reference",
           "named": true
         },
         {
@@ -331,6 +343,10 @@
       "required": true,
       "types": [
         {
+          "type": "conditional_directive",
+          "named": true
+        },
+        {
           "type": "do_parameter",
           "named": true
         },
@@ -351,15 +367,11 @@
           "named": true
         },
         {
+          "type": "keyword_pound_endif",
+          "named": true
+        },
+        {
           "type": "post_conditional",
-          "named": true
-        },
-        {
-          "type": "pound_if",
-          "named": true
-        },
-        {
-          "type": "tag_end_if",
           "named": true
         }
       ]
@@ -809,19 +821,11 @@
           "named": true
         },
         {
-          "type": "method_arg",
-          "named": true
-        },
-        {
           "type": "post_conditional",
           "named": true
         },
         {
           "type": "statement",
-          "named": true
-        },
-        {
-          "type": "statement_in_macro",
           "named": true
         }
       ]
@@ -928,7 +932,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -1217,7 +1225,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -1487,7 +1499,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -1644,6 +1660,41 @@
     }
   },
   {
+    "type": "conditional_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "else_block",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_if",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_ifdef",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_ifndef",
+          "named": true
+        },
+        {
+          "type": "pound_if_special_case",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "device",
     "named": true,
     "fields": {},
@@ -1729,7 +1780,7 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
           "named": true
         },
         {
@@ -1952,6 +2003,10 @@
           "named": true
         },
         {
+          "type": "conditional_directive",
+          "named": true
+        },
+        {
           "type": "embedded_html",
           "named": true
         },
@@ -1965,6 +2020,10 @@
         },
         {
           "type": "embedded_xml",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_endif",
           "named": true
         },
         {
@@ -1988,19 +2047,15 @@
           "named": true
         },
         {
+          "type": "pound_else",
+          "named": true
+        },
+        {
+          "type": "pound_elseif",
+          "named": true
+        },
+        {
           "type": "pound_execute",
-          "named": true
-        },
-        {
-          "type": "pound_if",
-          "named": true
-        },
-        {
-          "type": "pound_ifdef",
-          "named": true
-        },
-        {
-          "type": "pound_ifndef",
           "named": true
         },
         {
@@ -2009,6 +2064,10 @@
         },
         {
           "type": "pound_include",
+          "named": true
+        },
+        {
+          "type": "pound_lit",
           "named": true
         },
         {
@@ -2021,10 +2080,6 @@
         },
         {
           "type": "procedure",
-          "named": true
-        },
-        {
-          "type": "tag_end_if",
           "named": true
         },
         {
@@ -2456,7 +2511,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -2593,7 +2652,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -2659,6 +2722,14 @@
         },
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -2735,7 +2806,7 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
           "named": true
         },
         {
@@ -2814,7 +2885,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -2877,7 +2952,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -2943,7 +3022,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -3060,7 +3143,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -3103,7 +3190,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -3176,30 +3267,6 @@
     }
   },
   {
-    "type": "macro",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "macro_constant",
-          "named": true
-        },
-        {
-          "type": "macro_function",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "macro_constant",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "macro_def",
     "named": true,
     "fields": {},
@@ -3219,21 +3286,6 @@
     }
   },
   {
-    "type": "macro_func_args",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "method_arg",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "macro_function",
     "named": true,
     "fields": {},
@@ -3242,11 +3294,15 @@
       "required": false,
       "types": [
         {
-          "type": "macro_func_args",
+          "type": "macro_function",
           "named": true
         },
         {
-          "type": "method_args",
+          "type": "statement_in_macro",
+          "named": true
+        },
+        {
+          "type": "string_literal",
           "named": true
         }
       ]
@@ -3475,7 +3531,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -3518,7 +3578,11 @@
       "required": true,
       "types": [
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -3747,15 +3811,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "keyword_pound_else",
-          "named": true
-        },
-        {
-          "type": "statement",
           "named": true
         }
       ]
@@ -3776,10 +3836,6 @@
         {
           "type": "keyword_pound_elseif",
           "named": true
-        },
-        {
-          "type": "statement",
-          "named": true
         }
       ]
     }
@@ -3794,135 +3850,6 @@
       "types": [
         {
           "type": "keyword_pound_execute",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "pound_if",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_else",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_elseif",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_endif",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_if",
-          "named": true
-        },
-        {
-          "type": "numeric_literal",
-          "named": true
-        },
-        {
-          "type": "pound_else",
-          "named": true
-        },
-        {
-          "type": "pound_elseif",
-          "named": true
-        },
-        {
-          "type": "pound_if_special_case",
-          "named": true
-        },
-        {
-          "type": "pound_if_special_case_else",
-          "named": true
-        },
-        {
-          "type": "pound_if_special_case_else_if",
-          "named": true
-        },
-        {
-          "type": "statement",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "pound_ifdef",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_endif",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_ifdef",
-          "named": true
-        },
-        {
-          "type": "pound_else",
-          "named": true
-        },
-        {
-          "type": "pound_elseif",
-          "named": true
-        },
-        {
-          "type": "statement",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "pound_ifndef",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_endif",
-          "named": true
-        },
-        {
-          "type": "keyword_pound_ifndef",
-          "named": true
-        },
-        {
-          "type": "pound_else",
-          "named": true
-        },
-        {
-          "type": "pound_elseif",
-          "named": true
-        },
-        {
-          "type": "statement",
           "named": true
         }
       ]
@@ -3967,6 +3894,29 @@
     }
   },
   {
+    "type": "pound_lit",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "keyword_lit",
+          "named": true
+        },
+        {
+          "type": "lit_token",
+          "named": true
+        },
+        {
+          "type": "lit_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "pound_quote",
     "named": true,
     "fields": {},
@@ -3979,7 +3929,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -4134,7 +4088,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         }
       ]
@@ -4226,7 +4184,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -4430,7 +4392,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -4743,6 +4709,10 @@
           "named": true
         },
         {
+          "type": "conditional_directive",
+          "named": true
+        },
+        {
           "type": "embedded_html",
           "named": true
         },
@@ -4756,6 +4726,10 @@
         },
         {
           "type": "embedded_xml",
+          "named": true
+        },
+        {
+          "type": "keyword_pound_endif",
           "named": true
         },
         {
@@ -4779,19 +4753,15 @@
           "named": true
         },
         {
+          "type": "pound_else",
+          "named": true
+        },
+        {
+          "type": "pound_elseif",
+          "named": true
+        },
+        {
           "type": "pound_execute",
-          "named": true
-        },
-        {
-          "type": "pound_if",
-          "named": true
-        },
-        {
-          "type": "pound_ifdef",
-          "named": true
-        },
-        {
-          "type": "pound_ifndef",
           "named": true
         },
         {
@@ -4800,6 +4770,10 @@
         },
         {
           "type": "pound_include",
+          "named": true
+        },
+        {
+          "type": "pound_lit",
           "named": true
         },
         {
@@ -4812,10 +4786,6 @@
         },
         {
           "type": "procedure",
-          "named": true
-        },
-        {
-          "type": "tag_end_if",
           "named": true
         },
         {
@@ -4936,7 +4906,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -5158,7 +5132,11 @@
           "named": true
         },
         {
-          "type": "macro",
+          "type": "macro_constant",
+          "named": true
+        },
+        {
+          "type": "macro_function",
           "named": true
         },
         {
@@ -5709,10 +5687,6 @@
     "named": false
   },
   {
-    "type": "^$",
-    "named": false
-  },
-  {
     "type": "_",
     "named": false
   },
@@ -5900,6 +5874,10 @@
   },
   {
     "type": "keyword_kill",
+    "named": true
+  },
+  {
+    "type": "keyword_lit",
     "named": true
   },
   {
@@ -6159,7 +6137,19 @@
     "named": true
   },
   {
+    "type": "lit_token",
+    "named": true
+  },
+  {
+    "type": "lit_value",
+    "named": true
+  },
+  {
     "type": "macro_arg",
+    "named": true
+  },
+  {
+    "type": "macro_constant",
     "named": true
   },
   {
@@ -6195,14 +6185,6 @@
     "named": true
   },
   {
-    "type": "pound_if_special_case_else",
-    "named": true
-  },
-  {
-    "type": "pound_if_special_case_else_if",
-    "named": true
-  },
-  {
     "type": "sql_field_modifier",
     "named": true
   },
@@ -6216,10 +6198,6 @@
   },
   {
     "type": "tag",
-    "named": true
-  },
-  {
-    "type": "tag_end_if",
     "named": true
   },
   {

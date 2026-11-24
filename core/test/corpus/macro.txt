@@ -1,0 +1,14 @@
+===
+valid macro arg with escaped strings
+===
+ $$$GENERATE("     ,"""_%hi("bye")_"/"_%hi("bye")_"""")
+---
+
+(source_file
+  (statements
+    (statement
+      (command_macro
+        (macro_function
+          (macro_function)
+          (statement_in_macro)
+          (macro_function))))))
