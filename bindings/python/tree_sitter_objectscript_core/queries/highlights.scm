@@ -17,6 +17,7 @@
 [
   (json_string_literal)
   (string_literal)
+  (statement_in_macro)
 ] @string
 
 [
@@ -142,7 +143,10 @@
 ; === BEGIN LOCAL ===
 (macro_arg) @variable.member
 
-(macro_value) @constant.builtin
+[
+(macro_value)
+(lit_value)
+] @string
 
 (macro_def) @keyword.directive.define
 
@@ -170,6 +174,7 @@
 
 [
   (keyword_pound_define)
+  (keyword_lit)
   (keyword_pound_def1arg)
   (keyword_pound_if)
   (keyword_sqlcompile)

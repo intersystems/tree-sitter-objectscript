@@ -14,6 +14,7 @@
 [
   (json_string_literal)
   (string_literal)
+  (statement_in_macro)
 ] @string
 
 [

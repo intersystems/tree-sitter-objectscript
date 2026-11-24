@@ -17,6 +17,7 @@
 [
   (json_string_literal)
   (string_literal)
+  (statement_in_macro)
 ] @string
 
 [
@@ -142,7 +143,10 @@
 ; === BEGIN CORE ===
 (macro_arg) @variable.member
 
-(macro_value) @constant.builtin
+[
+  (macro_value)
+  (lit_value)
+] @string
 
 (macro_def) @keyword.directive.define
 
@@ -170,6 +174,7 @@
 
 [
   (keyword_pound_define)
+  (keyword_lit)
   (keyword_pound_def1arg)
   (keyword_pound_if)
   (keyword_sqlcompile)
@@ -319,6 +324,8 @@
 ; === BEGIN LOCAL ===
 (iris_username) @keyword.directive
 
+(external_language_keyword) @type.builtin
+
 [
   (keyword_import)
   (keyword_include)
@@ -345,6 +352,7 @@
   (keyword_not)
   (keyword_references)
   (keyword_byref)
+  (keyword_byval)
   (keyword_output)
 ] @keyword.type
 
