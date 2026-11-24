@@ -144,8 +144,8 @@
 (macro_arg) @variable.member
 
 [
-(macro_value)
-(lit_value)
+  (macro_value)
+  (lit_value)
 ] @string
 
 (macro_def) @keyword.directive.define
@@ -323,7 +323,9 @@
 ; === END CORE ===
 ; === BEGIN UDL ===
 (iris_username) @keyword.directive
+
 (external_language_keyword) @type.builtin
+
 [
   (keyword_import)
   (keyword_include)

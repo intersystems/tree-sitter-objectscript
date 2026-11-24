@@ -144,8 +144,8 @@
 (macro_arg) @variable.member
 
 [
-(macro_value)
-(lit_value)
+  (macro_value)
+  (lit_value)
 ] @string
 
 (macro_def) @keyword.directive.define
