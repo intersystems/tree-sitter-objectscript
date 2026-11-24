@@ -3,6 +3,7 @@ package tree_sitter_objectscript
 // #cgo CPPFLAGS: -I../../expr/src
 // #cgo CFLAGS: -std=c11 -fPIC
 // #include "../../expr/src/parser.c"
+// #include "../../expr/src/scanner.c"
 import "C"
 
 import "unsafe"

@@ -55,7 +55,7 @@ python3 -m pip install -U pip setuptools wheel pytest tree-sitter
 python3 setup.py build_ext --inplace
 PYTHONPATH=$PWD/bindings/python python3 -m pytest -q bindings/python/tests/test_binding.py
 npm test
-go test ./bindings/go/...
+go test ./bindings/go/
 swift test
 make test
 ```
