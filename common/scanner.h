@@ -1,9 +1,10 @@
 #include "tree_sitter/parser.h"
 #include <string.h>
 #include <wctype.h>
+#include "expr-scanner.h"
 
 enum ObjectScript_Core_Scanner_TokenType {
-  _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE,
+  _IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE = OBJECTSCRIPT_EXPR_TOKEN_TYPE_MAX,
   _ASSERT_NO_SPACE_BETWEEN_RULES,
   _ARGUMENTLESS_COMMAND_END,
   _ARGUMENTLESS_LOOP,
@@ -17,7 +18,6 @@ enum ObjectScript_Core_Scanner_TokenType {
   _LINE_COMMENT_INNER,
   _BLOCK_COMMENT_INNER,
   MACRO_VALUE_LINE_WITH_CONTINUE,
-  SENTINEL,
   _BOL,
   _TERMINATION,
   _POST_CONDITIONAL_ID,
@@ -27,10 +27,7 @@ enum ObjectScript_Core_Scanner_TokenType {
   EMBEDDED_JS_SPECIAL_CASE,
   EMBEDDED_JS_SPECIAL_CASE_COMPLETE,
   POUND_IF_SPECIAL_CASE,
-  POUND_IF_SPECIAL_CASE_ELSE,
-  POUND_IF_SPECIAL_CASE_ELSE_IF,
   MNEMONIC,
-  TAG_END_IF,
   INLINE_COMMENT,
   _STATEMENT_TERMINATION,
   ARGUMENTLESS_INLINE_COMMENT,
@@ -42,14 +39,21 @@ enum ObjectScript_Core_Scanner_TokenType {
   _POST_CONDITIONAL_END,
   COMPILED_HEADER,
   EXTERNAL_METHOD_BODY_CONTENT,
-  STATEMENT_IN_MACRO,
   _END_IF_END,
+  _CHANGE_TAG_PARSING,
+  KEYWORD_DIM,
+  _NEW_CONDITIONAL_DIRECTIVE,
+  _INSIDE_IF_DIRECTIVE,
+  LIT_TOKEN,
+  LIT_VALUE,
   /* Max token type */
   OBJECTSCRIPT_CORE_TOKEN_TYPE_MAX
 
 };
 
 static const char* token_names[] = {
+  "STATEMENT_IN_MACRO",
+  "SENTINEL",
   "_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE",
   "_ASSERT_NO_SPACE_BETWEEN_RULES",
   "_ARGUMENTLESS_COMMAND_END",
@@ -64,7 +68,6 @@ static const char* token_names[] = {
   "_LINE_COMMENT_INNER",
   "_BLOCK_COMMENT_INNER",
   "MACRO_VALUE_LINE_WITH_CONTINUE",
-  "SENTINEL",
   "BOL",
   "_INLINE_STATEMENT_SEPARATOR",
   "_TERMINATION",
@@ -75,10 +78,7 @@ static const char* token_names[] = {
   "EMBEDDED_JS_SPECIAL_CASE",
   "EMBEDDED_JS_SPECIAL_CASE_COMPLETE",
   "POUND_IF_SPECIAL_CASE",
-  "POUND_IF_SPECIAL_CASE_ELSE",
-  "POUND_IF_SPECIAL_CASE_ELSE_IF",
   "MNEMONIC",
-  "TAG_END_IF",
   "INLINE_COMMENT",
   "_STATEMENT_TERMINATION",
   "ARGUMENTLESS_INLINE_COMMENT",
@@ -90,8 +90,13 @@ static const char* token_names[] = {
   "_POST_CONDITIONAL_END",
   "COMPILED_HEADER",
   "EXTERNAL_METHOD_BODY_CONTENT",
-  "STATEMENT_IN_MACRO",
-  "_END_IF_END"
+  "_END_IF_END",
+  "_CHANGE_TAG_PARSING",
+  "KEYWORD_DIM",
+  "_NEW_CONDITIONAL_DIRECTIVE",
+  "_INSIDE_IF_DIRECTIVE",
+  "LIT_TOKEN",
+  "LIT_VALUE"
 };
 
 #if 0
@@ -116,9 +121,6 @@ static char* debug_enum(TSLexer *lexer, const bool *valid_symbols) {
 }
 #endif
 
-static inline void advance(TSLexer *lexer) {
-  lexer->advance(lexer, false);
-}
 static inline bool is_validHTML_MARKER_char(int32_t c) {
   if (iswspace(c)) return false;
 
@@ -174,8 +176,6 @@ struct ObjectScript_Core_Scanner {
   bool column1_statement_mode;
   // When true, a column-1 tag named ROUTINE is emitted as ROUTINE instead of TAG.
   bool routine_token_mode;
-  bool special_pound_if_mode;
-  uint32_t special_pound_if_mode_if_depth;
   int32_t html_marker_buffer[MARKER_BUFFER_MAX_LEN];
   int html_marker_buffer_len;
   int32_t sql_marker_buffer[MARKER_BUFFER_MAX_LEN];
@@ -188,6 +188,7 @@ struct ObjectScript_Core_Scanner {
   bool pending_dotted_block_end;
   bool is_python;
   bool is_text;
+  unsigned num_conditional_directives;
 };
 
 static inline bool is_label_char(int32_t c) {
@@ -316,53 +317,6 @@ static bool is_statement_or_class_keyword(const int32_t *text, uint32_t len) {
   return false;
 }
 
-// Consumes an ObjectScript interpolation (#(...)# or ##(...)##) embedded in
-// &html/&xml text. Assumes lookahead is '#'. Inside the parens, '>' and '\''
-// are ObjectScript operators, not XML syntax, so they must not be treated as
-// tag ends or attribute quotes.
-static void skip_cos_interpolation(TSLexer *lexer) {
-  advance(lexer);
-  if (lexer->lookahead == '#') {
-    advance(lexer);
-  }
-  if (lexer->lookahead != '(') {
-    return;
-  }
-  int depth = 0;
-  while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
-    int32_t c = lexer->lookahead;
-    if (c == '"') {
-      advance(lexer);
-      while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
-        if (lexer->lookahead == '"') {
-          advance(lexer);
-          if (lexer->lookahead != '"') {
-            break;
-          }
-        }
-        advance(lexer);
-      }
-      continue;
-    }
-    advance(lexer);
-    if (c == '(') {
-      depth++;
-    } else if (c == ')') {
-      depth--;
-      if (depth == 0) {
-        break;
-      }
-    }
-  }
-  // consume the closing # (or ##)
-  if (lexer->lookahead == '#') {
-    advance(lexer);
-    if (lexer->lookahead == '#') {
-      advance(lexer);
-    }
-  }
-}
-
 // Consumes the rest of an XML tag up to (not including) the closing '>'.
 // A quote only opens an attribute value directly after '=', so stray quotes in
 // hand-written HTML (e.g. height=24") don't swallow the rest of the file.
@@ -370,18 +324,18 @@ static void skip_xml_tag_body(TSLexer *lexer) {
   int32_t prev = 0;
   while (!lexer->eof(lexer) && lexer->lookahead != '>') {
     int32_t c = lexer->lookahead;
-    if (c == '#') {
-      skip_cos_interpolation(lexer);
-      prev = '#';
-      continue;
-    }
+    // if (c == '#') {
+    //   skip_cos_interpolation(lexer);
+    //   prev = '#';
+    //   continue;
+    // }
     if ((c == '"' || c == '\'') && prev == '=') {
       advance(lexer);
       while (!lexer->eof(lexer)) {
-        if (lexer->lookahead == '#') {
-          skip_cos_interpolation(lexer);
-          continue;
-        }
+        // if (lexer->lookahead == '#') {
+        //   skip_cos_interpolation(lexer);
+        //   continue;
+        // }
         if (lexer->lookahead == c) {
           advance(lexer);
           if (lexer->lookahead == c) {
@@ -408,11 +362,11 @@ static bool lex_fenced_text(TSLexer *lexer,
                             int32_t r_delim, bool is_xml, bool has_python_comment, bool is_text) {
   int depth = 1;
   const char *comment_start = "<!--";
-  const char *code_start = "<![CDATA[";
-  const char *code_end = "]]>";
   const char *comment_end = "-->";
   const char *script_start = "script";
   const char *script_end = "</script>";
+  const char *code_start = "<![CDATA[";
+  const char *code_end = "]]>";
   while (iswspace(lexer->lookahead) || lexer->lookahead == 0x2028 || lexer->lookahead == 0x2029) {
       advance(lexer);
   }
@@ -427,14 +381,36 @@ static bool lex_fenced_text(TSLexer *lexer,
         advance(lexer);
     }
     int32_t c = lexer->lookahead;
+    // anything within #[]# is skipped
     if (c == '#' && is_xml) {
-        skip_cos_interpolation(lexer);
+        advance(lexer);
+        if (lexer->lookahead == '[') {
+            while (!lexer->eof(lexer)) {
+                if (lexer->lookahead == ']' ) {
+                    advance(lexer);
+                    if (lexer->lookahead == '#' ) {
+                        advance(lexer);
+                        break;
+                    }
+                    continue;
+                } else {
+                    advance(lexer);
+                }
+            }
+        }
         continue;
     }
     if (c == '<' && is_xml) {
         bool comment = true;
         bool is_code = false;
+        bool legacy_skip = false;
         for (unsigned i = 0; i < 4; i++) {
+            if (i==1 && lexer->lookahead == '%') {
+                legacy_skip = true;
+                comment = false;
+                advance(lexer);
+                break;
+            }
             if (i > 1) {
                 is_code = true;
             }
@@ -443,6 +419,21 @@ static bool lex_fenced_text(TSLexer *lexer,
                 break;
             }
             advance(lexer);
+        }
+        if (legacy_skip) {
+            while (!lexer->eof(lexer)) {
+                if (lexer->lookahead == '%' ) {
+                    advance(lexer);
+                    if (lexer->lookahead == '>' ) {
+                        advance(lexer);
+                        break;
+                    }
+                    continue;
+                } else {
+                    advance(lexer);
+                }
+            }
+            continue;
         }
         if (comment) {
             bool is_comment_end = false;
@@ -463,7 +454,8 @@ static bool lex_fenced_text(TSLexer *lexer,
                 advance(lexer);
             }
             continue;
-        } else if (is_code) {
+        }
+        else if (is_code) {
             for (unsigned i = 2; i < 9; i++) {
                 while (iswspace(lexer->lookahead)) {
                     advance(lexer);
@@ -498,7 +490,8 @@ static bool lex_fenced_text(TSLexer *lexer,
                 }
                 continue;
             }
-        } else if (towlower(lexer->lookahead) == 's') {
+        }
+        else if (towlower(lexer->lookahead) == 's') {
             bool is_script = true;
             for (unsigned i = 0; i < 6; i++) {
                 while (iswspace(lexer->lookahead)) {
@@ -510,16 +503,39 @@ static bool lex_fenced_text(TSLexer *lexer,
                 }
                 advance(lexer);
             }
-            skip_xml_tag_body(lexer);
-            if (lexer->lookahead == '>') {
-                advance(lexer);
+            if (is_script) {
+                skip_xml_tag_body(lexer); // skip through the rest of this part <script language=sfdasf, name ='query'>
+                if (lexer->lookahead == '>') {
+                    advance(lexer);
+                }
             }
             if (!is_script) {
+                if (l_delim == '<') {
+                    depth ++;
+                }
                 continue;
             }
 
             bool is_script_end = false;
             while (!lexer->eof(lexer)) {
+                if (lexer->lookahead == '#') {
+                    advance(lexer);
+                    if (lexer->lookahead == '[') {
+                        while (!lexer->eof(lexer)) {
+                            if (lexer->lookahead == ']' ) {
+                                advance(lexer);
+                                if (lexer->lookahead == '#' ) {
+                                    advance(lexer);
+                                    break;
+                                }
+                                continue;
+                            } else {
+                                advance(lexer);
+                            }
+                        }
+                    }
+                    continue;
+                }
                 if (lexer->lookahead == '<') {
                     is_script_end = true;
                     for (unsigned i = 0; i < 9; i++) {
@@ -541,35 +557,45 @@ static bool lex_fenced_text(TSLexer *lexer,
             continue;
 
         }
-
-        else {
-            skip_xml_tag_body(lexer);
-            // consume the >
-            advance(lexer);
-            continue;
+        // plain tag: '<' was already consumed above, so count it here and
+        // skip the depth++/advance at the bottom of the loop. Tags only
+        // affect depth when '<' is the fence (&html<...>), not for {...}
+        // bodies like Storage/XData that happen to contain XML.
+        if (l_delim == '<') {
+            depth++;
         }
+        continue;
+    }
+
+    else if (!is_xml && c == '\\' ) {
+        advance(lexer);
+        if (!lexer->eof(lexer)) {
+            advance(lexer);
+        }
+        continue;
     }
 
     else if (!is_xml && (c == '"' || (c == '\'' && !is_text))) {
           int32_t quote = c;
           advance(lexer);
-
-          // Detect a triple-quoted string.
           bool triple = false;
-          if (lexer->lookahead == quote) {
-            advance(lexer);
             if (lexer->lookahead == quote) {
-              advance(lexer);
-              triple = true;
-            } else {
-              // Empty string literal ('' or ""); nothing more to skip.
-              continue;
+            advance(lexer);
+            if (is_text || !has_python_comment) {
+                continue; // escaped quote
             }
-          }
+            if (lexer->lookahead == quote) {
+                advance(lexer);
+                triple = true;
+            } else {
+                // Empty string literal ('' or ""); nothing more to skip.
+                continue;
+            }
+            }
 
           // Consume the string contents.
           while (!lexer->eof(lexer)) {
-            if (lexer->lookahead == '\\') {
+            if (lexer->lookahead == '\\' && !is_text) {
               advance(lexer);
               if (!lexer->eof(lexer)) {
                 advance(lexer);
@@ -578,17 +604,24 @@ static bool lex_fenced_text(TSLexer *lexer,
             }
             if (lexer->lookahead == quote) {
               advance(lexer);
-              if (!triple) {
+              if (!triple && !is_text) {
                 break;
               }
               if (lexer->lookahead == quote) {
                 advance(lexer);
+                if (is_text) {
+                    continue; // this was an escaped quote inside the outer string
+                }
                 if (lexer->lookahead == quote) {
                   advance(lexer);
                   break;
                 }
+              } else {
+                  if (is_text) {
+                      break;
+                  }
+                  continue;
               }
-              continue;
             }
             if (!triple && lexer->lookahead == '\n') {
               // Unterminated single-quoted string; stop before consuming the
@@ -605,7 +638,56 @@ static bool lex_fenced_text(TSLexer *lexer,
         advance(lexer);
       }
       continue;
-    } if (c == '/' && !is_xml) {
+    } if ((c == '(' || c == '=') && l_delim != '(' && !is_xml) {
+        advance(lexer);
+        if (lexer->lookahead=='/') {
+            advance(lexer);
+            if (lexer->lookahead == '/') {
+                while (lexer->lookahead != 0 && lexer->lookahead != '\n' && lexer->lookahead != 0x2028 &&
+                  lexer->lookahead != 0x2029) {
+                  advance(lexer);
+                  }
+                continue;
+            } else if (lexer->lookahead == '*') {
+                advance(lexer);
+                while (!lexer->eof(lexer)) {
+                  if (lexer->lookahead == '*') {
+                      advance(lexer);
+                    if (lexer->lookahead == '/') {
+                        advance(lexer);
+                        break;
+                    }
+                  } else if (lexer->lookahead == '\\') {
+                      advance(lexer);
+                      if (!lexer->eof(lexer)) {
+                          advance(lexer);
+                      }
+                  }
+                  else {
+                    advance(lexer);
+                  }
+                }
+                continue;
+            } else {
+                while (!lexer->eof(lexer) && lexer->lookahead != '/') {
+                    if (lexer->lookahead == '\\') {
+                        advance(lexer);
+                        if (!lexer->eof(lexer)) {
+                            advance(lexer);
+                        }
+                    } else {
+                        advance(lexer);
+                    }
+                }
+                if (lexer->lookahead == '/') {
+                    advance(lexer);
+                }
+                continue;
+            }
+        }
+        continue;
+    }
+    if (c == '/' && !is_xml) {
         advance(lexer);
         if (lexer->lookahead == '/') {
             while (lexer->lookahead != 0 && lexer->lookahead != '\n' && lexer->lookahead != 0x2028 &&
@@ -681,10 +763,6 @@ static bool ObjectScript_Core_Scanner_lex_marker_fenced_text(
   return false;
 }
 
-static inline bool is_ascii_alpha_i32(int32_t c) {
-  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-}
-
 // checks if char is part of valid expressions
 static inline bool is_objectscript_special_symbol_i32(int32_t c) {
   return c == '+' || c == '-' || c == '\'' || c == '$'|| c == '*' || c == '!' ||
@@ -720,7 +798,7 @@ static bool lex_compiled_header(TSLexer *lexer) {
 }
 
 static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) {
-  // if (lexer->lookahead != '0') return false;
+  if (lexer->lookahead != '0') return false;
 
   uint32_t depth = 1;
   bool at_line_start = false;
@@ -760,7 +838,7 @@ static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) 
         } else if (ascii_upper_eq(directive, len, "ELSE")) {
           if (depth == 0) return false;
           if (depth == 1) {
-            lexer->result_symbol = POUND_IF_SPECIAL_CASE_ELSE;
+            lexer->result_symbol = POUND_IF_SPECIAL_CASE;
             return true;
           }
         } else if (ascii_upper_eq(directive, len, "ELSEIF")) {
@@ -771,10 +849,10 @@ static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) 
             }
             if (lexer->lookahead == '1') {
               depth -= 1;
-              lexer->result_symbol = POUND_IF_SPECIAL_CASE_ELSE;
+              lexer->result_symbol = POUND_IF_SPECIAL_CASE;
               return true;
             }
-            lexer->result_symbol = POUND_IF_SPECIAL_CASE_ELSE_IF;
+            lexer->result_symbol = POUND_IF_SPECIAL_CASE;
             return true;
           }
         }
@@ -794,7 +872,6 @@ static bool ObjectScript_Core_Scanner_lex_pound_if_special_case(TSLexer *lexer) 
     advance(lexer);
   }
 
-  // No matching #endif found; let grammar/error recovery handle it.
   return false;
 }
 
@@ -816,6 +893,83 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   // we are not in error recovery mode
   if (valid_symbols[SENTINEL]) {
     return false;
+  }
+
+  if (valid_symbols[_CHANGE_TAG_PARSING]) {
+      if (scanner->column1_statement_mode == true) {
+          scanner->column1_statement_mode = false;
+      } else {
+          scanner->column1_statement_mode = true;
+      }
+      lexer->result_symbol = _CHANGE_TAG_PARSING;
+      return true;
+  }
+
+  if (valid_symbols[_NEW_CONDITIONAL_DIRECTIVE]) {
+      scanner->num_conditional_directives +=1;
+      lexer->result_symbol = _NEW_CONDITIONAL_DIRECTIVE;
+      return true;
+  }
+
+  if (valid_symbols[LIT_TOKEN] && lexer->lookahead == ';') {
+      int count = 0;
+      while (lexer->lookahead == ';') {
+          count ++;
+          advance(lexer);
+      }
+      if (count == 1 || count == 2) {
+          lexer->mark_end(lexer);
+          lexer->result_symbol = LIT_TOKEN;
+          return true;
+      }
+      return false;
+  }
+
+  if (valid_symbols[LIT_VALUE]) {
+      while(lexer->lookahead != '\n' && !lexer->eof(lexer)) {
+          if (lexer->lookahead == '#') {
+              lexer->mark_end(lexer);
+              advance(lexer);
+              if (lexer->lookahead != '#') {
+                  continue;
+              }
+              advance(lexer);
+              if (lexer->lookahead != 'l') {
+                  continue;
+              }
+              advance(lexer);
+              if (lexer->lookahead != 'i') {
+                  continue;
+              }
+              advance(lexer);
+              if (lexer->lookahead != 't') {
+                  continue;
+              }
+              advance(lexer);
+              if (lexer->lookahead != '(') {
+                  continue;
+              }
+              lexer->result_symbol = LIT_VALUE;
+              return true;
+          }
+          advance(lexer);
+      }
+      lexer->mark_end(lexer);
+      lexer->result_symbol = LIT_VALUE;
+      return true;
+  }
+
+  if (valid_symbols[_INSIDE_IF_DIRECTIVE]) {
+      if (scanner->num_conditional_directives > 0) {
+          lexer->result_symbol = _INSIDE_IF_DIRECTIVE;
+          return true;
+      } else {
+          return false;
+      }
+  }
+
+  if (valid_symbols[STATEMENT_IN_MACRO]) {
+      return lex_macro_statement(lexer);
   }
 
   if (scanner->pending_dotted_block_end) {
@@ -898,12 +1052,8 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   }
 
   if (valid_symbols[POUND_IF_SPECIAL_CASE]) {
-  // #if 0 .. #endif cases
+  // #if 0 cases
     if (ObjectScript_Core_Scanner_lex_pound_if_special_case(lexer)) {
-      if (lexer->result_symbol == POUND_IF_SPECIAL_CASE_ELSE ) {
-        scanner->special_pound_if_mode_if_depth += 1;
-        scanner->special_pound_if_mode = true;
-      }
       scanner->terminated_newline = false;
       return true;
     }
@@ -912,6 +1062,9 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   if (valid_symbols[_END_IF_END]) {
       while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
           advance(lexer);
+      }
+      if (scanner->num_conditional_directives > 0) {
+          scanner->num_conditional_directives -= 1;
       }
       lexer->result_symbol = _END_IF_END;
       scanner->terminated_newline = true;
@@ -994,32 +1147,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return true;
   }
 
-  if (valid_symbols[STATEMENT_IN_MACRO]) {
-      lexer->mark_end(lexer);
-      while (iswspace(lexer->lookahead)) {
-          advance(lexer);
-      }
-      int32_t ident[96];
-      uint32_t len = 0;
-      while (valid_tag_char(lexer->lookahead)) {
-          if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
-          advance(lexer);
-      }
-      if (is_statement_or_class_keyword(ident, len)) {
-          if (iswspace(lexer->lookahead)) {
-              advance(lexer);
-              if (valid_tag_char(lexer->lookahead)) {
-                  lexer->result_symbol = STATEMENT_IN_MACRO;
-                  scanner->terminated_newline = false;
-                  return true;
-              }
-          }
-
-      } else {
-          return false;
-      }
-  }
-
   if (valid_symbols[EMBEDDED_SQL_REVERSE_MARKER]) {
     while (scanner->sql_marker_buffer_len >0 && !lexer->eof(lexer)) {
       int32_t expected = scanner->sql_marker_buffer[scanner->sql_marker_buffer_len - 1];
@@ -1066,6 +1193,33 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
       lexer->result_symbol = _POST_CONDITIONAL_END;
       scanner->terminated_newline = false;
       return true;
+  }
+
+  // #dim (whitespace allowed between '#' and 'dim') where the termination
+  // block below doesn't run; that block handles '#' itself
+  if (valid_symbols[KEYWORD_DIM] && lexer->lookahead == '#' &&
+      !valid_symbols[_TERMINATION] &&
+      !valid_symbols[_ARGUMENTLESS_LOOP] &&
+      !valid_symbols[_ARGUMENTLESS_COMMAND_END] &&
+      !valid_symbols[_IMMEDIATE_SINGLE_WHITESPACE_FOLLOWED_BY_NON_WHITESPACE] &&
+      !valid_symbols[_STATEMENT_TERMINATION] &&
+      !valid_symbols[DOTTED_STATEMENT_BLOCK]) {
+    lexer->mark_end(lexer);
+    advance(lexer);
+    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+      advance(lexer);
+    }
+    if (ascii_toupper_i32(lexer->lookahead) != 'D') return false;
+    advance(lexer);
+    if (ascii_toupper_i32(lexer->lookahead) != 'I') return false;
+    advance(lexer);
+    if (ascii_toupper_i32(lexer->lookahead) != 'M') return false;
+    advance(lexer);
+    if (is_ascii_alpha_i32(lexer->lookahead)) return false;
+    lexer->mark_end(lexer);
+    lexer->result_symbol = KEYWORD_DIM;
+    scanner->terminated_newline = false;
+    return true;
   }
 
   if (
@@ -1122,35 +1276,24 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     else if (lexer->lookahead == '#') {
       lexer->mark_end(lexer);
       advance(lexer);
-      if (towlower(lexer->lookahead) == 'e' && (valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
-        int32_t directive[16];
-        uint32_t len = 0;
-        while (len < (sizeof(directive) / sizeof(directive[0])) &&
-                is_ascii_alpha_i32(lexer->lookahead)) {
-          directive[len++] = ascii_toupper_i32(lexer->lookahead);
+      int between_count = 0;
+      while(iswspace(lexer->lookahead)) {
+          between_count +=1;
           advance(lexer);
-        }
-        if (ascii_upper_eq(directive, len, "ENDIF")) {
-          if (scanner->special_pound_if_mode_if_depth > 0) {
-            scanner->special_pound_if_mode_if_depth -= 1;
-            if (scanner->special_pound_if_mode_if_depth<1) {
-              scanner->special_pound_if_mode=false;
-            }
-            // Anything after #endif on the same line is ignored (e.g. #endif ArgFor),
-            // but trailing comments are left for the comment rules
-            while (lexer->lookahead != '\n' && !lexer->eof(lexer) &&
-                   lexer->lookahead != ';' && lexer->lookahead != '/' &&
-                   lexer->lookahead != '#') {
-              advance(lexer);
-            }
-            lexer->result_symbol = TAG_END_IF;
-            lexer->mark_end(lexer);
-            return true;
-          }
-          return false;
-        }
       }
-      if (lexer->lookahead == ';') {
+      if (towlower(lexer->lookahead) == 'd' && valid_symbols[KEYWORD_DIM]) {
+          advance(lexer);
+          if (towlower(lexer->lookahead) != 'i') return false;
+          advance(lexer);
+          if (towlower(lexer->lookahead) != 'm') return false;
+          advance(lexer);
+          if (is_ascii_alpha_i32(lexer->lookahead)) return false;
+          lexer->mark_end(lexer);
+          lexer->result_symbol = KEYWORD_DIM;
+          scanner->terminated_newline = false;
+          return true;
+      }
+      else if (lexer->lookahead == ';' && between_count == 0) {
           while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
               advance(lexer);
           }
@@ -1159,7 +1302,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
           scanner->terminated_newline = false;
           return true;
       }
-      else if (lexer->lookahead == '#') {
+      else if (lexer->lookahead == '#' && between_count == 0) {
           advance(lexer);
           if (lexer->lookahead == ';') {
               while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
@@ -1328,7 +1471,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             if (lexer->get_column(lexer) == 0) {
                 potential_tag = true;
             }
-            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead)) {
+            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) ||  lexer->lookahead == '_') {
                 if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
                 advance(lexer);
             }
@@ -1420,7 +1563,7 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
             if (lexer->get_column(lexer) == 0) {
                 potential_tag = true;
             }
-            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead)) {
+            while (valid_tag_char(lexer->lookahead) || is_objectscript_special_symbol_i32(lexer->lookahead) || lexer->lookahead == '_') {
                 if (len < sizeof(ident) / sizeof(ident[0])) ident[len++] = lexer->lookahead;
                 advance(lexer);
             }
@@ -1689,7 +1832,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     return lex_fenced_text(lexer, EXTERNAL_METHOD_BODY_CONTENT, '{',
                            '}', false, is_python, is_text);
   }
-
   else if (valid_symbols[_LINE_COMMENT_INNER]) {
     lexer->result_symbol = _LINE_COMMENT_INNER;
     for (;;) {
@@ -1760,41 +1902,6 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
     lexer->result_symbol = _WHITESPACE;
     return true;
   }
-  else if ((valid_symbols[TAG] || valid_symbols[TAG_END_IF]) && scanner->special_pound_if_mode) {
-    while (iswspace(lexer->lookahead)) {
-      advance(lexer);
-    }
-    if (lexer->lookahead == '#') {
-      lexer->mark_end(lexer);
-      advance(lexer);
-      int32_t directive[16];
-      uint32_t len = 0;
-      while (len < (sizeof(directive) / sizeof(directive[0])) &&
-              is_ascii_alpha_i32(lexer->lookahead)) {
-        directive[len++] = ascii_toupper_i32(lexer->lookahead);
-        advance(lexer);
-      }
-      if (ascii_upper_eq(directive, len, "ENDIF")) {
-        if (scanner->special_pound_if_mode_if_depth > 0) {
-          scanner->special_pound_if_mode_if_depth -= 1;
-          if (scanner->special_pound_if_mode_if_depth<1) {
-            scanner->special_pound_if_mode=false;
-          }
-          // Anything after #endif on the same line is ignored (e.g. #endif ArgFor),
-          // but trailing comments are left for the comment rules
-          while (lexer->lookahead != '\n' && !lexer->eof(lexer) &&
-                 lexer->lookahead != ';' && lexer->lookahead != '/' &&
-                 lexer->lookahead != '#') {
-            advance(lexer);
-          }
-          lexer->result_symbol = TAG_END_IF;
-          lexer->mark_end(lexer);
-          return true;
-        }
-        return false;
-      }
-    }
-  }
 
   if (scanner->terminated_newline && lexer->lookahead == '.' && !valid_symbols[_BOL] && !valid_symbols[_INTERMEDIATE_TERMINATION] && !valid_symbols[_BOL_BLOCK]) {
     while (lexer->lookahead == '.') {
@@ -1809,6 +1916,28 @@ ObjectScript_Core_Scanner_scan(struct ObjectScript_Core_Scanner *scanner,
   if (valid_symbols[COMPILED_HEADER] && lex_compiled_header(lexer)) {
     return true;
   }
+  // if (valid_symbols[ELSE_BLOCK_ALLOWED] && scanner->num_conditional_directives > 0 && lexer->lookahead == 'e') {
+  //     lexer->mark_end(lexer);
+  //     advance(lexer);
+  //     if (lexer->lookahead != 'l') {
+  //         return false;
+  //     }
+  //     advance(lexer);
+  //     if (lexer->lookahead != 's') {
+  //         return false;
+  //     }
+  //     advance(lexer);
+  //     if (lexer->lookahead != 'e') {
+  //         return false;
+  //     }
+  //     while (iswspace(lexer->lookahead)) {
+  //         advance(lexer);
+  //     }
+  //     if (lexer->lookahead == '{') {
+  //         lexer->result_symbol = ELSE_BLOCK_ALLOWED;
+  //         return true;
+  //     }
+  // }
   scanner->terminated_newline = false;
   return false;
 }
@@ -1819,10 +1948,9 @@ static void ObjectScript_Core_Scanner_init(struct ObjectScript_Core_Scanner *sca
   scanner->terminated_newline = false;
   scanner->column1_statement_mode = false;
   scanner->routine_token_mode = false;
-  scanner->special_pound_if_mode = false;
-  scanner->special_pound_if_mode_if_depth = 0;
   scanner->is_rtn_dot = false;
   scanner->pending_dotted_block_end = false;
   scanner->is_python = false;
   scanner->is_text = false;
+  scanner->num_conditional_directives = 0;
 }

@@ -270,3 +270,20 @@ Expression for namespace
               (expression
                 (numeric_literal))))))
       (identifier))))
+
+===
+gvn macro function
+===
+ $q(^$$$h(""))
+---
+
+(source_file
+  (expression
+    (system_defined_function
+      (method_arg
+        (expression
+          (gvn
+            (macro_function
+              (macro_function)
+              (statement_in_macro)
+              (macro_function))))))))
