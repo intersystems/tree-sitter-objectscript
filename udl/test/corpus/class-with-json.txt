@@ -151,13 +151,10 @@ Class test {
                     (lvn
                       (objectscript_identifier)))
                   (expression
-                    (macro
-                      (macro_function
-                        (macro_func_args
-                          (method_arg
-                            (expression
-                              (lvn
-                                (objectscript_identifier)))))))))))
+                    (macro_function
+                      (macro_function)
+                      (statement_in_macro)
+                      (macro_function))))))
             (statement
               (command_if
                 (keyword_if)
@@ -166,8 +163,7 @@ Class test {
                     (objectscript_identifier))
                   (binary_operator)
                   (expression
-                    (macro
-                      (macro_constant))))
+                    (macro_constant)))
                 (statement
                   (command_return
                     (keyword_return)
@@ -189,8 +185,7 @@ Class test {
                     (objectscript_identifier))
                   (binary_operator)
                   (expression
-                    (macro
-                      (macro_constant))))
+                    (macro_constant)))
                 (statement
                   (command_if
                     (keyword_old_if)

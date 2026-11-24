@@ -175,8 +175,7 @@ Class MyApp.Test {
               (command_quit
                 (keyword_quit)
                 (expression
-                  (macro
-                    (macro_constant)))))))))))
+                  (macro_constant))))))))))
 
 ========================================================
 Valid — ClassMethod referenced as class member only
@@ -351,8 +350,7 @@ Class MyApp.Test {
                     (lvn
                       (objectscript_identifier)))
                   (expression
-                    (macro
-                      (macro_constant))))))
+                    (macro_constant)))))
             (statement
               (command_quit
                 (keyword_quit)
@@ -706,8 +704,7 @@ Method CreateObject(Output newobj As MyApp.MyClass) As %Status
               (command_quit
                 (keyword_quit)
                 (expression
-                  (macro
-                    (macro_constant)))))))))))
+                  (macro_constant))))))))))
 
 ====
 ClassMethod Call
@@ -791,10 +788,11 @@ ClassMethod TSQLTest() [ Language = tsql ]
             (method_name
               (identifier))
             (arguments)
-            (external_method_keywords
-              (keyword_external_language
-                (typename)))
-            (external_method_body_content)))))))
+            (method_keywords
+              (method_keyword
+                (external_language_keyword)))
+            (external_method
+              (external_method_body_content))))))))
 
 ====
 Valid ClassMethod
@@ -847,10 +845,11 @@ Class test {
                     (identifier)))
                 (default_argument_value
                   (numeric_literal))))
-            (external_method_keywords
-              (keyword_external_language
-                (typename)))
-            (external_method_body_content)))))))
+            (method_keywords
+              (method_keyword
+                (external_language_keyword)))
+            (external_method
+              (external_method_body_content))))))))
 
 ===
 Expression Method
@@ -891,15 +890,16 @@ Method Double(val As %Integer) As %Integer [ CodeMode = expression ]
               (keyword_as)
               (typename
                 (identifier)))
-            (expression_method_keywords
-              (method_keyword_codemode_expression
+            (method_keywords
+              (method_keyword
                 (typename)))
-            (expression
-              (lvn
-                (objectscript_identifier))
-              (binary_operator)
+            (expression_method
               (expression
-                (numeric_literal)))))))))
+                (lvn
+                  (objectscript_identifier))
+                (binary_operator)
+                (expression
+                  (numeric_literal))))))))))
 
 ====
 MethodGenerator
@@ -979,8 +979,7 @@ Method MyMethod() [ CodeMode = objectgenerator , ProcedureBlock=0]
               (command_quit
                 (keyword_quit)
                 (expression
-                  (macro
-                    (macro_constant)))))))))))
+                  (macro_constant))))))))))
 
 ===
 Call Method
@@ -1006,15 +1005,16 @@ Class test {
             (method_name
               (identifier))
             (arguments)
-            (call_method_keywords
-              (call_method_keyword
+            (method_keywords
+              (method_keyword
                 (typename)))
-            (routine_tag_call
-              (line_ref
-                (method_name
-                  (objectscript_identifier))
-                (routine_ref
-                  (routine_name))))))))))
+            (call_method
+              (routine_tag_call
+                (line_ref
+                  (method_name
+                    (objectscript_identifier))
+                  (routine_ref
+                    (routine_name)))))))))))
 
 ===
 trigger

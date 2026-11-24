@@ -359,3 +359,16 @@ embedded sql
       (embedded_sql_amp
         (keyword_embedded_sql_amp)
         (paren_fenced_text)))))
+
+===
+embedded sql with () within
+===
+	&sql(select %HI(Ok) into :bye from %okay.dokey)
+---
+
+(source_file
+  (statement
+    (embedded_sql
+      (embedded_sql_amp
+        (keyword_embedded_sql_amp)
+        (paren_fenced_text)))))

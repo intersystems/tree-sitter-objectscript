@@ -33,10 +33,11 @@ ClassMethod Real() As %String
             (method_name
               (identifier))
             (arguments)
-            (external_method_keywords
-              (keyword_external_language
-                (typename)))
-            (external_method_body_content))))
+            (method_keywords
+              (method_keyword
+                (external_language_keyword)))
+            (external_method
+              (external_method_body_content)))))
       (class_statement
         (classmethod
           (keyword_classmethod)
@@ -104,10 +105,11 @@ ClassMethod After() As %String
             (method_name
               (identifier))
             (arguments)
-            (external_method_keywords
-              (keyword_external_language
-                (typename)))
-            (external_method_body_content))))
+            (method_keywords
+              (method_keyword
+                (external_language_keyword)))
+            (external_method
+              (external_method_body_content)))))
       (class_statement
         (classmethod
           (keyword_classmethod)
@@ -161,13 +163,14 @@ ClassMethod After() As %String
           (keyword_trigger)
           (trigger_name
             (identifier))
-          (external_trigger_keywords
+          (trigger_keywords
             (trigger_keyword
               (trigger_event_value
                 (typename)))
-            (keyword_external_language
+            (trigger_keyword
               (typename)))
-          (external_method_body_content)))
+          (external_trigger
+            (external_method_body_content))))
       (class_statement
         (classmethod
           (keyword_classmethod)
@@ -214,7 +217,8 @@ ClassMethod TSql() [ Language = tsql ]
             (method_name
               (identifier))
             (arguments)
-            (external_method_keywords
-              (keyword_external_language
-                (typename)))
-            (external_method_body_content)))))))
+            (method_keywords
+              (method_keyword
+                (external_language_keyword)))
+            (external_method
+              (external_method_body_content))))))))

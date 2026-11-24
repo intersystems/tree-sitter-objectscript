@@ -64,7 +64,7 @@ function rule_refs($, ruleNames) {
 
 module.exports = grammar(objectscript_expr, {
   name: 'objectscript_core',
-  externals: ($) => [
+  externals: ($, previous) => previous.concat([
     $._immediate_single_whitespace_followed_by_non_whitespace,
     $._assert_no_space_between_rules,
     $._argumentless_command_end,
@@ -79,7 +79,6 @@ module.exports = grammar(objectscript_expr, {
     $._line_comment_inner,
     $._block_comment_inner,
     $.macro_value_line_with_continue,
-    $.sentinel,
     $._bol,
     $._termination,
     $._post_conditional_id,
@@ -89,10 +88,7 @@ module.exports = grammar(objectscript_expr, {
     $.embedded_js_special_case,
     $.embedded_js_special_case_complete,
     $.pound_if_special_case,
-    $.pound_if_special_case_else,
-    $.pound_if_special_case_else_if,
     $.mnemonic,
-    $.tag_end_if,
     $.inline_comment,
     $._statement_termination,
     $.argumentless_inline_comment,
@@ -104,9 +100,14 @@ module.exports = grammar(objectscript_expr, {
     $._post_conditional_end,
     $.compiled_header,
     $.external_method_body_content,
-    $.statement_in_macro,
     $._end_if_end,
-  ],
+    $._change_tag_parsing,
+    $.keyword_dim,
+    $._new_conditional_directive,
+    $._inside_if_directive,
+    $.lit_token,
+    $.lit_value,
+  ]),
   conflicts: ($, previous) =>
     previous.concat([
       [$.xecute_argument, $._parenthetical_expression],
@@ -144,7 +145,6 @@ module.exports = grammar(objectscript_expr, {
 
     keyword_set: (_) => /[sS]([eE][tT])?/,
     keyword_as: (_) => /As/i,
-    keyword_dim: (_) => /\#[dD][iI][mM]/,
     keyword_pound_define: (_) => /\#define/i,
     keyword_pound_def1arg: (_) => /\#def1arg/i,
     keyword_pound_execute: (_) => /\#execute/i,
@@ -249,34 +249,36 @@ module.exports = grammar(objectscript_expr, {
       ),
     variable_datatype: ($) =>
       seq(
-        choice(alias($._base_variable, $.typename), $.instance_variable, $.macro),
+        choice(alias($._base_variable, $.typename), $.instance_variable, $._macro),
         repeat(seq(token.immediate('.'), alias($._base_variable_immediate, $.typename))),
       ),
     keyword_of: (_) => /Of/i,
     pound_dim: ($) =>
       seq(
         $.keyword_dim,
-        commaSep1(alias($._base_variable, $.lvn)),
-        optional(
+        commaSep1(seq(alias($._base_variable, $.lvn), optional(
           seq(
             $.keyword_as,
             $.variable_datatype,
             optional(seq($.keyword_of, $.variable_datatype)),
           ),
-        ),
+        ))),
         optional(seq('=', $.expression)),
       ),
+
+    pound_lit: ($) => seq(
+      alias(/##lit/i, $.keyword_lit),
+      token.immediate('('),
+      $.lit_token,
+      ')',
+      $.lit_value,
+    ),
 
     pound_define: ($) =>
       seq(
         choice($.keyword_pound_define, $.keyword_pound_def1arg),
-        prec(10, alias(
-          choice(
-            $._base_variable,
-            /[0-9][A-Za-z0-9]*/,
-            // e.g. #define SQLEnumRowStatementROW_AND_OBJECT 3
-            /%?[A-Za-z0-9]+(_[A-Za-z0-9]+)+/),
-          $.macro_def)),
+        alias( /%?[A-Za-z0-9]+(_[A-Za-z0-9]+)*/,
+          $.macro_def),
         choice(
           seq(
             prec(10, $.pound_define_variable_args),
@@ -299,74 +301,19 @@ module.exports = grammar(objectscript_expr, {
     pound_define_variable_args: ($) =>
       prec(15, build_argument_list_immediate(seq(commaSep($.macro_arg), optional(',')))),
     pound_execute: ($) => $.keyword_pound_execute,
-    pound_if: ($) =>
-      seq(
-        $.keyword_pound_if,
-        choice(
-          prec.right(seq(
-            $.expression,
-            repeat(choice($.statement, $.pound_elseif)),
-            optional($.pound_else),
-            $._end_if,
-          )),
-          prec.right(seq($.pound_if_special_case, $._end_if)),
-          seq(
-            $.pound_if_special_case_else,
-            choice(
-              $.keyword_pound_else,
-              seq($.keyword_pound_elseif, alias('1', $.numeric_literal)),
-            ),
-          ),
-          prec.right(seq(
-            $.pound_if_special_case_else_if,
-            $.keyword_pound_elseif,
-            $.expression,
-            repeat(choice($.statement, $.pound_elseif)),
-            optional($.pound_else),
-            $._end_if,
-          )),
-        ),
-      ),
-    // #if between the dotted lines of an argumentless DO. Only the scanner's
-    // special cases are allowed (the first branch is skipped and any #else
-    // body is parsed inline) to keep the parse table small.
-    _dotted_block_pound_if: ($) =>
-      seq(
-        $.keyword_pound_if,
-        choice(
-          seq($.pound_if_special_case, $._end_if),
-          seq(
-            $.pound_if_special_case_else,
-            choice(
-              $.keyword_pound_else,
-              seq($.keyword_pound_elseif, alias('1', $.numeric_literal)),
-            ),
-          ),
-        ),
-      ),
-    pound_ifdef: ($) =>
+    conditional_directive: ($) =>
       prec.right(seq(
-        $.keyword_pound_ifdef,
-        $.expression,
-        repeat(choice($.statement, $.pound_elseif)),
-        optional($.pound_else),
-        $._end_if,
-      )),
-
-    pound_ifndef: ($) =>
-      prec.right(seq(
-        $.keyword_pound_ifndef,
-        $.expression,
-        repeat(choice($.statement, $.pound_elseif)),
-        optional($.pound_else),
-        $._end_if,
+        choice($.keyword_pound_ifdef, $.keyword_pound_if, $.keyword_pound_ifndef),
+        $._new_conditional_directive,
+        choice($.expression, $.pound_if_special_case),
+        optional($.else_block),
       )),
 
     pound_elseif: ($) =>
       prec.right(
-        seq($.keyword_pound_elseif, $.expression, repeat($.statement)),
+        seq($.keyword_pound_elseif, $._inside_if_directive, $.expression),
       ),
-    pound_else: ($) => prec.right(seq($.keyword_pound_else, repeat($.statement))),
+    pound_else: ($) => prec.right(seq($.keyword_pound_else, $._inside_if_directive)),
     pound_import: ($) =>
       seq(
         $.keyword_pound_import,
@@ -425,7 +372,7 @@ module.exports = grammar(objectscript_expr, {
     set_target: ($) =>
       choice(
         $._target_variable,
-        $.macro,
+        $._macro,
         $.relative_dot_property,
         $.relative_dot_method,
         $.system_defined_function,
@@ -503,8 +450,8 @@ module.exports = grammar(objectscript_expr, {
             optional($.post_conditional),
             repeat1(choice(
               $.dotted_statement,
-              alias($._dotted_block_pound_if, $.pound_if),
-              $.tag_end_if,
+              $.conditional_directive,
+              $._end_if,
             )),
           ),
         ),
@@ -515,7 +462,11 @@ module.exports = grammar(objectscript_expr, {
             $._argumentless_command_end,
             repeat(alias($.statement, $.do_statement_after)),
             $._termination,
-            repeat($.dotted_statement),
+            repeat(choice(
+              $.dotted_statement,
+              $.conditional_directive,
+              $._end_if,
+            )),
           ),
         ),
         // DO with parameters
@@ -546,7 +497,7 @@ module.exports = grammar(objectscript_expr, {
         $.relative_dot_method,
         $.superclass_method_call,
         $.class_method_call,
-        $.macro,
+        $._macro,
         seq(
           choice(
             $.lvn,
@@ -554,7 +505,7 @@ module.exports = grammar(objectscript_expr, {
             $.relative_dot_property,
             $.relative_dot_method,
             $._parenthetical_expression,
-            $.macro,
+            $._macro,
             $.extrinsic_function,
             $.system_defined_function,
             $.system_defined_variable,
@@ -876,7 +827,7 @@ module.exports = grammar(objectscript_expr, {
       choice(
         $.indirection,
         $.lvn,
-        $.macro,
+        $._macro,
         alias($.estack_token, $.system_defined_variable),
         alias($.etrap_token, $.system_defined_variable),
         alias($.namespace_token, $.system_defined_variable),
@@ -1266,8 +1217,6 @@ module.exports = grammar(objectscript_expr, {
           build_argument_list_immediate($.paren_fenced_text),
         ),
       ),
-
-    // NOTE: We put the marker within the &sql keyword def to make it easier to query for highlighting
     embedded_sql_hash: ($) =>
       seq(
         $.keyword_embedded_sql_hash,
@@ -1303,7 +1252,7 @@ module.exports = grammar(objectscript_expr, {
       ),
 
     procedure_pub_vars: ($) =>
-      seq('[', optional(commaSep1(choice(alias($._base_variable, $.lvn), $.macro))), ']'),
+      seq('[', optional(commaSep1(choice(alias($._base_variable, $.lvn), $._macro))), ']'),
 
     // Full procedure definitions: tagname(params) [public_vars] access_modifier { body }
     procedure: ($) =>
@@ -1341,34 +1290,13 @@ module.exports = grammar(objectscript_expr, {
         commaSep1(choice($.expression, '!', '?')),
       ),
 
-    // choice(
-    //   build_command_rule_argumentful_block_allowed(
-    //     $,
-    //     command_keyword_alias($, PRINTLIST_COMMAND_PATTERNS),
-    //     commaSep1(choice($.expression, '!', '?')),
-    //   ),
-    //   // build_command_rule_argumentless($, PRINTLIST_COMMAND_PATTERNS[0]),
-    // ),
     parameter_list: ($) =>
       build_argument_list_immediate(commaSep($.tag_parameter)),
 
     command_macro: ($) =>
       prec.right(
         seq(
-          choice(
-            alias(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)), $.macro_constant),
-            seq(
-              alias(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/, token.immediate('('))), $.macro_function),
-              optional(choice(
-                seq(
-                  $.statement_in_macro,
-                  $.statement,
-                ),
-                $._method_arg_list,
-              )),
-              alias(')', $.macro_function),
-            ),
-          ),
+          $._macro,
           optional($.post_conditional),
           optional(
             choice(

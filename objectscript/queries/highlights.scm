@@ -119,7 +119,6 @@
   "'>"
   "^"
   "-"
-  "^$"
   "+"
   "<"
   "<="
@@ -135,6 +134,9 @@
   "!"
   "?"
 ] @operator
+
+(ssvn
+  "$" @operator)
 
 ; === END EXPR ===
 ; === BEGIN CORE ===
@@ -181,7 +183,6 @@
   (keyword_pound_include)
   (keyword_pound_delay)
   (locktype)
-  (tag_end_if)
   (pound_execute)
 ] @keyword.directive
 
@@ -278,10 +279,7 @@
 
 (tag) @function.method
 
-[
-  (pound_if_special_case_else)
-  (pound_if_special_case)
-] @comment.inactive
+(pound_if_special_case) @comment.inactive
 
 "--" @operator
 
@@ -351,15 +349,12 @@
 ] @keyword.type
 
 [
-  (method_keyword_codemode_expression)
-  (call_method_keyword)
   (extent_index_keyword)
   (method_keyword)
   (class_keyword)
   (query_keyword)
   (trigger_keyword)
   (xdata_keyword_mimetype)
-  (keyword_external_language)
   (relationship_keyword)
   (foreignkey_keyword)
   (parameter_keyword)

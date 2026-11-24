@@ -119,7 +119,6 @@
   "'>"
   "^"
   "-"
-  "^$"
   "+"
   "<"
   "<="
@@ -135,6 +134,9 @@
   "!"
   "?"
 ] @operator
+
+(ssvn
+  "$" @operator)
 
 ; === END EXPR ===
 ; === BEGIN CORE ===
@@ -181,7 +183,6 @@
   (keyword_pound_include)
   (keyword_pound_delay)
   (locktype)
-  (tag_end_if)
   (pound_execute)
 ] @keyword.directive
 
@@ -278,10 +279,7 @@
 
 (tag) @function.method
 
-[
-  (pound_if_special_case_else)
-  (pound_if_special_case)
-] @comment.inactive
+(pound_if_special_case) @comment.inactive
 
 "--" @operator
 
