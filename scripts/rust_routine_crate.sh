@@ -28,6 +28,7 @@ stage_routine_crate() {
   cp -f "$ROOT_DIR/cargo_readme_routine.md" "$dest/cargo_readme_routine.md"
 
   cp -f "$ROOT_DIR/common/scanner.h" "$dest/common/scanner.h"
+  cp -f "$ROOT_DIR/common/expr-scanner.h" "$dest/common/expr-scanner.h"
   cp -f "$ROOT_DIR/objectscript_routine/src/parser.c" "$dest/objectscript_routine/src/parser.c"
   cp -f "$ROOT_DIR/objectscript_routine/src/scanner.c" "$dest/objectscript_routine/src/scanner.c"
   cp -f "$ROOT_DIR/objectscript_routine/src/node-types.json" "$dest/objectscript_routine/src/node-types.json"

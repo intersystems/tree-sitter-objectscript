@@ -155,7 +155,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
         parsers.objectscript_udl = {
           install_info = {
             url = "https://github.com/intersystems/tree-sitter-objectscript",
-            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
+            revision = "8282d6a87ee45d231a6c66d125b26e91d3282831", 
             location = "udl",
             queries = "udl/queries",
           }
@@ -164,7 +164,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
         parsers.objectscript = {
           install_info = {
             url = "https://github.com/intersystems/tree-sitter-objectscript",
-            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
+            revision = "8282d6a87ee45d231a6c66d125b26e91d3282831", 
             location = "objectscript",
             queries = "objectscript/queries",
           }
@@ -173,7 +173,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, query sync, and bind
         parsers.objectscript_routine = {
           install_info = {
             url = "https://github.com/intersystems/tree-sitter-objectscript",
-            revision = "58450fe03f6fa51de38ac689fbf0af63f455494a", 
+            revision = "8282d6a87ee45d231a6c66d125b26e91d3282831", 
             location = "objectscript_routine",
             queries = "objectscript_routine/queries",
           }
