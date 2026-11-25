@@ -313,3 +313,21 @@ html invalid marker )
 ---
 
 
+
+===
+valid html < counts even in string
+===
+ &html<
+ <table>
+ <csp:WHILE COUNTER="i" CONDITION="i<$ll(..hey)">
+ </csp:WHILE>
+ </table>>
+ >
+---
+
+(source_file
+  (statements
+    (statement
+      (embedded_html
+        (keyword_embedded_html)
+        (angled_bracket_fenced_text)))))

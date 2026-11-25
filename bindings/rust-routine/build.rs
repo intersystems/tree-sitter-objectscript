@@ -16,10 +16,12 @@ fn main() {
         println!("cargo:rerun-if-changed={}", path.to_str().unwrap());
     }
 
-    println!(
-        "cargo:rerun-if-changed={}",
-        common_dir.join("scanner.h").to_str().unwrap()
-    );
+    for header in &["scanner.h", "expr-scanner.h"] {
+        println!(
+            "cargo:rerun-if-changed={}",
+            common_dir.join(header).to_str().unwrap()
+        );
+    }
 
     // MSVC quirk
     if cfg!(target_env = "msvc") {

@@ -17,6 +17,7 @@
 [
   (json_string_literal)
   (string_literal)
+  (statement_in_macro)
 ] @string
 
 [
@@ -119,7 +120,6 @@
   "'>"
   "^"
   "-"
-  "^$"
   "+"
   "<"
   "<="
@@ -136,11 +136,17 @@
   "?"
 ] @operator
 
+(ssvn
+  "$" @operator)
+
 ; === END EXPR ===
 ; === BEGIN CORE ===
 (macro_arg) @variable.member
 
-(macro_value) @constant.builtin
+[
+  (macro_value)
+  (lit_value)
+] @string
 
 (macro_def) @keyword.directive.define
 
@@ -168,6 +174,7 @@
 
 [
   (keyword_pound_define)
+  (keyword_lit)
   (keyword_pound_def1arg)
   (keyword_pound_if)
   (keyword_sqlcompile)
@@ -181,7 +188,6 @@
   (keyword_pound_include)
   (keyword_pound_delay)
   (locktype)
-  (tag_end_if)
   (pound_execute)
 ] @keyword.directive
 
@@ -278,10 +284,7 @@
 
 (tag) @function.method
 
-[
-  (pound_if_special_case_else)
-  (pound_if_special_case)
-] @comment.inactive
+(pound_if_special_case) @comment.inactive
 
 "--" @operator
 
@@ -321,6 +324,8 @@
 ; === BEGIN UDL ===
 (iris_username) @keyword.directive
 
+(external_language_keyword) @type.builtin
+
 [
   (keyword_import)
   (keyword_include)
@@ -347,19 +352,17 @@
   (keyword_not)
   (keyword_references)
   (keyword_byref)
+  (keyword_byval)
   (keyword_output)
 ] @keyword.type
 
 [
-  (method_keyword_codemode_expression)
-  (call_method_keyword)
   (extent_index_keyword)
   (method_keyword)
   (class_keyword)
   (query_keyword)
   (trigger_keyword)
   (xdata_keyword_mimetype)
-  (keyword_external_language)
   (relationship_keyword)
   (foreignkey_keyword)
   (parameter_keyword)

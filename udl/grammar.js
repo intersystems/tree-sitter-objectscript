@@ -29,19 +29,18 @@ module.exports = define_grammar(objectscript_core, {
       $.python_mime_type,
       $._is_python,
       $.text_mime_type,
+      $._external_class_language,
+      $._reset_method_kind,
+      $._set_call_method_kind,
+      $._set_external_method_kind,
+      $._set_expression_method_kind,
+      $._is_call_method,
+      $._is_external_method,
+      $._is_expression_method,
     ]),
   conflicts: ($, previous) =>
     previous.concat([
-      [
-        $.trigger_keywords,
-        $.external_trigger_keywords,
-      ],
-      [
-        $.expression_method_keywords,
-        $.external_method_keywords,
-        $.call_method_keywords,
-        $.method_keywords,
-      ],
+
     ]),
 
   // Keep /\s/ in extras to avoid state-0 error-recovery loops.
@@ -72,7 +71,16 @@ module.exports = define_grammar(objectscript_core, {
         $.class_body,
       ),
 
-    class_extends: ($) => seq($.keyword_extends, $._class_names),
+    class_extends: ($) => seq($.keyword_extends,
+      choice(
+        alias($._quote_permitting_identifier, $.class_name),
+        seq(
+          '(',
+          optional(alias($._quote_permitting_identifier, $.class_name)),
+          repeat1(seq(',', optional(alias($._quote_permitting_identifier, $.class_name)))),
+          ')',
+        ),
+      )),
 
     documatic_line: ($) =>
       seq('///', choice($._line_comment_inner, token.immediate(prec(1, /.*/)))),
@@ -102,7 +110,15 @@ module.exports = define_grammar(objectscript_core, {
 
     classmethod: ($) => seq($.keyword_classmethod, $.method_definition),
 
-    clientmethod: ($) => seq($.keyword_clientmethod, $._external_method_definition),
+    clientmethod: ($) =>
+      seq(
+        $.keyword_clientmethod,
+        $._set_external_method_kind,
+        $._method_header,
+        optional($.method_keywords),
+        $.external_method,
+        $._reset_method_kind,
+      ),
 
     query: ($) =>
       seq(
@@ -118,14 +134,16 @@ module.exports = define_grammar(objectscript_core, {
       seq(
         $.keyword_trigger,
         alias($._quote_permitting_identifier, $.trigger_name),
-        choice($._core_trigger, $._external_trigger),
+        $.trigger_keywords,
+        choice($._class_statements_block, $.external_trigger),
+        $._reset_method_kind,
       ),
 
     _class_statements_block: ($) => seq('{', repeat($.statement), '}'),
     _core_trigger: ($) => seq($.trigger_keywords, $._class_statements_block),
 
-    _external_trigger: ($) =>
-      seq($.external_trigger_keywords, $._external_body),
+    external_trigger: ($) =>
+      seq($._is_external_method, $._external_body),
 
     property: ($) =>
       seq(
@@ -238,11 +256,6 @@ module.exports = define_grammar(objectscript_core, {
         $._external_body,
       ),
 
-    _external_method_definition: ($) => seq(
-      $._method_header,
-      $._external_method,
-    ),
-
     _method_header: ($) =>
       seq(
         alias($._quote_permitting_identifier, $.method_name),
@@ -253,24 +266,25 @@ module.exports = define_grammar(objectscript_core, {
     method_definition: ($) =>
       seq(
         $._method_header,
+        optional($.method_keywords),
+
         choice(
-          $._core_method,
-          $._expression_method,
-          $._external_method,
-          $._call_method,
+          $.expression_method,
+          $.external_method,
+          $.call_method,
+          $._class_statements_block,
         ),
+        $._reset_method_kind,
       ),
 
-    _call_method: ($) =>
-      seq($.call_method_keywords, '{', choice($.routine_tag_call, $._method_call), '}'),
+    call_method: ($) =>
+      seq($._is_call_method, '{', choice($.routine_tag_call, $._method_call), '}'),
 
-    _core_method: ($) =>
-      seq(optional($.method_keywords), $._class_statements_block),
+    expression_method: ($) =>
+      seq($._is_expression_method, '{', optional($.expression), '}'),
 
-    _expression_method: ($) =>
-      seq($.expression_method_keywords, '{', $.expression, '}'),
-
-    _external_method: ($) => seq($.external_method_keywords, $._external_body),
+    external_method: ($) => seq(
+      $._is_external_method, $._external_body),
 
     arguments: ($) =>
       seq(
@@ -281,7 +295,7 @@ module.exports = define_grammar(objectscript_core, {
 
     argument: ($) =>
       seq(
-        optional(choice($.keyword_byref, $.keyword_output)),
+        optional(choice($.keyword_byref, $.keyword_output, $.keyword_byval)),
         $.method_arg,
         optional($.return_type),
         optional($.default_argument_value),

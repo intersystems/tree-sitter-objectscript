@@ -1,7 +1,7 @@
 [package]
 name = "tree-sitter-objectscript-playground"
 description = "ObjectScript playground grammar for tree-sitter"
-version = "1.11.0"
+version = "2.0.0"
 keywords = ["incremental", "parsing", "objectscript"]
 categories = ["parsing", "text-editors"]
 repository = "https://github.com/intersystems/tree-sitter-objectscript"
@@ -18,6 +18,8 @@ include = [
   "/build.rs",
   "/lib.rs",
   "/common/scanner.h",
+  "/common/expr-scanner.h",
+  "/common/udl-scanner.h",
   "/objectscript/src/parser.c",
   "/objectscript/src/scanner.c",
   "/objectscript/src/node-types.json",
@@ -32,8 +34,10 @@ readme = "cargo_readme_playground.md"
 path = "lib.rs"
 
 [dependencies]
-tree-sitter = ">=0.26.6"
 tree-sitter-language = "0.1"
+
+[dev-dependencies]
+tree-sitter = ">=0.26.6"
 
 [build-dependencies]
 cc = "1.0"

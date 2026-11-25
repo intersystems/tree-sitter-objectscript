@@ -21,6 +21,13 @@ fn main() {
         common_dir.join("scanner.h").to_str().unwrap()
     );
 
+    for header in &["expr-scanner.h", "udl-scanner.h"] {
+        println!(
+            "cargo:rerun-if-changed={}",
+            common_dir.join(header).to_str().unwrap()
+        );
+    }
+
     // MSVC quirk
     if cfg!(target_env = "msvc") {
         config.define("TREE_SITTER_DISABLE_ATOMIC", None);

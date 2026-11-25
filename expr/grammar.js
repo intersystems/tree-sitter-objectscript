@@ -157,6 +157,10 @@ const DOTTED_IDENTIFIER = String.raw`(?:%|\p{Alphabetic})${IDENT_CONTINUE}*(?:\.
 
 module.exports = grammar({
   name: 'objectscript_expr',
+  externals: ($) => [
+    $.statement_in_macro,
+    $.sentinel,
+  ],
   precedences: ($) => [
     [$.oref_method, $.oref_property],
     [$.oref_chain_expr, $._expr_atom],
@@ -171,7 +175,7 @@ module.exports = grammar({
       choice(
         $.json_object_literal,
         $._parenthetical_expression,
-        $.macro,
+        $._macro,
 
         // Literals
         $.string_literal,
@@ -275,7 +279,7 @@ module.exports = grammar({
       seq(
         $.keyword_pound_pound_class,
         token.immediate('('),
-        choice(alias($._quote_permitting_identifier, $.class_name), prec.right(seq($.macro_constant, repeat(seq(token.immediate('.'), $.oref_property))))),
+        choice($.sql_field_reference, alias($._quote_permitting_identifier, $.class_name), prec.right(seq($._macro, repeat(seq(token.immediate('.'), $.oref_property))))),
         token.immediate(')'),
         optional(
           // Class cast syntax
@@ -297,7 +301,7 @@ module.exports = grammar({
         $.keyword_quote_directive,
         token.immediate('('),
         choice(
-          $.macro,
+          $._macro,
           repeat1(choice($.string_literal, $._base_variable)),
         ),
         (')'),
@@ -331,7 +335,7 @@ module.exports = grammar({
         // label+offset+routine, label+routine, numeric+offset+routine, etc.
         seq(
           optional(choice('+', '-')),
-          choice(alias($._base_variable, $.method_name), $.numeric_literal, $.macro),
+          choice(alias($._base_variable, $.method_name), $.numeric_literal, $._macro),
           choice($.routine_ref, seq($.label_offset, optional($.routine_ref))),
         ),
         // routine only (^routine)
@@ -359,11 +363,6 @@ module.exports = grammar({
           choice($.method_args, repeat1($.oref_chain_segment)),
         ),
       ),
-
-    macro_func_args: ($) => seq(
-      token.immediate('('),
-      optional(build_function_arguments(choice($.method_arg, '*'))),
-      ')'),
     method_args: ($) =>
       seq(token.immediate('('), optional($._method_arg_list), ')'),
     _method_arg_list: ($) => build_function_arguments($.method_arg),
@@ -371,28 +370,26 @@ module.exports = grammar({
     byref_arg: ($) =>
       seq(
         '.',
-        choice(
+        prec.right(optional(choice(
           $.lvn,
           $.indirection,
           $.instance_variable,
           $.system_defined_variable,
-        ),
+        ))),
       ),
     variadic_arg: ($) =>
       seq(choice($.lvn, $.json_object_literal), token.immediate('...')),
 
     _glvn: ($) =>
-      choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $.macro)),
+      choice($.gvn, $.lvn, prec(-1, $.ssvn), prec.right(1, $._macro)),
     gvn: ($) =>
       prec.right(
         seq(
           '^',
           optional($._global_reference_prefix),
           optional(
-            alias(
-              token.immediate(
-                /(?:\$\$\$)?[%A-Za-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)*/,
-              ),
+            choice(
+              $._macro,
               $.identifier,
             ),
           ),
@@ -440,7 +437,8 @@ module.exports = grammar({
     ssvn: ($) =>
       prec.right(
         seq(
-          '^$',
+          '^',
+          token.immediate('$'),
           optional($._global_reference_prefix),
           $._base_variable_immediate,
           optional($.method_args),
@@ -508,7 +506,7 @@ module.exports = grammar({
         seq(
           choice(
             $.lvn,
-            $.macro,
+            $._macro,
             $.instance_variable,
             $.relative_dot_property,
             $.relative_dot_method,
@@ -528,7 +526,7 @@ module.exports = grammar({
     oref_chain_segment: ($) =>
       seq(
         token.immediate('.'),
-        choice($.oref_property, $.oref_method, $.oref_parameter, $.macro),
+        choice($.oref_property, $.oref_method, $.oref_parameter, $._macro),
       ),
 
     oref_method: ($) =>
@@ -993,19 +991,23 @@ module.exports = grammar({
     // any length sequence of characters besides ", between "
     // Double-quotes are escaped with double quotes
     string_literal: (_) => token(seq('"', repeat(choice(/[^"]+/, '""')), '"')),
-    macro: ($) => choice($.macro_function, $.macro_constant),
     macro_constant: (_) => token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
-    macro_function: ($) =>
-      prec(
-        1,
-        prec.right(
-          seq(
-            token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/)),
-            $.macro_func_args,
-            optional($.method_args),
-          ),
-        ),
+    macro_function: ($) => prec.right(seq(
+      alias(token(seq(/\$\$\$/, /[%A-Za-z0-9][A-Za-z0-9]*/, token.immediate('('))), $.macro_function),
+      $.statement_in_macro,
+      alias(')', $.macro_function),
+      optional(choice(seq(
+        alias(token.immediate('('), $.macro_function),
+        $.statement_in_macro,
+        alias(')', $.macro_function),
+      ), $.string_literal)),
+    )),
+    _macro: ($) =>
+      choice(
+        $.macro_constant,
+        $.macro_function,
       ),
+
 
     json_object_literal: ($) =>
       prec(2, seq('{', optional(commaSep1($.json_object_literal_pair)), '}')),
@@ -1023,7 +1025,7 @@ module.exports = grammar({
         $.json_array_literal,
         $.json_boolean_literal,
         $.json_null_literal,
-        $.macro,
+        $._macro,
       ),
     json_array_literal: ($) =>
       seq(

@@ -27,46 +27,51 @@
 ; Keywords, one of type language = "python", none of type codemode
 ; External method body injection based on [ Language = ... ]
 (method_definition
-  (external_method_keywords
-    (keyword_external_language
-      (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (method_keywords
+    (method_keyword
+      (external_language_keyword) @_lang))
+  (external_method
+    (external_method_body_content) @injection.content)
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (method_definition
-  (external_method_keywords
-    (keyword_external_language
-      (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (method_keywords
+    (method_keyword
+      (external_language_keyword) @_lang))
+  (external_method
+    (external_method_body_content) @injection.content)
   (#set! injection.include-children "true")
   (#any-of? @_lang "tsql" "TSQL" "tSQL" "tSql" "TSql")
   (#set! injection.language "tsql"))
 
 (method_definition
-  (external_method_keywords
-    (keyword_external_language
-      (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (method_keywords
+    (method_keyword
+      (external_language_keyword) @_lang))
+  (external_method
+    (external_method_body_content) @injection.content)
   (#set! injection.include-children "true")
   (#any-of? @_lang "ispl" "ISPL" "ISpl" "iSpl")
   (#set! injection.language "ispl"))
 
 (trigger
-  (external_trigger_keywords
-    (keyword_external_language
-      (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (trigger_keywords
+    (trigger_keyword
+      (external_language_keyword) @_lang))
+  (external_trigger
+    (external_method_body_content) @injection.content)
   (#set! injection.include-children "true")
   (#any-of? @_lang "python" "Python" "PYTHON")
   (#set! injection.language "python"))
 
 (trigger
-  (external_trigger_keywords
-    (keyword_external_language
-      (typename) @_lang))
-  (external_method_body_content) @injection.content
+  (trigger_keywords
+    (trigger_keyword
+      (external_language_keyword) @_lang))
+  (external_trigger
+    (external_method_body_content) @injection.content)
   (#set! injection.include-children "true")
   (#any-of? @_lang "tsql" "TSQL" "tSQL" "tSql" "TSql")
   (#set! injection.language "tsql"))
@@ -208,7 +213,8 @@
   (#set! injection.language "comment"))
 
 (clientmethod
-  (external_method_body_content) @injection.content
+  (external_method
+    (external_method_body_content) @injection.content)
   (#set! injection.language "javascript")
   (#set! injection.include-children "true"))
 

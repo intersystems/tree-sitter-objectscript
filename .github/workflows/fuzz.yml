@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [objectscript, udl, core]
+        language: [objectscript, udl, core, expr]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -30,7 +30,7 @@ jobs:
         run: |-
           {
             ! git rev-parse HEAD^ >/dev/null 2>&1 && printf 'changed=true\n' ||
-            ! git diff --quiet HEAD^ -- common/scanner.h &&
+            ! git diff --quiet HEAD^ -- 'common/*.h' &&
             printf 'changed=true\n' || printf 'changed=false\n'
           } >> "$GITHUB_OUTPUT"
       - name: Run fuzzer

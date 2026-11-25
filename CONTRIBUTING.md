@@ -17,10 +17,24 @@ Thanks for contributing to `tree-sitter-objectscript`.
 - `core/`: routine/statement grammar
 - `expr/`: expression grammar
 - `objectscript_routine/`: routine-file grammar for `.mac`, `.rtn`, `.inc`, `.int`
+- `common/`: shared external scanner headers and grammar helpers
 
 Grammar graph:
 `objectscript_expr -> objectscript_core -> objectscript_udl -> objectscript`
 `objectscript_expr -> objectscript_core -> objectscript_routine`
+
+External scanners follow the same layering. Each grammar's `src/scanner.c`
+includes one shared header from `common/`:
+
+- `expr-scanner.h`: used by `expr` (macro function arguments)
+- `scanner.h`: includes `expr-scanner.h`; used by `core` and `objectscript_routine`
+- `udl-scanner.h`: includes `scanner.h`; used by `udl` and `objectscript` (method/trigger body language detection)
+
+If you add a header under `common/`, list it in `tree-sitter.json`
+`external-files`, the `include` lists in `Cargo.toml` and
+`bindings/rust-*/Cargo.toml`, `package.json` `files`, the
+`rerun-if-changed` lines in `bindings/rust*/build.rs`, and the copy steps in
+`scripts/rust_routine_crate.sh` and `scripts/rust_playground_crate.sh`.
 
 ## Grammar Workflow
 
@@ -40,6 +54,7 @@ tree-sitter playground
 ```
 
 If you modify an upstream grammar (`expr` or `core`), regenerate and retest downstream grammars (`udl`, `objectscript`, `objectscript_routine`).
+Changes to the `common/` scanner headers affect every grammar that includes them, so rebuild and retest all of those grammars.
 
 ## Query Sync and Git Hooks
 

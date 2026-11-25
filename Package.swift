@@ -47,6 +47,7 @@ let package = Package(
                 path: ".",
                 sources: [
                     "expr/src/parser.c",
+                    "expr/src/scanner.c",
                 ],
                 resources: [
                     .copy("expr/queries")

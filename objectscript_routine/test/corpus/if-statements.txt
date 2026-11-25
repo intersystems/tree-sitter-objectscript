@@ -111,8 +111,7 @@ If Statements 1
               (system_defined_function
                 (method_arg
                   (expression
-                    (macro
-                      (macro_constant))))
+                    (macro_constant)))
                 (method_arg
                   (expression
                     (string_literal))))))))
@@ -332,16 +331,10 @@ If Statements 3
               (lvn
                 (objectscript_identifier)))
             (expression
-              (macro
-                (macro_function
-                  (macro_func_args
-                    (method_arg
-                      (expression
-                        (macro
-                          (macro_constant))))
-                    (method_arg
-                      (expression
-                        (string_literal))))))))))
+              (macro_function
+                (macro_function)
+                (statement_in_macro)
+                (macro_function))))))
       (statement
         (command_quit
           (keyword_quit)))))
